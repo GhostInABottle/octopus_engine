@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Sprite Image="data/player.png" Transparent-Color="#FF00FF" Base-Dir="../">
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Up" />
+    <Tag Key="State" Value="Walk" />
+    <Frame>
+      <Rectangle X="42" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Right" />
+    <Tag Key="State" Value="Walk" />
+    <Frame>
+      <Rectangle X="21" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Down" />
+    <Tag Key="State" Value="Walk" />
+    <Frame>
+      <Rectangle X="0" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Left" />
+    <Tag Key="State" Value="Walk" />
+    <Frame>
+      <Rectangle X="63" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Up" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="42" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Right" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="21" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Down" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="0" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Direction" Value="Left" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="63" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180" Repeats="3">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Name" Value="Pose Test" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="0" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame Duration="600" X-Mag="1.98833334" Angle="31" Opacity="0.25875" Tween="true">
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame X-Mag="2" Angle="32" Opacity="0.25">
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+    <Frame Duration="600" Tween="true">
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+</Sprite>

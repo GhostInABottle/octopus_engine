@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="50" height="40" tilewidth="8" tileheight="8">
+ <properties>
+  <property name="music" value="data/music.ogg"/>
+  <property name="name" value="testmap"/>
+  <property name="scripts" value="data/fade_in.lua"/>
+ </properties>
+ <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8">
+  <properties>
+   <property name="prop1" value="1"/>
+  </properties>
+  <image source="data/test_tileset.gif" trans="ff00ff" width="128" height="256"/>
+  <tile id="0">
+   <properties>
+    <property name="a" value="b"/>
+    <property name="x" value="y"/>
+   </properties>
+  </tile>
+  <tile id="272">
+   <properties>
+    <property name="test" value="va"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8">
+  <image source="data/obstruction.png" trans="ff00ff" width="64" height="8"/>
+ </tileset>
+ <layer name="ground" width="50" height="40">
+  <properties>
+   <property name="@Description" value="ground layer"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJy9mclrFFEQxkuNehAFtwgSBdEouKJJ9CiKHlxxBfftkIMgKoiCoJBo1KuOweWm4xZvKsbl5op4c1/+GquY+uiaynu9ZNpp+Oh5k57u+r3a3uu0E1E7q8upjTVG/zaPNSJD0wP3aKbEzg7WHMfTpuNpORhiHONZCwpqQoMss5XFcoChRc+jWVMLcMg9elgXcugiq68EvwpHp/FLm7NTWCYX9Ifc4yqrwrqmqrix/a6/BI52ZRAWibOVKTZDowtw3GNVVfdU4Kjq+XZJHB3KIXqVgyOvP7z98vmuY5Px/RI4wAK/xDgmUTi+0jhkrn+wrhueqo4rVG5ceb8sCdg6hZI89zwxjiesZ6wvek7T85I5kOdjc/hkLtX6TIxjHWs9awNrs55PsI7R0FrfVSKHtcH2QOsLaz/yKcaxm7WHtVftl/M+1iHWOfW9ZUnjaKdwz87i6Ir4BPbLfJ7N4LD+EI5N6hfh2EJJfYR9MQ65Bj2uYxgcYJH5n2UYYH+n2pDlj+PKsZ91QH1x0PgFPKH7oE+/0usGdJyXo9X5cqmxfQ7V980sf/gz8kU4zqtvzgXug7XNYkr6AXgWUbKeSeMYoSyYk2VU3y/BIPM4n4aulRYaf8TOwrLPyHOIHb2sN6xB1i/l+M16r3/rzcEBFrF1lWGCZqt69FkXjfpS/IE8Eb9spFr9OhrhqBoJyx/WQ9ZL830s/2dQ+gEGrJVfU63XfaSkP/e7+U87xqlmBjgqVN8/Bx3DB0ryNMSSdqygmp8QY49ZPw1H1XBAsSMrT7H+Ao9da+IzcsbXv6x7S19ZTkme3NF5qSpPiGM4Pa6NkrUk+j7WNHaMGgC/2BoQ00JK+mOr/lY43ug94RPPEaoFeZ4Fe7tVoTHqmNRkqQE3qJZHcpYY7DV6q+c+w7Fc/SHrKKyhvlKyXrIcPe5+kPC/o/r602ue1W102o0hYbil509qPxgkTiRG7qrs+hq1DLElvgz1fstxh+prD3SJavXnUeBvtyP2+/GA0W+9302q1R5hsPmEe1uO7aydrLWqHaxdAR7R4wjHA32uzN8VfdYl9U+/sTuNZYCSviL3eaG+AAd8gLhHPbX2wSdY98Ter2AvgjxFHRqkJA4kpi+zPqt/ZM7OZPjitNr/wtj/wTFcV9v9fsfbiHxPe08Ejoo7oyd8Njx/1Z77xt5ZKSzfqZafT6l+T5M2fu7sk9jaoUKMhWLrCYX3T6gP38ycfjfP6lafrFYWMFgW2VfInqjFPG8yhfeufg/iWdY6WZZT7rn4jJiJ2XfGfLfKsPh65fenGMf24THhevT4UO06FWDA59UB23xenGRtZW0LzEdor23H1gf2PY9nmKi/sT3e5kkjh7X5MOsIDc2PrP03FGOQeBypHCMp8Unnf+CAT0J9MC320/Ih5A9woH7Z2Bru+wNZX6X1DXy2R5a9c3OwjKL6+MJ6shEO1AzvA8tThGNFjmt8TymDI9QvUOvXKKe9HnNZpEZl/Qax1ShHTOCz19vYsLGeVaPy+GS4HLIvHecUOixHrFYVEfh83pf9njCLoxH7xe5RjgNx16z/u1l/wI6i+dJiOPxvm8kxiZLcDdkZ64V51Gx/+PkP9Qz0xyK51GwOK3mX6/9fa+OuyHryf3P8A9Gl4kI=
+  </data>
+ </layer>
+ <layer name="upper" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztlbkKwkAYhPN3WgYbbRW1F49a8ejFo05hfAIfQdQX8HhbJ+xKgpA6zjofDMl037A5okgIURVXy8PM2fIwc4P/3dyVmcz/EsCOB/yfyIt8hxBCCFE1NfxL61beWWjCuWXl/dcxuHaRHtI31833BtGOGK4jZIxMzPXYd6YdH5ZwXhW827jv+LNhYgfffcF5gPuhPxsmUvgev5wT9AXZjjIOgewQ4p+Z4T1eB/Iuz/339US8J/PfIFviDRlT758E9HwJIQQ7b9oVEgU=
+  </data>
+ </layer>
+ <objectgroup name="objects">
+  <object name="jimbo" type="npc" x="147" y="232">
+   <properties>
+    <property name="direction" value="left"/>
+    <property name="script" value="data/script.lua"/>
+    <property name="speed" value="2"/>
+    <property name="sprite" value="data/sprite.spr"/>
+   </properties>
+  </object>
+  <object name="area51" type="area" x="86" y="241" width="12" height="13">
+   <properties>
+    <property name="script" value="data/script.lua"/>
+   </properties>
+  </object>
+  <object name="obj" type="object" x="384" y="240" width="16" height="16">
+   <properties>
+    <property name="script" value="data/script.lua"/>
+   </properties>
+  </object>
+  <object name="exit" type="area" x="0" y="200" width="8" height="48">
+   <properties>
+    <property name="global-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled2.tmx', 20, 192, RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
+   </properties>
+  </object>
+  <object name="area52" type="area object" x="172" y="288" width="12" height="13">
+   <properties>
+    <property name="script" value="data/script.lua"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="above" width="50" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt17ENgDAMBMDUwASINdh/tUzgICwSEeVO+vYbN+9SAACAme1BjmTf1ujs6Q5yJfvOoA8AYKTWtmolu+V6ibbVU7JbblZ/vd9bq96P74z+J3vxU8KaKl7xCIw=
+  </data>
+ </layer>
+ <imagelayer name="some image" opacity="0.4">
+  <image source="data/snowstorm.png" trans="7c7c7c"/>
+  <properties>
+   <property name="fixed" value="1"/>
+   <property name="xspeed" value="3"/>
+   <property name="yspeed" value="3"/>
+  </properties>
+ </imagelayer>
+ <layer name="collision" width="50" height="40" visible="0" opacity="0.27">
+  <data encoding="base64" compression="zlib">
+   eJzt1EEOgCAMBVECJt7/xq41gVBtP8XMYnbS9Gmk1VJap2qoNyNDOHKFI1c4coVjbt5OjtGZ4ycOlUXhUFhUjuh/Bod9xhlkUDoiDUpHpMFqnHlu5b44dI4vs6336S7fI9LxPO/5XnD4OTwsKxyjuW/2ISLfVt2RGR0ZLNEOldXL0dsTB47ocODAce8ClMUjtQ==
+  </data>
+ </layer>
+</map>

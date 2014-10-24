@@ -1,0 +1,1 @@
+camera:tint_screen(Color(0.0, 0.0, 0.0, 0.0), 2000):wait()

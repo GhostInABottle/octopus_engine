@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\vendor\xd\include\xd\asset_manager.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\asset_serializer.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio\audio.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio\detail\audio_handle.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio\exceptions.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio\music.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\audio\sound.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\config.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\entity.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\identity.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\iterate_asset_manager.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\iterate_create.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\iterate_entity_constructor.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\iterate_factory_create.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\detail\noop_deleter.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\entity.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\event_bus.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\exception.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\factory.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\glm.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\font.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\image.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\iterate_render.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\sprite_batch.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\text_formatter.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\detail\vertex_traits.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\exceptions.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\font.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\font_style.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\image.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\matrix_stack.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\shaders.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\shader_program.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\simple_text_renderer.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\sprite_batch.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\stock_text_formatter.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\texture.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\text_formatter.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\text_renderer.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\transform_geometry.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\types.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\utility.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\vertex_batch.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\vertex_traits.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\handle.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\config.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\detail\iterate_function_call.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\detail\iterate_scheduler_yield.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\detail\scheduler.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\detail\scheduler_task.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\exceptions.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\function.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\scheduler.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\scheduler_task.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\types.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\lua\virtual_machine.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\ref_counted.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system\exceptions.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system\input.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system\utility.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system\window.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\system\window_options.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\types.hpp" />
+    <ClInclude Include="..\..\vendor\xd\include\xd\weak_handle.hpp" />
+    <ClInclude Include="..\..\vendor\xd\src\test\test.h" />
+    <ClInclude Include="..\..\vendor\xd\src\test\types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\vendor\xd\src\audio\audio.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\audio\music.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\audio\sound.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\font.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\image.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\shaders.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\shader_program.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\simple_text_renderer.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\sprite_batch.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\stock_text_formatter.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\texture.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\text_formatter.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\text_renderer.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\lua\scheduler.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\lua\virtual_machine.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\system\input.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\system\window.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\test\main.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\test\test.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{065DCECA-67DB-438B-9BF9-8B88D252F70C}</ProjectGuid>
+    <RootNamespace>xd</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>
+      </SDLCheck>
+      <PreprocessorDefinitions>LUA_BUILD_AS_DLL;LUABIND_DYNAMIC_LINK;SFML_STATIC;XD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glew.lib;glfw3-d.lib;freetype244.lib;DevIL.lib;lua.lib;luabind-d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <PreprocessorDefinitions>LUA_BUILD_AS_DLL;LUABIND_DYNAMIC_LINK;SFML_STATIC;XD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glew.lib;glfw3.lib;freetype244.lib;DevIL.lib;lua.lib;luabind.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

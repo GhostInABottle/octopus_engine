@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine", "octopus_engine.vcxproj", "{2D827BB7-26EB-41A5-8153-E7CE326643CD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine_tests", "octopus_engine_tests\octopus_engine_tests.vcxproj", "{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xd", "xd\xd.vcxproj", "{065DCECA-67DB-438B-9BF9-8B88D252F70C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Debug|Win32.Build.0 = Debug|Win32
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Release|Win32.ActiveCfg = Release|Win32
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Release|Win32.Build.0 = Release|Win32
+		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Debug|Win32.Build.0 = Debug|Win32
+		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Release|Win32.ActiveCfg = Release|Win32
+		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Release|Win32.Build.0 = Release|Win32
+		{065DCECA-67DB-438B-9BF9-8B88D252F70C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{065DCECA-67DB-438B-9BF9-8B88D252F70C}.Debug|Win32.Build.0 = Debug|Win32
+		{065DCECA-67DB-438B-9BF9-8B88D252F70C}.Release|Win32.ActiveCfg = Release|Win32
+		{065DCECA-67DB-438B-9BF9-8B88D252F70C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

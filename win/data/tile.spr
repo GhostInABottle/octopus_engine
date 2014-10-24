@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Sprite Image="images/obstruction.png" Base-Dir="../../">
+  <Pose Duration="200">
+    <Bounding-Box X="0" Y="0" Width="8" Height="8" />
+    <Tag Key="Name" Value="Pass" />
+    <Frame>
+      <Rectangle X="8" Y="0" Width="8" Height="8" />
+    </Frame>
+  </Pose>
+  <Pose Duration="200">
+    <Bounding-Box X="0" Y="0" Width="8" Height="8" />
+    <Tag Key="Name" Value="Block" />
+    <Frame>
+      <Rectangle X="16" Y="0" Width="8" Height="8" />
+    </Frame>
+  </Pose>
+  <Pose Duration="200">
+    <Bounding-Box X="0" Y="0" Width="8" Height="8" />
+    <Tag Key="Name" Value="TPass" />
+    <Frame>
+      <Rectangle X="0" Y="0" Width="8" Height="8" />
+    </Frame>
+  </Pose>
+</Sprite>

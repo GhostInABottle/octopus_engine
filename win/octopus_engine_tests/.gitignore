@@ -1,0 +1,12 @@
+Release
+Debug
+*.user
+/obstruction.png
+/player.png
+/sprite.spr
+/test_tiled.tmx
+/test_tileset.gif
+/Unibody 8-Italic.otf
+/music.ogg
+/script.lua
+/config.ini
