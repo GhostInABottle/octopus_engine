@@ -7,29 +7,17 @@
 #include <iomanip>
 #include <boost/algorithm/string.hpp>
 
+bool file_exists(const std::string& filename) {
+    std::ifstream stream(normalize_slashes(filename));
+    return static_cast<bool>(stream);
+}
+
 std::string read_file(const std::string& filename) {
     std::ifstream stream(normalize_slashes(filename));
     if (!stream)
         throw std::runtime_error("Couldn't read file " + filename);
     return std::string((std::istreambuf_iterator<char>(stream)),
                  std::istreambuf_iterator<char>());
-}
-
-xd::vec4 hex_to_color(std::string hex) {
-    if (hex.empty())
-        throw std::runtime_error("Empty hex string");
-    if (hex[0] == '#')
-        hex = hex.substr(1);
-    if (hex.size() > 8)
-        throw std::runtime_error(hex + " is too long");
-    std::stringstream ss(hex);
-    unsigned int value;
-    ss >> std::hex >> value;
-    if (!ss)
-        throw std::runtime_error("Invalid hex string");
-    if (hex.size() == 6)
-        value |= 0xff000000;
-    return int_to_color(value);
 }
 
 void read_properties(Properties& properties, rapidxml::xml_node<>& parent_node) {
@@ -41,6 +29,38 @@ void read_properties(Properties& properties, rapidxml::xml_node<>& parent_node) 
             properties[name] = value;
         }
     }
+}
+
+void save_properties(const Properties& properties, rapidxml::xml_document<>& doc, rapidxml::xml_node<>& node) {
+    if (properties.empty())
+        return;
+    auto properties_node = xml_node(doc, "properties");
+    node.append_node(properties_node);
+    for (auto& prop : properties) {
+        auto property_node = xml_node(doc, "property");
+        auto name_attr = xml_attribute(doc, "name", prop.first);
+        auto value_attr = xml_attribute(doc, "value", prop.second);
+        property_node->append_attribute(name_attr);
+        property_node->append_attribute(value_attr);
+        properties_node->append_node(property_node);
+    }
+}
+
+rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
+        const std::string& name, const std::string& value,
+        rapidxml::node_type type) {
+    char* name_str = doc.allocate_string(name.c_str());
+    char* value_str = nullptr;
+    if (!value.empty())
+        value_str = doc.allocate_string(value.c_str());
+    return doc.allocate_node(type, name_str, value_str);
+}
+
+rapidxml::xml_attribute<>* xml_attribute(rapidxml::xml_document<>& doc,
+        const std::string& name, const std::string& value) {
+    char* name_str = doc.allocate_string(name.c_str());
+    char* value_str = doc.allocate_string(value.c_str());
+    return doc.allocate_attribute(name_str, value_str);
 }
 
 std::string trim(std::string s) {
@@ -97,16 +117,6 @@ bool equal_strings(const std::string& str1, const std::string& str2) {
     return boost::iequals(str1, str2);
 }
 
-void set_color_key(xd::image& image, const xd::vec4& color) {
-    unsigned int color_value = color_to_int(color);
-    unsigned int* data = static_cast<unsigned int*>(image.data());
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-        if (data[i] == color_value) {
-            data[i] &= 0x00ffffff;
-        }
-    }
-}
-
 xd::vec4 int_to_color(unsigned int value) {
     xd::vec4 color;
     color.a = ((value >> 24) & 0xff) / 255.0f;
@@ -123,6 +133,30 @@ unsigned int color_to_int(const xd::vec4& color) {
     value |= static_cast<unsigned int>(color.r * 255.0f) << 16;
     value |= static_cast<unsigned int>(color.a * 255.0f) << 24;
     return value;
+}
+
+xd::vec4 hex_to_color(std::string hex) {
+    if (hex.empty())
+        throw std::runtime_error("Empty hex string");
+    if (hex[0] == '#')
+        hex = hex.substr(1);
+    if (hex.size() > 8)
+        throw std::runtime_error(hex + " is too long");
+    std::stringstream ss(hex);
+    unsigned int value;
+    ss >> std::hex >> value;
+    if (!ss)
+        throw std::runtime_error("Invalid hex string");
+    if (hex.size() == 6)
+        value |= 0xff000000;
+    return int_to_color(value);
+}
+
+std::string color_to_hex(const xd::vec4& color) {
+    int value = color_to_int(color);
+    std::stringstream ss;
+    ss << std::hex << value;
+    return ss.str();
 }
 
 xd::vec2 lerp(const xd::vec2& start, const xd::vec2& end, float alpha) {

@@ -170,7 +170,7 @@ private:
 
 class Text_Command : public Command {
 public:
-    Text_Command(Game& game, Map_Object* object, const std::string& text);
+    Text_Command(Game& game, Map_Object* object, const std::string& text, long duration = -1);
     Text_Command(Game& game, Map_Object* object, std::vector<std::string> choices, const std::string& text = "");
     void execute();
     bool is_complete() const;
@@ -188,6 +188,8 @@ private:
     bool was_disabled;
     unsigned int  selected_choice;
     unsigned int current_choice;
+    long start_time;
+    long duration;
 };
 
 class Wait_Command : public Simulatable_Command {

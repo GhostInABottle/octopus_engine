@@ -3,12 +3,15 @@
 
 #include<memory>
 #include <string>
+#include <xd/graphics/types.hpp>
 #include "common.hpp"
+#include "editable.hpp"
+#include "rapidxml.hpp"
 
 class Layer_Renderer;
 class Layer_Updater;
 
-struct Layer {
+struct Layer : public Editable {
     // Layer name
     std::string name;
     // Layer width (same as map width)
@@ -25,9 +28,22 @@ struct Layer {
     std::unique_ptr<Layer_Renderer> renderer;
     // Layer logic component
     std::unique_ptr<Layer_Updater> updater;
+    // Filename of vertex shader
+    std::string vertex_shader;
+    // Filename of fragment shader
+    std::string fragment_shader;
 
     Layer();
+    // Resize layer (width and height in tiles)
+    virtual void resize(xd::ivec2 new_size);
+    // Serialize layer to XML node
+    virtual rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) = 0;
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc,
+            const std::string& node_name);
+    // Load layer data from XML node
+    void load(rapidxml::xml_node<>& node);
     virtual ~Layer() = 0;
+
 };
 
 #endif

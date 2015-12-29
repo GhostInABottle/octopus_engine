@@ -25,6 +25,9 @@ public:
     xd::lua::scheduler& get_scheduler() { return scheduler; }
     Command_Result* register_command(std::shared_ptr<Command> command);
     Choice_Result* register_choice_command(std::shared_ptr<Command> command);
+    lua_State* lua_state() {
+        return vm.lua_state();
+    }
 private:
     static void setup_scripts();
     static Game* game;

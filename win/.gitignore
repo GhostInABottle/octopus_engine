@@ -1,6 +1,7 @@
 ipch
 Release
 Debug
+data/test_save.txt
 *.sdf
 *.suo
 *.user

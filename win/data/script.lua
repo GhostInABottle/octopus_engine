@@ -1,3 +1,48 @@
+function print_table(tt, indent, done)
+  done = done or {}
+  indent = indent or 0
+  if type(tt) == "table" then
+    local result = string.rep(" ", indent) .. '{\n'
+    indent = indent + 2
+    for key, value in pairs (tt) do
+      result = result .. string.rep(" ", indent) -- indent it
+      if type (value) == "table" and not done [value] then
+        done [value] = true
+        result = result ..  key .. " =\n";
+        result = result ..  print_table(value, indent + 2, done)
+        result = result ..  string.rep(" ", indent) -- indent it
+        result = result ..  "\n";
+      elseif "number" == type(key) then
+        result = result ..  string.format("\"%s\"\n", tostring(value))
+      else
+        result = result ..  string.format(
+            "%s = \"%s\"\n", tostring(key), tostring(value))
+       end
+    end
+    indent = indent - 2
+    return result .. string.rep(" ", indent) ..  '}'
+  else
+    return tostring(tt) .. "\n"
+  end
+end
+local tbl = {
+    a = 'aa',
+    b = 'ba',
+    c = 'ca',
+    d = 6.5,
+    e = false,
+    f = {
+        x = 1,
+        y = true,
+        z = 'w',
+    },
+    g = nil,
+    x = function() end
+}
+print(print_table(tbl))
+game:save('data/test_save.txt', tbl)
+tbl2 = game:load('data/test_save.txt')
+print(print_table(tbl2))
 player.disabled = true
 print("Objects:\n")
 local objects = current_map:get_objects()

@@ -11,6 +11,7 @@ void Tile_Layer_Renderer::render(Map& map) {
     if (!layer.visible)
         return;
     if (needs_redraw) {
+        batch.clear();
         for (int y = 0; y < map.get_height(); ++y) {
             for (int x = 0; x < map.get_width(); ++x) {
                 int i = y * map.get_width() + x;
@@ -29,5 +30,5 @@ void Tile_Layer_Renderer::render(Map& map) {
         cache = batch.create_batches();
         needs_redraw = false;
     }
-    batch.draw(map.get_game().get_mvp(), cache);
+    batch.draw(map.get_game().get_mvp(), cache, map.get_game().ticks());
 }

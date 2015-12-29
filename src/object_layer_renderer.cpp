@@ -10,7 +10,6 @@ void Object_Layer_Renderer::render(Map& map) {
     if (!layer.visible)
         return;
     batch.clear();
-    xd::vec4 color(1.0f, 1.0f, 1.0f, layer.opacity);
     // Casting the const away is fine since we're only sorting
     auto& object_layer =
         const_cast<Object_Layer&>(static_cast<const Object_Layer&>(layer));
@@ -37,5 +36,5 @@ void Object_Layer_Renderer::render(Map& map) {
     for (auto& object : object_layer.objects) {
         object->render();
     }
-    batch.draw(map.get_game().get_mvp());
+    batch.draw(map.get_game().get_mvp(), map.get_game().ticks());
 }

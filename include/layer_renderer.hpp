@@ -12,8 +12,7 @@ class Camera;
 
 class Layer_Renderer : public xd::render_component<Map> {
 public:
-    Layer_Renderer(const Layer& layer, const Camera& camera) : layer(layer),
-        camera(camera), needs_redraw(false) {}
+    Layer_Renderer(const Layer& layer, const Camera& camera);
     virtual void render(Map& map) = 0;
     xd::sprite_batch& get_batch() { return batch; }
     void redraw() { needs_redraw = true; }

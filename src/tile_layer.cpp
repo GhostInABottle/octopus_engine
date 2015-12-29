@@ -5,20 +5,52 @@
 #include "../include/exceptions.hpp"
 #include <zlib.h>
 #include <boost/lexical_cast.hpp>
+#include <cmath>
+
+void Tile_Layer::resize(xd::ivec2 new_size) {
+    std::vector<unsigned int> new_tiles;
+    auto row_start = tiles.begin();
+    int min_width = std::min(new_size.x, this->width);
+    int min_height = std::min(new_size.y, this->height);
+    for (int y = 0; y < min_height; ++y) {
+        auto row_end = row_start + min_width;
+        new_tiles.insert(new_tiles.end(), row_start, row_end);
+        if (new_size.x > this->width) {
+            new_tiles.insert(new_tiles.end(), new_size.x - this->width, 0);
+        }
+        row_start += this->width;
+    }
+    if (new_size.y > this->height) {
+        int new_rows = (new_size.y - this->height) * new_size.x;
+        new_tiles.insert(new_tiles.end(), new_rows, 0);
+    }
+    tiles = std::move(new_tiles);
+    Layer::resize(new_size);
+}
+
+rapidxml::xml_node<>* Tile_Layer::save(rapidxml::xml_document<>& doc) {
+    auto node = Layer::save(doc, "layer");
+    std::string raw_data;
+    uLongf src_size = tiles.size() * 4;
+    uLongf dest_size = compressBound(src_size);
+    std::vector<Bytef> dest_bytes(dest_size);
+    compress2(&dest_bytes[0], &dest_size,
+        (const Bytef*) &tiles[0], src_size,
+        Z_DEFAULT_COMPRESSION);
+    dest_bytes.resize(dest_size);
+    std::string coded_data = base64_encode(
+        (const unsigned char*) &dest_bytes[0], dest_bytes.size());
+    auto data_node = xml_node(doc, "data", coded_data);
+    data_node->append_attribute(xml_attribute(doc, "encoding", "base64"));
+    data_node->append_attribute(xml_attribute(doc, "compression", "zlib"));
+    node->append_node(data_node);
+    return node;
+}
 
 std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& camera) {
     using boost::lexical_cast;
     Tile_Layer* layer_ptr = new Tile_Layer();
-    layer_ptr->name = node.first_attribute("name")->value();
-    layer_ptr->width = lexical_cast<int>(node.first_attribute("width")->value());
-    layer_ptr->height = lexical_cast<int>(node.first_attribute("height")->value());
-    if (auto opacity_node = node.first_attribute("opacity"))
-        layer_ptr->opacity = lexical_cast<float>(opacity_node->value());
-    if (auto visible_node = node.first_attribute("visible"))
-        layer_ptr->visible = lexical_cast<bool>(visible_node->value());
-
-    // Layer properties
-    read_properties(layer_ptr->properties, node);
+    layer_ptr->Layer::load(node);
 
     // Layer data
     auto data_node = node.first_node("data");

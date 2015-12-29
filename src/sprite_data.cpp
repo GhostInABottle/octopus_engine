@@ -29,7 +29,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     auto sprite_node = doc.first_node("Sprite");
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing spritedata node");
-    return load(manager, *sprite_node);
+    auto sprite_data = load(manager, *sprite_node);
+    sprite_data->filename = normalize_slashes(filename);
+    return sprite_data;
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node) {
@@ -49,13 +51,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     if (auto attr = node.first_attribute("Image")) {
         image_loaded = true;
         std::string image_file = attr->value();
-        xd::image image(normalize_slashes(image_file));
-
-        if (trans_color_attr)
-            set_color_key(image, sprite_ptr->transparent_color);
-
-        sprite_ptr->image = manager.load_persistent<xd::texture>(image, 
-                GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+        sprite_ptr->image = manager.load_persistent<xd::texture>(
+            normalize_slashes(image_file), sprite_ptr->transparent_color,
+            GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     }
 
     // Poses
@@ -93,11 +91,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
-            xd::image pose_image(normalize_slashes(pose_image_file));
-            if (pose.transparent_color) {
-                set_color_key(pose_image, pose.transparent_color.get());
-            }
-            pose.image = manager.load_persistent<xd::texture>(pose_image, 
+            pose.image = manager.load_persistent<xd::texture>(
+                normalize_slashes(pose_image_file),
+                pose.transparent_color,
                 GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
         } else {
             pose_images_loaded = false;
@@ -139,12 +135,10 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
-                xd::image frame_image(normalize_slashes(frame_image_file));
-                if (frame.transparent_color) {
-                    set_color_key(frame_image, frame.transparent_color.get());
-                }
-                frame.image = manager.load_persistent<xd::texture>(frame_image, 
-                GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+                frame.image = manager.load_persistent<xd::texture>(
+                    normalize_slashes(frame_image_file),
+                    frame.transparent_color,
+                    GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
             } else {
                 frame_images_loaded = false;
             }

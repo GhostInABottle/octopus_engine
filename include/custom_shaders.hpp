@@ -3,9 +3,9 @@
 
 #include <xd/graphics/shader_program.hpp>
 
-class custom_shader : public xd::shader_program {
+class Custom_Shader : public xd::shader_program {
 public:
-    custom_shader(const std::string& vertex_src, const std::string& fragment_src);
+	Custom_Shader(const std::string& vertex_src, const std::string& fragment_src);
 };
 
 #endif

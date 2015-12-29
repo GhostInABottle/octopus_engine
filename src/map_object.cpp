@@ -6,6 +6,7 @@
 #include "../include/utility.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/direction_utilities.hpp"
+#include "../include/log.hpp"
 #include <boost/lexical_cast.hpp>
 
 Map_Object::Map_Object(Game& game, std::string name,
@@ -122,12 +123,25 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     return collision;
 }
 
-void Map_Object::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
-    if (sprite.get())
-        del_component(sprite);
+void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
+    // Player sprite needs to be persisted across maps
+    auto& manager = this == game.get_player() ? game.get_asset_manager() :
+        game.get_map()->get_asset_manager();
+    set_sprite(game, manager, filename, pose_name);
+}
 
-    sprite = xd::create<Sprite>(game, Sprite_Data::load(
-        manager, filename));
+void Map_Object::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
+    if (!file_exists(filename)) {
+        LOGGER_W << "Tried to set sprite for map object " << name <<
+                    " to nonexistent file " << filename;
+        return;
+    }
+    if (sprite) {
+        if (sprite->get_filename() == normalize_slashes(filename))
+            return;
+        del_component(sprite);
+    }
+    sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
     add_component(sprite);
     set_pose(pose_name);
 }
@@ -175,6 +189,26 @@ void Map_Object::run_script() {
         game.get_map()->run_script(script);
 }
 
+rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
+    auto node = xml_node(doc, "object");
+    if (!get_name().empty())
+        node->append_attribute(xml_attribute(doc, "name", get_name()));
+    if (!get_type().empty())
+        node->append_attribute(xml_attribute(doc, "type", get_type()));
+    node->append_attribute(xml_attribute(doc, "x", std::to_string((int)get_x())));
+    node->append_attribute(xml_attribute(doc, "y", std::to_string((int)get_y())));
+    if (size.x != 0)
+        node->append_attribute(xml_attribute(doc, "width", std::to_string((int)size.x)));
+    if (size.y != 0)
+        node->append_attribute(xml_attribute(doc, "height", std::to_string((int)size.y)));
+    if (get_gid() != -1)
+        node->append_attribute(xml_attribute(doc, "gid", std::to_string(get_gid())));
+    if (!is_visible())
+        node->append_attribute(xml_attribute(doc, "visible", "0"));
+    save_properties(properties, doc, *node);
+    return node;
+}
+
 std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, 
         Game& game, xd::asset_manager& manager) {
     using boost::lexical_cast;
@@ -189,9 +223,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
     object_ptr->position.y = lexical_cast<float>(node.first_attribute("y")->value());
 
     if (auto width_node = node.first_attribute("width"))
-        object_ptr->size[0] = lexical_cast<float>(width_node->value());
+        object_ptr->size.x = lexical_cast<float>(width_node->value());
     if (auto height_node = node.first_attribute("height"))
-        object_ptr->size[1] = lexical_cast<float>(height_node->value());
+        object_ptr->size.y= lexical_cast<float>(height_node->value());
 
     if (auto gid_node = node.first_attribute("gid"))
         object_ptr->gid = lexical_cast<int>(gid_node->value());

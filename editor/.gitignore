@@ -1,0 +1,9 @@
+debug/
+release/
+data/
+srv/
+*.user
+*.user.*
+*.log
+Makefile*
+machine_specific.txt

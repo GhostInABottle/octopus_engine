@@ -17,6 +17,7 @@
 #include "tileset.hpp"
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
+#include "editable.hpp"
 
 namespace xd {
     class music;
@@ -31,7 +32,7 @@ class Scripting_Interface;
 class Map_Renderer;
 class Map_Updater;
 
-class Map : public xd::entity<Map> {
+class Map : public xd::entity<Map>, public Editable {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;
@@ -46,6 +47,10 @@ public:
             return properties.at("name");
         else
             return "unnamed map";
+    }
+    // Set name
+    void set_name(const std::string& name) {
+        properties["name"] = name;
     }
     // Run a script (limited to this map)
     void run_script(const std::string& script);
@@ -86,6 +91,12 @@ public:
     Layer* get_layer(int id);
     // Get layer by name
     Layer* get_layer(const std::string& name);
+    // Resize map and layers
+    void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
+    // Save map to specified file name
+    void save(std::string filename);
+    // Save map to XML document
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load map from a TMX file
     static std::unique_ptr<Map> load(Game& game, const std::string& filename);
     // Load map from a TMX map node
@@ -124,8 +135,24 @@ public:
     std::string get_bg_music_filename() const {
         return background_music;
     }
+    void set_bg_music_filename(const std::string& filename) {
+        background_music = filename;
+    }
+    std::string get_startup_scripts() const {
+        if (properties.find("scripts") != properties.end()) {
+            return properties.at("scripts");
+        } else {
+            return "";
+        }
+    }
+    void set_startup_scripts(const std::string& scripts) {
+        properties["scripts"] = scripts;
+    }
     void set_objects_moved(bool moved) {
         objects_moved = moved;
+    }
+    bool is_changed() {
+        return needs_redraw;
     }
 private:
     // Game instance

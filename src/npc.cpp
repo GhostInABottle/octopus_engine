@@ -28,8 +28,8 @@ struct NPC::Impl {
     {
         if (time_multiplier < 0) {
             time_multiplier = static_cast<int>(
-                Configurations::get<float>("game.time-multiplier"));
-            frame_time = 1000 / Configurations::get<int>("game.logic-fps");
+                Configurations::get<float>("debug.time-multiplier"));
+            frame_time = 1000 / Configurations::get<int>("debug.logic-fps");
         }
     }
     // Game instance
@@ -222,8 +222,8 @@ struct NPC::Impl {
             std::abs(dest.x - npc.position.x),
             std::abs(dest.y - npc.position.y)) * 1.25f;
         static float frame_time = static_cast<float>(1000 /
-            Configurations::get<int>("game.logic-fps"));
-        static float multiplier = Configurations::get<float>("game.time-multiplier");
+            Configurations::get<int>("debug.logic-fps"));
+        static float multiplier = Configurations::get<float>("debug.time-multiplier");
         int delay = static_cast<int>(multiplier * distance * frame_time / 1000.0f);
         expected_completion = time + delay;
     }

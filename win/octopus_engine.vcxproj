@@ -20,14 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -53,7 +53,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;glfw3-d.lib;freetype244.lib;DevIL.lib;lua.lib;luabind-d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3-d.lib;freetype244.lib;DevIL.lib;lua.lib;luabind-d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -72,7 +72,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;glfw3.lib;freetype244.lib;DevIL.lib;lua.lib;luabind.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3.lib;freetype244.lib;DevIL.lib;lua.lib;luabind.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -93,6 +93,7 @@
     <ClCompile Include="..\src\image_layer_renderer.cpp" />
     <ClCompile Include="..\src\image_layer_updater.cpp" />
     <ClCompile Include="..\src\layer.cpp" />
+    <ClCompile Include="..\src\layer_renderer.cpp" />
     <ClCompile Include="..\src\log.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\map.cpp" />
@@ -103,10 +104,12 @@
     <ClCompile Include="..\src\object_layer_updater.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
     <ClCompile Include="..\src\player_controller.cpp" />
+    <ClCompile Include="..\src\save_file.cpp" />
     <ClCompile Include="..\src\scripting_interface.cpp" />
     <ClCompile Include="..\src\custom_shaders.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
     <ClCompile Include="..\src\sprite_data.cpp" />
+    <ClCompile Include="..\src\sprite_holder.cpp" />
     <ClCompile Include="..\src\tileset.cpp" />
     <ClCompile Include="..\src\tile_layer.cpp" />
     <ClCompile Include="..\src\tile_layer_renderer.cpp" />
@@ -144,6 +147,7 @@
     <ClInclude Include="..\include\configurations.hpp" />
     <ClInclude Include="..\include\direction.hpp" />
     <ClInclude Include="..\include\direction_utilities.hpp" />
+    <ClInclude Include="..\include\editable.hpp" />
     <ClInclude Include="..\include\exceptions.hpp" />
     <ClInclude Include="..\include\game.hpp" />
     <ClInclude Include="..\include\image_layer.hpp" />
@@ -163,6 +167,8 @@
     <ClInclude Include="..\include\pathfinder.hpp" />
     <ClInclude Include="..\include\player_controller.hpp" />
     <ClInclude Include="..\include\rapidxml.hpp" />
+    <ClInclude Include="..\include\rapidxml_print.hpp" />
+    <ClInclude Include="..\include\save_file.hpp" />
     <ClInclude Include="..\include\scripting_interface.hpp" />
     <ClInclude Include="..\include\custom_shaders.hpp" />
     <ClInclude Include="..\include\sprite.hpp" />

@@ -11,9 +11,11 @@
 #include "../include/utility.hpp"
 #include "../include/npc.hpp"
 #include "../include/custom_shaders.hpp"
+#include "../include/save_file.hpp"
 #include "../include/log.hpp"
 #include <xd/graphics.hpp>
 #include <xd/factory.hpp>
+#include <luabind/luabind.hpp>
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -26,9 +28,10 @@ int Game::game_width;
 int Game::game_height;
 
 struct Game::Impl {
-    Impl() :
-        show_fps(Configurations::get<bool>("game.show-fps")),
-        show_time(Configurations::get<bool>("game.show-time")),
+    Impl(bool editor_mode) :
+        editor_mode(editor_mode),
+        show_fps(Configurations::get<bool>("debug.show-fps")),
+        show_time(Configurations::get<bool>("debug.show-time")),
         pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
         style(xd::vec4(1.0f,1.0f,1.0f,0.7f), 8),
         paused(false),
@@ -44,6 +47,8 @@ struct Game::Impl {
     bool show_fps;
     bool show_time;
     xd::font_style style;
+    // Was game started in editor mode?
+    bool editor_mode;
     // Information for teleporting to another map
     xd::vec2 next_position;
     Direction next_direction;
@@ -73,25 +78,26 @@ struct Game::Impl {
     void render_shader(Game& game);
 };
 
-Game::Game() : 
-        xd::window(
+Game::Game(bool editor_mode) : 
+        window(editor_mode ? nullptr : new xd::window(
             Configurations::get<std::string>("game.title"), 
             Configurations::get<int>("game.screen-width"),
             Configurations::get<int>("game.screen-height"),
             xd::window_options(Configurations::get<bool>("game.fullscreen"), 
-                false, false, 8, 0, 0, 2, 0)),
+                false, false, 8, 0, 0, 2, 0))),
+        pimpl(new Impl(editor_mode)),
         current_scripting_interface(nullptr),
         font(xd::create<xd::font>(Configurations::get<std::string>("game.font"))),
-        text_renderer(static_cast<float>(game_width), static_cast<float>(game_height)),
-        pimpl(new Impl)
-        {
+        text_renderer(static_cast<float>(game_width), static_cast<float>(game_height)) {
     xd::audio::init();
     clock.reset(new Clock(*this));
     pimpl->load_npcs(*this);
     camera.reset(new Camera(*this));
-    map = Map::load(*this, Configurations::get<std::string>("startup.map"));
     auto clear_color = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+    if (editor_mode)
+        return;
+    map = Map::load(*this, Configurations::get<std::string>("startup.map"));
     // Create player object
     auto player_ptr = new Map_Object(
         *this,
@@ -139,8 +145,8 @@ Game::Game() :
     // Run map startup scripts
     map->run_startup_scripts();
     // Set frame update function and frequency
-    int logic_fps = Configurations::get<int>("game.logic-fps");
-    register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
+    int logic_fps = Configurations::get<int>("debug.logic-fps");
+    window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
     // Setup shader, if any
     set_shader(Configurations::get<std::string>("game.vertex-shader"),
         Configurations::get<std::string>("game.fragment-shader"));
@@ -152,8 +158,8 @@ Game::~Game() {
 
 void Game::run() {
     for (;;) {
-        update();
-        if (closed())
+        window->update();
+        if (window->closed())
             break;
         render();
     }
@@ -166,14 +172,14 @@ void Game::frame_update() {
     if (pimpl->paused) {
         if (triggered_pause)
             resume();
-        else if (pimpl->focus_pause && focused()) {
+        else if (pimpl->focus_pause && window->focused()) {
             resume();
             pimpl->focus_pause = false;
         }
     } else {
         if (triggered_pause)
             pause();
-        else if (pimpl->pause_unfocused && !focused()) {
+        else if (pimpl->pause_unfocused && !window->focused()) {
             pause();
             pimpl->focus_pause = true;
         }
@@ -196,7 +202,7 @@ void Game::frame_update() {
 }
 
 void Game::render() {
-    clear();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     geometry.projection().load(
         xd::ortho<float>(
             0, static_cast<float>(game_width), // left, right
@@ -208,29 +214,31 @@ void Game::render() {
     auto cam_pos = camera->get_position();
     geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
     camera->render();
-    // Draw shader, if any
-    if (pimpl->current_shader)
-        pimpl->render_shader(*this);
-    // Draw FPS
-    if (pimpl->show_fps)
-        text_renderer.render(font, pimpl->style, 5, 230,
-            "FPS: " + boost::lexical_cast<std::string>(fps()));
-    // Draw game time
-    if (pimpl->show_time || pimpl->paused) {
-        int seconds = clock->total_seconds();
-        std::ostringstream ss;
-        ss << "Day: " << std::setw(2) << time_to_days(seconds) << " Time: ";
-        ss.fill('0');
-        ss << std::setw(2) << time_to_hours(seconds) << ":" <<
-            std::setw(2) << time_to_minutes(seconds);
-        text_renderer.render(font, pimpl->style, 220, 230, ss.str());
+    if (!pimpl->editor_mode) {
+        // Draw shader, if any
+        if (pimpl->current_shader)
+            pimpl->render_shader(*this);
+        // Draw FPS
+        if (pimpl->show_fps)
+            text_renderer.render(font, pimpl->style, 5, 230,
+                "FPS: " + boost::lexical_cast<std::string>(fps()));
+        // Draw game time
+        if (pimpl->show_time || pimpl->paused) {
+            int seconds = clock->total_seconds();
+            std::ostringstream ss;
+            ss << "Day: " << std::setw(2) << time_to_days(seconds) << " Time: ";
+            ss.fill('0');
+            ss << std::setw(2) << time_to_hours(seconds) << ":" <<
+                std::setw(2) << time_to_minutes(seconds);
+            text_renderer.render(font, pimpl->style, 210, 230, ss.str());
+        }
+        window->swap();
     }
-    swap();
 }
 
 void Game::pause() {
     pimpl->paused = true;
-    pimpl->pause_start_time = xd::window::ticks();
+    pimpl->pause_start_time = window->ticks();
     pimpl->was_stopped = clock->stopped();
     clock->stop_time();
     if (music) {
@@ -244,13 +252,18 @@ void Game::pause() {
 
 void Game::resume() {
     pimpl->paused = false;
-    pimpl->total_paused_time += xd::window::ticks() - pimpl->pause_start_time;
+    pimpl->total_paused_time += window->ticks() - pimpl->pause_start_time;
     if (!pimpl->was_stopped)
         clock->resume_time();
     if (music && !pimpl->music_was_paused)
         music->play();
     set_shader(Configurations::get<std::string>("game.vertex-shader"),
         Configurations::get<std::string>("game.fragment-shader"));
+}
+
+void Game::set_size(int width, int height) {
+    camera->calculate_viewport(width, height);
+    camera->update_viewport();
 }
 
 void Game::run_script(const std::string& script) {
@@ -294,10 +307,20 @@ NPC* Game::get_npc(const std::string& name) {
         return nullptr;
 }
 
+bool Game::stopped() const {
+    return clock->stopped();
+}
+
+int Game::total_seconds() const {
+    return clock->total_seconds();
+}
+
 int Game::ticks() const {
+    if (!window)
+        return editor_ticks;
     int stopped_time = pimpl->total_paused_time + (pimpl->paused ?
-        xd::window::ticks() - pimpl->pause_start_time : 0);
-    return xd::window::ticks() - stopped_time;
+        window->ticks() - pimpl->pause_start_time : 0);
+    return window->ticks() - stopped_time;
 }
 
 void Game::set_shader(const std::string& vertex, const std::string& fragment) {
@@ -312,32 +335,52 @@ void Game::set_shader(const std::string& vertex, const std::string& fragment) {
         }
     }
     if (!vsrc.empty()) {
-        pimpl->current_shader = new custom_shader(vsrc, fsrc);
-       pimpl->full_screen_batch.set_shader(pimpl->current_shader);
+        pimpl->current_shader = new Custom_Shader(vsrc, fsrc);
+        pimpl->full_screen_batch.set_shader(pimpl->current_shader);
     } else {
         pimpl->current_shader = nullptr;
     }
 }
 
+void Game::save(const std::string& filename, Save_File& save_file) const {
+    std::ofstream of(filename, std::ios::binary);
+    of << save_file;
+}
+
+std::unique_ptr<Save_File> Game::load(const std::string& filename) {
+    lua_State* state = pimpl->scripting_interface->lua_state();
+    std::unique_ptr<Save_File> file(new Save_File(state, luabind::object()));
+    std::ifstream ifs(filename, std::ios::binary);
+    ifs >> *file;
+    return file;
+}
+
 void Game::load_map(const std::string& filename) {
     map = Map::load(*this, filename);
-    // Add player to the map
-    player->set_position(pimpl->next_position);
-    player->face(pimpl->next_direction);
-    map->add_object(player);
-    camera->set_object(player.get());
-    player->set_triggered_object(nullptr);
-    player->set_collision_area(nullptr);
-    // Play background music
-    auto bg_music = map->get_bg_music_filename();
-    if (!bg_music.empty() && bg_music != pimpl->playing_music_name) {
-        load_music(bg_music);
-        music->set_looping(true);
-        music->play();
+    if (!pimpl->editor_mode) {
+        // Add player to the map
+        player->set_position(pimpl->next_position);
+        player->face(pimpl->next_direction);
+        map->add_object(player);
+        camera->set_object(player.get());
+        player->set_triggered_object(nullptr);
+        player->set_collision_area(nullptr);
+        // Play background music
+        auto bg_music = map->get_bg_music_filename();
+        if (!bg_music.empty() && bg_music != pimpl->playing_music_name) {
+            load_music(bg_music);
+            music->set_looping(true);
+            music->play();
+        }
+        // Run map startup scripts
+        map->run_startup_scripts();
+        pimpl->next_map = "";
     }
-    // Run map startup scripts
-    map->run_startup_scripts();
-    pimpl->next_map = "";
+}
+
+void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
+    map.reset(new Map(*this));
+    map->resize(map_size, tile_size);
 }
 
 void Game::Impl::load_npcs(Game& game) {
@@ -359,7 +402,8 @@ void Game::Impl::render_shader(Game& game) {
     int w = game.width();
     int h = game.height();
     if (!full_screen_texture)
-        full_screen_texture = xd::create<xd::texture>(w, h, nullptr, GL_CLAMP, GL_CLAMP);
+        full_screen_texture = xd::create<xd::texture>(w, h, nullptr,
+            xd::vec4(0), GL_CLAMP, GL_CLAMP);
     full_screen_texture->copy_read_buffer(0, 0, w, h);
     full_screen_batch.clear();
     full_screen_batch.add(full_screen_texture, 0, 0);
@@ -372,7 +416,7 @@ void Game::Impl::render_shader(Game& game) {
     );
     game.geometry.model_view().push(xd::mat4());
     glViewport(0, 0, w, h);
-    game.clear();
+    game.window->clear();
     full_screen_batch.draw(game.get_mvp(), game.ticks());
     game.camera->update_viewport();
     game.geometry.model_view().pop();
@@ -380,37 +424,37 @@ void Game::Impl::render_shader(Game& game) {
 }
 
 void Game::process_keymap() {
-    bool gamepad_enabled = joystick_present(0) &&
+    bool gamepad_enabled = window->joystick_present(0) &&
         Configurations::get<bool>("controls.gamepad-enabled");
     std::string map_file = Configurations::get<std::string>("controls.mapping-file");
     std::ifstream input(map_file);
     if (input) {
+		// Map key names to XD keys
         std::unordered_map<std::string, xd::key> key_names;
-        if (key_names.empty()) {
-            key_names["LEFT"] = xd::KEY_LEFT;
-            key_names["RIGHT"] = xd::KEY_RIGHT;
-            key_names["UP"] = xd::KEY_UP;
-            key_names["DOWN"] = xd::KEY_DOWN;
-            key_names["ENTER"] = xd::KEY_ENTER;
-            key_names["SPACE"] = xd::KEY_SPACE;
-            key_names["ESC"] = xd::KEY_ESC;
-            // Assumes ASCII layout
-            for (int i = xd::KEY_A.code; i <= xd::KEY_Z.code; ++i) {
-                key_names[std::string(1, i)] = xd::KEY(i);
-            }
-            for (int i = xd::KEY_0.code; i <= xd::KEY_9.code; ++i) {
-                key_names[std::string(1, i)] = xd::KEY(i);
-            }
-            if (gamepad_enabled) {
-                key_names["GAMEPAD-LEFT"] = xd::JOYSTICK_AXIS_LEFT;
-                key_names["GAMEPAD-RIGHT"] = xd::JOYSTICK_AXIS_RIGHT;
-                key_names["GAMEPAD-UP"] = xd::JOYSTICK_AXIS_UP;
-                key_names["GAMEPAD-DOWN"] = xd::JOYSTICK_AXIS_DOWN;
-                for (int i = xd::JOYSTICK_BUTTON_1.code; i <= xd::JOYSTICK_BUTTON_12.code; ++i) {
-                    key_names["GAMEPAD-" + std::to_string(i + 1)] = xd::JOYSTICK(i);
-                }
+        key_names["LEFT"] = xd::KEY_LEFT;
+        key_names["RIGHT"] = xd::KEY_RIGHT;
+        key_names["UP"] = xd::KEY_UP;
+        key_names["DOWN"] = xd::KEY_DOWN;
+        key_names["ENTER"] = xd::KEY_ENTER;
+        key_names["SPACE"] = xd::KEY_SPACE;
+        key_names["ESC"] = xd::KEY_ESC;
+        // Assumes ASCII layout
+        for (int i = xd::KEY_A.code; i <= xd::KEY_Z.code; ++i) {
+            key_names[std::string(1, i)] = xd::KEY(i);
+        }
+        for (int i = xd::KEY_0.code; i <= xd::KEY_9.code; ++i) {
+            key_names[std::string(1, i)] = xd::KEY(i);
+        }
+        if (gamepad_enabled) {
+            key_names["GAMEPAD-LEFT"] = xd::JOYSTICK_AXIS_LEFT;
+            key_names["GAMEPAD-RIGHT"] = xd::JOYSTICK_AXIS_RIGHT;
+            key_names["GAMEPAD-UP"] = xd::JOYSTICK_AXIS_UP;
+            key_names["GAMEPAD-DOWN"] = xd::JOYSTICK_AXIS_DOWN;
+            for (int i = xd::JOYSTICK_BUTTON_1.code; i <= xd::JOYSTICK_BUTTON_12.code; ++i) {
+                key_names["GAMEPAD-" + std::to_string(i + 1)] = xd::JOYSTICK(i);
             }
         }
+		// Read keymap file and bind keys based on name
         std::string line;
         int counter = 0;
         while(std::getline(input, line))
@@ -433,8 +477,8 @@ void Game::process_keymap() {
             for (auto& key : keys) {
                 key = capitalize(trim(key));
                 if (key_names.find(key) != key_names.end()) {
-                    bind_key(key_names[key], name);
-                } else {
+                    window->bind_key(key_names[key], name);
+                } else if (gamepad_enabled || key.find("GAMEPAD") == std::string::npos) {
                     LOGGER_W << "Error processing key mapping file \"" << map_file <<
                     " at line " << counter << ", key \"" << key << "\" not found." ;
                     continue;
@@ -442,36 +486,37 @@ void Game::process_keymap() {
             }
         }
     } else {
+		// Default mapping
         LOGGER_W << "Couldn't read key mapping file \"" << map_file << "\", using default key mapping.";
-        bind_key(xd::KEY_ESC, "pause");
-        bind_key(xd::KEY_LEFT, "left");
-        bind_key(xd::KEY_A, "left");
-        bind_key(xd::KEY_RIGHT, "right");
-        bind_key(xd::KEY_D, "right");
-        bind_key(xd::KEY_UP, "up");
-        bind_key(xd::KEY_W, "up");
-        bind_key(xd::KEY_DOWN, "down");
-        bind_key(xd::KEY_S, "down");
-        bind_key(xd::KEY_ENTER, "a");
-        bind_key(xd::KEY_SPACE, "a");
-        bind_key(xd::KEY_Z, "a");
-        bind_key(xd::KEY_J, "a");
-        bind_key(xd::KEY_X, "b");
-        bind_key(xd::KEY_K, "b");
-        bind_key(xd::KEY_C, "c");
-        bind_key(xd::KEY_L, "c");
-        bind_key(xd::KEY_V, "d");
-        bind_key(xd::KEY_I, "d");
+        window->bind_key(xd::KEY_ESC, "pause");
+        window->bind_key(xd::KEY_LEFT, "left");
+        window->bind_key(xd::KEY_A, "left");
+        window->bind_key(xd::KEY_RIGHT, "right");
+        window->bind_key(xd::KEY_D, "right");
+        window->bind_key(xd::KEY_UP, "up");
+        window->bind_key(xd::KEY_W, "up");
+        window->bind_key(xd::KEY_DOWN, "down");
+        window->bind_key(xd::KEY_S, "down");
+        window->bind_key(xd::KEY_ENTER, "a");
+        window->bind_key(xd::KEY_SPACE, "a");
+        window->bind_key(xd::KEY_Z, "a");
+        window->bind_key(xd::KEY_J, "a");
+        window->bind_key(xd::KEY_X, "b");
+        window->bind_key(xd::KEY_K, "b");
+        window->bind_key(xd::KEY_C, "c");
+        window->bind_key(xd::KEY_L, "c");
+        window->bind_key(xd::KEY_V, "d");
+        window->bind_key(xd::KEY_I, "d");
         if (gamepad_enabled) {
-            bind_key(xd::JOYSTICK_AXIS_UP, "up");
-            bind_key(xd::JOYSTICK_AXIS_DOWN, "down");
-            bind_key(xd::JOYSTICK_AXIS_LEFT, "left");
-            bind_key(xd::JOYSTICK_AXIS_RIGHT, "right");
-            bind_key(xd::JOYSTICK_BUTTON_1, "a");
-            bind_key(xd::JOYSTICK_BUTTON_2, "b");
-            bind_key(xd::JOYSTICK_BUTTON_3, "c");
-            bind_key(xd::JOYSTICK_BUTTON_4, "d");
-            bind_key(xd::JOYSTICK_BUTTON_8, "pause");
+            window->bind_key(xd::JOYSTICK_AXIS_UP, "up");
+            window->bind_key(xd::JOYSTICK_AXIS_DOWN, "down");
+            window->bind_key(xd::JOYSTICK_AXIS_LEFT, "left");
+            window->bind_key(xd::JOYSTICK_AXIS_RIGHT, "right");
+            window->bind_key(xd::JOYSTICK_BUTTON_1, "a");
+            window->bind_key(xd::JOYSTICK_BUTTON_2, "b");
+            window->bind_key(xd::JOYSTICK_BUTTON_3, "c");
+            window->bind_key(xd::JOYSTICK_BUTTON_4, "d");
+            window->bind_key(xd::JOYSTICK_BUTTON_8, "pause");
         }
     }
 }

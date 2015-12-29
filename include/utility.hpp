@@ -9,12 +9,22 @@
 #include "rapidxml.hpp"
 #include "common.hpp"
 
+// Check if a file exists
+bool file_exists(const std::string& filename);
 // Read file content into a string
 std::string read_file(const std::string& filename);
-// Convert a hex color into a vec[4] of ARGB components
-xd::vec4 hex_to_color(std::string hex);
 // Read the properties of a TMX node
 void read_properties(Properties& properties, rapidxml::xml_node<>& parent_node);
+// Save properties into a node
+void save_properties(const Properties& properties,
+        rapidxml::xml_document<>& doc, rapidxml::xml_node<>& node);
+// Allocate an XML node
+rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
+        const std::string& name, const std::string& value = "",
+        rapidxml::node_type type = rapidxml::node_element);
+// Allocate an XML attribute
+rapidxml::xml_attribute<>* xml_attribute(rapidxml::xml_document<>& doc,
+        const std::string& name, const std::string& value);
 // Trim a string from both sides
 std::string trim(std::string s);
 // Split a string to a vector
@@ -27,12 +37,14 @@ std::string capitalize(std::string original);
 std::string normalize_slashes(std::string filename);
 // Check if two strings are equal (case insensitive)
 bool equal_strings(const std::string& str1, const std::string& str2);
-// Set the alpha to 0 for pixels that match the given color in the image
-void set_color_key(xd::image& image, const xd::vec4& color);
 // Convert an unsigned int color value to a vec[4] of ARGB components
 xd::vec4 int_to_color(unsigned int value);
 // Convert a vec[4] of ARGB components to an unsigned int color value
 unsigned int color_to_int(const xd::vec4& color);
+// Convert a hex color into a vec[4] of ARGB components
+xd::vec4 hex_to_color(std::string hex);
+// Convert a vec4 color to a hex string
+std::string color_to_hex(const xd::vec4& color);
 // Linear interpolation between two floats at time alpha
 inline float lerp(float start, float end, float alpha) {
     return (1.0f - alpha) * start + alpha * end;
@@ -47,10 +59,7 @@ xd::vec4 lerp(const xd::vec4& start, const xd::vec4& end, float alpha);
 inline bool check_close(float num1, float num2, float epsilon = 0.001f) {
     return std::fabs(num1 - num2) < epsilon;
 }
-// Round a number
-inline int round(float n) {
-    return static_cast<int>(std::floor(n + 0.5));
-}
+
 // Get the seconds portion of given time
 inline int time_to_seconds(int seconds) {
     return seconds % 60;

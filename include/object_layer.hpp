@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <xd/graphics/types.hpp>
-#include "rapidxml.hpp"
 #include "layer.hpp"
 
 class Game;
@@ -18,6 +17,7 @@ struct Object_Layer : public Layer {
     // List of objects
     std::vector<Map_Object*> objects;
 
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Layer> load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map);
 };
 

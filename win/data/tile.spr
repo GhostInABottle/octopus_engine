@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<Sprite Image="images/obstruction.png" Base-Dir="../../">
+<Sprite Image="data/obstruction.png" Base-Dir="../../">
   <Pose Duration="200">
     <Bounding-Box X="0" Y="0" Width="8" Height="8" />
     <Tag Key="Name" Value="Pass" />

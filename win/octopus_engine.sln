@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 14.00
+# Visual Studio 2015
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine", "octopus_engine.vcxproj", "{2D827BB7-26EB-41A5-8153-E7CE326643CD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine_tests", "octopus_engine_tests\octopus_engine_tests.vcxproj", "{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}"

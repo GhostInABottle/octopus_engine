@@ -13,7 +13,10 @@ public:
     // Get the option with given name
     template<typename T>
     static T get(const std::string& name) {
-        return pt.get<T>(name, boost::any_cast<T>(defaults[name]));
+        if (defaults.find(name) != defaults.end())
+            return pt.get<T>(name, boost::any_cast<T>(defaults[name]));
+        else
+            return pt.get<T>(name);
     }
     // Get the option with given name as a string
     static std::string get_string(const std::string& name);

@@ -18,6 +18,8 @@ struct Tileset {
     int first_id;
     // Name of tileset
     std::string name;
+    // Filename (for external tilesets)
+    std::string filename;
     // Width of each tile in pixels
     int tile_width;
     // Height of each tile pixels
@@ -33,7 +35,7 @@ struct Tileset {
     // List of tiles properties
     std::vector<Tile> tiles;
 
-
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Tileset> load(const std::string& filename);
     static std::unique_ptr<Tileset> load(rapidxml::xml_node<>& node);
     xd::rect tile_source_rect(int tile_index) const;

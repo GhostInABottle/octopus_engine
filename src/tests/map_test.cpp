@@ -26,8 +26,8 @@ struct Global_Fixture
 {
     Global_Fixture() {
         Configurations::parse("config.ini");
-        Game::game_width = Configurations::get<int>("game.width");
-        Game::game_height = Configurations::get<int>("game.height");
+        Game::game_width = Configurations::get<int>("debug.width");
+        Game::game_height = Configurations::get<int>("debug.height");
         detail::game = new Game();
     }
     ~Global_Fixture()

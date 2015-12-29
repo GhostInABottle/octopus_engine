@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <boost/optional.hpp>
 #include <xd/graphics/types.hpp>
 #include <xd/graphics/texture.hpp>
 #include "rapidxml.hpp"
@@ -30,7 +29,7 @@ struct Frame {
     // Frame image
     xd::texture::ptr image;
     // Transparent color
-    boost::optional<xd::vec4> transparent_color;
+    xd::vec4 transparent_color;
     // Frame sound effect filename
     std::string sound_file;
 
@@ -50,7 +49,7 @@ struct Pose {
     // Pose image
     xd::texture::ptr image;
     // Transparent color
-    boost::optional<xd::vec4> transparent_color;
+    xd::vec4 transparent_color;
     // Hash table of tags
     std::unordered_map<std::string, std::string> tags;
     // List of frames
@@ -60,6 +59,8 @@ struct Pose {
 };
 
 struct Sprite_Data {
+    // Sprite file name
+    std::string filename;
     // Sprite image
     xd::texture::ptr image;
     // Transparent color

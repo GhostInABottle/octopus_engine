@@ -5,7 +5,10 @@
 #include <vector>
 #include <xd/graphics/types.hpp>
 #include <xd/graphics/texture.hpp>
+#include <xd/graphics/font.hpp>
+#include <xd/graphics/text_formatter.hpp>
 #include "sprite_holder.hpp"
+#include "sprite.hpp"
 
 class Game;
 namespace xd {
@@ -23,8 +26,7 @@ public:
     // Create a canvas with some text
     Canvas(Game& game, xd::vec2 position, const std::string& text);
     // Update the image
-    void set_image(const std::string& filename);
-    void set_transparent_image(const std::string& filename, xd::vec4 trans);
+    void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
     void set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name = "");
     // Update the text for a text canvas
@@ -53,6 +55,18 @@ public:
     }
     void set_position(xd::vec2 position) {
         this->position = position;
+    }
+    float get_x() const {
+        return position.x;
+    }
+    void set_x(float x) {
+        position.x = x;
+    }
+    float get_y() const {
+        return position.y;
+    }
+    void set_y(float y) {
+        position.y = y;
     }
     xd::vec2 get_origin() const {
         return origin;

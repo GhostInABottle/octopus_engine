@@ -14,6 +14,7 @@
 #include "../include/configurations.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/direction_utilities.hpp"
+#include "../include/save_file.hpp"
 #include <lua.hpp>
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
@@ -128,6 +129,12 @@ void Scripting_Interface::setup_scripts() {
         def("time_to_minutes", &time_to_minutes),
         def("time_to_seconds", &time_to_seconds),
         def("time_without_days", &time_without_days),
+        def("text_width", tag_function<float (const std::string&)>(
+            [&](const std::string& text) {
+            return game->get_font()->get_width(text,
+                xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8));
+            }
+        )),
         // 2D vector
         class_<xd::vec2>("Vec2")
             .def(constructor<>())
@@ -263,18 +270,12 @@ void Scripting_Interface::setup_scripts() {
             .def("reset", &Sprite_Holder::reset)
             .def("set_sprite", tag_function<void (Sprite_Holder*, const std::string&)>(
                 [&](Sprite_Holder* holder, const std::string& filename) {
-                    Sprite_Holder* player = game->get_player();
-                    auto& manager = holder == player ? game->get_asset_manager() :
-                        game->get_map()->get_asset_manager();
-                    holder->set_sprite(*game, manager, filename);
+                    holder->set_sprite(*game, filename);
                 }
             ))
             .def("set_sprite", tag_function<void (Sprite_Holder*, const std::string&, const std::string&)>(
                 [&](Sprite_Holder* holder, const std::string& filename, const std::string& pose) {
-                    Sprite_Holder* player = game->get_player();
-                    auto& manager = holder == player ? game->get_asset_manager() :
-                        game->get_map()->get_asset_manager();
-                    holder->set_sprite(*game, manager, filename, pose);
+                    holder->set_sprite(*game, filename, pose);
                 }
             ))
             .def("show_pose", tag_function<Command_Result* (Sprite_Holder*, const std::string&)>(
@@ -393,24 +394,54 @@ void Scripting_Interface::setup_scripts() {
             }))
             .def("run_script", &Map_Object::run_script),
         // Game class
-        class_<Game, xd::window>("Game")
-            .def("ticks", &Game::ticks)
+        class_<Game>("Game")
+            .property("width", &Game::width)
+            .property("height", &Game::height)
+            .property("ticks", &Game::ticks)
+            .property("fps", &Game::fps)
+            .property("frame_count", &Game::frame_count)
+            .property("stopped", &Game::stopped)
+            .property("total_seconds", &Game::total_seconds)
+            .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
+            .def("pressed", tag_function<bool (Game*, const xd::key&)>(
+                [](Game* game, const xd::key& key) {
+                    return game->pressed(key);
+            }))
+            .def("pressed", (bool (Game::*)(const std::string&, int) const) &Game::pressed)
+            .def("pressed", tag_function<bool (Game*, const std::string&)>(
+                [](Game* game, const std::string& key) {
+                    return game->pressed(key);
+            }))
+            .def("triggered", (bool (Game::*)(const xd::key&, int) const) &Game::triggered)
+            .def("triggered", tag_function<bool (Game*, const xd::key&)>(
+                [](Game* game, const xd::key& key) {
+                    return game->triggered(key);
+            }))
+            .def("triggered", (bool (Game::*)(const std::string&, int) const) &Game::triggered)
+            .def("triggered", tag_function<bool (Game*, const std::string&)>(
+                [](Game* game, const std::string& key) {
+                    return game->triggered(key);
+            }))
+            .def("triggered_once", (bool (Game::*)(const xd::key&, int)) &Game::triggered_once)
+            .def("triggered_once", tag_function<bool (Game*, const xd::key&)>(
+                [](Game* game, const xd::key& key) {
+                    return game->triggered_once(key);
+            }))
+            .def("triggered_once", (bool (Game::*)(const std::string&, int)) &Game::triggered_once)
+            .def("triggered_once", tag_function<bool (Game*, const std::string&)>(
+                [](Game* game, const std::string& key) {
+                    return game->triggered_once(key);
+            }))
             .def("playing_music", &Game::playing_music)
             .def("run_script", &Game::run_script)
-            .def("stopped", tag_function<bool (Game*)>([&](Game* game) {
-                return game->get_clock()->stopped();
-            }))
-            .def("stop_time", tag_function<void (Game*)>([&](Game* game) {
+            .def("stop_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->stop_time();
             }))
-            .def("resume_time", tag_function<void (Game*)>([&](Game* game) {
+            .def("resume_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->resume_time();
             }))
-            .def("total_seconds", tag_function<int (Game*)>([&](Game* game) {
-                return game->get_clock()->total_seconds();
-            }))
             .def("add_seconds", tag_function <void (Game*, int)>(
-                [&](Game* game, int seconds) {
+                [](Game* game, int seconds) {
                     game->get_clock()->add_seconds(seconds);
                 }
             ))
@@ -431,6 +462,17 @@ void Scripting_Interface::setup_scripts() {
             .def("get_config", tag_function<std::string (Game*, const std::string&)>(
                 [](Game*, const std::string& key) {
                     return Configurations::get_string(key);
+                }
+            ))
+            .def("save", tag_function<void (Game*, const std::string&, object)>(
+                [&](Game* game, const std::string& filename, object obj) {
+                    Save_File file(vm.lua_state(), obj);
+                    game->save(filename, file);
+                }
+            ))
+            .def("load", tag_function<luabind::object (Game*, const std::string&)>(
+                [&](Game* game, const std::string& filename) {
+                    return game->load(filename)->lua_data();
                 }
             )),
         // Game map
@@ -606,6 +648,8 @@ void Scripting_Interface::setup_scripts() {
         // A drawing canvas
         class_<Canvas, Sprite_Holder>("Canvas_Class")
             .property("position", &Canvas::get_position, &Canvas::set_position)
+            .property("x", &Canvas::get_x, &Canvas::set_x)
+            .property("y", &Canvas::get_y, &Canvas::set_y)
             .property("origin", &Canvas::get_origin, &Canvas::set_origin)
             .property("magnification", &Canvas::get_magnification, &Canvas::set_magnification)
             .property("angle", &Canvas::get_angle, &Canvas::set_angle)
@@ -620,8 +664,16 @@ void Scripting_Interface::setup_scripts() {
             .def("hide", tag_function<void (Canvas*)>([](Canvas* canvas) {
                 canvas->set_visible(false);
             }))
-            .def("set_image", &Canvas::set_image)
-            .def("set_image", &Canvas::set_transparent_image)
+            .def("set_image", tag_function<void (Canvas*, const std::string&)>(
+                [](Canvas* canvas, const std::string& filename) {
+                    canvas->set_image(filename);
+                }
+            ))
+            .def("set_image", tag_function<void (Canvas*, const std::string&, xd::vec4)>(
+                [](Canvas* canvas, const std::string& filename, xd::vec4 ck) {
+                    canvas->set_image(filename, ck);
+                }
+            ))
             .def("update", tag_function<Command_Result* (Canvas*, float, float,
                     float, float, float, float, long)>(
                 [&](Canvas* canvas, float x, float y, float mag_x,
@@ -742,6 +794,15 @@ void Scripting_Interface::setup_scripts() {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Text_Command>(
                         *game, &obj, text
+                    ));
+                }
+        ), adopt(result)),
+        // Show timed text
+        def("text", tag_function<Command_Result* (Map_Object&, const std::string&, long)>(
+                [&](Map_Object& obj, const std::string& text, long duration) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Text_Command>(
+                        *game, &obj, text, duration
                     ));
                 }
         ), adopt(result)),

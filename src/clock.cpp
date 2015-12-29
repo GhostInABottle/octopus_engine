@@ -4,7 +4,7 @@
 
 Clock::Clock(Game& game) : game(game), start_time(game.ticks()), time_stop(false),
     stop_start_time(0), total_stopped_time(0), added_time(0),
-    time_multiplier(Configurations::get<float>("game.time-multiplier")) {}
+    time_multiplier(Configurations::get<float>("debug.time-multiplier")) {}
 
 int Clock::ticks() const {
     return game.ticks();

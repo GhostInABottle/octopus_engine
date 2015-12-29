@@ -27,12 +27,16 @@ public:
     void update();
     // Reset values to their defaults
     void reset();
+    // Get sprite file name
+    std::string get_filename() const;
     // Sets the current pose
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags);
     // Get the current pose
     Pose& get_pose();
     // Get bounding box
     xd::rect get_bounding_box() const;
+    // Get size of first frame
+    xd::vec2 get_size() const;
     // Get current frame
     Frame& get_frame();
     const Frame& get_frame() const;

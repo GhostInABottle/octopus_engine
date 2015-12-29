@@ -11,11 +11,13 @@
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
 #include "sprite_holder.hpp"
+#include "sprite.hpp"
+#include "editable.hpp"
 
 class Game;
 struct Object_Layer;
 
-class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder {
+class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable {
 public:
     enum Draw_Order { BELOW, NORMAL, ABOVE };
     // Map object onstructor
@@ -65,6 +67,9 @@ public:
     }
     xd::vec2 get_size() const {
         return size;
+    }
+    void set_size(xd::vec2 size) {
+        this->size = size;
     }
     xd::vec4 get_color() const {
         return color;
@@ -154,6 +159,9 @@ public:
     const Sprite* get_sprite() const {
         return sprite.get();
     }
+    // Set sprite using map's asset manager for NPCs and global one for player
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
+    // Set sprite using specified asset manager
     void set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name = "");
     float get_speed() const {
         return speed;
@@ -201,6 +209,8 @@ public:
     void face(Direction dir);
     // Run the object's activation script
     void run_script();
+    // Serialize object to TMX data
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load the object from TMX data
     static std::unique_ptr<Map_Object> load(rapidxml::xml_node<>& node,
         Game& game, xd::asset_manager& manager);
@@ -260,6 +270,5 @@ private:
         Sprite_Holder::set_pose(pose_name, state, direction);
     }
 };
-
 
 #endif

@@ -28,23 +28,24 @@ namespace detail {
         }
     };
 
-    void tint_screen(Game& game, xd::vec2 position, const xd::vec4& color) {
-        auto mvp = game.get_mvp();
+    void draw_quad(xd::mat4 mvp, xd::rect rect,
+            const xd::vec4& color, GLenum draw_mode = GL_QUADS) {
         static xd::flat_shader shader;
         // Setup uniforms
-        mvp = xd::translate(mvp, xd::vec3(position, 0.0f));
+        mvp = xd::translate(mvp, xd::vec3(rect.x, rect.y, 0.0f));
         shader.setup(mvp, color);
         // Set quad vertex positions
         quad_vertex quad[4];
-        quad[0].pos = xd::vec2(0.0f, game.game_height);
-        quad[1].pos = xd::vec2(game.game_width, game.game_height);
-        quad[2].pos = xd::vec2(game.game_width, 0.0f);
+        quad[0].pos = xd::vec2(0.0f, rect.h);
+        quad[1].pos = xd::vec2(rect.w, rect.h);
+        quad[2].pos = xd::vec2(rect.w, 0.0f);
         quad[3].pos = xd::vec2(0.0f, 0.0f);
         // Load and render batch
-        xd::vertex_batch<quad_vertex_traits> batch(GL_QUADS);
+        xd::vertex_batch<quad_vertex_traits> batch(draw_mode);
         batch.load(&quad[0], 4);
         batch.render();
     }
+
 }
 
 Camera::Camera(Game& game) 
@@ -53,17 +54,29 @@ Camera::Camera(Game& game)
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         shaker(nullptr)
 {
+    calculate_viewport(game.width(), game.height());
+    // Add components
+    add_component(xd::create<Camera_Renderer>(game));
+    add_component(xd::create<Object_Tracker>());
+    setup_opengl();
+    update_viewport();
+}
+
+void Camera::calculate_viewport(int width, int height) {
     // Calculate viewport rectangle
     auto scale_mode = Configurations::get<std::string>("game.scale-mode");
-    float screen_width = static_cast<float>(game.width());
-    float screen_height = static_cast<float>(game.height());
+    float screen_width = static_cast<float>(width);
+    float screen_height = static_cast<float>(height);
     float game_width = static_cast<float>(game.game_width);
     float game_height = static_cast<float>(game.game_height);
     if (scale_mode == "stretch") {
         viewport.w = screen_width;
         viewport.h = screen_height;
     } else {
-        if (scale_mode == "aspect" ||
+        if (scale_mode == "none") {
+            viewport.w = game_width * magnification;
+            viewport.h = game_height * magnification;
+        } else if (scale_mode == "aspect" ||
                 screen_width < game_width || screen_height < game_height) {
             float target_ratio = (float)game_width / game_height;
 
@@ -88,22 +101,21 @@ Camera::Camera(Game& game)
         viewport.x = screen_width / 2 - viewport.w / 2;
         viewport.y = screen_height / 2 - viewport.h / 2;
     }
-    // Add components
-    add_component(xd::create<Camera_Renderer>(game));
-    add_component(xd::create<Object_Tracker>());
-    // Setup OpenGL state
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    update_viewport();
 }
 
-void Camera::update_viewport(float shake_offset) {
+void Camera::update_viewport(float shake_offset) const {
     glViewport(static_cast<int>(viewport.x + shake_offset),
         static_cast<int>(viewport.y),
         static_cast<int>(viewport.w),
         static_cast<int>(viewport.h));
+}
+
+void Camera::setup_opengl() const {
+    // Setup OpenGL state
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Camera::center_at(float x, float y) {
@@ -128,6 +140,11 @@ void Camera::set_position(float x, float y) {
         position.y = bottom_limit;
 }
 
+void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
+    GLenum draw_mode = fill ? GL_QUADS :  GL_LINE_LOOP;
+    detail::draw_quad(game.get_mvp(), rect, color, draw_mode);
+}
+
 void Camera::start_shaking(float strength, float speed) {
     auto shaker_comp = xd::create<Screen_Shaker>(strength, speed);
     shaker = static_cast<Screen_Shaker*>(shaker_comp.get());
@@ -149,8 +166,13 @@ void Camera_Renderer::render(Camera& camera) {
         camera.update_viewport(camera.shake_offset());
     game.get_map()->render();
     auto tint_color = camera.get_tint_color();
-    if (tint_color.a > 0.0f)
-        detail::tint_screen(game, camera.get_position(), tint_color);
+    if (tint_color.a > 0.0f) {
+        auto pos = camera.get_position();
+        xd::rect rect(pos.x, pos.y,
+            static_cast<float>(game.game_width),
+            static_cast<float>(game.game_height));
+        camera.draw_rect(rect, tint_color);
+    }
 }
 
 void Object_Tracker::update(Camera& camera) {

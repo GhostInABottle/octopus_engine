@@ -3,7 +3,7 @@
 - Allow running a script while game is paused.
 - Overload text command to show at specific position without needing an object.
 - Automatic text command mode that optionally doesn't restrict player movement.
-- Saving and loading game data (including engine and Lua state).
 - Proper Linux distributables (.deb files? autopackage?)
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)
 - Move more Octopus City Blues-specific code to Lua.
+- Pimpl idiom for Map_Object and Canvas to reduce header dependencies.

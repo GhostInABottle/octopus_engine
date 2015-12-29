@@ -17,29 +17,31 @@ void Configurations::parse(const std::string& filename) {
         LOGGER_W << "Couldn't open config file " << filename;
     }
     defaults["game.title"] = std::string("Untitled");
-    defaults["game.show-fps"] = true;
-    defaults["game.show-time"] = false;
     defaults["game.font"] = std::string("Unibody 8-Italic.otf");
-    defaults["game.width"] = 320;
-    defaults["game.height"] = 240;
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;
     defaults["game.fullscreen"] = false;
     defaults["game.npcs-file"] = std::string();
     // Scaling modes: aspect, window, stretch
     defaults["game.scale-mode"] = std::string("window");
-    defaults["game.logic-fps"] = 40;
-    defaults["game.time-multiplier"] = 0.5f;
     defaults["game.vertex-shader"] = std::string();
     defaults["game.fragment-shader"] = std::string();
     defaults["game.pause-vertex-shader"] = std::string();
     defaults["game.pause-fragment-shader"] = std::string();
     defaults["game.pause-unfocused"] = true;
+    defaults["game.save-folder"] = std::string();
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");
     defaults["logging.filename"] = std::string("game.log");
     defaults["logging.level"] = std::string("debug");
+    defaults["debug.width"] = 320;
+    defaults["debug.height"] = 240;
+    defaults["debug.show-fps"] = true;
+    defaults["debug.show-time"] = false;
+    defaults["debug.logic-fps"] = 40;
+    defaults["debug.time-multiplier"] = 0.5f;
+    defaults["debug.pathfinding-sprite"] = std::string();
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
     defaults["startup.player-position-x"] = 70.0f;
@@ -51,7 +53,7 @@ void Configurations::parse(const std::string& filename) {
 
 std::string Configurations::get_string(const std::string& name) {
     if (defaults.find(name) == defaults.end())
-        return "";
+        return get<std::string>(name);
     // Ugly...
     auto& type = defaults[name].type();
     if (type == typeid(std::string))

@@ -126,6 +126,10 @@ struct Sprite::Impl {
         tweening = false;
     }
 
+    std::string get_filename() const {
+        return data->filename;
+    }
+
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
         // Clear existing tags if needed
         tags.clear();
@@ -191,8 +195,11 @@ Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
 void Sprite::render(Map_Object& object) {
     if (!object.is_visible())
         return;
-    auto& batch = object.get_layer()->renderer->get_batch();
-    render(batch, object.get_position(), object.get_opacity(), object.get_color());
+    auto layer =  object.get_layer();
+    auto& batch = layer->renderer->get_batch();
+    render(batch, object.get_position(),
+           layer->opacity * object.get_opacity(),
+           layer->color * object.get_color());
 }
 
 void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
@@ -227,6 +234,10 @@ void Sprite::reset() {
     pimpl->reset();
 }
 
+std::string Sprite::get_filename() const {
+    return pimpl->get_filename();
+}
+
 void Sprite::set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
     pimpl->set_pose(new_tags);
 }
@@ -237,6 +248,16 @@ Pose& Sprite::get_pose() {
 
 xd::rect Sprite::get_bounding_box() const {
     return pimpl->pose->bounding_box;
+}
+
+xd::vec2 Sprite::get_size() const {
+    xd::vec2 size;
+    auto& pose = *pimpl->pose;
+    if (pose.frames.size() > 0) {
+        auto& frame = pose.frames[0];
+        size = xd::vec2(frame.rectangle.w, frame.rectangle.h);
+    }
+    return size;
 }
 
 Frame& Sprite::get_frame() {

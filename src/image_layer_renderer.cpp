@@ -26,5 +26,5 @@ void Image_Layer_Renderer::render(Map& map) {
             batch.add(texture, pos.x, pos.y, color);
         }
     }
-    batch.draw(map.get_game().get_mvp());
+    batch.draw(map.get_game().get_mvp(), map.get_game().ticks());
 }

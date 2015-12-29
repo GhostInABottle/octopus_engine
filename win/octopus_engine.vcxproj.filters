@@ -180,6 +180,15 @@
     <ClCompile Include="..\src\clock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\save_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sprite_holder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utility.hpp">
@@ -306,6 +315,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\keypoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\save_file.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\editable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rapidxml_print.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

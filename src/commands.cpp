@@ -166,7 +166,10 @@ void Tint_Screen_Command::execute() {
 }
 
 bool Tint_Screen_Command::is_complete() const {
-    return game.ticks() - start_time > duration;
+    bool complete = game.ticks() - start_time > duration;
+    if (complete)
+        game.get_camera()->set_tint_color(new_color);
+    return complete;
 }
 
 Canvas_Update_Command::Canvas_Update_Command(Game& game, Canvas& canvas,
@@ -193,7 +196,14 @@ void Canvas_Update_Command::execute() {
 }
 
 bool Canvas_Update_Command::is_complete() const {
-    return game.ticks() - start_time > duration;
+    bool complete = game.ticks() - start_time > duration;
+    if (complete) {
+        canvas.set_position(new_position);
+        canvas.set_magnification(new_magnification);
+        canvas.set_angle(new_angle);
+        canvas.set_opacity(new_opacity);
+    }
+    return complete;
 }
 
 
@@ -211,7 +221,10 @@ void Layer_Opacity_Update_Command::execute() {
 }
 
 bool Layer_Opacity_Update_Command::is_complete() const {
-    return game.ticks() - start_time > duration;
+    bool complete = game.ticks() - start_time > duration;
+    if (complete)
+        layer.opacity = new_opacity;
+    return complete;
 }
 
 Music_Fade_Command::Music_Fade_Command(Game& game, xd::music& music, float volume, long duration) :
@@ -228,7 +241,10 @@ void Music_Fade_Command::execute() {
 }
 
 bool Music_Fade_Command::is_complete() const {
-    return game.ticks() - start_time > duration;
+    bool complete = game.ticks() - start_time > duration;
+    if (complete)
+        music.set_volume(new_volume);
+    return complete;
 }
 
 
@@ -247,14 +263,16 @@ bool Shake_Screen_Command::is_complete() const {
     return complete;
 }
 
-Text_Command::Text_Command(Game& game, Map_Object* object, const std::string& text) :
-        game(game), object(object), text(text), complete(false) {
+Text_Command::Text_Command(Game& game, Map_Object* object, const std::string& text, long duration) :
+        game(game), object(object), text(text), duration(duration),
+        start_time(game.ticks()), complete(false) {
     init();
 }
 
-Text_Command::Text_Command(Game& game, Map_Object* object, std::vector<std::string> choices, const std::string& text) :
-     game(game), object(object), choices(choices), text(text), complete(false)
-{
+Text_Command::Text_Command(Game& game, Map_Object* object,
+    std::vector<std::string> choices, const std::string& text) :
+        game(game), object(object), choices(choices), text(text),
+        duration(-1), complete(false) {
     init();
 }
 
@@ -281,16 +299,16 @@ void Text_Command::init() {
             longest_line = line;
     }
     // Set text position based on size estimation
-    float char_width = 5.5;
     float char_height = 8;
-    float text_width = char_width * longest_line.length();
+    float text_width = game.get_font()->get_width(longest_line,
+        xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8));
     float text_height = char_height * text_lines.size();
     xd::vec2 object_pos = object->get_position() + xd::vec2(16, 0) -
         game.get_camera()->get_position();
     xd::vec2 position(object_pos.x - text_width / 2, object_pos.y - text_height);
     // Make sure text fits on the screen
     if (position.x + text_width > Game::game_width - 10)
-        position.x = static_cast<float>(Game::game_width - text_width - char_width * 2);
+        position.x = static_cast<float>(Game::game_width - text_width - 10);
     if (position.x < 10.0f)
         position.x = 10.0f;
     if (position.y + text_height > Game::game_height - 10)
@@ -308,14 +326,18 @@ void Text_Command::init() {
 void Text_Command::execute() {
     if (complete)
         return;
-    static std::string action_button =
-        Configurations::get<std::string>("controls.action-button");
-    complete = game.triggered_once(action_button);
-    if (!choices.empty()) {
-        if (complete)
-            selected_choice = current_choice;
-        else
-            update_choice();
+    if (duration > -1) {
+        complete = game.ticks() > start_time + duration;
+    } else {
+        static std::string action_button =
+            Configurations::get<std::string>("controls.action-button");
+        complete = game.triggered_once(action_button);
+        if (!choices.empty()) {
+            if (complete)
+                selected_choice = current_choice;
+            else
+                update_choice();
+        }
     }
 }
 

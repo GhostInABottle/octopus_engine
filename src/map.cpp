@@ -14,11 +14,13 @@
 #include "../include/utility.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/exceptions.hpp"
+#include "../include/rapidxml_print.hpp"
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <xd/system.hpp>
 #include <xd/factory.hpp>
 #include <xd/audio.hpp>
+#include <fstream>
 
 Map::Map(Game& game) :
         game(game),
@@ -42,8 +44,8 @@ void Map::run_script(const std::string& script) {
 
 void Map::run_startup_scripts() {
     scripting_interface->set_globals();
-    for (auto i = start_scripts.begin(); i != start_scripts.end(); ++i) {
-        run_script(*i);
+    for (auto& script : start_scripts) {
+        run_script(script);
     }
 }
 
@@ -234,16 +236,64 @@ Layer* Map::get_layer(const std::string& name) {
         return nullptr;
 }
 
-std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
-    rapidxml::memory_pool<> pool;
-    char* content = pool.allocate_string(read_file(filename).c_str());
+void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
+    if (map_size == xd::ivec2(width, height) &&
+            tile_size == xd::ivec2(tile_width, tile_height))
+        return;
+    this->width = map_size.x;
+    this->height = map_size.y;
+    this->tile_width = tile_size.x;
+    this->tile_height = tile_size.y;
+    for (auto& layer : layers) {
+        layer->resize(map_size);
+    }
+    needs_redraw = true;
+}
+
+void Map::save(std::string filename) {
     rapidxml::xml_document<> doc;
+    auto decl_node = xml_node(doc, "", "", rapidxml::node_declaration);
+    decl_node->append_attribute(xml_attribute(doc, "version", "1.0"));
+    decl_node->append_attribute(xml_attribute(doc, "encoding", "UTF-8"));
+    doc.append_node(decl_node);
+    auto map_node = save(doc);
+    doc.append_node(map_node);
+    std::ofstream out;
+    out.open(filename.c_str(), std::ios_base::out | std::ios_base::trunc);
+    out << doc;
+}
+
+rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
+    auto node = xml_node(doc, "map");
+    node->append_attribute(xml_attribute(doc, "version", "1.0"));
+    node->append_attribute(xml_attribute(doc, "orientation", "orthogonal"));
+    node->append_attribute(xml_attribute(doc, "width", std::to_string(width)));
+    node->append_attribute(xml_attribute(doc, "height", std::to_string(height)));
+    node->append_attribute(xml_attribute(doc, "tilewidth", std::to_string(tile_width)));
+    node->append_attribute(xml_attribute(doc, "tileheight", std::to_string(tile_height)));
+    save_properties(properties, doc, *node);
+    // Tilesets
+    for (auto& tileset : tilesets) {
+        auto tileset_node = tileset.save(doc);
+        node->append_node(tileset_node);
+    }
+    // Layers
+    for (auto& layer : layers) {
+        auto layer_node = layer->save(doc);
+        node->append_node(layer_node);
+    }
+    return node;
+}
+
+std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
+    rapidxml::xml_document<> doc;
+    char* content = doc.allocate_string(read_file(filename).c_str());
     doc.parse<0>(content);
     auto map_node = doc.first_node("map");
     if (!map_node)
         throw tmx_exception("Invalid TMX file. Missing map node");
     auto map = load(game, *map_node);
-    map->filename = filename;
+    map->filename = normalize_slashes(filename);
     return map;
 }
 
@@ -281,8 +331,8 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         if (auto source_node = tileset_node->first_attribute("source")) {
             std::string source = source_node->value();
             tileset_ptr = Tileset::load(source);
-            int id = lexical_cast<int>(tileset_node->first_attribute("firstgid")->value());
-            tileset_ptr->first_id = id;
+			tileset_ptr->first_id = lexical_cast<int>(
+				tileset_node->first_attribute("firstgid")->value());
         } else {
             tileset_ptr = Tileset::load(*tileset_node);
         }

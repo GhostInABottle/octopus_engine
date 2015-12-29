@@ -7,25 +7,25 @@
 #include "../include/exceptions.hpp"
 #include <boost/lexical_cast.hpp>
 
+rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
+    auto node = Layer::save(doc, "objectgroup");
+    std::string color_hex = color_to_hex(color);
+    if (color_hex != std::string("ffffffff"))
+        node->append_attribute(xml_attribute(doc, "color", color_hex));
+    for (auto& object : objects) {
+        node->append_node(object->save(doc));
+    }
+    return node;
+}
+
 std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map) {
     using boost::lexical_cast;
     Object_Layer* layer_ptr = new Object_Layer();
-    layer_ptr->name = node.first_attribute("name")->value();
-    if (node.first_attribute("width"))
-        layer_ptr->width = lexical_cast<int>(node.first_attribute("width")->value());
-    if (node.first_attribute("height"))
-        layer_ptr->height = lexical_cast<int>(node.first_attribute("height")->value());
-    if (auto opacity_node = node.first_attribute("opacity"))
-        layer_ptr->opacity = lexical_cast<float>(opacity_node->value());
-    if (auto visible_node = node.first_attribute("visible"))
-        layer_ptr->visible = lexical_cast<bool>(visible_node->value());
+    layer_ptr->Layer::load(node);
     if (auto color_node = node.first_attribute("color"))
         layer_ptr->color = hex_to_color(color_node->value());
     else
-        layer_ptr->color = hex_to_color("a0a0a4");
-
-    // Layer properties
-    read_properties(layer_ptr->properties, node);
+        layer_ptr->color = xd::vec4(1.0f);
 
     // Objects
     for (auto object_node = node.first_node("object");

@@ -23,7 +23,7 @@ Canvas::Canvas(const std::string& filename, xd::vec2 position) :
 Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) : 
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
         angle(0.0f), opacity(1.0f), visible(false) {
-    set_transparent_image(filename, trans);
+    set_image(filename, trans);
 }
 
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text) :
@@ -36,17 +36,10 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text) :
     set_text(text);
 }
 
-void Canvas::set_image(const std::string& filename) {
+void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
     this->filename = filename;
     image_texture = xd::create<xd::texture>(normalize_slashes(filename),
-            GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
-}
-void Canvas::set_transparent_image(const std::string& filename, xd::vec4 trans) {
-    this->filename = filename;
-    xd::image image(normalize_slashes(filename));
-    set_color_key(image, trans);
-    image_texture = xd::create<xd::texture>(image,  GL_REPEAT, GL_REPEAT,
-            GL_NEAREST, GL_NEAREST);
+            trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
 }
 
 void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {

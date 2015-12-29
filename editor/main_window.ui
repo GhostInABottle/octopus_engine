@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Main_Window</class>
+ <widget class="QMainWindow" name="Main_Window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>821</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Octopus Editor</string>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <layout class="QHBoxLayout" name="widget_layout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontal_layout">
+      <item>
+       <widget class="QScrollArea" name="scroll_area">
+        <property name="contextMenuPolicy">
+         <enum>Qt::ActionsContextMenu</enum>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scroll_contents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>598</width>
+           <height>525</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menu_bar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>821</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_new_map"/>
+    <addaction name="action_open_project"/>
+    <addaction name="action_open_map"/>
+    <addaction name="action_save"/>
+    <addaction name="action_save_as"/>
+   </widget>
+   <addaction name="menu_file"/>
+  </widget>
+  <widget class="QToolBar" name="main_toolbar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="status_bar"/>
+  <widget class="QDockWidget" name="dock_widget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>243</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>200</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dock_contents">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>175</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <layout class="QHBoxLayout" name="dock_layout">
+     <item>
+      <layout class="QVBoxLayout" name="lists_layout">
+       <item>
+        <widget class="QTabWidget" name="tab_widget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="map_tab">
+          <attribute name="title">
+           <string>Maps</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QListView" name="map_list">
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layer_tab">
+          <attribute name="title">
+           <string>Layers</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QListView" name="layer_list">
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="object_tab">
+          <attribute name="title">
+           <string>Objects</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QListView" name="object_list">
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_open_project">
+   <property name="text">
+    <string>Open &amp;Project...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_save">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_save_as">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="action_open_map">
+   <property name="text">
+    <string>&amp;Open Map...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_new_map">
+   <property name="text">
+    <string>&amp;New Map</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>open_project()</slot>
+  <slot>select_object(QModelIndex)</slot>
+  <slot>select_layer(QModelIndex)</slot>
+  <slot>select_map(QModelIndex)</slot>
+ </slots>
+</ui>

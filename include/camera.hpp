@@ -12,12 +12,26 @@ class Screen_Shaker;
 class Camera : public xd::entity<Camera> {
 public:
     Camera(Game& game);
+    // Calculate viewport rectangle based on screen width and height
+    void calculate_viewport(int width, int height);
     // Setup viewport for rendering
-    void update_viewport(float shake_offset = 0.0f);
+    void update_viewport(float shake_offset = 0.0f) const;
+    // Setup initial OpenGL state
+    void setup_opengl() const;
     // Center camera at position
     void center_at(float x, float y);
     // Update position within map bounds
     void set_position(float x, float y);
+    // Draw a rectangle
+    void draw_rect(xd::rect rect, xd::vec4 color, bool fill = true);
+    // Get screen magnification
+    float get_magnification() const {
+        return magnification;
+    }
+    // Set screen magnification
+    void set_magnification(float mag) {
+        magnification = mag;
+    }
     // Start shaking screen
     void start_shaking(float strength, float speed);
     // Cease shaking screen
@@ -52,6 +66,8 @@ private:
     Game& game;
     // Camera position
     xd::vec2 position;
+    // Screen magnification
+    float magnification;
     // Viewport rectangle
     xd::rect viewport;
     // Screen tint color

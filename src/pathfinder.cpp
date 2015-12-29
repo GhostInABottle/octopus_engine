@@ -2,6 +2,23 @@
 #include "../include/direction_utilities.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
+#include "../include/configurations.hpp"
+
+namespace detail {
+    bool debug_mode = false;
+    void show_test_tile(Map& map, int x, int y, const std::string& type) {
+        auto pos = xd::vec2(x * map.get_tile_width(), y * map.get_tile_height());
+        std::string name = std::to_string(x) + ", " + std::to_string(y);
+        auto obj = map.get_object(name);
+        if (!obj) {
+            std::string sprite = Configurations::get<std::string>("debug.pathfinding-sprite");
+            obj = map.create_object(name, sprite, pos);
+        }
+        obj->set_pose(type);
+        obj->set_opacity(0.5);
+        obj->set_passthrough(true);
+    }
+}
 
 Pathfinder::Pathfinder(Map& map, Map_Object& object,
     xd::vec2 dest, int range, bool close, Collision_Check_Types check_type) :
@@ -17,6 +34,7 @@ Pathfinder::Pathfinder(Map& map, Map_Object& object,
     nearest_node.h = -1;
     start_node.h = distance(start_node.tile_pos(), goal_node.tile_pos());
     open_list.push(start_node);
+    detail::debug_mode = !Configurations::get<std::string>("debug.pathfinding-sprite").empty();
 }
 
 bool Node::in_range(Node& other, int range) const {
@@ -70,8 +88,11 @@ void Pathfinder::calculate_path() {
 
 void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) {
     auto tile_pos = static_cast<xd::ivec2>(pos) / 8;
-    if (!object.is_passthrough() && !map.tile_passable(tile_pos.x, tile_pos.y))
+    if (!object.is_passthrough() && !map.tile_passable(tile_pos.x, tile_pos.y)) {
+        if (detail::debug_mode)
+            detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Block");
         return;
+    }
     auto dir = facing_direction(parent.pos, pos, true);
     auto steps = static_cast<float>(map.get_tile_width());
     auto obj_pos = parent.pos;
@@ -90,6 +111,10 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
         }
         Node* parent_address = &closed_list[parent.tile_pos()];
         nodes.emplace_back(pos, parent_address, g, h);
+        if (detail::debug_mode)
+            detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Pass");
+    } else if (detail::debug_mode) {
+        detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Block");
     }
 }
 
