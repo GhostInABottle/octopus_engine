@@ -16,11 +16,26 @@
 #include "../include/exceptions.hpp"
 #include "../include/rapidxml_print.hpp"
 #include <vector>
+#include <unordered_set>
 #include <boost/lexical_cast.hpp>
 #include <xd/system.hpp>
 #include <xd/factory.hpp>
 #include <xd/audio.hpp>
 #include <fstream>
+#include <algorithm>
+
+namespace detail {
+	std::string generate_unique_name(std::unordered_set<std::string> names,
+			std::string base_name = "UNTITLED") {
+		int i = 1;
+		base_name = capitalize(base_name);
+		std::string name = base_name;
+		while (names.find(name) != names.end()) {
+			name = base_name + std::to_string(i++);
+		}
+		return name;
+	}
+}
 
 Map::Map(Game& game) :
         game(game),
@@ -127,10 +142,9 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     return Collision_Record(Collision_Types::TILE);
                 // Check if tile is blocking
                 if (collision_layer && collision_tileset) {
-                    int tile_index = x + y * width;
-                    int tile = collision_layer->tiles[tile_index] -
+                    int tile = collision_layer->tiles[x + y * width] -
                         collision_tileset->first_id;
-                    if (collision_layer && tile > 1)
+                    if (tile == 2)
                         return Collision_Record(Collision_Types::TILE);
                 }
             }
@@ -183,19 +197,26 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
     return object.get();
 }
 
+Map_Object* Map::add_object(std::string name, std::string sprite_file,
+	xd::vec2 pos, Direction dir) {
+	if (name.empty()) {
+		std::unordered_set<std::string> names;
+		for (auto& obj_pair : objects) {
+			names.insert(obj_pair.first);
+		}
+		name = detail::generate_unique_name(names);
+	}
+	auto object_ptr = new Map_Object(game, name, &asset_manager, sprite_file, pos, dir);
+	add_object(object_ptr);
+	return object_ptr;
+}
+
 Map_Object* Map::get_object(const std::string& name) {
     auto cap_name = capitalize(name);
     if (objects.find(cap_name) != objects.end())
         return objects.find(cap_name)->second.get();
     else
         return nullptr;
-}
-
-Map_Object* Map::create_object(std::string name, std::string sprite_file,
-        xd::vec2 pos, Direction dir) {
-    auto object_ptr = new Map_Object(game, name, &asset_manager, sprite_file,  pos, dir);
-    add_object(object_ptr);
-    return object_ptr;
 }
 
 void Map::delete_object(const std::string& name) {
@@ -234,6 +255,59 @@ Layer* Map::get_layer(const std::string& name) {
         return layer->get();
     else
         return nullptr;
+}
+
+void Map::add_layer(Layer_Types type) {
+	std::shared_ptr<Layer> layer;
+	switch (type) {
+	case Layer_Types::OBJECT:
+		layer = std::make_shared<Object_Layer>();
+		break;
+	case Layer_Types::IMAGE:
+		layer = std::make_shared<Image_Layer>();
+		break;
+	case Layer_Types::TILE:
+		layer = std::make_shared<Tile_Layer>();
+		break;
+	default:
+		return;
+	}
+	std::unordered_set<std::string> names;
+	for (auto& layer : layers) {
+		names.insert(layer->name);
+	}
+	layer->name = detail::generate_unique_name(names);
+	layers.push_back(layer);
+    if (type == Layer_Types::OBJECT)
+        object_layers.push_back((Object_Layer*)layer.get());
+}
+
+void Map::delete_layer(const std::string& name) {
+    auto cap_name = capitalize(name);
+    // Delete any matching object layer and its object
+    for (auto& layer = object_layers.begin(); layer != object_layers.end();)
+    {
+        if (capitalize((*layer)->name) != cap_name)
+        {
+            layer++;
+        } else {
+            auto& obj_layer = static_cast<Object_Layer*>(*layer);
+            for (auto& obj : obj_layer->objects)
+            {
+                objects.erase(obj->get_name());
+            }
+            layer = object_layers.erase(layer);
+        }
+    }
+    // Clear the collision object if necessary
+    if (collision_layer && capitalize(collision_layer->name) == cap_name)
+        collision_layer = nullptr;
+    // Delete matching layers
+    layers.erase(std::remove_if(layers.begin(), layers.end(),
+        [&cap_name](std::shared_ptr<Layer> layer) {
+              return capitalize(layer->name) == cap_name;
+        }
+    ), layers.end());
 }
 
 void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {

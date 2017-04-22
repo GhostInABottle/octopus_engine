@@ -1,4 +1,4 @@
-#include <boost/regex.hpp>
+#include <regex>
 #include <unordered_map>
 #include <xd/graphics/stock_text_formatter.hpp>
 #include <xd/graphics/simple_text_renderer.hpp>
@@ -7,6 +7,7 @@
 #include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/sprite_data.hpp"
+#include "../include/configurations.hpp"
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
@@ -30,9 +31,10 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text) :
         position(position), text_renderer(&game.get_text_renderer()),
         font(game.get_font()), opacity(1.0f), visible(false),
         formatter(xd::create<xd::stock_text_formatter>()),
-        style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)) {
-    style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    style->line_height(12.0f);
+        style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+			Configurations::get<int>("game.font-size"))) {
+	style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
+		.line_height(12.0f).force_autohint(true);
     set_text(text);
 }
 
@@ -76,11 +78,11 @@ void Canvas::set_text(const std::string& text) {
                 }
             }
             text_lines[i] = open_tags + text_lines[i];
-            static boost::regex opening("\\{(\\w+)=?(\\w+)?\\}");
-            static boost::regex closing("\\{/(\\w+)\\}");
-            boost::smatch open_results;
+            static std::regex opening("\\{(\\w+)=?(\\w+)?\\}");
+            static std::regex closing("\\{/(\\w+)\\}");
+			std::smatch open_results;
             auto start = line.cbegin();
-            while (boost::regex_search(start, line.cend(), open_results, opening)) {
+            while (std::regex_search(start, line.cend(), open_results, opening)) {
                 tag_info info;
                 info.name = open_results[1].str();
                 if (open_results.size() > 2)
@@ -90,9 +92,9 @@ void Canvas::set_text(const std::string& text) {
                 tags[info.name].push_back(tag_infos.size() - 1);
                 start += open_results.position() + 1;
             }
-            boost::smatch close_results;
+			std::smatch close_results;
             start = line.cbegin();
-            while (boost::regex_search(start, line.cend(), close_results, closing)) {
+            while (std::regex_search(start, line.cend(), close_results, closing)) {
                 auto& ids = tags[close_results[1].str()];
                 int id = ids[0];
                 tag_infos[id].open = false;

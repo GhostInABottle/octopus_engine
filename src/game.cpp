@@ -29,18 +29,21 @@ int Game::game_height;
 
 struct Game::Impl {
     Impl(bool editor_mode) :
-        editor_mode(editor_mode),
-        show_fps(Configurations::get<bool>("debug.show-fps")),
-        show_time(Configurations::get<bool>("debug.show-time")),
-        pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
-        style(xd::vec4(1.0f,1.0f,1.0f,0.7f), 8),
-        paused(false),
-        focus_pause(false),
-        music_was_paused(false),
-        was_stopped(false),
-        pause_start_time(0),
-        total_paused_time(0),
-        current_shader(nullptr) {}
+			editor_mode(editor_mode),
+			show_fps(Configurations::get<bool>("debug.show-fps")),
+			show_time(Configurations::get<bool>("debug.show-time")),
+			pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
+			style(xd::vec4(1.0f,1.0f,1.0f,0.7f),
+			Configurations::get<int>("game.font-size")),
+			paused(false),
+			focus_pause(false),
+			music_was_paused(false),
+			was_stopped(false),
+			pause_start_time(0),
+			total_paused_time(0),
+			current_shader(nullptr) {
+		style.force_autohint() = true;
+	}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     std::vector<xd::sound::ptr> sounds;
     std::string playing_music_name;
@@ -84,15 +87,18 @@ Game::Game(bool editor_mode) :
             Configurations::get<int>("game.screen-width"),
             Configurations::get<int>("game.screen-height"),
             xd::window_options(Configurations::get<bool>("game.fullscreen"), 
-                false, false, 8, 0, 0, 2, 0))),
+                false, false, false, 8, 0, 0, 2, 0))),
         pimpl(new Impl(editor_mode)),
         current_scripting_interface(nullptr),
-        font(xd::create<xd::font>(Configurations::get<std::string>("game.font"))),
         text_renderer(static_cast<float>(game_width), static_cast<float>(game_height)) {
     xd::audio::init();
     clock.reset(new Clock(*this));
     pimpl->load_npcs(*this);
     camera.reset(new Camera(*this));
+	auto font_file = Configurations::get<std::string>("game.font");
+	if (!file_exists(font_file))
+		throw std::runtime_error("Couldn't read font file " + font_file);
+	font = xd::create<xd::font>(font_file);
     auto clear_color = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     if (editor_mode)
@@ -381,6 +387,15 @@ void Game::load_map(const std::string& filename) {
 void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
     map.reset(new Map(*this));
     map->resize(map_size, tile_size);
+}
+
+void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
+	map->get_canvases().push_back(canvas);
+}
+
+void Game::remove_canvas(std::shared_ptr<Canvas> canvas) {
+	auto& cvs = map->get_canvases();
+	cvs.erase(std::remove(cvs.begin(), cvs.end(), canvas), cvs.end());
 }
 
 void Game::Impl::load_npcs(Game& game) {

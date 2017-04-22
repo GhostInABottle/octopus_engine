@@ -7,3 +7,5 @@ data/test_save.txt
 *.user
 *.opensdf
 *.log
+*.opendb
+*.db

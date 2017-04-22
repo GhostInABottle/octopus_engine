@@ -30,7 +30,7 @@ void Canvas_Renderer::render(Map& map) {
                     sprite->render(batch, xd::vec2(x, y), canvas->get_opacity());
                 else {
                     xd::vec4 color(1.0f, 1.0f, 1.0f, canvas->get_opacity());
-                    batch.add(canvas->get_texture(), x, y, canvas->get_angle(),
+                    batch.add(canvas->get_texture(), x, y, xd::radians(canvas->get_angle()),
                     canvas->get_magnification(), color, canvas->get_origin());
                 }
                 batch.draw(game.get_mvp());

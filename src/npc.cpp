@@ -99,7 +99,7 @@ struct NPC::Impl {
                     npc.object->face(direction);
                 }
             }
-            npc.object->set_script(keypoint->activation_script);
+            npc.object->set_trigger_script_source(keypoint->activation_script);
             if (npc.object->get_pose_name() != keypoint->pose) {
                 npc.object->set_pose(keypoint->pose);
             }
@@ -352,7 +352,7 @@ struct NPC::Impl {
             npc.position = last_keypoint->position;
             last_keypoint->status = Keypoint::Status_Types::STARTED;
             last_keypoint->start_time = time;
-            npc.object->set_script(last_keypoint->activation_script);
+            npc.object->set_trigger_script_source(last_keypoint->activation_script);
         }
         return false;
     }
@@ -473,7 +473,7 @@ void NPC::update() {
             if (auto obj = map_ptr->get_object(name))
                 object = obj;
             else
-                object = map_ptr->create_object(name, pimpl->sprite, position);
+                object = map_ptr->add_object(name, pimpl->sprite, position);
             object->set_type("npc");
             if (pimpl->direction != Direction::NONE)
                 object->set_direction(pimpl->direction);

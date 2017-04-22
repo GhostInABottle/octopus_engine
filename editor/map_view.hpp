@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <xd/graphics/types.hpp>
+#include "../include/layer_types.hpp"
 
 class Game;
 class Map;
@@ -26,6 +27,9 @@ public:
     Map* get_map();
     Map_Object* get_object(const std::string& name);
     Layer* get_layer(const std::string& name);
+    void add_layer(Layer_Types type);
+    void delete_layer(const std::string& name);
+    void add_object();
     std::vector<std::string> get_layer_names();
     std::vector<std::string> get_object_names();
     void highlight_object(Map_Object* obj);

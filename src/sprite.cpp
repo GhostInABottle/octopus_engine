@@ -216,7 +216,7 @@ void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
         src.x = -repeat_pos.x;
         src.y = -repeat_pos.y;
     }
-    float angle = static_cast<float>(frame.angle);
+    float angle = xd::radians(static_cast<float>(frame.angle));
     color.a *= opacity * frame.opacity;
     batch.add(image, src, pos.x, pos.y, angle,
         frame.magnification, color, get_pose().origin);
@@ -282,12 +282,13 @@ float Sprite::get_speed() const {
 }
 
 void Sprite::set_speed(float speed) {
-    speed = std::max(0.0f, std::min(pimpl->max_speed, speed));
-    if (speed <= 1)
-        pimpl->speed = 2 - speed;
-    else {
-        // Scale speed between 1 and 0.5
-        float a = 3.0f/52.0f;
-        pimpl->speed = -a * speed + 1 + a;
-    }
+	// Scale sprite speed in the opposite direction of object speed,
+	// between 0.5 for max speed (10) and 2 for min speed (0)
+	// but also make sure object speed 1 maps to sprite speed 1
+	// s-speed = s-min + (s-max - s-min) * (o-speed - o-min) / (o-max - o-min)
+	speed = std::max(0.0f, std::min(pimpl->max_speed, speed));
+	if (speed <= 1)
+		pimpl->speed = 2.0f - speed;
+    else 
+		pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (pimpl->max_speed - 1.0f);
 }

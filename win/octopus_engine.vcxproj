@@ -53,7 +53,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3-d.lib;freetype244.lib;DevIL.lib;lua.lib;luabind-d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3-d.lib;freetype26d.lib;harfbuzz-d.lib;DevIL.lib;lua51-d.lib;luabind-d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -72,7 +72,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3.lib;freetype244.lib;DevIL.lib;lua.lib;luabind.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3.lib;freetype26.lib;harfbuzz.lib;DevIL.lib;lua51.lib;luabind.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -85,7 +85,18 @@
     <ClCompile Include="..\src\canvas_updater.cpp" />
     <ClCompile Include="..\src\clock.cpp" />
     <ClCompile Include="..\src\collision_record.cpp" />
-    <ClCompile Include="..\src\commands.cpp" />
+    <ClCompile Include="..\src\command.cpp" />
+    <ClCompile Include="..\src\commands\fade_music_command.cpp" />
+    <ClCompile Include="..\src\commands\move_camera_command.cpp" />
+    <ClCompile Include="..\src\commands\move_object_command.cpp" />
+    <ClCompile Include="..\src\commands\move_object_to_command.cpp" />
+    <ClCompile Include="..\src\commands\shake_screen_command.cpp" />
+    <ClCompile Include="..\src\commands\show_pose_command.cpp" />
+    <ClCompile Include="..\src\commands\show_text_command.cpp" />
+    <ClCompile Include="..\src\commands\tint_screen_command.cpp" />
+    <ClCompile Include="..\src\commands\update_canvas_command.cpp" />
+    <ClCompile Include="..\src\commands\update_layer_command.cpp" />
+    <ClCompile Include="..\src\commands\wait_command.cpp" />
     <ClCompile Include="..\src\command_result.cpp" />
     <ClCompile Include="..\src\configurations.cpp" />
     <ClCompile Include="..\src\game.cpp" />
@@ -142,6 +153,17 @@
     <ClInclude Include="..\include\collision_record.hpp" />
     <ClInclude Include="..\include\command.hpp" />
     <ClInclude Include="..\include\commands.hpp" />
+    <ClInclude Include="..\include\commands\show_text_command.hpp" />
+    <ClInclude Include="..\include\commands\update_canvas_command.hpp" />
+    <ClInclude Include="..\include\commands\update_layer_command.hpp" />
+    <ClInclude Include="..\include\commands\move_camera_command.hpp" />
+    <ClInclude Include="..\include\commands\move_object_command.hpp" />
+    <ClInclude Include="..\include\commands\move_object_to_command.hpp" />
+    <ClInclude Include="..\include\commands\fade_music_command.hpp" />
+    <ClInclude Include="..\include\commands\shake_screen_command.hpp" />
+    <ClInclude Include="..\include\commands\show_pose_command.hpp" />
+    <ClInclude Include="..\include\commands\tint_screen_command.hpp" />
+    <ClInclude Include="..\include\commands\wait_command.hpp" />
     <ClInclude Include="..\include\command_result.hpp" />
     <ClInclude Include="..\include\common.hpp" />
     <ClInclude Include="..\include\configurations.hpp" />
@@ -156,6 +178,7 @@
     <ClInclude Include="..\include\keypoint.hpp" />
     <ClInclude Include="..\include\layer.hpp" />
     <ClInclude Include="..\include\layer_renderer.hpp" />
+    <ClInclude Include="..\include\layer_types.hpp" />
     <ClInclude Include="..\include\layer_updater.hpp" />
     <ClInclude Include="..\include\log.hpp" />
     <ClInclude Include="..\include\map.hpp" />

@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     ../src/clock.cpp \
     ../src/collision_record.cpp \
     ../src/command_result.cpp \
-    ../src/commands.cpp \
     ../src/configurations.cpp \
     ../src/custom_shaders.cpp \
     ../src/game.cpp \
@@ -86,8 +85,19 @@ SOURCES += main.cpp\
     mappers/object_layer_mapper.cpp \
     mappers/map_mapper.cpp \
     ../src/layer_renderer.cpp \
-    ../vendor/xd/include/xd/vendor/glm/detail/dummy.cpp \
-    ../vendor/xd/include/xd/vendor/glm/detail/glm.cpp
+    ../vendor/xd/include/xd/vendor/glm/detail/glm.cpp \
+    ../src/command.cpp \
+    ../src/commands/fade_music_command.cpp \
+    ../src/commands/move_camera_command.cpp \
+    ../src/commands/move_object_command.cpp \
+    ../src/commands/move_object_to_command.cpp \
+    ../src/commands/shake_screen_command.cpp \
+    ../src/commands/show_pose_command.cpp \
+    ../src/commands/show_text_command.cpp \
+    ../src/commands/tint_screen_command.cpp \
+    ../src/commands/update_canvas_command.cpp \
+    ../src/commands/update_layer_command.cpp \
+    ../src/commands/wait_command.cpp
     
 
 HEADERS  += main_window.hpp \
@@ -116,6 +126,7 @@ HEADERS  += main_window.hpp \
     ../include/keypoint.hpp \
     ../include/layer.hpp \
     ../include/layer_renderer.hpp \
+    ../include/layer_types.hpp \
     ../include/layer_updater.hpp \
     ../include/log.hpp \
     ../include/map.hpp \
@@ -369,6 +380,17 @@ HEADERS  += main_window.hpp \
     ../vendor/xd/include/xd/vendor/glm/vec2.hpp \
     ../vendor/xd/include/xd/vendor/glm/vec3.hpp \
     ../vendor/xd/include/xd/vendor/glm/vec4.hpp \
-    ../vendor/xd/include/xd/vendor/glm/vector_relational.hpp
+    ../vendor/xd/include/xd/vendor/glm/vector_relational.hpp \
+    ../include/commands/fade_music_command.hpp \
+    ../include/commands/move_camera_command.hpp \
+    ../include/commands/move_object_command.hpp \
+    ../include/commands/move_object_to_command.hpp \
+    ../include/commands/shake_screen_command.hpp \
+    ../include/commands/show_pose_command.hpp \
+    ../include/commands/show_text_command.hpp \
+    ../include/commands/tint_screen_command.hpp \
+    ../include/commands/update_canvas_command.hpp \
+    ../include/commands/update_layer_command.hpp \
+    ../include/commands/wait_command.hpp
 
 FORMS    += main_window.ui

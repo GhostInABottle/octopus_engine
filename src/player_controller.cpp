@@ -61,7 +61,7 @@ void Player_Controller::update(Map_Object& object) {
             collision.input_triggerable()) {
         object.set_triggered_object(collision.other_object);
         collision.other_object->face(object);
-        collision.other_object->run_script();
+        collision.other_object->run_trigger_script();
     }
     // Check if inside a collision area
     if (collision.is_area()) {
@@ -71,10 +71,13 @@ void Player_Controller::update(Map_Object& object) {
             // Automatically trigger regular areas
             if (area && moved && !collision.input_triggerable()) {
                 object.set_triggered_object(area);
-                area->run_script();
+                area->run_trigger_script();
             }
         }
     } else if (collision.type == Collision_Types::NONE) {
+		auto old_area = object.get_collision_area();
+		if (old_area)
+			old_area->run_exit_script();
         object.set_collision_area(nullptr);
     }
 

@@ -31,7 +31,7 @@ namespace detail {
         }
         return true;
     }
-    const int end_table_marker = LUA_NUMTAGS + 1;
+    const int end_table_marker = LUA_TNONE;
     void write_object(std::ostream& stream, luabind::object obj) {
         using namespace luabind;
         for (iterator i(obj), end; i != end; ++i) {

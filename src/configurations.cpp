@@ -18,6 +18,7 @@ void Configurations::parse(const std::string& filename) {
     }
     defaults["game.title"] = std::string("Untitled");
     defaults["game.font"] = std::string("Unibody 8-Italic.otf");
+	defaults["game.font-size"] = 8;
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;
     defaults["game.fullscreen"] = false;

@@ -100,11 +100,25 @@ Map* Map_View::get_map() {
 }
 
 Map_Object* Map_View::get_object(const std::string& name) {
-    return game->get_map()->get_object(name);
+    return get_map()->get_object(name);
 }
 
 Layer* Map_View::get_layer(const std::string& name) {
-    return game->get_map()->get_layer(name);
+    return get_map()->get_layer(name);
+}
+
+void Map_View::add_layer(Layer_Types type) {
+    get_map()->add_layer(type);
+}
+
+void Map_View::delete_layer(const std::string& name) {
+    selected_object = nullptr;
+    get_map()->delete_layer(name);
+}
+
+void Map_View::add_object() {
+    auto object = get_map()->add_object();
+    object->set_size(xd::vec2(16, 16));
 }
 
 std::vector<std::string> Map_View::get_layer_names() {

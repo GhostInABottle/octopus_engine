@@ -132,7 +132,8 @@ void Scripting_Interface::setup_scripts() {
         def("text_width", tag_function<float (const std::string&)>(
             [&](const std::string& text) {
             return game->get_font()->get_width(text,
-                xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8));
+                xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
+				.force_autohint(true));
             }
         )),
         // 2D vector
@@ -309,8 +310,9 @@ void Scripting_Interface::setup_scripts() {
             .property("pose_name", &Map_Object::get_pose_name)
             .property("state", &Map_Object::get_state)
             .property("visible", &Map_Object::is_visible, &Map_Object::set_visible)
-            .property("script", &Map_Object::get_script, &Map_Object::set_script)
+            .property("script", &Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source)
             .property("triggered_object", &Map_Object::get_triggered_object, &Map_Object::set_triggered_object)
+			.property("collision_area", &Map_Object::get_collision_area, &Map_Object::set_collision_area)
             .property("draw_order", &Map_Object::get_draw_order, &Map_Object::set_draw_order)
             .property("real_position", &Map_Object::get_real_position)
             .property("bounding_box", &Map_Object::get_bounding_box)
@@ -392,7 +394,7 @@ void Scripting_Interface::setup_scripts() {
             .def("face", tag_function<void (Map_Object*, int)>([&](Map_Object* obj, int dir) {
                 obj->face(static_cast<Direction>(dir));
             }))
-            .def("run_script", &Map_Object::run_script),
+            .def("run_script", &Map_Object::run_trigger_script),
         // Game class
         class_<Game>("Game")
             .property("width", &Game::width)
@@ -591,7 +593,7 @@ void Scripting_Interface::setup_scripts() {
                     [&](Layer* layer, float opacity, long duration) {
                         auto si = game->get_current_scripting_interface();
                         return si->register_command(
-                            std::make_shared<Layer_Opacity_Update_Command>(
+                            std::make_shared<Update_Layer_Command>(
                                 *game, *layer, opacity, duration
                             )
                         );
@@ -634,7 +636,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](xd::music* music, float volume, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Music_Fade_Command>(
+                        std::make_shared<Fade_Music_Command>(
                             *game, *music, volume, duration
                         )
                     );
@@ -680,7 +682,7 @@ void Scripting_Interface::setup_scripts() {
                         float mag_y, float angle, float opacity, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Canvas_Update_Command>(
+                        std::make_shared<Update_Canvas_Command>(
                             *game, *canvas, duration, xd::vec2(x, y),
                             xd::vec2(mag_x, mag_y), angle, opacity
                         )
@@ -691,7 +693,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](Canvas* canvas, float x, float y, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Canvas_Update_Command>(
+                        std::make_shared<Update_Canvas_Command>(
                             *game, *canvas, duration,
                             xd::vec2(x, y), canvas->get_magnification(),
                             canvas->get_angle(), canvas->get_opacity()
@@ -703,7 +705,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](Canvas* canvas, float mag_x, float mag_y, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Canvas_Update_Command>(
+                        std::make_shared<Update_Canvas_Command>(
                             *game, *canvas, duration,
                             canvas->get_position(), xd::vec2(mag_x, mag_y),
                             canvas->get_angle(), canvas->get_opacity()
@@ -715,7 +717,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](Canvas* canvas, float opacity, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Canvas_Update_Command>(
+                        std::make_shared<Update_Canvas_Command>(
                             *game, *canvas, duration, canvas->get_position(),
                             canvas->get_magnification(), canvas->get_angle(), opacity
                         )
@@ -726,7 +728,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](Canvas* canvas, float angle, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Canvas_Update_Command>(
+                        std::make_shared<Update_Canvas_Command>(
                             *game, *canvas, duration, canvas->get_position(),
                             canvas->get_magnification(), angle, canvas->get_opacity()
                         )
@@ -742,7 +744,7 @@ void Scripting_Interface::setup_scripts() {
                     canvas = std::make_shared<Canvas>(*game, filename, "", xd::vec2(x, y));
                 else
                     canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y));
-                game->get_map()->get_canvases().push_back(canvas);
+                game->add_canvas(canvas);
                 return canvas.get();
             }
         )),
@@ -750,7 +752,7 @@ void Scripting_Interface::setup_scripts() {
         def("Canvas", tag_function<Canvas* (const std::string&, float, float, const xd::vec4&)>(
             [&](const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
                 auto canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y), trans);
-                game->get_map()->get_canvases().push_back(canvas);
+                game->add_canvas(canvas);
                 return canvas.get();
             }
         )),
@@ -763,7 +765,7 @@ void Scripting_Interface::setup_scripts() {
                     canvas = std::make_shared<Canvas>(*game, filename, trans_or_pose, xd::vec2(x, y));
                 else
                     canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y), hex_to_color(trans_or_pose));
-                game->get_map()->get_canvases().push_back(canvas);
+                game->add_canvas(canvas);
                 return canvas.get();
             }
         )),
@@ -771,7 +773,7 @@ void Scripting_Interface::setup_scripts() {
         def("Canvas", tag_function<Canvas* (float, float, const std::string&)>(
             [&](float x, float y, const std::string& text) -> Canvas* {
                 auto canvas = std::make_shared<Canvas>(*game, xd::vec2(x, y), text);
-                game->get_map()->get_canvases().push_back(canvas);
+                game->add_canvas(canvas);
                 return canvas.get();
             }
         )),
@@ -792,7 +794,7 @@ void Scripting_Interface::setup_scripts() {
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&)>(
                 [&](Map_Object& obj, const std::string& text) {
                     auto si = game->get_current_scripting_interface();
-                    return si->register_command(std::make_shared<Text_Command>(
+                    return si->register_command(std::make_shared<Show_Text_Command>(
                         *game, &obj, text
                     ));
                 }
@@ -801,7 +803,7 @@ void Scripting_Interface::setup_scripts() {
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&, long)>(
                 [&](Map_Object& obj, const std::string& text, long duration) {
                     auto si = game->get_current_scripting_interface();
-                    return si->register_command(std::make_shared<Text_Command>(
+                    return si->register_command(std::make_shared<Show_Text_Command>(
                         *game, &obj, text, duration
                     ));
                 }
@@ -822,7 +824,7 @@ void Scripting_Interface::setup_scripts() {
                             choices.push_back(object_cast<std::string>(*i));
                         }
                     }
-                    auto command = std::make_shared<Text_Command>(
+                    auto command = std::make_shared<Show_Text_Command>(
                         *game, &obj, choices, text);
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);
@@ -838,7 +840,7 @@ void Scripting_Interface::setup_scripts() {
                           choices.push_back(object_cast<std::string>(*i));
                         }
                     }
-                    auto command = std::make_shared<Text_Command>(
+                    auto command = std::make_shared<Show_Text_Command>(
                         *game, &obj, choices);
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);

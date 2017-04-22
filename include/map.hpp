@@ -18,6 +18,7 @@
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
 #include "editable.hpp"
+#include "layer_types.hpp"
 
 namespace xd {
     class music;
@@ -71,26 +72,28 @@ public:
         int layer_index = -1, Object_Layer* layer = nullptr);
     Map_Object* add_object(Map_Object* object,
         int layer_index = -1, Object_Layer* layer = nullptr);
-    // Get object by index (starting from 1, lua convention)
-    Map_Object* get_object(int id);
+	// Create an object
+	Map_Object* add_object(std::string name = "", std::string sprite_file = "",
+		xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
     Map_Object* get_object(const std::string& name);
     // Get all objects
     Object_Map& get_objects() {
         return objects;
     }
-    // Create an object
-    Map_Object* create_object(std::string name = "", std::string sprite_file = "",
-        xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Delete object
     void delete_object(const std::string& name);
     void delete_object(Map_Object* object);
     // Get number of layers
     int layer_count();
-    // Get object by index (starting from 1, lua convention)
+    // Get layer by index (starting from 1, lua convention)
     Layer* get_layer(int id);
     // Get layer by name
     Layer* get_layer(const std::string& name);
+	// Add a new layer
+	void add_layer(Layer_Types type);
+	// Delete layer with given name
+    void delete_layer(const std::string& name);
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Save map to specified file name

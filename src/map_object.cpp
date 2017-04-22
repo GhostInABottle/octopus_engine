@@ -15,8 +15,8 @@ Map_Object::Map_Object(Game& game, std::string name,
         game(game), layer(nullptr), color(1.0f), gid(-1), opacity(1.0f),
         visible(true), disabled(false), stopped(false), frozen(false),
         passthrough(false), speed(1), name(name), position(pos), state("FACE"),
-        global_script(false), direction(dir), collision_area(nullptr),
-        triggered_object(nullptr), draw_order(NORMAL) {
+        direction(dir), collision_area(nullptr), triggered_object(nullptr),
+		draw_order(NORMAL) {
     if (manager && !sprite_file.empty()) {
         set_sprite(game, *manager, sprite_file);
     }
@@ -180,13 +180,13 @@ void Map_Object::face(Direction dir) {
     update_pose();
 }
 
-void Map_Object::run_script() {
-    if (script.empty())
-        return;
-    if (global_script)
-        game.run_script(script);
-    else
-        game.get_map()->run_script(script);
+void Map_Object::run_script(const Script& script) {
+	if (script.source.empty())
+		return;
+	if (script.is_global)
+		game.run_script(script.source);
+	else
+		game.get_map()->run_script(script.source);
 }
 
 rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
@@ -250,20 +250,30 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
         object_ptr->opacity = lexical_cast<float>(properties["opacity"]);
 
     auto set_script = [&properties](Map_Object* obj, const std::string& type) {
-        auto script = properties[type];
-        auto extension = script.substr(script.find_last_of(".") + 1);
+        auto source = properties[type];
+        auto extension = source.substr(source.find_last_of(".") + 1);
         if (extension == "lua")
-            obj->script = read_file(script);
-        else
-            obj->script = script;
-        obj->global_script = type == "global-script";
+			source = read_file(source);
+		Script* script = &obj->trigger_script;
+        if (type.find("exit") != std::string::npos)
+			script = &obj->exit_script;
+		script->source = source;
+        script->is_global = type.find("global") != std::string::npos;
     };
+	// Trigger script
     if (properties.find("script") != properties.end())
         set_script(object_ptr.get(), "script");
     else if (properties.find("map-script") != properties.end())
         set_script(object_ptr.get(), "map-script");
     else if (properties.find("global-script") != properties.end())
         set_script(object_ptr.get(), "global-script");
+	// Exit script
+	if (properties.find("exit-script") != properties.end())
+		set_script(object_ptr.get(), "exit-script");
+	else if (properties.find("map-exit-script") != properties.end())
+		set_script(object_ptr.get(), "map-exit-script");
+	else if (properties.find("global-exit-script") != properties.end())
+		set_script(object_ptr.get(), "global-exit-script");
 
     object_ptr->update_pose();
 
