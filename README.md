@@ -32,7 +32,7 @@ Dependencies:
   * [DevIL](http://openil.sourceforge.net/)
   * [GLFW3](http://www.glfw.org/)
   * [GLEW](http://glew.sourceforge.net/)
-  * [Qt 5.6] (https://www.qt.io/) - For the editor
+  * [Qt 5.6](https://www.qt.io/) - For the editor
   
 Start by cloning my XD fork into the vendor/ directory. There are project files for Visual Studio 2015 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory.
  
