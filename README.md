@@ -12,6 +12,7 @@ A cross-platform 2D game engine used in [Octopus City Blues](http://octopuscityb
   * Tile-based collision detection.
   * Player movement and interaction with various object types.
   * Support for custom GLSL shaders.
+  * A Qt-based tile editor.
 
 ### License
 
@@ -19,17 +20,19 @@ See LICENSE.text file.
 
 ### Building
 
-** Dependencies **
+Dependencies:
 
   * [XD](https://github.com/firas-assaad/xd) - Should be placed in vendor/ directory
   * [FreeType](http://www.freetype.org/index.html)
+  * [HarfBuzz] (https://www.freedesktop.org/wiki/Software/HarfBuzz/)
   * [Lua 5.2](http://www.lua.org/)
-  * [Luabind](https://bitbucket.org/uso/luabind) - with Lua 5.2 support
-  * [Boost](http://www.boost.org/) - Regex (Required), Unit Test Framework (Optional)
+  * [Luabind](https://github.com/Oberon00/luabind) - Oberon00 version
+  * [Boost](http://www.boost.org/) - any, property tree, unit testing, etc.
   * [FMOD Studio Programmer's API](http://www.fmod.org/download/)
   * [DevIL](http://openil.sourceforge.net/)
   * [GLFW3](http://www.glfw.org/)
   * [GLEW](http://glew.sourceforge.net/)
+  * [Qt 5.6] (https://www.qt.io/) - For the editor
   
-Start by cloning my XD fork into the vendor/ directory. There are project files for Visual Studio 2012 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory or try it with the [Octopus City Blues](http://ghost-in-a-bottle.itch.io/octopus-city-blues) demo.
+Start by cloning my XD fork into the vendor/ directory. There are project files for Visual Studio 2015 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory.
  
