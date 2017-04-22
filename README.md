@@ -24,7 +24,7 @@ Dependencies:
 
   * [XD](https://github.com/firas-assaad/xd) - Should be placed in vendor/ directory
   * [FreeType](http://www.freetype.org/index.html)
-  * [HarfBuzz] (https://www.freedesktop.org/wiki/Software/HarfBuzz/)
+  * [HarfBuzz](https://www.freedesktop.org/wiki/Software/HarfBuzz/)
   * [Lua 5.2](http://www.lua.org/)
   * [Luabind](https://github.com/Oberon00/luabind) - Oberon00 version
   * [Boost](http://www.boost.org/) - any, property tree, unit testing, etc.
