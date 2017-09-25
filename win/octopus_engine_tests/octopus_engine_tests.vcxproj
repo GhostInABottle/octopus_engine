@@ -14,20 +14,21 @@
     <ProjectGuid>{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}</ProjectGuid>
     <RootNamespace>octopus_engine_tests</RootNamespace>
     <ProjectName>octopus_engine_tests</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -130,6 +131,7 @@
     <ClCompile Include="..\..\vendor\xd\src\audio\music.cpp" />
     <ClCompile Include="..\..\vendor\xd\src\audio\sound.cpp" />
     <ClCompile Include="..\..\vendor\xd\src\graphics\font.cpp" />
+    <ClCompile Include="..\..\vendor\xd\src\graphics\framebuffer.cpp" />
     <ClCompile Include="..\..\vendor\xd\src\graphics\image.cpp" />
     <ClCompile Include="..\..\vendor\xd\src\graphics\shaders.cpp" />
     <ClCompile Include="..\..\vendor\xd\src\graphics\shader_program.cpp" />

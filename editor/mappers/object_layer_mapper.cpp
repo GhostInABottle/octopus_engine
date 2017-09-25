@@ -23,7 +23,7 @@ void Object_Layer_Mapper::change_property(QtProperty* prop) {
     Layer_Mapper::change_property(prop);
     QtVariantProperty* vprop = static_cast<QtVariantProperty*>(prop);
     QString prop_name = prop->propertyName();
-    QVariant& prop_value = vprop->value();
+    QVariant prop_value = vprop->value();
     if (prop_name == "Color") {
         QColor c = prop_value.value<QColor>();
         layer->color = xd::vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF());

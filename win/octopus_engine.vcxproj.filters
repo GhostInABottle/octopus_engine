@@ -228,6 +228,9 @@
     <ClCompile Include="..\src\command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\vendor\xd\src\graphics\framebuffer.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utility.hpp">

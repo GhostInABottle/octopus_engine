@@ -54,7 +54,7 @@ void Image_Layer_Mapper::change_property(QtProperty* prop) {
     Layer_Mapper::change_property(prop);
     QtVariantProperty* vprop = static_cast<QtVariantProperty*>(prop);
     QString prop_name = prop->propertyName();
-    QVariant& prop_value = vprop->value();
+    QVariant prop_value = vprop->value();
     if (prop_name == "Repeat") {
         layer->repeat = prop_value.toBool();
     } else if (prop_name == "Fixed") {

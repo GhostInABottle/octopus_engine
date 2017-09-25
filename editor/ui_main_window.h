@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.6.0
+** Created by: Qt User Interface Compiler version 5.9.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -210,20 +210,28 @@ public:
 
     void retranslateUi(QMainWindow *Main_Window)
     {
-        Main_Window->setWindowTitle(QApplication::translate("Main_Window", "Octopus Editor", 0));
-        action_open_project->setText(QApplication::translate("Main_Window", "Open &Project...", 0));
-        action_open_project->setShortcut(QApplication::translate("Main_Window", "Ctrl+P", 0));
-        action_save->setText(QApplication::translate("Main_Window", "&Save", 0));
-        action_save->setShortcut(QApplication::translate("Main_Window", "Ctrl+S", 0));
-        action_save_as->setText(QApplication::translate("Main_Window", "Save As...", 0));
-        action_open_map->setText(QApplication::translate("Main_Window", "&Open Map...", 0));
-        action_open_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+O", 0));
-        action_new_map->setText(QApplication::translate("Main_Window", "&New Map", 0));
-        action_new_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+N", 0));
-        menu_file->setTitle(QApplication::translate("Main_Window", "&File", 0));
-        tab_widget->setTabText(tab_widget->indexOf(map_tab), QApplication::translate("Main_Window", "Maps", 0));
-        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QApplication::translate("Main_Window", "Layers", 0));
-        tab_widget->setTabText(tab_widget->indexOf(object_tab), QApplication::translate("Main_Window", "Objects", 0));
+        Main_Window->setWindowTitle(QApplication::translate("Main_Window", "Octopus Editor", Q_NULLPTR));
+        action_open_project->setText(QApplication::translate("Main_Window", "Open &Project...", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
+        action_open_project->setShortcut(QApplication::translate("Main_Window", "Ctrl+P", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
+        action_save->setText(QApplication::translate("Main_Window", "&Save", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
+        action_save->setShortcut(QApplication::translate("Main_Window", "Ctrl+S", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
+        action_save_as->setText(QApplication::translate("Main_Window", "Save As...", Q_NULLPTR));
+        action_open_map->setText(QApplication::translate("Main_Window", "&Open Map...", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
+        action_open_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+O", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
+        action_new_map->setText(QApplication::translate("Main_Window", "&New Map", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
+        action_new_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+N", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
+        menu_file->setTitle(QApplication::translate("Main_Window", "&File", Q_NULLPTR));
+        tab_widget->setTabText(tab_widget->indexOf(map_tab), QApplication::translate("Main_Window", "Maps", Q_NULLPTR));
+        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QApplication::translate("Main_Window", "Layers", Q_NULLPTR));
+        tab_widget->setTabText(tab_widget->indexOf(object_tab), QApplication::translate("Main_Window", "Objects", Q_NULLPTR));
     } // retranslateUi
 
 };

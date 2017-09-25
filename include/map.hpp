@@ -38,7 +38,7 @@ public:
     friend class Map_Renderer;
     friend class Map_Updater;
     typedef std::shared_ptr<Map_Object> Object_Ptr;
-    typedef std::unordered_multimap<std::string, Object_Ptr> Object_Map;
+    typedef std::unordered_map<int, Object_Ptr> Object_Map;
     // Constructor and destructor
     Map(Game& game);
     ~Map();
@@ -77,12 +77,15 @@ public:
 		xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
     Map_Object* get_object(const std::string& name);
+	// Get object by ID
+	Map_Object* get_object(int id);
     // Get all objects
     Object_Map& get_objects() {
         return objects;
     }
     // Delete object
     void delete_object(const std::string& name);
+	void delete_object(int id);
     void delete_object(Map_Object* object);
     // Get number of layers
     int layer_count();
@@ -170,14 +173,18 @@ private:
     int tile_height;
     // Map file name
     std::string filename;
+	// Counter to set IDs of new objects
+	int next_object_id;
     // Map properties
     Properties properties;
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Texture asset manager
     xd::asset_manager asset_manager;
-    // Hash table of object names to objects
+    // Hash table of object IDs to objects
     Object_Map objects;
+	// Hash table of object names to IDs
+	std::unordered_multimap<std::string, int> object_name_to_id;
     // List of map tilesets
     std::vector<Tileset> tilesets;
     // Obstruction data tileset
@@ -198,6 +205,8 @@ private:
     bool needs_redraw;
     // Did any objects move?
     bool objects_moved;
+	// Remove object from ID and name hash tables
+	void erase_object_references(Map_Object* object);
 };
 
 class Map_Renderer : public xd::render_component<Map> {

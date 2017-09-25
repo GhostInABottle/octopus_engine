@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
             <properties> \
                 <property name=\"jimbo\" value=\"yeah right\"/> \
             </properties> \
-            <object name=\"cool\" type=\"dragon\" x=\"168\" y=\"208\"> \
+            <object id =\"5\"name=\"cool\" type=\"dragon\" x=\"168\" y=\"208\"> \
                 <properties> \
                     <property name=\"elf\" value=\"qui\"/> \
                 </properties> \
@@ -91,12 +91,14 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     Object_Layer* object_layer = static_cast<Object_Layer*>(layer.get());
     auto& obj1 = *(object_layer->objects[0]);
     auto& obj2 = *(object_layer->objects[1]);
+	BOOST_CHECK_EQUAL(obj1.get_id(), 5);
     BOOST_CHECK_EQUAL(obj1.get_name(), "cool");
     BOOST_CHECK_EQUAL(obj1.get_type(), "dragon");
     BOOST_CHECK_CLOSE(obj1.get_position().x, 168.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_position().y, 208.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_size()[0], 0.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_size()[1], 0.0f, 0.1f);
+	BOOST_CHECK_EQUAL(obj2.get_id(), 6);
     BOOST_CHECK_EQUAL(obj2.get_name(), "collision");
     BOOST_CHECK_CLOSE(obj2.get_size()[0], 8.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj2.get_size()[1], 16.0f, 0.1f);

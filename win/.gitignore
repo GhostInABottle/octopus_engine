@@ -9,3 +9,5 @@ data/test_save.txt
 *.log
 *.opendb
 *.db
+*.db-shm
+*.db-wal

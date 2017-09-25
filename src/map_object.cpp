@@ -12,7 +12,7 @@
 Map_Object::Map_Object(Game& game, std::string name,
         xd::asset_manager* manager, std::string sprite_file,
         xd::vec2 pos, Direction dir) :
-        game(game), layer(nullptr), color(1.0f), gid(-1), opacity(1.0f),
+        game(game), layer(nullptr), id(-1), color(1.0f), gid(-1), opacity(1.0f),
         visible(true), disabled(false), stopped(false), frozen(false),
         passthrough(false), speed(1), name(name), position(pos), state("FACE"),
         direction(dir), collision_area(nullptr), triggered_object(nullptr),
@@ -191,6 +191,7 @@ void Map_Object::run_script(const Script& script) {
 
 rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "object");
+	node->append_attribute(xml_attribute(doc, "id", std::to_string(get_id())));
     if (!get_name().empty())
         node->append_attribute(xml_attribute(doc, "name", get_name()));
     if (!get_type().empty())
@@ -213,6 +214,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
         Game& game, xd::asset_manager& manager) {
     using boost::lexical_cast;
     std::unique_ptr<Map_Object> object_ptr(new Map_Object(game));
+
+	if (auto id_node = node.first_attribute("id"))
+		object_ptr->id = lexical_cast<int>(id_node->value());
 
     if (auto name_node = node.first_attribute("name"))
         object_ptr->name = name_node->value();

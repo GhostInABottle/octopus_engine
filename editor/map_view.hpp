@@ -33,8 +33,8 @@ public:
     std::vector<std::string> get_layer_names();
     std::vector<std::string> get_object_names();
     void highlight_object(Map_Object* obj);
-    float get_scale() const { return scale; }
-    void set_scale(float scale) { this->scale = scale; }
+    float get_scale() const { return scales[scale_index]; }
+    void refresh_scrollbars();
 protected:
     void initializeGL();
     void paintGL();
@@ -42,6 +42,7 @@ protected:
     void mousePressEvent(QMouseEvent* mouse_event);
     void mouseReleaseEvent(QMouseEvent* mouse_event);
     void mouseMoveEvent(QMouseEvent* mouse_event);
+    void keyPressEvent(QKeyEvent *event);
 private:
     std::unique_ptr<Game> game;
     std::string map_name;
@@ -49,7 +50,8 @@ private:
     QTimer* draw_timer;
     QTimer* update_timer;
     QElapsedTimer* tick_timer;
-    float scale;
+    int scale_index;
+    constexpr static float scales[] = { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
     Map_Object* selected_object;
     bool mouse_pressed;
     xd::vec2 press_offset;

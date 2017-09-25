@@ -33,7 +33,7 @@ void Map_Mapper::change_property(QtProperty* prop) {
         return;
     QtVariantProperty* vprop = static_cast<QtVariantProperty*>(prop);
     QString prop_name = prop->propertyName();
-    QVariant& prop_value = vprop->value();
+    QVariant prop_value = vprop->value();
     if (prop_name == "Name") {
         map->set_name(prop_value.toString().toStdString());
     } else if (prop_name == "Size") {

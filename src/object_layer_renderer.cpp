@@ -3,16 +3,20 @@
 #include "../include/map_object.hpp"
 #include "../include/map.hpp"
 #include "../include/game.hpp"
+#include "../include/utility.hpp"
 #include <algorithm>
 #include <limits>
 
 void Object_Layer_Renderer::render(Map& map) {
     if (!layer.visible)
         return;
+
     batch.clear();
+
     // Casting the const away is fine since we're only sorting
     auto& object_layer =
         const_cast<Object_Layer&>(static_cast<const Object_Layer&>(layer));
+
     std::sort(object_layer.objects.begin(), object_layer.objects.end(),
         [](Map_Object* a, Map_Object* b) {
             float a_order, b_order;
@@ -31,10 +35,13 @@ void Object_Layer_Renderer::render(Map& map) {
             else
                 b_order = std::numeric_limits<float>().max();
 
-            return a_order < b_order;
+            return check_close(a_order, b_order) ?
+				a->get_id() < b->get_id() : a_order < b_order;
     });
+
     for (auto& object : object_layer.objects) {
         object->render();
     }
+
     batch.draw(map.get_game().get_mvp(), map.get_game().ticks());
 }

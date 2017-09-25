@@ -267,6 +267,9 @@
     <ClInclude Include="..\..\vendor\xd\include\xd\audio\detail\audio_handle.hpp">
       <Filter>Header Files\audio\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\vendor\xd\include\xd\graphics\framebuffer.hpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\vendor\xd\src\audio\music.cpp">
@@ -325,6 +328,9 @@
     </ClCompile>
     <ClCompile Include="..\..\vendor\xd\src\audio\audio.cpp">
       <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\vendor\xd\src\graphics\framebuffer.cpp">
+      <Filter>Source Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

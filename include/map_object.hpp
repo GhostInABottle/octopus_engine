@@ -42,6 +42,12 @@ public:
     void set_layer(Object_Layer* layer) {
         this->layer = layer;
     }
+	int get_id() const {
+		return id;
+	}
+	void set_id(int id) {
+		this->id = id;
+	}
     std::string get_name() const {
         return name;
     }
@@ -238,6 +244,8 @@ private:
     Game& game;
     // Associated map layer
     Object_Layer* layer;
+	// Unique ID
+	int id;
     // Name of the object
     std::string name;
     // Type of the object

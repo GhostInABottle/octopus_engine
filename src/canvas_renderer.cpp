@@ -14,14 +14,60 @@ void Canvas_Renderer::render(Map& map) {
             xd::vec2 pos = canvas->get_position();
             float x = pos.x;
             float y = pos.y;
-            if (!canvas->get_text().empty()) {
-                auto style = canvas->get_style();
-                style->color().a = canvas->get_opacity();
-                auto& lines = canvas->get_text_lines();
-                for (auto line : lines) {
-                    canvas->render_text(line, x, game.game_height - y);
-                    y += style->line_height();
-                }
+			std::string text = canvas->get_text();
+            if (!text.empty()) {
+				bool framebuffer_supported = xd::framebuffer::extension_supported();
+				// The first time text is rendered, we render it to a texture
+				// if it's not supported, we render directly every frame (slow)
+				if (text != last_drawn_text || !framebuffer_supported) {
+					if (framebuffer_supported) {
+						text_texture = xd::create<xd::texture>(
+							game.width(),
+							game.height(),
+							nullptr,
+							xd::vec4(0),
+							GL_CLAMP,
+							GL_CLAMP);
+						text_framebuffer.attach_color_texture(text_texture, 0);
+						text_framebuffer.bind();
+						glViewport(0, 0, game.width(), game.height());
+						glPushAttrib(GL_COLOR_BUFFER_BIT);
+						glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+						glClear(GL_COLOR_BUFFER_BIT);
+						glPopAttrib();
+						auto fb_complete = text_framebuffer.check_complete();
+						if (!std::get<0>(fb_complete))
+							throw std::exception(std::get<1>(fb_complete).c_str());
+					}
+					last_drawn_text = text;
+					auto style = canvas->get_style();
+					style->color().a = canvas->get_opacity();
+					auto& lines = canvas->get_text_lines();
+					for (auto line : lines) {
+						canvas->render_text(line, x, game.game_height - y);
+						y += style->line_height();
+					}
+					text_framebuffer.unbind();
+				}
+				// Render the previously created texture
+				if (framebuffer_supported)
+				{
+					batch.clear();
+					xd::vec4 color(1.0f, 1.0f, 1.0f, canvas->get_opacity());
+					batch.add(text_texture, 0, 0, color);
+					xd::transform_geometry geometry;
+					geometry.projection().push(
+						xd::ortho<float>(
+							0, static_cast<float>(game.width()), // left, right
+							0, static_cast<float>(game.height()), // bottom, top
+							-1, 1 // near, far
+							)
+					);
+					geometry.model_view().push(xd::mat4());
+					glViewport(0, 0, game.width(), game.height());
+					batch.draw(geometry.mvp());
+					game.get_camera()->update_viewport();
+				}
             } else {
                 batch.clear();
                 x += camera_pos.x;

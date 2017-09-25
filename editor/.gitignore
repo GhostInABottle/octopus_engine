@@ -7,3 +7,4 @@ srv/
 *.log
 Makefile*
 machine_specific.txt
+*.stash

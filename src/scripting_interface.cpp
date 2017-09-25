@@ -296,6 +296,7 @@ void Scripting_Interface::setup_scripts() {
             ), adopt(result)),
         // Map object
         class_<Map_Object, Sprite_Holder>("Map_Object")
+			.property("id", &Map_Object::get_id)
             .property("name", &Map_Object::get_name, &Map_Object::set_name)
             .property("type", &Map_Object::get_type, &Map_Object::set_type)
             .property("position", &Map_Object::get_position, &Map_Object::set_position)
@@ -486,6 +487,7 @@ void Scripting_Interface::setup_scripts() {
             .property("filename", &Map::get_filename)
             .property("name", &Map::get_name)
             .def("object_count", &Map::object_count)
+			.def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
             .def("get_object", (Map_Object* (Map::*)(const std::string&)) &Map::get_object)
             .def("layer_count", &Map::layer_count)
             .def("get_layer", (Layer* (Map::*)(int)) &Map::get_layer)

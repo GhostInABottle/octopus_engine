@@ -39,6 +39,7 @@ namespace detail {
 
 Map::Map(Game& game) :
         game(game),
+		next_object_id(1),
         scripting_interface(new Scripting_Interface(game)),
         collision_tileset(nullptr),
         collision_layer(nullptr),
@@ -94,12 +95,11 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     // Check object collisions
     if (check_type & Collision_Check_Types::OBJECT) {
         Collision_Record obj_result(Collision_Types::NONE, &object);
-        auto this_name = capitalize(object.get_name());
         for (auto& object_pair : objects) {
-            auto other_name = object_pair.first;
+            auto other_id = object_pair.first;
             auto other_object = object_pair.second;
             // Skip self and invisible/passthrough objects
-            if (other_name == this_name || !other_object->is_visible() ||
+            if (other_id == object.get_id() || !other_object->is_visible() ||
                     other_object->is_passthrough())
                 continue;
             // Skip objects with no bounding box
@@ -176,51 +176,74 @@ Map_Object* Map::add_object(Map_Object* object, int layer_index, Object_Layer* l
 }
 
 Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* layer) {
+	// If layer isn't specified try getting a layer named "objects",
+	// if none is found use the 'middle' object layer
     if (!layer) {
         if (layer_index < 0) {
-            // If layer isn't specified try getting a layer named "objects",
-            // if none is found use the 'middle' object layer
             layer = static_cast<Object_Layer*>(get_layer("objects"));
             if (!layer) {
                 layer_index = static_cast<int>(std::floor(
                     object_layers.size() / 2.0));
                 layer = object_layers[layer_index];
             }
-        } else if (static_cast<unsigned>(layer_index) > object_layers.size())
-            layer = *object_layers.begin();
-        else
-            layer = object_layers[layer_index];
+		}
+		else if (static_cast<unsigned>(layer_index) > object_layers.size()) {
+			layer = *object_layers.begin();
+		}
+		else {
+			layer = object_layers[layer_index];
+		}
     }
     object->set_layer(layer);
-    objects.insert(Object_Map::value_type(capitalize(object->get_name()), object));
+	// Update ID counter for new objects
+	int id = object->get_id();
+	if (id == -1) {
+		id = next_object_id;
+		object->set_id(id);
+	}
+	if (id >= next_object_id) {
+		next_object_id = id + 1;
+	}
+	// Add to object map and to layer
+	auto name = capitalize(object->get_name());
+	auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
+	object_name_to_id.insert(mapping);
+	objects[id] = object;
     layer->objects.push_back(object.get());
     return object.get();
 }
 
 Map_Object* Map::add_object(std::string name, std::string sprite_file,
 	xd::vec2 pos, Direction dir) {
-	if (name.empty()) {
-		std::unordered_set<std::string> names;
-		for (auto& obj_pair : objects) {
-			names.insert(obj_pair.first);
-		}
-		name = detail::generate_unique_name(names);
-	}
 	auto object_ptr = new Map_Object(game, name, &asset_manager, sprite_file, pos, dir);
 	add_object(object_ptr);
+	if (name.empty())
+		object_ptr->set_name("UNTITLED" + object_ptr->get_id());
 	return object_ptr;
 }
 
 Map_Object* Map::get_object(const std::string& name) {
     auto cap_name = capitalize(name);
-    if (objects.find(cap_name) != objects.end())
-        return objects.find(cap_name)->second.get();
-    else
-        return nullptr;
+	if (object_name_to_id.find(cap_name) != object_name_to_id.end()) {
+		int id = object_name_to_id.find(cap_name)->second;
+		return get_object(id);
+	}
+	return nullptr;
+}
+
+Map_Object* Map::get_object(int id) {
+	if (objects.find(id) != objects.end())
+		return objects[id].get();
+	else
+		return nullptr;
 }
 
 void Map::delete_object(const std::string& name) {
     delete_object(get_object(name));
+}
+
+void Map::delete_object(int id) {
+	delete_object(get_object(id));
 }
 
 void Map::delete_object(Map_Object* object) {
@@ -231,7 +254,12 @@ void Map::delete_object(Map_Object* object) {
         std::remove(layer_objects.begin(), layer_objects.end(), object),
         layer_objects.end()
     );
-    objects.erase(capitalize(object->get_name()));
+	erase_object_references(object);
+}
+
+void Map::erase_object_references(Map_Object* object) {
+	object_name_to_id.erase(capitalize(object->get_name()));
+	objects.erase(object->get_id());
 }
 
 int Map::layer_count() {
@@ -285,16 +313,16 @@ void Map::add_layer(Layer_Types type) {
 void Map::delete_layer(const std::string& name) {
     auto cap_name = capitalize(name);
     // Delete any matching object layer and its object
-    for (auto& layer = object_layers.begin(); layer != object_layers.end();)
+    for (auto layer = object_layers.begin(); layer != object_layers.end();)
     {
         if (capitalize((*layer)->name) != cap_name)
         {
             layer++;
         } else {
-            auto& obj_layer = static_cast<Object_Layer*>(*layer);
+            auto obj_layer = static_cast<Object_Layer*>(*layer);
             for (auto& obj : obj_layer->objects)
             {
-                objects.erase(obj->get_name());
+				erase_object_references(obj);
             }
             layer = object_layers.erase(layer);
         }
