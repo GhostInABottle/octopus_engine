@@ -4,6 +4,23 @@
 #include "../include/game.hpp"
 #include "../include/camera.hpp"
 #include "../include/sprite_data.hpp"
+#include "../include/configurations.hpp"
+
+Canvas_Renderer::Canvas_Renderer(int game_width, int game_height)
+	: ms_between_text_refresh(1000 / Configurations::get<int>("debug.text-fps"))
+{
+	if (xd::framebuffer::extension_supported()) {
+		text_texture = xd::create<xd::texture>(
+				game_width,
+				game_height,
+				nullptr,
+				xd::vec4(0),
+				GL_CLAMP,
+				GL_CLAMP,
+				GL_NEAREST,
+				GL_NEAREST);
+	}
+}
 
 void Canvas_Renderer::render(Map& map) {
     auto& game = map.get_game();
@@ -17,19 +34,11 @@ void Canvas_Renderer::render(Map& map) {
 			std::string text = canvas->get_text();
             if (!text.empty()) {
 				bool framebuffer_supported = xd::framebuffer::extension_supported();
+				bool time_to_update = game.ticks() - last_drawn_text_time > ms_between_text_refresh;
 				// The first time text is rendered, we render it to a texture
 				// if it's not supported, we render directly every frame (slow)
-				if (text != last_drawn_text || !framebuffer_supported) {
+				if (text != last_drawn_text || !framebuffer_supported || time_to_update) {
 					if (framebuffer_supported) {
-						text_texture = xd::create<xd::texture>(
-							game.width(),
-							game.height(),
-							nullptr,
-							xd::vec4(0),
-							GL_CLAMP,
-							GL_CLAMP,
-							GL_NEAREST,
-							GL_NEAREST);
 						text_framebuffer.attach_color_texture(text_texture, 0);
 						text_framebuffer.bind();
 						glViewport(0, 0, game.width(), game.height());
@@ -41,7 +50,7 @@ void Canvas_Renderer::render(Map& map) {
 						if (!std::get<0>(fb_complete))
 							throw std::exception(std::get<1>(fb_complete).c_str());
 					}
-					last_drawn_text = text;
+					
 					auto style = canvas->get_style();
 					style->color().a = canvas->get_opacity();
 					auto& lines = canvas->get_text_lines();
@@ -50,6 +59,8 @@ void Canvas_Renderer::render(Map& map) {
 						y += style->line_height();
 					}
 					text_framebuffer.unbind();
+					last_drawn_text = text;
+					last_drawn_text_time = game.ticks();
 				}
 				// Render the previously created texture
 				if (framebuffer_supported)

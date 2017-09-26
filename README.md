@@ -29,7 +29,6 @@ Dependencies:
   * [Luabind](https://github.com/Oberon00/luabind) - Oberon00 version
   * [Boost](http://www.boost.org/) - any, property tree, unit testing, etc.
   * [FMOD Studio Programmer's API](http://www.fmod.org/download/)
-  * [DevIL](http://openil.sourceforge.net/)
   * [GLFW3](http://www.glfw.org/)
   * [GLEW](http://glew.sourceforge.net/)
   * [Qt 5.6](https://www.qt.io/) - For the editor

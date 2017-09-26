@@ -47,7 +47,7 @@ Map::Map(Game& game) :
         objects_moved(true) {
     add_component(xd::create<Map_Renderer>());
     add_component(xd::create<Map_Updater>());
-    add_component(xd::create<Canvas_Renderer>());
+    add_component(xd::create<Canvas_Renderer>(game.width(), game.height()));
     add_component(xd::create<Canvas_Updater>());
 }
 

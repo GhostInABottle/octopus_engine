@@ -9,9 +9,12 @@
 
 class Canvas_Renderer : public xd::render_component<Map> {
 public:
+	Canvas_Renderer(int game_width, int game_height);
     void render(Map& map);
 private:
 	std::string last_drawn_text;
+	int last_drawn_text_time;
+	int ms_between_text_refresh;
     xd::sprite_batch batch;
 	xd::framebuffer text_framebuffer;
 	xd::texture::ptr text_texture;
