@@ -27,7 +27,9 @@ void Canvas_Renderer::render(Map& map) {
 							nullptr,
 							xd::vec4(0),
 							GL_CLAMP,
-							GL_CLAMP);
+							GL_CLAMP,
+							GL_NEAREST,
+							GL_NEAREST);
 						text_framebuffer.attach_color_texture(text_texture, 0);
 						text_framebuffer.bind();
 						glViewport(0, 0, game.width(), game.height());
@@ -52,6 +54,7 @@ void Canvas_Renderer::render(Map& map) {
 				// Render the previously created texture
 				if (framebuffer_supported)
 				{
+					glDisable(GL_BLEND);
 					batch.clear();
 					xd::vec4 color(1.0f, 1.0f, 1.0f, canvas->get_opacity());
 					batch.add(text_texture, 0, 0, color);
@@ -67,6 +70,7 @@ void Canvas_Renderer::render(Map& map) {
 					glViewport(0, 0, game.width(), game.height());
 					batch.draw(geometry.mvp());
 					game.get_camera()->update_viewport();
+					glEnable(GL_BLEND);
 				}
             } else {
                 batch.clear();

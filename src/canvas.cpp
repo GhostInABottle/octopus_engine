@@ -33,6 +33,7 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text) :
         formatter(xd::create<xd::stock_text_formatter>()),
         style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 			Configurations::get<int>("game.font-size"))) {
+	style->force_autohint(true);
 	style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
 		.line_height(12.0f).force_autohint(true);
     set_text(text);
