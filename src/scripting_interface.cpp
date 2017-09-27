@@ -801,6 +801,22 @@ void Scripting_Interface::setup_scripts() {
                     ));
                 }
         ), adopt(result)),
+		def("text", tag_function<Command_Result* (xd::vec2&, const std::string&)>(
+				[&](xd::vec2& position, const std::string& text) {
+					auto si = game->get_current_scripting_interface();
+					return si->register_command(std::make_shared<Show_Text_Command>(
+						*game, position, std::vector<std::string>{}, text
+					));
+				}
+		), adopt(result)),
+		def("centered_text", tag_function<Command_Result* (float, const std::string&)>(
+				[&](float y, const std::string& text) {
+					auto si = game->get_current_scripting_interface();
+					return si->register_command(std::make_shared<Show_Text_Command>(
+						*game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, -1, true
+					));
+				}
+		), adopt(result)),
         // Show timed text
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&, long)>(
                 [&](Map_Object& obj, const std::string& text, long duration) {
@@ -810,6 +826,22 @@ void Scripting_Interface::setup_scripts() {
                     ));
                 }
         ), adopt(result)),
+		def("text", tag_function<Command_Result* (xd::vec2&, const std::string&, long)>(
+				[&](xd::vec2& position, const std::string& text, long duration) {
+					auto si = game->get_current_scripting_interface();
+					return si->register_command(std::make_shared<Show_Text_Command>(
+						*game, position, std::vector<std::string>{}, text, duration
+					));
+				}
+		), adopt(result)),
+		def("centered_text", tag_function<Command_Result* (float, const std::string&, long)>(
+				[&](float y, const std::string& text, long duration) {
+					auto si = game->get_current_scripting_interface();
+					return si->register_command(std::make_shared<Show_Text_Command>(
+						*game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, duration, true
+					));
+				}
+		), adopt(result)),
         // Like Command_Result but stores the index of selected choice
         class_<Choice_Result>("Choice_Result")
             .def("is_complete", &Choice_Result::operator())
@@ -832,18 +864,17 @@ void Scripting_Interface::setup_scripts() {
                     return si->register_choice_command(command);
                 }
         ), adopt(result)),
-        // Show a list of choices
-        def("choices", 
-            tag_function<Choice_Result* (Map_Object&, const object&)>(
-                [&](Map_Object& obj, const object& table) {
+		def("choices", 
+            tag_function<Choice_Result* (xd::vec2&, const std::string&, const object&)>(
+                [&](xd::vec2& position, const std::string& text, const object& table) {
                     std::vector<std::string> choices;
                     if (type(table) == LUA_TTABLE) {
                         for (iterator i(table), end; i != end; ++i) {
-                          choices.push_back(object_cast<std::string>(*i));
+                            choices.push_back(object_cast<std::string>(*i));
                         }
                     }
                     auto command = std::make_shared<Show_Text_Command>(
-                        *game, &obj, choices);
+						*game, position, choices, text);
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);
                 }

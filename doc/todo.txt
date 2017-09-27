@@ -1,7 +1,6 @@
 - Better management of sound files (track them per map?)
 - New camera movement command that centers on an object.
 - Allow running a script while game is paused.
-- Overload text command to show at specific position without needing an object.
 - Automatic text command mode that optionally doesn't restrict player movement.
 - Proper Linux distributables (.deb files? autopackage?)
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)

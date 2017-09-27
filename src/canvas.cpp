@@ -79,7 +79,7 @@ void Canvas::set_text(const std::string& text) {
                 }
             }
             text_lines[i] = open_tags + text_lines[i];
-            static std::regex opening("\\{(\\w+)=?(\\w+)?\\}");
+            static std::regex opening("\\{(\\w+)=?((\\w|,)+)?\\}");
             static std::regex closing("\\{/(\\w+)\\}");
 			std::smatch open_results;
             auto start = line.cbegin();

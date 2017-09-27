@@ -6,20 +6,21 @@
 #include "../../include/utility.hpp"
 #include "../../include/configurations.hpp"
 
-Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object, const std::string& text, long duration) :
-	game(game), object(object), text(text), duration(duration),
-	start_time(game.ticks()), complete(false) {
-	init();
-}
+Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
+	const std::string& text, long duration) :
+	Show_Text_Command(game, text_position(object), std::vector<std::string>{},
+		text, duration, false, Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y) {}
 
 Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
 	std::vector<std::string> choices, const std::string& text) :
-	game(game), object(object), choices(choices), text(text),
-	duration(-1), complete(false) {
-	init();
-}
+	Show_Text_Command(game, text_position(object), choices, text, -1, false,
+		Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y) {}
 
-void Show_Text_Command::init() {
+Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
+	std::vector<std::string> choices, const std::string& text,
+	long duration, bool center, Text_Position_Type pos_type) :
+		game(game), position(position), choices(choices), text(text),
+		duration(duration), start_time(game.ticks()), complete(false) {
 	selected_choice = 0;
 	current_choice = 0;
 	auto full = full_text();
@@ -47,20 +48,27 @@ void Show_Text_Command::init() {
 		xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
 		.force_autohint(true));
 	float text_height = char_height * text_lines.size();
-	xd::vec2 object_pos = object->get_position() + xd::vec2(16, 0) -
-		game.get_camera()->get_position();
-	xd::vec2 position(object_pos.x - text_width / 2, object_pos.y - text_height);
+	auto pos = position - game.get_camera()->get_position();
+	if ((pos_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
+		pos.y -= text_height;
+	}
+	if (center) {
+		pos.x = game.game_width / 2 - text_width / 2;
+	}
+	else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+		pos.x -= text_width / 2;
+	}
 	// Make sure text fits on the screen
-	if (position.x + text_width > Game::game_width - 10)
-		position.x = static_cast<float>(Game::game_width - text_width - 10);
-	if (position.x < 10.0f)
-		position.x = 10.0f;
-	if (position.y + text_height > Game::game_height - 10)
-		position.y = static_cast<float>(Game::game_height - text_height * 2);
-	if (position.y < 25.0f)
-		position.y = 25.0f;
+	if (pos.x + text_width > Game::game_width - 10)
+		pos.x = static_cast<float>(Game::game_width - text_width - 10);
+	if (pos.x < 10.0f)
+		pos.x = 10.0f;
+	if (pos.y + text_height > Game::game_height - 10)
+		pos.y = static_cast<float>(Game::game_height - text_height * 2);
+	if (pos.y < 25.0f)
+		pos.y = 25.0f;
 	// Create the text canvas and show it
-	canvas = std::make_shared<Canvas>(game, position, full);
+	canvas = std::make_shared<Canvas>(game, pos, full);
 	game.add_canvas(canvas);
 	was_disabled = game.get_player()->is_disabled();
 	game.get_player()->set_disabled(true);
@@ -94,6 +102,10 @@ void Show_Text_Command::update_choice() {
 		current_choice = (current_choice + choices.size() - 1) % choices.size();
 	if (old_choice != current_choice)
 		canvas->set_text(full_text());
+}
+
+xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
+	return object->get_position() + xd::vec2(16, 0);
 }
 
 bool Show_Text_Command::is_complete() const {
