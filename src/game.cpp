@@ -365,6 +365,7 @@ void Game::load_map(const std::string& filename) {
     map = Map::load(*this, filename);
     if (!pimpl->editor_mode) {
         // Add player to the map
+		player->set_id(-1);
         player->set_position(pimpl->next_position);
         player->face(pimpl->next_direction);
         map->add_object(player);

@@ -1,5 +1,4 @@
 - Better management of sound files (track them per map?)
-- New camera movement command that centers on an object.
 - Allow running a script while game is paused.
 - Automatic text command mode that optionally doesn't restrict player movement.
 - Proper Linux distributables (.deb files? autopackage?)

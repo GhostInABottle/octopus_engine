@@ -133,7 +133,7 @@ void Scripting_Interface::setup_scripts() {
             [&](const std::string& text) {
             return game->get_font()->get_width(text,
                 xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
-				.force_autohint(true));
+                .force_autohint(true));
             }
         )),
         // 2D vector
@@ -296,7 +296,7 @@ void Scripting_Interface::setup_scripts() {
             ), adopt(result)),
         // Map object
         class_<Map_Object, Sprite_Holder>("Map_Object")
-			.property("id", &Map_Object::get_id)
+            .property("id", &Map_Object::get_id)
             .property("name", &Map_Object::get_name, &Map_Object::set_name)
             .property("type", &Map_Object::get_type, &Map_Object::set_type)
             .property("position", &Map_Object::get_position, &Map_Object::set_position)
@@ -313,7 +313,7 @@ void Scripting_Interface::setup_scripts() {
             .property("visible", &Map_Object::is_visible, &Map_Object::set_visible)
             .property("script", &Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source)
             .property("triggered_object", &Map_Object::get_triggered_object, &Map_Object::set_triggered_object)
-			.property("collision_area", &Map_Object::get_collision_area, &Map_Object::set_collision_area)
+            .property("collision_area", &Map_Object::get_collision_area, &Map_Object::set_collision_area)
             .property("draw_order", &Map_Object::get_draw_order, &Map_Object::set_draw_order)
             .property("real_position", &Map_Object::get_real_position)
             .property("bounding_box", &Map_Object::get_bounding_box)
@@ -487,7 +487,7 @@ void Scripting_Interface::setup_scripts() {
             .property("filename", &Map::get_filename)
             .property("name", &Map::get_name)
             .def("object_count", &Map::object_count)
-			.def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
+            .def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
             .def("get_object", (Map_Object* (Map::*)(const std::string&)) &Map::get_object)
             .def("layer_count", &Map::layer_count)
             .def("get_layer", (Layer* (Map::*)(int)) &Map::get_layer)
@@ -544,8 +544,11 @@ void Scripting_Interface::setup_scripts() {
             .def("move_to", tag_function<Command_Result* (Camera*, Map_Object*, float)>(
                 [&](Camera* camera, Map_Object* object, float speed) -> Command_Result* {
                     xd::vec2 position = object->get_position();
-                    float x = position.x - game->game_width / 2;
-                    float y = position.y - game->game_height / 2;
+					auto sprite = object->get_sprite();
+					float width = sprite ? sprite->get_size().x : 0.0f;
+					float height = sprite ? sprite->get_size().y : 0.0f;
+                    float x = position.x + width / 2 - game->game_width / 2;
+                    float y = position.y + height / 2 - game->game_height / 2;
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
                         std::make_shared<Move_Camera_Command>(*camera, x, y, speed)
@@ -801,22 +804,22 @@ void Scripting_Interface::setup_scripts() {
                     ));
                 }
         ), adopt(result)),
-		def("text", tag_function<Command_Result* (xd::vec2&, const std::string&)>(
-				[&](xd::vec2& position, const std::string& text) {
-					auto si = game->get_current_scripting_interface();
-					return si->register_command(std::make_shared<Show_Text_Command>(
-						*game, position, std::vector<std::string>{}, text
-					));
-				}
-		), adopt(result)),
-		def("centered_text", tag_function<Command_Result* (float, const std::string&)>(
-				[&](float y, const std::string& text) {
-					auto si = game->get_current_scripting_interface();
-					return si->register_command(std::make_shared<Show_Text_Command>(
-						*game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, -1, true
-					));
-				}
-		), adopt(result)),
+        def("text", tag_function<Command_Result* (xd::vec2&, const std::string&)>(
+                [&](xd::vec2& position, const std::string& text) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Show_Text_Command>(
+                        *game, position, std::vector<std::string>{}, text
+                    ));
+                }
+        ), adopt(result)),
+        def("centered_text", tag_function<Command_Result* (float, const std::string&)>(
+                [&](float y, const std::string& text) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Show_Text_Command>(
+                        *game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, -1, true
+                    ));
+                }
+        ), adopt(result)),
         // Show timed text
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&, long)>(
                 [&](Map_Object& obj, const std::string& text, long duration) {
@@ -826,22 +829,22 @@ void Scripting_Interface::setup_scripts() {
                     ));
                 }
         ), adopt(result)),
-		def("text", tag_function<Command_Result* (xd::vec2&, const std::string&, long)>(
-				[&](xd::vec2& position, const std::string& text, long duration) {
-					auto si = game->get_current_scripting_interface();
-					return si->register_command(std::make_shared<Show_Text_Command>(
-						*game, position, std::vector<std::string>{}, text, duration
-					));
-				}
-		), adopt(result)),
-		def("centered_text", tag_function<Command_Result* (float, const std::string&, long)>(
-				[&](float y, const std::string& text, long duration) {
-					auto si = game->get_current_scripting_interface();
-					return si->register_command(std::make_shared<Show_Text_Command>(
-						*game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, duration, true
-					));
-				}
-		), adopt(result)),
+        def("text", tag_function<Command_Result* (xd::vec2&, const std::string&, long)>(
+                [&](xd::vec2& position, const std::string& text, long duration) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Show_Text_Command>(
+                        *game, position, std::vector<std::string>{}, text, duration
+                    ));
+                }
+        ), adopt(result)),
+        def("centered_text", tag_function<Command_Result* (float, const std::string&, long)>(
+                [&](float y, const std::string& text, long duration) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Show_Text_Command>(
+                        *game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, duration, true
+                    ));
+                }
+        ), adopt(result)),
         // Like Command_Result but stores the index of selected choice
         class_<Choice_Result>("Choice_Result")
             .def("is_complete", &Choice_Result::operator())
@@ -864,7 +867,7 @@ void Scripting_Interface::setup_scripts() {
                     return si->register_choice_command(command);
                 }
         ), adopt(result)),
-		def("choices", 
+        def("choices", 
             tag_function<Choice_Result* (xd::vec2&, const std::string&, const object&)>(
                 [&](xd::vec2& position, const std::string& text, const object& table) {
                     std::vector<std::string> choices;
@@ -874,7 +877,7 @@ void Scripting_Interface::setup_scripts() {
                         }
                     }
                     auto command = std::make_shared<Show_Text_Command>(
-						*game, position, choices, text);
+                        *game, position, choices, text);
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);
                 }
