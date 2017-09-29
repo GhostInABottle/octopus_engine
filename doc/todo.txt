@@ -1,6 +1,5 @@
 - Better management of sound files (track them per map?)
 - Allow running a script while game is paused.
-- Automatic text command mode that optionally doesn't restrict player movement.
 - Proper Linux distributables (.deb files? autopackage?)
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)
 - Move more Octopus City Blues-specific code to Lua.

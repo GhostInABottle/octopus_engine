@@ -70,8 +70,10 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
 	// Create the text canvas and show it
 	canvas = std::make_shared<Canvas>(game, pos, full);
 	game.add_canvas(canvas);
-	was_disabled = game.get_player()->is_disabled();
-	game.get_player()->set_disabled(true);
+	if (duration == -1) {
+		was_disabled = game.get_player()->is_disabled();
+		game.get_player()->set_disabled(true);
+	}
 	canvas->set_visible(true);
 }
 
@@ -111,8 +113,10 @@ xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
 bool Show_Text_Command::is_complete() const {
 	if (complete && canvas->is_visible()) {
 		canvas->set_visible(false);
-		game.get_player()->set_disabled(was_disabled);
 		game.remove_canvas(canvas);
+		if (duration == -1) {
+			game.get_player()->set_disabled(was_disabled);
+		}
 	}
 	return complete;
 }
