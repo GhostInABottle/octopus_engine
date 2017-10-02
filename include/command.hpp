@@ -3,6 +3,7 @@
 
 class Command {
 public:
+	Command() : stopped(false) {}
     virtual void execute() = 0;
     virtual bool is_complete() const = 0;
     bool operator()() const { return is_complete(); }
