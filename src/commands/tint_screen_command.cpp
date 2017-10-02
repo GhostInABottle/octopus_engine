@@ -13,7 +13,7 @@ void Tint_Screen_Command::execute() {
 }
 
 bool Tint_Screen_Command::is_complete() const {
-	bool complete = game.ticks() - start_time > duration;
+	bool complete = stopped || game.ticks() - start_time > duration;
 	if (complete)
 		game.get_camera()->set_tint_color(new_color);
 	return complete;

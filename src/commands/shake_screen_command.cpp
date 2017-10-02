@@ -10,7 +10,7 @@ Shake_Screen_Command::Shake_Screen_Command(Game& game, float strength, float spe
 }
 
 bool Shake_Screen_Command::is_complete() const {
-	bool complete = game.ticks() - start_time > duration;
+	bool complete = stopped || game.ticks() - start_time > duration;
 	if (complete)
 		game.get_camera()->cease_shaking();
 	return complete;

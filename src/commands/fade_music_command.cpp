@@ -17,7 +17,7 @@ void Fade_Music_Command::execute() {
 }
 
 bool Fade_Music_Command::is_complete() const {
-	bool complete = game.ticks() - start_time > duration;
+	bool complete = stopped || game.ticks() - start_time > duration;
 	if (complete)
 		music.set_volume(new_volume);
 	return complete;

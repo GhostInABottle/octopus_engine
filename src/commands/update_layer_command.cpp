@@ -17,7 +17,7 @@ void Update_Layer_Command::execute() {
 }
 
 bool Update_Layer_Command::is_complete() const {
-	bool complete = game.ticks() - start_time > duration;
+	bool complete = stopped || game.ticks() - start_time > duration;
 	if (complete)
 		layer.opacity = new_opacity;
 	return complete;

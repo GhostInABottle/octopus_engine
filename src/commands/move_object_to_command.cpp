@@ -61,7 +61,7 @@ void Move_Object_To_Command::init() {
 
 bool Move_Object_To_Command::is_complete(int ticks) const {
 	auto pos = object.get_real_position();
-	bool complete = object.is_stopped() || (!keep_trying && path.empty()) ||
+	bool complete = stopped || object.is_stopped() || (!keep_trying && path.empty()) ||
 		(std::abs(pos.x - destination.x) < 8.0f &&
 			std::abs(pos.y - destination.y) < 8.0f);
 	if (complete)

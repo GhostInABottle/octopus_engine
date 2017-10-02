@@ -8,6 +8,7 @@ class Command_Result {
 public:
     Command_Result(std::shared_ptr<Command> command) : command(command) {}
     bool operator()() const { return command->is_complete(); }
+	void stop() { command->stop(); }
 protected:
     std::shared_ptr<Command> command;
 };

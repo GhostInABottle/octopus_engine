@@ -22,10 +22,11 @@ void Move_Object_Command::execute() {
 		pixels -= object.get_speed();
 	else if (skip_blocking)
 		pixels = 0.0f;
-	if (is_complete())
-		object.update_state("FACE");
 }
 
 bool Move_Object_Command::is_complete() const {
-	return object.is_stopped() || pixels <= 0;
+	bool complete = stopped || object.is_stopped() || pixels <= 0;
+	if (complete)
+		object.update_state("FACE");
+	return complete;
 }

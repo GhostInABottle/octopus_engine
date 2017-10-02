@@ -10,5 +10,5 @@ bool Wait_Command::is_complete() const {
 }
 
 bool Wait_Command::is_complete(int ticks) const {
-	return ticks > start_time + duration;
+	return stopped || ticks > start_time + duration;
 }

@@ -13,7 +13,5 @@ Show_Pose_Command::Show_Pose_Command(Sprite_Holder* holder,
 
 bool Show_Pose_Command::is_complete() const {
 	auto sprite = holder->get_sprite();
-	if (sprite->get_pose().repeats == -1)
-		return true;
-	return sprite->is_stopped();
+	return stopped || sprite->get_pose().repeats == -1 || sprite->is_stopped();
 }

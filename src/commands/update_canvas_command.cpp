@@ -27,7 +27,7 @@ void Update_Canvas_Command::execute() {
 }
 
 bool Update_Canvas_Command::is_complete() const {
-	bool complete = game.ticks() - start_time > duration;
+	bool complete = stopped || game.ticks() - start_time > duration;
 	if (complete) {
 		canvas.set_position(new_position);
 		canvas.set_magnification(new_magnification);

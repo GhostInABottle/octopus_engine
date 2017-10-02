@@ -117,7 +117,8 @@ void Scripting_Interface::setup_scripts() {
         // Returned from commands that allow yielding
         class_<Command_Result>("Command_Result")
             .def("is_complete", &Command_Result::operator())
-            .def("wait", tag_function<void (Command_Result*)>(result_wait), yield),
+            .def("wait", tag_function<void (Command_Result*)>(result_wait), yield)
+			.def("stop", &Command_Result::stop),
         def("wait", tag_function<void (int)>([&](int duration) {
             wait(*game, duration); 
         }), yield),

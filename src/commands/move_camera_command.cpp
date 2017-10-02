@@ -20,9 +20,11 @@ Move_Camera_Command::Move_Camera_Command(Camera& camera, Direction dir, float pi
 }
 
 void Move_Camera_Command::execute() {
-	xd::vec2 new_position = camera.get_position() + direction * speed;
-	camera.set_position(new_position.x, new_position.y);
-	pixels -= speed;
+	do {
+		xd::vec2 new_position = camera.get_position() + direction * speed;
+		camera.set_position(new_position.x, new_position.y);
+		pixels -= speed;
+	} while (stopped && !is_complete());
 }
 
 bool Move_Camera_Command::is_complete() const {
