@@ -16,7 +16,7 @@ Map_Object::Map_Object(Game& game, std::string name,
         visible(true), disabled(false), stopped(false), frozen(false),
         passthrough(false), speed(1), name(name), position(pos), state("FACE"),
         direction(dir), collision_area(nullptr), triggered_object(nullptr),
-		draw_order(NORMAL) {
+        draw_order(NORMAL) {
     if (manager && !sprite_file.empty()) {
         set_sprite(game, *manager, sprite_file);
     }
@@ -123,6 +123,16 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     return collision;
 }
 
+void  Map_Object::set_trigger_script_source(const std::string& script) {
+    auto extension = script.substr(script.find_last_of(".") + 1);
+    trigger_script.source = extension == "lua" ? read_file(script) : script;
+}
+
+void  Map_Object::set_exit_script_source(const std::string& script) {
+    auto extension = script.substr(script.find_last_of(".") + 1);
+    exit_script.source = extension == "lua" ? read_file(script) : script;
+}
+
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
     // Player sprite needs to be persisted across maps
     auto& manager = this == game.get_player() ? game.get_asset_manager() :
@@ -181,17 +191,17 @@ void Map_Object::face(Direction dir) {
 }
 
 void Map_Object::run_script(const Script& script) {
-	if (script.source.empty())
-		return;
-	if (script.is_global)
-		game.run_script(script.source);
-	else
-		game.get_map()->run_script(script.source);
+    if (script.source.empty())
+        return;
+    if (script.is_global)
+        game.run_script(script.source);
+    else
+        game.get_map()->run_script(script.source);
 }
 
 rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "object");
-	node->append_attribute(xml_attribute(doc, "id", std::to_string(get_id())));
+    node->append_attribute(xml_attribute(doc, "id", std::to_string(get_id())));
     if (!get_name().empty())
         node->append_attribute(xml_attribute(doc, "name", get_name()));
     if (!get_type().empty())
@@ -215,8 +225,8 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
     using boost::lexical_cast;
     std::unique_ptr<Map_Object> object_ptr(new Map_Object(game));
 
-	if (auto id_node = node.first_attribute("id"))
-		object_ptr->id = lexical_cast<int>(id_node->value());
+    if (auto id_node = node.first_attribute("id"))
+        object_ptr->id = lexical_cast<int>(id_node->value());
 
     if (auto name_node = node.first_attribute("name"))
         object_ptr->name = name_node->value();
@@ -255,29 +265,29 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
 
     auto set_script = [&properties](Map_Object* obj, const std::string& type) {
         auto source = properties[type];
-        auto extension = source.substr(source.find_last_of(".") + 1);
-        if (extension == "lua")
-			source = read_file(source);
-		Script* script = &obj->trigger_script;
-        if (type.find("exit") != std::string::npos)
-			script = &obj->exit_script;
-		script->source = source;
+        Script* script = &obj->trigger_script;
+        if (type.find("exit") != std::string::npos) {
+            script = &obj->exit_script;
+            obj->set_exit_script_source(source);
+        } else {
+            obj->set_trigger_script_source(source);
+        }
         script->is_global = type.find("global") != std::string::npos;
     };
-	// Trigger script
+    // Trigger script
     if (properties.find("script") != properties.end())
         set_script(object_ptr.get(), "script");
     else if (properties.find("map-script") != properties.end())
         set_script(object_ptr.get(), "map-script");
     else if (properties.find("global-script") != properties.end())
         set_script(object_ptr.get(), "global-script");
-	// Exit script
-	if (properties.find("exit-script") != properties.end())
-		set_script(object_ptr.get(), "exit-script");
-	else if (properties.find("map-exit-script") != properties.end())
-		set_script(object_ptr.get(), "map-exit-script");
-	else if (properties.find("global-exit-script") != properties.end())
-		set_script(object_ptr.get(), "global-exit-script");
+    // Exit script
+    if (properties.find("exit-script") != properties.end())
+        set_script(object_ptr.get(), "exit-script");
+    else if (properties.find("map-exit-script") != properties.end())
+        set_script(object_ptr.get(), "map-exit-script");
+    else if (properties.find("global-exit-script") != properties.end())
+        set_script(object_ptr.get(), "global-exit-script");
 
     object_ptr->update_pose();
 

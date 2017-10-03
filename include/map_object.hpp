@@ -20,13 +20,13 @@ struct Object_Layer;
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable {
 public:
     enum Draw_Order { BELOW, NORMAL, ABOVE };
-	struct Script {
-		Script() : is_global(false) {}
-		// Script source text
-		std::string source;
-		// Is script a local (map) or global script?
-		bool is_global;
-	};
+    struct Script {
+        Script() : is_global(false) {}
+        // Script source text
+        std::string source;
+        // Is script a local (map) or global script?
+        bool is_global;
+    };
     // Map object onstructor
     Map_Object(Game& game, std::string name = "",
         xd::asset_manager* manager = nullptr, std::string sprite_file = "",
@@ -42,12 +42,12 @@ public:
     void set_layer(Object_Layer* layer) {
         this->layer = layer;
     }
-	int get_id() const {
-		return id;
-	}
-	void set_id(int id) {
-		this->id = id;
-	}
+    int get_id() const {
+        return id;
+    }
+    void set_id(int id) {
+        this->id = id;
+    }
     std::string get_name() const {
         return name;
     }
@@ -146,15 +146,11 @@ public:
     std::string get_trigger_script_source() const {
         return trigger_script.source;
     }
-    void set_trigger_script_source(const std::string& script) {
-        this->trigger_script.source = script;
+    void set_trigger_script_source(const std::string& script);
+    std::string get_exit_script_source() const {
+        return exit_script.source;
     }
-	std::string get_exit_script_source() const {
-		return exit_script.source;
-	}
-	void set_exit_script_source(const std::string& script) {
-		this->exit_script.source = script;
-	}
+    void set_exit_script_source(const std::string& script);
     Map_Object* get_collision_area() const {
         return collision_area;
     }
@@ -162,7 +158,8 @@ public:
         collision_area = area;
     }
     Map_Object* get_triggered_object() const {
-        return triggered_object; }
+        return triggered_object;
+    }
     void set_triggered_object(Map_Object* obj) {
         triggered_object = obj;
     }
@@ -227,13 +224,13 @@ public:
     // Face a certain direction
     void face(Direction dir);
     // Run the object's activation script
-	void run_trigger_script() {
-		run_script(trigger_script);
-	}
-	// Run exit script (for areas)
-	void run_exit_script() {
-		run_script(exit_script);
-	}
+    void run_trigger_script() {
+        run_script(trigger_script);
+    }
+    // Run exit script (for areas)
+    void run_exit_script() {
+        run_script(exit_script);
+    }
     // Serialize object to TMX data
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load the object from TMX data
@@ -244,8 +241,8 @@ private:
     Game& game;
     // Associated map layer
     Object_Layer* layer;
-	// Unique ID
-	int id;
+    // Unique ID
+    int id;
     // Name of the object
     std::string name;
     // Type of the object
@@ -278,8 +275,8 @@ private:
     std::string state;
     // Script executed when object is triggered
     Script trigger_script;
-	// Script executed when exiting an area
-	Script exit_script;
+    // Script executed when exiting an area
+    Script exit_script;
     // Area the object is inside
     Map_Object* collision_area;
     // Last object activated by this one
@@ -296,8 +293,8 @@ private:
     void update_pose() {
         Sprite_Holder::set_pose(pose_name, state, direction);
     }
-	// Run a script
-	void run_script(const Script& script);
+    // Run a script
+    void run_script(const Script& script);
 };
 
 #endif

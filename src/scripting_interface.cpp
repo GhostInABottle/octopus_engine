@@ -15,6 +15,7 @@
 #include "../include/sprite_data.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/save_file.hpp"
+#include "../include/log.hpp"
 #include <lua.hpp>
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
@@ -56,12 +57,12 @@ void Scripting_Interface::set_globals() {
     vm.globals()["screen_width"] = game->width();
     vm.globals()["screen_height"] = game->height();
     // Directions
-    vm.globals()["UP"] = 1;
-    vm.globals()["RIGHT"] = 2;
-    vm.globals()["DOWN"] = 4;
-    vm.globals()["LEFT"] = 8;
-    vm.globals()["FORWARD"] = 16;
-    vm.globals()["BACKWARD"] = 32;
+    vm.globals()["UP"] = static_cast<int>(Direction::UP);
+    vm.globals()["RIGHT"] = static_cast<int>(Direction::RIGHT);
+    vm.globals()["DOWN"] = static_cast<int>(Direction::DOWN);
+    vm.globals()["LEFT"] = static_cast<int>(Direction::LEFT);
+    vm.globals()["FORWARD"] = static_cast<int>(Direction::FORWARD);
+    vm.globals()["BACKWARD"] = static_cast<int>(Direction::BACKWARD);
     // Object draw order
     vm.globals()["DRAW_BELOW"] = 0;
     vm.globals()["DRAW_NORMAL"] = 1;
@@ -118,7 +119,7 @@ void Scripting_Interface::setup_scripts() {
         class_<Command_Result>("Command_Result")
             .def("is_complete", &Command_Result::operator())
             .def("wait", tag_function<void (Command_Result*)>(result_wait), yield)
-			.def("stop", &Command_Result::stop),
+            .def("stop", &Command_Result::stop),
         def("wait", tag_function<void (int)>([&](int duration) {
             wait(*game, duration); 
         }), yield),
@@ -135,6 +136,26 @@ void Scripting_Interface::setup_scripts() {
             return game->get_font()->get_width(text,
                 xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
                 .force_autohint(true));
+            }
+        )),
+        def("log_info", tag_function<void(const std::string&)>(
+            [](const std::string& message) {
+                LOGGER_I << message;
+            }
+        )),
+        def("log_debug", tag_function<void(const std::string&)>(
+            [](const std::string& message) {
+                LOGGER_D << message;
+            }
+        )),
+        def("log_warning", tag_function<void(const std::string&)>(
+            [](const std::string& message) {
+                LOGGER_W << message;
+            }
+        )),
+        def("log_error", tag_function<void(const std::string&)>(
+            [](const std::string& message) {
+                LOGGER_E << message;
             }
         )),
         // 2D vector
@@ -545,9 +566,9 @@ void Scripting_Interface::setup_scripts() {
             .def("move_to", tag_function<Command_Result* (Camera*, Map_Object*, float)>(
                 [&](Camera* camera, Map_Object* object, float speed) -> Command_Result* {
                     xd::vec2 position = object->get_position();
-					auto sprite = object->get_sprite();
-					float width = sprite ? sprite->get_size().x : 0.0f;
-					float height = sprite ? sprite->get_size().y : 0.0f;
+                    auto sprite = object->get_sprite();
+                    float width = sprite ? sprite->get_size().x : 0.0f;
+                    float height = sprite ? sprite->get_size().y : 0.0f;
                     float x = position.x + width / 2 - game->game_width / 2;
                     float y = position.y + height / 2 - game->game_height / 2;
                     auto si = game->get_current_scripting_interface();
