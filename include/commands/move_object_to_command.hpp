@@ -12,7 +12,7 @@ struct Node;
 class Map_Object;
 class Map;
 
-class Move_Object_To_Command : public Simulatable_Command {
+class Move_Object_To_Command : public Command {
 public:
 	Move_Object_To_Command(Map& map, Map_Object& object, float x, float y,
 		Collision_Check_Types check_type = Collision_Check_Types::BOTH,

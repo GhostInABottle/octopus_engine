@@ -14,7 +14,7 @@
 #include "commands/wait_command.hpp"
 
 // Used to simplify NPC scheduling
-class Dummy_Command : public Simulatable_Command {
+class Dummy_Command : public Command {
     void execute() {}
     bool is_complete() const { return true; }
     bool is_complete(int ticks) const { return true; }

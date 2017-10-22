@@ -1,7 +1,7 @@
 #include "../../include/commands/wait_command.hpp"
 #include "../../include/game.hpp"
 
-Wait_Command::Wait_Command(Game& game, long duration, int start)
+Wait_Command::Wait_Command(Game& game, int duration, int start)
 	: game(game), duration(duration),
 	start_time(start < 0 ? game.ticks() : start) {}
 

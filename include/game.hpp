@@ -16,7 +16,6 @@ class Map;
 class Map_Object;
 class Scripting_Interface;
 class Canvas;
-class NPC;
 class Clock;
 class Save_File;
 namespace xd {
@@ -116,10 +115,6 @@ public:
     xd::simple_text_renderer& get_text_renderer() { return text_renderer; }
     // Get font
     xd::font* get_font() { return font.get(); }
-    // Get all NPCs
-    std::vector<std::unique_ptr<NPC>>& get_npcs() { return npcs; }
-    // Get NPC with given name
-    NPC* get_npc(const std::string& name);
     // Get clock
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
@@ -158,7 +153,6 @@ private:
     xd::music::ptr music;
     xd::font::ptr font;
     xd::simple_text_renderer text_renderer;
-    std::vector<std::unique_ptr<NPC>> npcs;
     int editor_ticks;
 };
 

@@ -213,7 +213,7 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
     return object.get();
 }
 
-Map_Object* Map::add_object(std::string name, std::string sprite_file,
+Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
 	xd::vec2 pos, Direction dir) {
 	auto object_ptr = new Map_Object(game, name, &asset_manager, sprite_file, pos, dir);
 	add_object(object_ptr);

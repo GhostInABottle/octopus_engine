@@ -110,7 +110,6 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\map.cpp" />
     <ClCompile Include="..\src\map_object.cpp" />
-    <ClCompile Include="..\src\npc.cpp" />
     <ClCompile Include="..\src\object_layer.cpp" />
     <ClCompile Include="..\src\object_layer_renderer.cpp" />
     <ClCompile Include="..\src\object_layer_updater.cpp" />
@@ -177,7 +176,6 @@
     <ClInclude Include="..\include\image_layer.hpp" />
     <ClInclude Include="..\include\image_layer_renderer.hpp" />
     <ClInclude Include="..\include\image_layer_updater.hpp" />
-    <ClInclude Include="..\include\keypoint.hpp" />
     <ClInclude Include="..\include\layer.hpp" />
     <ClInclude Include="..\include\layer_renderer.hpp" />
     <ClInclude Include="..\include\layer_types.hpp" />
@@ -185,7 +183,6 @@
     <ClInclude Include="..\include\log.hpp" />
     <ClInclude Include="..\include\map.hpp" />
     <ClInclude Include="..\include\map_object.hpp" />
-    <ClInclude Include="..\include\npc.hpp" />
     <ClInclude Include="..\include\object_layer.hpp" />
     <ClInclude Include="..\include\object_layer_renderer.hpp" />
     <ClInclude Include="..\include\object_layer_updater.hpp" />

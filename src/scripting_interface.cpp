@@ -1,7 +1,6 @@
 #include "../include/scripting_interface.hpp"
 #include "../include/game.hpp"
 #include "../include/clock.hpp"
-#include "../include/npc.hpp"
 #include "../include/camera.hpp"
 #include "../include/map.hpp"
 #include "../include/canvas.hpp"
@@ -79,7 +78,6 @@ Choice_Result* Scripting_Interface::register_choice_command(std::shared_ptr<Comm
     return new Choice_Result(command);
 }
 
-
 void Scripting_Interface::setup_scripts() {
     using namespace luabind;
     vm.load_library();
@@ -101,23 +99,14 @@ void Scripting_Interface::setup_scripts() {
             return game.triggered(key);
         });
     };
-    auto get_npcs = [](Game* game, bool on_map_only) -> luabind::object {
-        luabind::object objects = luabind::newtable(vm.lua_state());
-        auto& npcs = game->get_npcs(); 
-        int i = 1;
-        for (auto& npc : npcs) {
-            if (!on_map_only || (npc->get_object() &&
-                    npc->get_map_name() == game->get_map()->get_filename()))
-                objects[i++] = npc.get();
-        }
-        return objects;
-    };
 
     module(vm.lua_state())
     [
         // Returned from commands that allow yielding
         class_<Command_Result>("Command_Result")
             .def("is_complete", &Command_Result::operator())
+            .def("is_complete", (bool (Command_Result::*)(int) const) &Command_Result::is_complete)
+            .def("execute", &Command_Result::execute)
             .def("wait", tag_function<void (Command_Result*)>(result_wait), yield)
             .def("stop", &Command_Result::stop),
         def("wait", tag_function<void (int)>([&](int duration) {
@@ -158,6 +147,27 @@ void Scripting_Interface::setup_scripts() {
                 LOGGER_E << message;
             }
         )),
+        // A generic command for waiting (used in NPC scheduling)
+        def("Wait_Command", tag_function<Command_Result* (int, int)>(
+            [&](int duration, int start_time) {
+                return new Command_Result(std::make_shared<Wait_Command>(
+                    *game,
+                    duration,
+                    start_time));
+            }
+        ), adopt(result)),
+        // A command for moving an object (used in NPC scheduling)
+        def("Move_To_Command", tag_function<Command_Result* (Map_Object*, float, float, bool)>(
+            [&](Map_Object* obj, float x, float y, bool keep_trying) {
+                return new Command_Result(std::make_shared<Move_Object_To_Command>(
+                    *game->get_map(),
+                    *obj,
+                    x,
+                    y,
+                    Collision_Check_Types::BOTH,
+                    keep_trying));
+            }
+        ), adopt(result)),
         // 2D vector
         class_<xd::vec2>("Vec2")
             .def(constructor<>())
@@ -331,7 +341,7 @@ void Scripting_Interface::setup_scripts() {
             .property("frozen", &Map_Object::is_frozen, &Map_Object::set_frozen)
             .property("passthrough", &Map_Object::is_passthrough, &Map_Object::set_passthrough)
             .property("pose_name", &Map_Object::get_pose_name)
-            .property("state", &Map_Object::get_state)
+            .property("state", &Map_Object::get_state, &Map_Object::update_state)
             .property("visible", &Map_Object::is_visible, &Map_Object::set_visible)
             .property("script", &Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source)
             .property("triggered_object", &Map_Object::get_triggered_object, &Map_Object::set_triggered_object)
@@ -470,15 +480,6 @@ void Scripting_Interface::setup_scripts() {
                     game->get_clock()->add_seconds(seconds);
                 }
             ))
-            .def("get_npc", &Game::get_npc)
-            .def("get_npcs", tag_function<luabind::object (Game*)>([&](Game* game) {
-                return get_npcs(game, false);
-            }))
-            .def("get_map_npcs", tag_function<luabind::object (Game*)>(
-                [&](Game* game) {
-                    return get_npcs(game, true);
-                }
-            ))
             .def("load_map", tag_function<void (Game*, const std::string&, float, float, int)>(
                 [](Game* game, const std::string& filename, float x, float y, int dir) {
                     game->set_next_map(filename, x, y, static_cast<Direction>(dir));
@@ -511,6 +512,13 @@ void Scripting_Interface::setup_scripts() {
             .def("object_count", &Map::object_count)
             .def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
             .def("get_object", (Map_Object* (Map::*)(const std::string&)) &Map::get_object)
+            .def("add_new_object", &Map::add_new_object)
+            .def("add_object", tag_function<Map_Object* (Map*, Map_Object*, int)>(
+                [](Map* map, Map_Object* object, int layer_index) {
+                    return map->add_object(object, layer_index);
+                }
+            ))
+            .def("delete_object", (void (Map::*)(Map_Object*)) &Map::delete_object)
             .def("layer_count", &Map::layer_count)
             .def("get_layer", (Layer* (Map::*)(int)) &Map::get_layer)
             .def("get_layer", (Layer* (Map::*)(const std::string&)) &Map::get_layer)
@@ -804,19 +812,6 @@ void Scripting_Interface::setup_scripts() {
                 return canvas.get();
             }
         )),
-        // A scheduled NPC
-        class_<NPC>("NPC")
-            .property("name", &NPC::get_name)
-            .property("display_name", &NPC::get_display_name)
-            .property("active", &NPC::is_active, &NPC::set_active)
-            .property("map_name", &NPC::get_map_name)
-            .property("position", &NPC::get_position)
-            .property("object", &NPC::get_object)
-            .property("keypoint_day", &NPC::keypoint_day)
-            .property("keypoint_time", &NPC::keypoint_time)
-            .property("keypoint_day_type", &NPC::keypoint_day_type)
-            .property("schedule", &NPC::get_schedule, &NPC::set_schedule)
-            .def("has_schedule", &NPC::has_schedule),
         // Show some text
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&)>(
                 [&](Map_Object& obj, const std::string& text) {

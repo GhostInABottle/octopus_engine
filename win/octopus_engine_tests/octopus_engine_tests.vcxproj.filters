@@ -183,12 +183,6 @@
     <ClCompile Include="..\..\src\pathfinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\npc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tests\npc_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\collision_record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -347,9 +341,6 @@
     <ClInclude Include="..\..\include\pathfinder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\npc.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\collision_record.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -363,9 +354,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\clock.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\keypoint.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\save_file.hpp">

@@ -4,19 +4,17 @@
 class Command {
 public:
 	Command() : stopped(false) {}
+    // Called while the command isn't completed
     virtual void execute() = 0;
+    // Is the command completed?
     virtual bool is_complete() const = 0;
-    bool operator()() const { return is_complete(); }
-	virtual void stop() { stopped = true; }
+    // Would the command be complete by the given time?
+    virtual bool is_complete(int ticks) const { return is_complete(); }
+    // Force the command to complete
+    virtual void stop() { stopped = true; }
     virtual ~Command() = 0;
 protected:
 	bool stopped;
-};
-
-class Simulatable_Command : public Command {
-public:
-    using Command::is_complete;
-    virtual bool is_complete(int ticks) const = 0;
 };
 
 #endif

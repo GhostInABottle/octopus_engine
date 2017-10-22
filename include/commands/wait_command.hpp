@@ -5,16 +5,16 @@
 
 class Game;
 
-class Wait_Command : public Simulatable_Command {
+class Wait_Command : public Command {
 public:
-	Wait_Command(Game& game, long duration, int start = -1);
+	Wait_Command(Game& game, int duration, int start = -1);
 	void execute() {}
 	bool is_complete() const;
 	bool is_complete(int ticks) const;
 private:
 	Game& game;
-	long start_time;
-	long duration;
+	int start_time;
+	int duration;
 };
 
 

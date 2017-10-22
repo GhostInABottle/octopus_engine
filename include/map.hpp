@@ -72,8 +72,8 @@ public:
         int layer_index = -1, Object_Layer* layer = nullptr);
     Map_Object* add_object(Map_Object* object,
         int layer_index = -1, Object_Layer* layer = nullptr);
-	// Create an object
-	Map_Object* add_object(std::string name = "", std::string sprite_file = "",
+	// Create and add an object
+	Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
 		xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
     Map_Object* get_object(const std::string& name);

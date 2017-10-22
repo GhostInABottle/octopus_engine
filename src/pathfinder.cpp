@@ -12,7 +12,7 @@ namespace detail {
         auto obj = map.get_object(name);
         if (!obj) {
             std::string sprite = Configurations::get<std::string>("debug.pathfinding-sprite");
-            obj = map.add_object(name, sprite, pos);
+            obj = map.add_new_object(name, sprite, pos);
         }
         obj->set_pose(type);
         obj->set_opacity(0.5);

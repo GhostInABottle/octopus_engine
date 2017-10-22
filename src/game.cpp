@@ -9,7 +9,6 @@
 #include "../include/command.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility.hpp"
-#include "../include/npc.hpp"
 #include "../include/custom_shaders.hpp"
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
@@ -75,8 +74,6 @@ struct Game::Impl {
     xd::texture::ptr full_screen_texture;
     // Asset manager for player sprite
     xd::asset_manager asset_manager;
-    // Load NPC schedules
-    void load_npcs(Game& game);
     // Render a full-screen shader
     void render_shader(Game& game);
 };
@@ -93,7 +90,6 @@ Game::Game(bool editor_mode) :
         text_renderer(static_cast<float>(game_width), static_cast<float>(game_height)) {
     xd::audio::init();
     clock.reset(new Clock(*this));
-    pimpl->load_npcs(*this);
     camera.reset(new Camera(*this));
 	auto font_file = Configurations::get<std::string>("game.font");
 	if (!file_exists(font_file))
@@ -192,8 +188,7 @@ void Game::frame_update() {
     }
     if (pimpl->paused)
         return;
-    for (auto& npc : npcs)
-        npc->update();
+
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->update();
     camera->update();
@@ -301,18 +296,6 @@ xd::asset_manager& Game::get_asset_manager() {
     return pimpl->asset_manager;
 }
 
-NPC* Game::get_npc(const std::string& name) {
-    auto it = std::find_if(npcs.begin(), npcs.end(),
-        [&name](const std::unique_ptr<NPC>& npc) {
-            return equal_strings(npc->get_name(), name);
-        }
-    );
-    if (it != npcs.end())
-        return it->get();
-    else
-        return nullptr;
-}
-
 bool Game::stopped() const {
     return clock->stopped();
 }
@@ -397,21 +380,6 @@ void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
 void Game::remove_canvas(std::shared_ptr<Canvas> canvas) {
 	auto& cvs = map->get_canvases();
 	cvs.erase(std::remove(cvs.begin(), cvs.end(), canvas), cvs.end());
-}
-
-void Game::Impl::load_npcs(Game& game) {
-    auto npcs_file = Configurations::get<std::string>("game.npcs-file");
-    if (npcs_file.empty())
-        return;
-    rapidxml::memory_pool<> pool;
-    char* content = pool.allocate_string(read_file(npcs_file).c_str());
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(content);
-    auto npcs_node = doc.first_node("npcs");
-    for (auto npc_node = npcs_node->first_node("npc");
-            npc_node; npc_node = npc_node->next_sibling("npc")) {
-        game.get_npcs().push_back(std::move(NPC::load(game, *npc_node)));
-    }
 }
 
 void Game::Impl::render_shader(Game& game) {
