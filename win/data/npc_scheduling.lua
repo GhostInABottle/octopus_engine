@@ -136,8 +136,16 @@ function NPC:process_map_command()
     end
     -- Process command by type
     local command = keypoint.commands[keypoint.command_index]
-    if command.type == 'move' then
+    if command.condition and not command.condition() then
+        -- Do nothing if command condition doesn't apply
+    elseif command.type == 'move' then
         self.script_command = Move_To_Command(self.object, command.x, command.y, true)
+    elseif command.type == 'text' then
+        self.script_command = Text_Command(self.object, command.text, command.duration * 1000)
+    elseif command.type == 'pose' then
+        local state = command.state or ''
+        local direction = command.direction or self.object.direction
+        self.script_command = Pose_Command(self.object, command.pose, state, direction)
     elseif command.type == 'face' then
         self.direction = command.direction
         self.object:face(command.direction)
@@ -191,7 +199,9 @@ function NPC:process_offmap_command(current_time)
     self.expected_completion = current_time
     -- Calculate expected time and position for commands
     local command = keypoint.commands[keypoint.command_index]
-    if command.type == 'move' then
+    if command.condition and not command.condition() then
+        -- Do nothing if command condition doesn't apply
+    elseif command.type == 'move' then
         self:process_offmap_move(Vec2(command.x, command.y), current_time)
     elseif command.type == 'face' then
         self.direction = command.direction
@@ -201,8 +211,8 @@ function NPC:process_offmap_command(current_time)
         self.expected_position = Vec2(command.x, command.y)
         self.position = Vec2(command.x, command.y)
         self:complete_keypoint()
-    elseif command.type == 'wait' then
-        self.expected_completion = current_time + command.duration
+    elseif command.type == 'wait' or command.type == 'text' or command.type == 'pose' then
+        self.expected_completion = current_time + (command.duration or 1)
     elseif command.type == 'visibility' then
         self.visible = command.visible
     elseif command.type == 'passthrough' then
@@ -290,7 +300,8 @@ function NPC:is_candidate_keypoint(keypoint, day, current_time)
     if keypoint.day_type == 'odd' and day % 2 == 0 then
         day_match = false
     end
-    return day_match and keypoint.timestamp ~= -1 and keypoint.timestamp <= current_time
+    local condition = not keypoint.condition or keypoint.condition(day, current_time)
+    return day_match and keypoint.timestamp ~= -1 and condition and keypoint.timestamp <= current_time
 end
 
 -- Find the best keypoint matching current time (returns index and keypoint)

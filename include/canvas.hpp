@@ -24,7 +24,7 @@ public:
     // Create a canvas with a transparent color
     Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans);
     // Create a canvas with some text
-    Canvas(Game& game, xd::vec2 position, const std::string& text);
+    Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
     // Update the image
     void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
@@ -110,6 +110,9 @@ public:
     xd::font_style* get_style() const {
         return style.get();
     }
+    bool is_camera_relative_text() const {
+        return camera_relative_text;
+    }
 private:
     // Canvas position
     xd::vec2 position;
@@ -141,6 +144,8 @@ private:
     std::unique_ptr<xd::font_style> style;
     // Text formatter
     xd::text_formatter::ptr formatter;
+    // Is text canvas rendered relative to camera?
+    bool camera_relative_text;
 };
 
 #endif

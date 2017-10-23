@@ -10,39 +10,40 @@
 #include "../include/configurations.hpp"
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
-        set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
+    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+    angle(0.0f), opacity(1.0f), visible(false) {
+    set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
 }
 
-Canvas::Canvas(const std::string& filename, xd::vec2 position) : 
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
+Canvas::Canvas(const std::string& filename, xd::vec2 position) :
+    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+    angle(0.0f), opacity(1.0f), visible(false) {
     set_image(filename);
 }
 
-Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) : 
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
+Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
+    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+    angle(0.0f), opacity(1.0f), visible(false) {
     set_image(filename, trans);
 }
 
-Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text) :
-        position(position), text_renderer(&game.get_text_renderer()),
-        font(game.get_font()), opacity(1.0f), visible(false),
-        formatter(xd::create<xd::stock_text_formatter>()),
-        style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-			Configurations::get<int>("game.font-size"))) {
-	style->force_autohint(true);
-	style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
-		.line_height(12.0f).force_autohint(true);
+Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) :
+    position(position), text_renderer(&game.get_text_renderer()),
+    font(game.get_font()), opacity(1.0f), visible(false),
+    formatter(xd::create<xd::stock_text_formatter>()),
+    style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+        Configurations::get<int>("game.font-size"))),
+    camera_relative_text(camera_relative) {
+    style->force_autohint(true);
+    style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
+        .line_height(12.0f).force_autohint(true);
     set_text(text);
 }
 
 void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
     this->filename = filename;
     image_texture = xd::create<xd::texture>(normalize_slashes(filename),
-            trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+        trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
 }
 
 void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
@@ -81,7 +82,7 @@ void Canvas::set_text(const std::string& text) {
             text_lines[i] = open_tags + text_lines[i];
             static std::regex opening("\\{(\\w+)=?((\\w|,)+)?\\}");
             static std::regex closing("\\{/(\\w+)\\}");
-			std::smatch open_results;
+            std::smatch open_results;
             auto start = line.cbegin();
             while (std::regex_search(start, line.cend(), open_results, opening)) {
                 tag_info info;
@@ -93,7 +94,7 @@ void Canvas::set_text(const std::string& text) {
                 tags[info.name].push_back(tag_infos.size() - 1);
                 start += open_results.position() + 1;
             }
-			std::smatch close_results;
+            std::smatch close_results;
             start = line.cbegin();
             while (std::regex_search(start, line.cend(), close_results, closing)) {
                 auto& ids = tags[close_results[1].str()];
@@ -110,6 +111,6 @@ void Canvas::set_text(const std::string& text) {
     }
 }
 
-void Canvas::render_text(const std::string& text , float x, float y) {
+void Canvas::render_text(const std::string& text, float x, float y) {
     text_renderer->render_formatted(font, formatter, *style, x, y, text);
 }

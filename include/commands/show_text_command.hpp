@@ -10,7 +10,14 @@ class Game;
 class Map_Object;
 class Canvas;
 
-enum class Text_Position_Type { NONE = 0, EXACT_X = 1, CENTERED_X = 2, EXACT_Y = 4, BOTTOM_Y = 8 };
+enum class Text_Position_Type {
+    NONE = 0,
+    EXACT_X = 1,
+    CENTERED_X = 2,
+    EXACT_Y = 4,
+    BOTTOM_Y = 8,
+    CAMERA_RELATIVE = 16
+};
 
 inline Text_Position_Type operator|(Text_Position_Type a, Text_Position_Type b) {
 	return static_cast<Text_Position_Type>(static_cast<int>(a) | static_cast<int>(b));
@@ -29,14 +36,15 @@ public:
 	Show_Text_Command(Game& game, xd::vec2 position,
 		std::vector<std::string> choices, const std::string& text,
 		long duration = -1, bool center = false,
-		Text_Position_Type pos_type = Text_Position_Type::EXACT_X | Text_Position_Type::EXACT_Y);
+		Text_Position_Type pos_type = Text_Position_Type::EXACT_X
+        | Text_Position_Type::EXACT_Y | Text_Position_Type::CAMERA_RELATIVE);
 	void execute();
 	bool is_complete() const;
 	int choice_index() const { return selected_choice; }
 	std::string full_text() const;
+    static xd::vec2 text_position(Map_Object* object);
 private:
 	void update_choice();
-	xd::vec2 text_position(Map_Object* object);
 	Game& game;
 	xd::vec2 position;
 	std::shared_ptr<Canvas> canvas;

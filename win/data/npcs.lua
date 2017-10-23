@@ -11,6 +11,7 @@ return {
                         sequential = true,
                         day = 'odd',
                         timestamp = '0:0:3',
+                        condition = function() return true end,
                         commands = {
                             {
                                 type = 'move',
@@ -20,6 +21,18 @@ return {
                             {
                                 type = 'wait',
                                 duration = 1,
+                            },
+                            {
+                                type = 'text',
+                                text = 'hello my friend',
+                                duration = 3,
+                                condition = function()
+                                    return current_map:get_object('jimbo')
+                                end,
+                            },
+                            {
+                                type = 'pose',
+                                pose = 'Pose Test',
                             },
                             {
                                 type = 'teleport',

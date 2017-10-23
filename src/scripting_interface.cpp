@@ -168,6 +168,28 @@ void Scripting_Interface::setup_scripts() {
                     keep_trying));
             }
         ), adopt(result)),
+        // A command for showing text (used in NPC scheduling)
+        def("Text_Command", tag_function<Command_Result* (Map_Object*, const std::string&, long)>(
+            [&](Map_Object* object, const std::string& text, long duration) {
+                return new Command_Result(std::make_shared<Show_Text_Command>(
+                    *game,
+                    Show_Text_Command::text_position(object),
+                    std::vector<std::string>{},
+                    text,
+                    duration,
+                    false,
+                    Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y));
+            }
+        ), adopt(result)),
+        // A command to show an object's pose (used in NPC scheduling)
+        def("Pose_Command", tag_function<Command_Result* (Map_Object*, const std::string&,
+                const std::string&, Direction)>(
+            [&](Map_Object* object, const std::string& pose,
+                    const std::string& state, Direction direction) {
+                return new Command_Result(std::make_shared<Show_Pose_Command>(
+                    object, pose, state, direction));
+            }
+        ), adopt(result)),
         // 2D vector
         class_<xd::vec2>("Vec2")
             .def(constructor<>())
