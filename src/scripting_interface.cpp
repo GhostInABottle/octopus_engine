@@ -115,11 +115,6 @@ void Scripting_Interface::setup_scripts() {
         def("wait", tag_function<void (const std::string&)>([&](const std::string& key) {
             wait_press(*game, key); 
         }), yield),
-        def("time_to_days", &time_to_days),
-        def("time_to_hours", &time_to_hours),
-        def("time_to_minutes", &time_to_minutes),
-        def("time_to_seconds", &time_to_seconds),
-        def("time_without_days", &time_without_days),
         def("text_width", tag_function<float (const std::string&)>(
             [&](const std::string& text) {
             return game->get_font()->get_width(text,

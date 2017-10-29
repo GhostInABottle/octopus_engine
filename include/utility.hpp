@@ -69,26 +69,5 @@ inline bool check_close(float num1, float num2, float epsilon = 0.001f) {
     return std::fabs(num1 - num2) < epsilon;
 }
 
-// Get the seconds portion of given time
-inline int time_to_seconds(int seconds) {
-    return seconds % 60;
-}
-// Get the minutes portion of given time
-inline int time_to_minutes(int seconds) {
-    return (seconds / 60) % 60;
-}
-// Get the hours portion of given time
-inline int time_to_hours(int seconds) {
-    return (seconds / 3600) % 12;
-}
-// Get the days portion of given time
-inline int time_to_days(int seconds) {
-    return seconds / 43200 + 1;
-}
-// Get time without days
-inline int time_without_days(int seconds) {
-    return seconds - (time_to_days(seconds) - 1) * 43200;
-}
-
 
 #endif

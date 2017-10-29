@@ -1,3 +1,28 @@
+-- Get the seconds portion of given time
+function time_to_seconds(seconds)
+    return seconds % 60
+end
+
+-- Get the minutes portion of given time
+function time_to_minutes(seconds)
+    return math.floor(seconds / 60) % 60
+end
+
+-- Get the hours portion of given time
+function time_to_hours(seconds)
+    return math.floor(seconds / 3600) % 12
+end
+
+-- Get the days portion of given time
+function time_to_days(seconds)
+    return math.floor(seconds / 43200) + 1
+end
+
+-- Get time without days
+function time_without_days(seconds)
+    return seconds - (time_to_days(seconds) - 1) * 43200
+end
+
 class 'NPC'
 
 function NPC:__init(name, data)

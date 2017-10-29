@@ -225,13 +225,8 @@ void Game::render() {
                 "FPS: " + boost::lexical_cast<std::string>(fps()));
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
-            int seconds = clock->total_seconds();
-            std::ostringstream ss;
-            ss << "Day: " << std::setw(2) << time_to_days(seconds) << " Time: ";
-            ss.fill('0');
-            ss << std::setw(2) << time_to_hours(seconds) << ":" <<
-                std::setw(2) << time_to_minutes(seconds);
-            text_renderer.render(font, pimpl->style, 210, 230, ss.str());
+            auto seconds = std::to_string(clock->total_seconds());
+            text_renderer.render(font, pimpl->style, 5, 220, seconds);
         }
         window->swap();
     }
