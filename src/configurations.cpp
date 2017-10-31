@@ -44,6 +44,7 @@ void Configurations::parse(const std::string& filename) {
     defaults["debug.time-multiplier"] = 0.5f;
     defaults["debug.pathfinding-sprite"] = std::string();
 	defaults["debug.text-fps"] = 40;
+    defaults["debug.seed-lua-rng"] = true;
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
     defaults["startup.player-position-x"] = 70.0f;

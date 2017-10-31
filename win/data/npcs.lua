@@ -25,6 +25,7 @@ return {
                             {
                                 type = 'text',
                                 text = 'hello my friend',
+                                object = 'jimbo',
                                 duration = 3,
                                 condition = function()
                                     return current_map:get_object('jimbo')

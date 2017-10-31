@@ -166,7 +166,13 @@ function NPC:process_map_command()
     elseif command.type == 'move' then
         self.script_command = Move_To_Command(self.object, command.x, command.y, true)
     elseif command.type == 'text' then
-        self.script_command = Text_Command(self.object, command.text, command.duration * 1000)
+        local object = self.object
+        if command.object then
+            object = current_map:get_object(command.object)
+        end
+        if object then
+            self.script_command = Text_Command(object, command.text, command.duration * 1000)
+        end
     elseif command.type == 'pose' then
         local state = command.state or ''
         local direction = command.direction or self.object.direction
@@ -183,8 +189,14 @@ function NPC:process_map_command()
         self:delete_object(true)
         self:complete_keypoint()
     elseif command.type == 'wait' then
+        local duration = command.duration
+        if command.min or command.max then
+            local min_d = command.min or 1
+            local max_d = command.max or min_d
+            duration = math.random(min_d, max_d)
+        end
         self.script_command = Wait_Command(
-            command.duration * 1000,
+            duration * 1000,
             time_without_days(game.total_seconds) * 1000)
     elseif command.type == 'visibility' then
         self.visible = command.visible
@@ -237,7 +249,17 @@ function NPC:process_offmap_command(current_time)
         self.position = Vec2(command.x, command.y)
         self:complete_keypoint()
     elseif command.type == 'wait' or command.type == 'text' or command.type == 'pose' then
-        self.expected_completion = current_time + (command.duration or 1)
+        local duration = command.duration
+        if not duration then
+            if command.min then
+                duration = command.min
+            elseif command.max then
+                duration = command.max
+            else
+                duration = 1
+            end
+        end
+        self.expected_completion = current_time + duration
     elseif command.type == 'visibility' then
         self.visible = command.visible
     elseif command.type == 'passthrough' then

@@ -82,6 +82,9 @@ void Scripting_Interface::setup_scripts() {
     using namespace luabind;
     vm.load_library();
     luaL_openlibs(vm.lua_state());
+    if (Configurations::get<bool>("debug.seed-lua-rng")) {
+        vm.exec("math.randomseed(os.time())");
+    }
     auto result_wait = [](Command_Result* cmd) {
         auto& scheduler = game->get_current_scripting_interface()->scheduler;
         scheduler.yield(*cmd);
