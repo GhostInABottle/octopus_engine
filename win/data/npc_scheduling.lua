@@ -149,6 +149,13 @@ function NPC:complete_keypoint()
     self.expected_completion = -1
 end
 
+-- Check if command fails condition or randomness criteria
+function NPC:should_skip_command(command)
+    local condition = not command.condition or command.condition()
+    local chance = command.chance or 100
+    return not condition or math.random(0, 99) >= chance
+end
+
 -- Process the next keypoint command
 function NPC:process_map_command()
     if not self.object or not self.last_keypoint then return end
@@ -159,10 +166,11 @@ function NPC:process_map_command()
         self:complete_keypoint()
         return
     end
+
     -- Process command by type
     local command = keypoint.commands[keypoint.command_index]
-    if command.condition and not command.condition() then
-        -- Do nothing if command condition doesn't apply
+    if self:should_skip_command(command) then
+        -- Skip command
     elseif command.type == 'move' then
         self.script_command = Move_To_Command(self.object, command.x, command.y, true)
     elseif command.type == 'text' then
@@ -232,12 +240,13 @@ function NPC:process_offmap_command(current_time)
         self.position = self.expected_position
         return
     end
+
     self.expected_position = self.position
     self.expected_completion = current_time
     -- Calculate expected time and position for commands
     local command = keypoint.commands[keypoint.command_index]
-    if command.condition and not command.condition() then
-        -- Do nothing if command condition doesn't apply
+    if self:should_skip_command(command) then
+        -- Skip command
     elseif command.type == 'move' then
         self:process_offmap_move(Vec2(command.x, command.y), current_time)
     elseif command.type == 'face' then
@@ -269,9 +278,8 @@ end
 
 -- Execute a pending command, return true while processing
 function NPC:execute_pending_command(current_time)
-    if not self.script_command then
-        return false
-    end
+    if not self.script_command then return false end
+
     if self.script_command:is_complete(current_time * 1000) then
         local keypoint = self.last_keypoint
         if keypoint.status ~= 'pending' then
@@ -285,9 +293,11 @@ function NPC:execute_pending_command(current_time)
     else
         self.script_command:execute()
     end
+
     if self.object then
         self.position = self.object.real_position
     end
+
     return true
 end
 
@@ -324,9 +334,11 @@ function NPC:set_keypoint_initial_time(schedule, keypoint)
     else
         keypoint.timestamp = -1
     end
+
     if not keypoint.day and schedule.day then
         keypoint.day = schedule.day
     end
+
     if keypoint.day then
         if keypoint.day == 'even' or keypoint.day == 'odd' then
             keypoint.day_type = keypoint.day
