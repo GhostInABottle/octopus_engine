@@ -23,21 +23,35 @@ namespace std {
 }
 
 struct Node {
+    int tile_width, tile_height;
     xd::vec2 pos;
     Node* parent;
     // cost of getting to this node
     int g;
     // distance to goal (heuristic)
     int h;
-    Node(xd::vec2 pos = xd::vec2(), Node* parent = nullptr,
-        int g = 0, int h = 0) : pos(pos), parent(parent), g(g), h(h) {}
+    Node(
+        int tile_width = 1,
+        int tile_height = 1,
+        xd::vec2 pos = xd::vec2(),
+        Node* parent = nullptr,
+        int g = 0,
+        int h = 0) :
+        tile_width(tile_width),
+        tile_height(tile_height),
+        pos(pos),
+        parent(parent),
+        g(g),
+        h(h) {}
     // Total cost at this node
     // f(n) = g(n) + h(n)
     int cost() const {
         return g + h;
     }
     xd::ivec2 tile_pos() const {
-        return static_cast<xd::ivec2>(pos) / 8;
+        return xd::ivec2(
+            static_cast<int>(pos.x) / tile_width,
+            static_cast<int>(pos.y) / tile_height);
     }
     bool operator==(const Node& other) const {
         return other.tile_pos() == tile_pos();

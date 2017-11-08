@@ -24,13 +24,14 @@ Pathfinder::Pathfinder(Map& map, Map_Object& object,
     xd::vec2 dest, int range, bool close, Collision_Check_Types check_type) :
         map(map),
         object(object),
-        goal_node(dest),
-        start_node(object.get_real_position()),
+        goal_node(map.get_tile_width(), map.get_tile_height(), dest),
+        start_node(map.get_tile_width(), map.get_tile_height(), object.get_real_position()),
         range(range),
         get_close(close),
-        original_goal(dest),
+        original_goal(map.get_tile_width(), map.get_tile_height(), dest),
         found(false),
-        check_type(check_type) {
+        check_type(check_type),
+        nearest_node(map.get_tile_width(), map.get_tile_height()) {
     nearest_node.h = -1;
     start_node.h = distance(start_node.tile_pos(), goal_node.tile_pos());
     open_list.push(start_node);
@@ -87,19 +88,20 @@ void Pathfinder::calculate_path() {
 }
 
 void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) {
-    auto tile_pos = static_cast<xd::ivec2>(pos) / 8;
+    auto tile_height = map.get_tile_height();
+    auto tile_width = map.get_tile_width();
+    auto tile_pos = static_cast<xd::ivec2>(pos) / tile_width;
     if (!object.is_passthrough() && !map.tile_passable(tile_pos.x, tile_pos.y)) {
         if (detail::debug_mode)
             detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Block");
         return;
     }
     auto dir = facing_direction(parent.pos, pos, true);
-    auto steps = static_cast<float>(map.get_tile_width());
     auto obj_pos = parent.pos;
     auto obj_box = object.get_bounding_box();
     obj_pos.x -= obj_box.x;
     obj_pos.y -= obj_box.y;
-    auto collision = map.passable(object, dir, obj_pos, steps, check_type);
+    auto collision = map.passable(object, dir, obj_pos, static_cast<float>(tile_width), check_type);
     if (collision.passable()) {
         int g = parent.g + 1;
         int h = distance(tile_pos, goal_node.tile_pos());
@@ -110,7 +112,7 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
                 h++;
         }
         Node* parent_address = &closed_list[parent.tile_pos()];
-        nodes.emplace_back(pos, parent_address, g, h);
+        nodes.emplace_back(tile_width, tile_height, pos, parent_address, g, h);
         if (detail::debug_mode)
             detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Pass");
     } else if (detail::debug_mode) {
@@ -124,7 +126,8 @@ std::vector<Node> Pathfinder::get_adjacent_nodes(Node& node) {
     for (int i = -1; i <= 1; ++i) {
         for (int j = -1; j <= 1; ++j) {
             if (i != 0 || j != 0) {
-                new_pos = xd::ivec2(node.pos.x + i * 8, node.pos.y + j * 8);
+                new_pos = xd::ivec2(node.pos.x + i * map.get_tile_width(),
+                    node.pos.y + j * map.get_tile_height());
                 add_node(nodes, new_pos, node);
             }
         }

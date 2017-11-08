@@ -61,9 +61,11 @@ void Move_Object_To_Command::init() {
 
 bool Move_Object_To_Command::is_complete(int ticks) const {
 	auto pos = object.get_real_position();
+    auto half_tile_width = static_cast<float>(map.get_tile_width()) / 2.0f;
+    auto half_tile_height = static_cast<float>(map.get_tile_height()) / 2.0f;
 	bool complete = stopped || object.is_stopped() || (!keep_trying && path.empty()) ||
-		(std::abs(pos.x - destination.x) < 8.0f &&
-			std::abs(pos.y - destination.y) < 8.0f);
+		(std::abs(pos.x - destination.x) <= half_tile_width &&
+			std::abs(pos.y - destination.y) <= half_tile_height);
 	if (complete)
 		object.update_state("FACE");
 	return complete;
