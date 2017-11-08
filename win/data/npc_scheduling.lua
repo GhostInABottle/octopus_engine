@@ -90,6 +90,9 @@ function NPC:set_schedule(schedule_name)
         schedule.keypoints = {}
     end
     for i, keypoint in ipairs(schedule.keypoints) do
+        if schedule.activation_script and not keypoint.activation_script then
+            keypoint.activation_script = schedule.activation_script
+        end
         self:reset_keypoint(keypoint)
     end
     -- Last executed keypoint

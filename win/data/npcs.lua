@@ -3,6 +3,7 @@ return {
         sprite = 'data/sprite.spr',
         schedules = {
             first = {
+                activation_script = 'centered_text(100, "test"):wait()',
                 keypoints = {
                     {
                         map = 'data/test_tiled.tmx',
