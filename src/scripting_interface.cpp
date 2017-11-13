@@ -155,14 +155,14 @@ void Scripting_Interface::setup_scripts() {
             }
         ), adopt(result)),
         // A command for moving an object (used in NPC scheduling)
-        def("Move_To_Command", tag_function<Command_Result* (Map_Object*, float, float, bool)>(
-            [&](Map_Object* obj, float x, float y, bool keep_trying) {
+        def("Move_To_Command", tag_function<Command_Result* (Map_Object*, float, float, bool, bool)>(
+            [&](Map_Object* obj, float x, float y, bool keep_trying, bool tile_only) {
                 return new Command_Result(std::make_shared<Move_Object_To_Command>(
                     *game->get_map(),
                     *obj,
                     x,
                     y,
-                    Collision_Check_Types::BOTH,
+                    tile_only ? Collision_Check_Types::TILE : Collision_Check_Types::BOTH,
                     keep_trying));
             }
         ), adopt(result)),

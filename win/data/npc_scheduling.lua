@@ -175,7 +175,7 @@ function NPC:process_map_command()
     if self:should_skip_command(command) then
         -- Skip command
     elseif command.type == 'move' then
-        self.script_command = Move_To_Command(self.object, command.x, command.y, true)
+        self.script_command = Move_To_Command(self.object, command.x, command.y, true, true)
     elseif command.type == 'text' then
         local object = self.object
         if command.object then
@@ -423,6 +423,7 @@ function NPC:move_to_keypoint(current_time)
                 self.object,
                 self.last_keypoint.x,
                 self.last_keypoint.y,
+                true,
                 true)
             local simulated_ticks = 0
             local time_passed = (current_time - self.last_keypoint.timestamp) / self.time_multiplier
