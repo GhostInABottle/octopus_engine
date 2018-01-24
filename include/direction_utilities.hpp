@@ -20,12 +20,27 @@ inline Direction opposite_direction(Direction dir) {
     return static_cast<Direction>((dir_int + dir_int * 3) % 15);
 }
 
+// Convert a direction to a normalized 2D vector
 inline xd::vec2 direction_to_vector(Direction dir) {
     float x = (dir & Direction::RIGHT) != Direction::NONE ?
         1.0f : (dir & Direction::LEFT) != Direction::NONE ? -1.0f : 0.0f;
     float y = (dir & Direction::DOWN) != Direction::NONE ?
         1.0f : (dir & Direction::UP) != Direction::NONE ? -1.0f : 0.0f;
     return xd::vec2(x, y);
+}
+
+// Convert a 2D vector to a direction
+inline Direction vector_to_direction(xd::vec2 vec) {
+    auto dir = Direction::NONE;
+    if (vec.x > 0)
+        dir = dir | Direction::RIGHT;
+    if (vec.x < 0)
+        dir = dir | Direction::LEFT;
+    if (vec.y > 0)
+        dir = dir | Direction::DOWN;
+    if (vec.y < 0)
+        dir = dir | Direction::UP;
+    return dir;
 }
 
 // Get the name of a direction

@@ -144,8 +144,13 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                 if (collision_layer && collision_tileset) {
                     int tile = collision_layer->tiles[x + y * width] -
                         collision_tileset->first_id;
-                    if (tile == 2)
-                        return Collision_Record(Collision_Types::TILE);
+                    if (tile >= 2) {
+                        Collision_Record tile_record(Collision_Types::TILE);
+                        if (tile >= 3 && tile <= 6) {
+                            tile_record.edge_direction = static_cast<Direction>((tile - 2) * 3);
+                        }
+                        return tile_record;
+                    }
                 }
             }
         }

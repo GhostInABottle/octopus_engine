@@ -25,24 +25,17 @@ Map_Object::Map_Object(Game& game, std::string name,
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
         Collision_Check_Types check_type, bool change_facing) {
-    float x_change = 0.0f;
-    float y_change = 0.0f;
-
+    // Map relative directions
     if (move_dir == Direction::FORWARD)
         move_dir = direction;
     else if (move_dir == Direction::BACKWARD)
         move_dir = opposite_direction(direction);
 
-    if ((move_dir & Direction::UP) != Direction::NONE)
-        y_change -= pixels;
-    if ((move_dir & Direction::DOWN) != Direction::NONE)
-        y_change += pixels;
-    if ((move_dir & Direction::RIGHT) != Direction::NONE)
-        x_change += pixels;
-    if ((move_dir & Direction::LEFT) != Direction::NONE)
-        x_change -= pixels;
+    xd::vec2 movement_vector = direction_to_vector(move_dir);
+    xd::vec2 change = movement_vector * pixels;
+    bool multiple_directions = change.x && change.y;
+    bool movement = change.x || change.y;
 
-    bool movement = x_change || y_change;
     if (!movement) {
         update_state("FACE");
         // If there was no movement there's no need to check tile collision,
@@ -61,52 +54,66 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         movement ? move_dir : direction,
         check_type
     );
-    // Move object
-    if (collision.passable()) {
-        position.y += y_change;
-        position.x += x_change;
-    } else if (x_change && y_change) {
-        // If two directions, try only one of them
-        collision = map->passable(*this,
-            move_dir & (Direction::UP | Direction::DOWN), check_type);
-        if (collision.passable()) {
-            x_change = 0;
-            position.y += y_change;
-        } else {
+
+    // Check suggested direction (e.g. corrections for doors)
+    auto edge_dir = collision.edge_direction;
+    if (edge_dir != Direction::NONE && movement && !multiple_directions && !collision.passable()) {
+        auto edge_vector = direction_to_vector(edge_dir);
+        auto corrected_vector = xd::normalize(movement_vector + edge_vector);
+        auto corrected_dir = vector_to_direction(corrected_vector);
+        if (corrected_dir != Direction::NONE) {
             collision = map->passable(*this,
-                move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
+                corrected_dir, check_type);
             if (collision.passable()) {
-                y_change = 0;
-                position.x += x_change;
-            } else {
-                if (change_facing)
-                    direction = move_dir;
-                update_state("FACE");
-                return collision;
+                change = direction_to_vector(corrected_dir) * pixels;
             }
         }
     }
-    else {
-        if (movement && change_facing)
-            direction = move_dir;
-        update_state("FACE");
-        return collision;
+
+    // Move object
+    if (collision.passable()) {
+        position += change;
+    } else {
+        if (multiple_directions) {
+            // Check if we can move in either direction
+            collision = map->passable(*this,
+                move_dir & (Direction::UP | Direction::DOWN), check_type);
+            if (collision.passable()) {
+                change.x = 0.0f;
+            }
+            else {
+                collision = map->passable(*this,
+                    move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
+                if (collision.passable()) {
+                    change.y = 0.0f;
+                }
+            }
+        }
+        if (collision.passable()) {
+            position += change;
+            move_dir = vector_to_direction(change);
+        } else {
+            if (movement && change_facing)
+                direction = move_dir;
+            update_state("FACE");
+            return collision;
+        }
     }
 
     // Update movement pose
     if (movement) {
         if (change_facing) {
-            if (y_change == -pixels) {
+            if (change.y == -pixels) {
                 direction = Direction::UP;
             }
-            else if (y_change == pixels) {
+            else if (change.y == pixels) {
                 direction = Direction::DOWN;
             }
             else {
-                if (x_change == -pixels) {
+                if (change.x == -pixels) {
                     direction = Direction::LEFT;
                 }
-                else if (x_change == pixels) {
+                else if (change.x == pixels) {
                     direction = Direction::RIGHT;
                 }
                 else {

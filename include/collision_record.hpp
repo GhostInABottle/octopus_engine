@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include "direction.hpp"
 
 class Map_Object;
 
@@ -18,10 +19,16 @@ enum class Collision_Types {
 
 // Structure returned after collision detection
 struct Collision_Record {
+    // What triggered this collision
     Collision_Types type;
+    // The object that triggered it (usually the player)
     const Map_Object* this_object;
+    // The first other object, if any
     Map_Object* other_object;
+    // List of objects, for multi-collision
     std::unordered_map<std::string, Map_Object*> other_objects;
+    // Direction of edge tiles (e.g. correcting tiles next to a door)
+    Direction edge_direction;
     // Does collision type allow passing through?
     bool passable() const {
         return type == Collision_Types::NONE || is_area();
