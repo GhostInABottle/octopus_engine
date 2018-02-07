@@ -35,6 +35,10 @@ public:
     std::string get_text() const { return text; }
     // Render canvas text
     void render_text(const std::string& text , float x, float y);
+    // Set the font
+    void set_font(const std::string& font_file);
+    // Set bold and italic fonts
+    void set_linked_fonts(const std::string& bold_font_file, const std::string& italic_font_file);
     // Get the sprite, if any
     Sprite* get_sprite() { return sprite.get(); }
     // Get canvas width
@@ -113,6 +117,65 @@ public:
     bool is_camera_relative_text() const {
         return camera_relative_text;
     }
+    int get_font_size() const {
+        return style->size();
+    }
+    void set_font_size(int size) {
+        style->size() = size;
+    }
+    xd::vec4 get_text_color() const {
+        return style->color();
+    }
+    void set_text_color(xd::vec4 color) {
+        style->color() = color;
+    }
+    float get_line_height() const {
+        return style->line_height();
+    }
+    void set_line_height(float height) {
+        style->line_height() = height;
+    }
+    int get_text_outline_width() const {
+        if (!style->has_outline())
+            return 0;
+        return style->outline().width;
+    }
+    xd::vec4 get_text_outline_color() const {
+        if (!style->has_outline())
+            return xd::vec4();
+        return style->outline().color;
+    }
+    void set_text_outline_width(int width) {
+        if (!style->has_outline())
+            style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        style->outline().width = width;
+    }
+    void set_text_outline_color(xd::vec4 color) {
+        if (!style->has_outline())
+            style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        style->outline().color = color;
+    }
+    xd::vec2 get_text_shadow_offset() const {
+        if (!style->has_shadow())
+            return xd::vec2();
+        return xd::vec2(style->shadow().x, style->shadow().y);
+    }
+    xd::vec4 get_text_shadow_color() const {
+        if (!style->has_shadow())
+            return xd::vec4();
+        return style->shadow().color;
+    }
+    void set_text_shadow_offset(xd::vec2 offset) {
+        if (!style->has_shadow())
+            style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        style->shadow().x = offset.x;
+        style->shadow().y = offset.y;
+    }
+    void set_text_shadow_color(xd::vec4 color) {
+        if (!style->has_shadow())
+            style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        style->shadow().color = color;
+    }
 private:
     // Canvas position
     xd::vec2 position;
@@ -137,7 +200,11 @@ private:
     // Text lines
     std::vector<std::string> text_lines;
     // Font to use
-    xd::font* font;
+    xd::font::ptr font;
+    // Bold font
+    xd::font::ptr bold_font;
+    // Italic font
+    xd::font::ptr italic_font;
     // Text renderer
     xd::simple_text_renderer* text_renderer;
     // Text style

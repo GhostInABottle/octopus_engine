@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <regex>
 #include <unordered_map>
 #include <xd/graphics/stock_text_formatter.hpp>
@@ -8,35 +9,32 @@
 #include "../include/map.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/configurations.hpp"
+#include "../include/log.hpp"
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
-    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-    angle(0.0f), opacity(1.0f), visible(false) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), opacity(1.0f), visible(false) {
     set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position) :
-    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-    angle(0.0f), opacity(1.0f), visible(false) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), opacity(1.0f), visible(false) {
     set_image(filename);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
-    position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-    angle(0.0f), opacity(1.0f), visible(false) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), opacity(1.0f), visible(false) {
     set_image(filename, trans);
 }
 
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) :
-    position(position), text_renderer(&game.get_text_renderer()),
-    font(game.get_font()), opacity(1.0f), visible(false),
-    formatter(xd::create<xd::stock_text_formatter>()),
-    style(new xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-        Configurations::get<int>("game.font-size"))),
-    camera_relative_text(camera_relative) {
-    style->force_autohint(true);
-    style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
-        .line_height(12.0f).force_autohint(true);
+        position(position), text_renderer(&game.get_text_renderer()),
+        font(game.get_font()), opacity(1.0f), visible(false),
+        formatter(xd::create<xd::stock_text_formatter>()),
+        style(new xd::font_style(game.get_font_style())),
+        camera_relative_text(camera_relative) {
     set_text(text);
 }
 
@@ -97,10 +95,15 @@ void Canvas::set_text(const std::string& text) {
             std::smatch close_results;
             start = line.cbegin();
             while (std::regex_search(start, line.cend(), close_results, closing)) {
-                auto& ids = tags[close_results[1].str()];
-                int id = ids[0];
-                tag_infos[id].open = false;
-                ids.pop_front();
+                auto close_tag = close_results[1].str();
+                if (tags.find(close_tag) != tags.end()) {
+                    auto& ids = tags[close_tag];
+                    int id = ids[0];
+                    tag_infos[id].open = false;
+                    ids.pop_front();
+                } else {
+                    LOGGER_E << "Closing tag " + close_tag + " didn't match any open tags in line: " + line;
+                }
                 start += close_results.position() + 1;
             }
             for (auto tag = tag_infos.rbegin(); tag != tag_infos.rend(); ++tag) {
@@ -113,4 +116,27 @@ void Canvas::set_text(const std::string& text) {
 
 void Canvas::render_text(const std::string& text, float x, float y) {
     text_renderer->render_formatted(font, formatter, *style, x, y, text);
+}
+
+void Canvas::set_font(const std::string& font_file) {
+    if (!file_exists(font_file))
+        throw std::runtime_error("Couldn't read font file " + font_file);
+    font = xd::create<xd::font>(font_file);
+}
+
+void Canvas::set_linked_fonts(const std::string& bold_font_file, const std::string& italic_font_file) {
+    if (file_exists(bold_font_file)) {
+        bold_font = xd::create<xd::font>(bold_font_file);
+        font->link_font("bold", bold_font);
+    }
+    else {
+        LOGGER_W << "Couldn't read bold font file " + bold_font_file;
+    }
+    if (file_exists(italic_font_file)) {
+        italic_font = xd::create<xd::font>(italic_font_file);
+        font->link_font("italic", italic_font);
+    }
+    else {
+        LOGGER_W << "Couldn't read italic font file " + bold_font_file;
+    }
 }

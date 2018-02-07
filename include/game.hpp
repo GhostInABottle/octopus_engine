@@ -21,6 +21,9 @@ class Save_File;
 namespace xd {
     class shader_program;
     class asset_manager;
+    namespace lua {
+        class virtual_machine;
+    }
 }
 
 class Game {
@@ -85,6 +88,8 @@ public:
     Scripting_Interface* get_current_scripting_interface() {
         return current_scripting_interface;
     }
+    // Get the shared Lua virtual machine
+    xd::lua::virtual_machine* get_lua_vm();
     // Play some music
     xd::music::ptr load_music(const std::string& filename);
     // Play some sound effect
@@ -114,7 +119,9 @@ public:
     // Get text renderer
     xd::simple_text_renderer& get_text_renderer() { return text_renderer; }
     // Get font
-    xd::font* get_font() { return font.get(); }
+    xd::font::ptr get_font() { return font; }
+    // Get style
+    const xd::font_style& get_font_style() { return style; }
     // Get clock
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
@@ -152,6 +159,9 @@ private:
     std::shared_ptr<Map_Object> player;
     xd::music::ptr music;
     xd::font::ptr font;
+    xd::font::ptr bold_font;
+    xd::font::ptr italic_font;
+    xd::font_style style;
     xd::simple_text_renderer text_renderer;
     int editor_ticks;
 };

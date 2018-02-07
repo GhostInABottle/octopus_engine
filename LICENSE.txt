@@ -1,7 +1,7 @@
 The license below does not apply to the following files:
   - win/data/player.png and win/data/test_tileset.gif by Francis Coulombe (cc-by http://www.frankiesmileshow.com/)
   - win/data/music.ogg by HorrorPen (cc-by https://soundcloud.com/horrorpen/spirit-waltz)
-  - win/data/Unibody 8-Italic.otf by Underware (http://underware.nl/fonts/unibody/)
+  - win/data/Roboto fonts by Google (Apache 2.0 https://github.com/google/roboto/blob/master/LICENSE)
   - src/base64.cpp by René Nyffenegger (zlib http://www.adp-gmbh.ch/cpp/common/base64.html)
   - include/rapidxml.hpp by Marcin Kalicinski (MIT http://rapidxml.sourceforge.net/)
 

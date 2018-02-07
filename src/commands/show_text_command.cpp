@@ -48,10 +48,9 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
             longest_line = line;
     }
     // Set text position based on size estimation
-    float char_height = 8;
-    float text_width = game.get_font()->get_width(longest_line,
-        xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
-        .force_autohint(true));
+    auto& font_style = game.get_font_style();
+    float char_height = font_style.line_height();
+    float text_width = game.get_font()->get_width(longest_line, font_style);
     float text_height = char_height * text_lines.size();
     auto pos = position;
     bool camera_relative =

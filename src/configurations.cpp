@@ -17,8 +17,6 @@ void Configurations::parse(const std::string& filename) {
         LOGGER_W << "Couldn't open config file " << filename;
     }
     defaults["game.title"] = std::string("Untitled");
-    defaults["game.font"] = std::string("Unibody 8-Italic.otf");
-	defaults["game.font-size"] = 8;
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;
     defaults["game.fullscreen"] = false;
@@ -31,6 +29,10 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.pause-fragment-shader"] = std::string();
     defaults["game.pause-unfocused"] = true;
     defaults["game.save-folder"] = std::string();
+    defaults["font.default"] = std::string();
+    defaults["font.bold"] = std::string();
+    defaults["font.italic"] = std::string();
+    defaults["font.size"] = 12;
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");

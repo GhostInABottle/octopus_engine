@@ -22,7 +22,13 @@
 #include <xd/audio.hpp>
 
 Game* Scripting_Interface::game = nullptr;
-xd::lua::virtual_machine Scripting_Interface::vm;
+
+Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_vm()) {
+    if (!Scripting_Interface::game) {
+        Scripting_Interface::game = &game;
+        setup_scripts();
+    }
+}
 
 void Scripting_Interface::update() {
     if (scheduler.pending_tasks() > 0)
@@ -41,10 +47,11 @@ void Scripting_Interface::update() {
 
 void Scripting_Interface::run_script(const std::string& script) {
     if (!script.empty())
-        scheduler.start(vm.load(script));
+        scheduler.start(game->get_lua_vm()->load(script));
 }
 
 void Scripting_Interface::set_globals() {
+    auto& vm = *game->get_lua_vm();
     // Global variables
     vm.globals()["game"] = game;
     vm.globals()["current_map"] = game->get_map();
@@ -78,8 +85,13 @@ Choice_Result* Scripting_Interface::register_choice_command(std::shared_ptr<Comm
     return new Choice_Result(command);
 }
 
+lua_State* Scripting_Interface::lua_state() {
+    return game->get_lua_vm()->lua_state();
+}
+
 void Scripting_Interface::setup_scripts() {
     using namespace luabind;
+    auto& vm = *game->get_lua_vm();
     vm.load_library();
     luaL_openlibs(vm.lua_state());
     if (Configurations::get<bool>("debug.seed-lua-rng")) {
@@ -715,6 +727,15 @@ void Scripting_Interface::setup_scripts() {
             .property("text", &Canvas::get_text, &Canvas::set_text)
             .property("width", &Canvas::get_width)
             .property("height", &Canvas::get_height)
+            .property("font_size", &Canvas::get_font_size, &Canvas::set_font_size)
+            .property("text_color", &Canvas::get_text_color, &Canvas::set_text_color)
+            .property("line_height", &Canvas::get_line_height, &Canvas::set_line_height)
+            .property("text_outline_width", &Canvas::get_text_outline_width, &Canvas::set_text_outline_width)
+            .property("text_outline_color", &Canvas::get_text_outline_color, &Canvas::set_text_outline_color)
+            .property("text_shadow_offset", &Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset)
+            .property("text_shadow_color", &Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color)
+            .def("set_font", &Canvas::set_font)
+            .def("set_linked_fonts", &Canvas::set_linked_fonts)
             .def("show", tag_function<void (Canvas*)>([](Canvas* canvas) {
                 canvas->set_visible(true);
             }))

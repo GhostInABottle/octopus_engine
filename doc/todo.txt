@@ -4,4 +4,3 @@
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)
 - Move more Octopus City Blues-specific code to Lua.
 - Pimpl idiom for Map_Object and Canvas to reduce header dependencies.
-- Allow specifying the font size for a canvas (and for text commands).
