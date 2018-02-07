@@ -38,7 +38,7 @@ public:
     // Set the font
     void set_font(const std::string& font_file);
     // Set bold and italic fonts
-    void set_linked_fonts(const std::string& bold_font_file, const std::string& italic_font_file);
+    void link_font(const std::string& type, const std::string& font_file);
     // Get the sprite, if any
     Sprite* get_sprite() { return sprite.get(); }
     // Get canvas width
@@ -155,6 +155,9 @@ public:
             style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         style->outline().color = color;
     }
+    void reset_text_outline() {
+        style->reset_outline();
+    }
     xd::vec2 get_text_shadow_offset() const {
         if (!style->has_shadow())
             return xd::vec2();
@@ -175,6 +178,20 @@ public:
         if (!style->has_shadow())
             style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         style->shadow().color = color;
+    }
+    void reset_text_shadow() {
+        style->reset_shadow();
+    }
+    std::string get_text_type() const {
+        if (!style->has_type())
+            return std::string();
+        return style->type();
+    }
+    void set_text_type(const std::string& type) {
+        style->type(type);
+    }
+    void reset_text_type() {
+        style->reset_type();
     }
 private:
     // Canvas position
@@ -201,10 +218,6 @@ private:
     std::vector<std::string> text_lines;
     // Font to use
     xd::font::ptr font;
-    // Bold font
-    xd::font::ptr bold_font;
-    // Italic font
-    xd::font::ptr italic_font;
     // Text renderer
     xd::simple_text_renderer* text_renderer;
     // Text style

@@ -96,24 +96,22 @@ Game::Game(bool editor_mode) :
 	auto font_file = Configurations::get<std::string>("font.default");
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     auto italic_font_file = Configurations::get<std::string>("font.italic");
-	if (!file_exists(font_file))
-		throw std::runtime_error("Couldn't read font file " + font_file);
+    if (!file_exists(font_file)) {
+        throw std::runtime_error("Couldn't read font file " + font_file);
+    }
 	font = xd::create<xd::font>(font_file);
     if (!bold_font_file.empty()) {
         if (file_exists(bold_font_file)) {
-            bold_font = xd::create<xd::font>(bold_font_file);
-            font->link_font("bold", bold_font);
+            font->link_font("bold", xd::create<xd::font>(bold_font_file));
         } else {
-            LOGGER_W << "Couldn't read bold font file " + bold_font_file;
+            LOGGER_W << "Couldn't read bold font file " << bold_font_file;
         }
     }
     if (!italic_font_file.empty()) {
         if (file_exists(italic_font_file)) {
-            italic_font = xd::create<xd::font>(italic_font_file);
-            font->link_font("italic", italic_font);
-        }
-        else {
-            LOGGER_W << "Couldn't read italic font file " + bold_font_file;
+            font->link_font("italic", xd::create<xd::font>(italic_font_file));
+        } else {
+            LOGGER_W << "Couldn't read italic font file " << bold_font_file;
         }
     }
 

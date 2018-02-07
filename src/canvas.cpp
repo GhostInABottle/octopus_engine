@@ -124,19 +124,10 @@ void Canvas::set_font(const std::string& font_file) {
     font = xd::create<xd::font>(font_file);
 }
 
-void Canvas::set_linked_fonts(const std::string& bold_font_file, const std::string& italic_font_file) {
-    if (file_exists(bold_font_file)) {
-        bold_font = xd::create<xd::font>(bold_font_file);
-        font->link_font("bold", bold_font);
-    }
-    else {
-        LOGGER_W << "Couldn't read bold font file " + bold_font_file;
-    }
-    if (file_exists(italic_font_file)) {
-        italic_font = xd::create<xd::font>(italic_font_file);
-        font->link_font("italic", italic_font);
-    }
-    else {
-        LOGGER_W << "Couldn't read italic font file " + bold_font_file;
+void Canvas::link_font(const std::string& type, const std::string& font_file) {
+    if (file_exists(font_file)) {
+        font->link_font(type, xd::create<xd::font>(font_file));
+    } else {
+        LOGGER_W << "Couldn't read '" << type << "' font file " << font_file;
     }
 }

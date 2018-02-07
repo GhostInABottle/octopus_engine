@@ -159,8 +159,6 @@ private:
     std::shared_ptr<Map_Object> player;
     xd::music::ptr music;
     xd::font::ptr font;
-    xd::font::ptr bold_font;
-    xd::font::ptr italic_font;
     xd::font_style style;
     xd::simple_text_renderer text_renderer;
     int editor_ticks;

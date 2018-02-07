@@ -734,8 +734,12 @@ void Scripting_Interface::setup_scripts() {
             .property("text_outline_color", &Canvas::get_text_outline_color, &Canvas::set_text_outline_color)
             .property("text_shadow_offset", &Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset)
             .property("text_shadow_color", &Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color)
+            .property("text_type", &Canvas::get_text_type, &Canvas::set_text_type)
+            .def("reset_text_outline", &Canvas::reset_text_outline)
+            .def("reset_text_shadow", &Canvas::reset_text_shadow)
+            .def("reset_text_type", &Canvas::reset_text_type)
             .def("set_font", &Canvas::set_font)
-            .def("set_linked_fonts", &Canvas::set_linked_fonts)
+            .def("link_font", &Canvas::link_font)
             .def("show", tag_function<void (Canvas*)>([](Canvas* canvas) {
                 canvas->set_visible(true);
             }))
