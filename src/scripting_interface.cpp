@@ -15,8 +15,6 @@
 #include "../include/direction_utilities.hpp"
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
-#include <lua.hpp>
-#include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 #include <luabind/tag_function.hpp>
 #include <xd/audio.hpp>
