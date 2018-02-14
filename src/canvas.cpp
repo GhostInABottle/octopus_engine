@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <xd/graphics/stock_text_formatter.hpp>
 #include <xd/graphics/simple_text_renderer.hpp>
+#include <xd/graphics/framebuffer.hpp>
 #include "../include/canvas.hpp"
 #include "../include/utility.hpp"
 #include "../include/game.hpp"
@@ -35,6 +36,11 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
         formatter(xd::create<xd::stock_text_formatter>()),
         style(new xd::font_style(game.get_font_style())),
         camera_relative_text(camera_relative) {
+    // Use image texture for FBO rendering, if supported
+    if (xd::framebuffer::extension_supported()) {
+        image_texture = xd::create<xd::texture>(game.game_width, game.game_height,
+            nullptr,xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+    }
     set_text(text);
 }
 

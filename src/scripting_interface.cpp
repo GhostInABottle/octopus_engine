@@ -731,6 +731,7 @@ void Scripting_Interface::setup_scripts() {
             .property("y", &Canvas::get_y, &Canvas::set_y)
             .property("origin", &Canvas::get_origin, &Canvas::set_origin)
             .property("magnification", &Canvas::get_magnification, &Canvas::set_magnification)
+            .property("scissor_box", &Canvas::get_scissor_box, &Canvas::set_scissor_box)
             .property("angle", &Canvas::get_angle, &Canvas::set_angle)
             .property("opacity", &Canvas::get_opacity, &Canvas::set_opacity)
             .property("filename", &Canvas::get_filename)

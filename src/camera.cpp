@@ -145,6 +145,23 @@ void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
     detail::draw_quad(game.get_mvp(), rect, color, draw_mode);
 }
 
+void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
+    if (custom_viewport.w == 0)
+        custom_viewport = viewport;
+    xd::vec2 scale{ custom_viewport.w / game.game_width,
+        custom_viewport.h / game.game_height};
+    int y = game.game_height - static_cast<int>(rect.y + rect.h);
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(static_cast<int>(custom_viewport.x + rect.x * scale.x),
+        static_cast<int>(custom_viewport.y + y * scale.y),
+        static_cast<int>(rect.w * scale.x),
+        static_cast<int>(rect.h * scale.y));
+}
+
+void Camera::disable_scissor_test() {
+    glDisable(GL_SCISSOR_TEST);
+}
+
 void Camera::start_shaking(float strength, float speed) {
     auto shaker_comp = xd::create<Screen_Shaker>(strength, speed);
     shaker = static_cast<Screen_Shaker*>(shaker_comp.get());

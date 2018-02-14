@@ -84,6 +84,12 @@ public:
     void set_magnification(xd::vec2 magnification) {
         this->magnification = magnification;
     }
+    xd::rect get_scissor_box() const {
+        return scissor_box;
+    }
+    void set_scissor_box(xd::rect scissor_box) {
+        this->scissor_box = scissor_box;
+    }
     float get_angle() const {
         return angle;
     }
@@ -105,8 +111,8 @@ public:
     std::string get_filename() const {
         return filename;
     }
-    xd::texture* get_texture() {
-        return image_texture.get();
+    xd::texture::ptr get_texture() {
+        return image_texture;
     }
     std::vector<std::string>& get_text_lines() {
         return text_lines;
@@ -200,6 +206,8 @@ private:
     xd::vec2 origin;
     // X and Y magnification
     xd::vec2 magnification;
+    // Scissor test rectangle (won't draw outside it)
+    xd::rect scissor_box;
     // Rotation angle in degrees
     float angle;
     // Opacity (0 transparent, 1 opaque)
@@ -208,7 +216,7 @@ private:
     bool visible;
     // Image filename
     std::string filename;
-    // Image texture
+    // Image texture (may also be used for text FBO rendering)
     xd::texture::ptr image_texture;
     // Optional sprite
     Sprite::ptr sprite;

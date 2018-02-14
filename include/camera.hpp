@@ -24,6 +24,10 @@ public:
     void set_position(float x, float y);
     // Draw a rectangle
     void draw_rect(xd::rect rect, xd::vec4 color, bool fill = true);
+    // Enable scissor test to limit drawing to a certain rectangle (game coords)
+    void enable_scissor_test(xd::rect rect, xd::rect custom_viewport = xd::rect());
+    // Disable scissor test
+    void disable_scissor_test();
     // Get screen magnification
     float get_magnification() const {
         return magnification;
