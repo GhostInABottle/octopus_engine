@@ -29,8 +29,14 @@ Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_v
 }
 
 void Scripting_Interface::update() {
-    if (scheduler.pending_tasks() > 0)
-        scheduler.run();
+    try {
+        if (scheduler.pending_tasks() > 0)
+            scheduler.run();
+    } catch (const luabind::error& e) {
+        std::string err(lua_tostring(e.state(), -1));
+        LOGGER_E << "Lua Error: " << err;
+        throw;
+    }
     // Execute pending commands
     for (auto i = commands.begin(); i < commands.end();) {
         auto command = *i;
@@ -44,8 +50,14 @@ void Scripting_Interface::update() {
 }
 
 void Scripting_Interface::run_script(const std::string& script) {
-    if (!script.empty())
-        scheduler.start(game->get_lua_vm()->load(script));
+    try {
+        if (!script.empty())
+            scheduler.start(game->get_lua_vm()->load(script));
+    } catch (const luabind::error& e) {
+        std::string err(lua_tostring(e.state(), -1));
+        LOGGER_E << "Lua Error: " << err;
+        throw;
+    }
 }
 
 void Scripting_Interface::set_globals() {

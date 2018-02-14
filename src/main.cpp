@@ -1,4 +1,3 @@
-#include <luabind/luabind.hpp>
 #include "../include/rapidxml.hpp"
 #include "../include/utility.hpp"
 #include "../include/log.hpp"
@@ -36,20 +35,13 @@ int main() {
         Game::game_height = Configurations::get<int>("debug.height");
         Game game;
         game.run();
-    }
-    catch (const luabind::error& e)
-    {
-        std::string err(lua_tostring(e.state(), -1));
-        LOGGER_E << "Lua Error: " << err;
-    }
-    catch (const rapidxml::parse_error& e) {
+
+    } catch (const rapidxml::parse_error& e) {
         std::string where = e.where<char>();
         LOGGER_E << "RapidXml Exception: \"" << e.what() << "\" at \"" << where.substr(0, 50) << '"';
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception& e) {
         LOGGER_E << "Exception: " << e.what();
-    }
-    catch (...) {
+    } catch (...) {
         LOGGER_E << "Unknown exception!";
     }
 }
