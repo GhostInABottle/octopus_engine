@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <regex>
 #include <unordered_map>
+#include <cmath>
 #include <xd/graphics/stock_text_formatter.hpp>
 #include <xd/graphics/simple_text_renderer.hpp>
 #include <xd/graphics/framebuffer.hpp>
@@ -121,7 +122,7 @@ void Canvas::set_text(const std::string& text) {
 }
 
 void Canvas::render_text(const std::string& text, float x, float y) {
-    text_renderer->render_formatted(font, formatter, *style, x, y, text);
+    text_renderer->render_formatted(font, formatter, *style, std::round(x), std::round(y), text);
 }
 
 void Canvas::set_font(const std::string& font_file) {
