@@ -5,6 +5,7 @@
 #include <memory>
 #include <xd/graphics/types.hpp>
 #include "../command.hpp"
+#include "update_canvas_command.hpp"
 
 class Game;
 class Map_Object;
@@ -48,6 +49,7 @@ private:
 	Game& game;
 	xd::vec2 position;
 	std::shared_ptr<Canvas> canvas;
+    std::unique_ptr<Update_Canvas_Command> canvas_updater;
 	std::string text;
 	std::vector<std::string> choices;
 	bool complete;

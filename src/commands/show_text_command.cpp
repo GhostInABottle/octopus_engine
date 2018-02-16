@@ -82,7 +82,11 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
 
     // Create the text canvas and show it
     canvas = std::make_shared<Canvas>(game, pos, full, camera_relative);
+    canvas->set_opacity(0.0f);
     game.add_canvas(canvas);
+    canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
+    canvas_updater->set_new_opacity(1.0f);
+    canvas_updater->set_duration(Configurations::get<int>("game.text-fade-duration"));
     if (duration == -1) {
         was_disabled = game.get_player()->is_disabled();
         game.get_player()->set_disabled(true);
@@ -92,6 +96,10 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
 }
 
 void Show_Text_Command::execute() {
+    if (!canvas_updater->is_complete()) {
+        canvas_updater->execute();
+        return;
+    }
     if (complete)
         return;
     if (duration > -1) {
@@ -100,11 +108,12 @@ void Show_Text_Command::execute() {
         static std::string action_button =
             Configurations::get<std::string>("controls.action-button");
         complete = game.triggered_once(action_button);
-        if (!choices.empty()) {
-            if (complete)
-                selected_choice = current_choice;
-            else
-                update_choice();
+        if (complete) {
+            selected_choice = current_choice;
+            canvas_updater->reset();
+            canvas_updater->set_new_opacity(0.0f);
+        } else if (!choices.empty()) {
+            update_choice();
         }
     }
 }
@@ -124,6 +133,8 @@ xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
 }
 
 bool Show_Text_Command::is_complete() const {
+    if (!canvas_updater->is_complete())
+        return false;
     if ((stopped || complete) && canvas->is_visible()) {
         canvas->set_visible(false);
         game.remove_canvas(canvas);
