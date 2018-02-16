@@ -5,7 +5,10 @@
 #include <memory>
 #include <xd/graphics/types.hpp>
 #include "../command.hpp"
+#include "../direction.hpp"
 #include "update_canvas_command.hpp"
+
+
 
 class Game;
 class Map_Object;
@@ -58,6 +61,8 @@ private:
 	unsigned int current_choice;
 	long start_time;
 	long duration;
+    Direction pressed_direction;
+    long press_start;
 };
 
 #endif

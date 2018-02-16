@@ -120,9 +120,40 @@ void Show_Text_Command::execute() {
 
 void Show_Text_Command::update_choice() {
     unsigned int old_choice = current_choice;
+
+    Direction dir = Direction::NONE;
+    Direction pressed_dir = Direction::NONE;
+
+    if (game.pressed("down"))
+        pressed_dir = Direction::DOWN;
+    if (game.pressed("up"))
+        pressed_dir = Direction::UP;
+
+    if (pressed_dir != Direction::NONE) {
+        if (pressed_dir == pressed_direction) {
+            static int delay = Configurations::get<int>("game.choice-press-delay");
+            if (game.ticks() - press_start > delay) {
+                pressed_direction = Direction::NONE;
+                press_start = 0;
+                dir = pressed_dir;
+            }
+        } else {
+            pressed_direction = pressed_dir;
+            press_start = game.ticks();
+        }
+    } else {
+        pressed_direction = Direction::NONE;
+        press_start = 0;
+    }
+
     if (game.triggered("down"))
-        current_choice = (current_choice + 1) % choices.size();
+        dir = Direction::DOWN;
     if (game.triggered("up"))
+        dir = Direction::UP;
+
+    if (dir == Direction::DOWN)
+        current_choice = (current_choice + 1) % choices.size();
+    if (dir == Direction::UP)
         current_choice = (current_choice + choices.size() - 1) % choices.size();
     if (old_choice != current_choice)
         canvas->set_text(full_text());

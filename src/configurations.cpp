@@ -30,6 +30,7 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.pause-unfocused"] = true;
     defaults["game.save-folder"] = std::string();
     defaults["game.text-fade-duration"] = 250;
+    defaults["game.choice-press-delay"] = 250;
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();
     defaults["font.italic"] = std::string();
