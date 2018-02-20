@@ -869,6 +869,12 @@ void Scripting_Interface::setup_scripts() {
                 return canvas.get();
             }
         )),
+        // Child canvas constructor (with text and position)
+        def("Canvas", tag_function<Canvas* (Canvas*, const std::string&, float, float, const std::string&)>(
+            [&](Canvas* parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
+                return parent->add_child(name, *game, xd::vec2(x, y), text, true);
+            }
+        )),
         // Show some text
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&)>(
                 [&](Map_Object& obj, const std::string& text) {

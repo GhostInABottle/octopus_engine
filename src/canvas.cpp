@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include <regex>
 #include <unordered_map>
 #include <cmath>
@@ -64,16 +63,6 @@ void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::strin
     this->filename = filename;
     sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
     set_pose(pose_name, "", Direction::NONE);
-    redraw_needed = true;
-}
-
-template<class ...Args>
-void Canvas::add_child(const std::string& name, Args... args) {
-    children.emplace_back(args...);
-    children.back()->set_name(name);
-    if (children.back()->get_type() != get_type()) {
-        throw std::runtime_error("Child canvas " + name + " has a different type than its parent");
-    }
     redraw_needed = true;
 }
 

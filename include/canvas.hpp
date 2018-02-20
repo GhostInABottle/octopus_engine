@@ -1,6 +1,7 @@
 #ifndef HPP_CANVAS
 #define HPP_CANVAS
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -30,7 +31,15 @@ public:
     Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class ...Args>
-    void add_child(const std::string& name, Args... args);
+    Canvas* add_child(const std::string& name, Args&&... args) {
+        children.emplace_back(new Canvas(std::forward<Args>(args)...));
+        children.back()->set_name(name);
+        if (children.back()->get_type() != get_type()) {
+            throw std::runtime_error("Child canvas " + name + " has a different type than its parent");
+        }
+        redraw_needed = true;
+        return children.back().get();
+    }
     // Remove a child
     void remove_child(const std::string& name);
     // Find a child by name
