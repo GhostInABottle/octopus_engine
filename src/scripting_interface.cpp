@@ -734,6 +734,7 @@ void Scripting_Interface::setup_scripts() {
             .property("scissor_box", &Canvas::get_scissor_box, &Canvas::set_scissor_box)
             .property("angle", &Canvas::get_angle, &Canvas::set_angle)
             .property("opacity", &Canvas::get_opacity, &Canvas::set_opacity)
+            .property("color", &Canvas::get_color, &Canvas::set_color)
             .property("filename", &Canvas::get_filename)
             .property("text", &Canvas::get_text, &Canvas::set_text)
             .property("width", &Canvas::get_width)

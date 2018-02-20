@@ -8,8 +8,6 @@
 #include "../direction.hpp"
 #include "update_canvas_command.hpp"
 
-
-
 class Game;
 class Map_Object;
 class Canvas;

@@ -15,52 +15,81 @@
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
+        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
     set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position) :
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
+        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
     set_image(filename);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), opacity(1.0f), visible(false) {
+        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
     set_image(filename, trans);
 }
 
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) :
         position(position), text_renderer(&game.get_text_renderer()),
-        font(game.get_font()), opacity(1.0f), visible(false),
+        font(game.get_font()), color(1.0f), visible(false),
         formatter(xd::create<xd::stock_text_formatter>()),
         style(new xd::font_style(game.get_font_style())),
-        camera_relative_text(camera_relative) {
-    // Use image texture for FBO rendering, if supported
-    if (xd::framebuffer::extension_supported()) {
-        image_texture = xd::create<xd::texture>(game.game_width, game.game_height,
-            nullptr,xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
-    }
+        camera_relative_text(camera_relative), redraw_needed(true) {
+    setup_fbo();
+    type = Canvas::Type::TEXT;
     set_text(text);
 }
 
+void Canvas::setup_fbo() {
+    if (xd::framebuffer::extension_supported()) {
+        int width = Configurations::get<int>("debug.width");
+        int height = Configurations::get<int>("debug.height");
+        fbo_texture = xd::create<xd::texture>(width, height, nullptr,
+            xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+    }
+}
+
 void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
+    type = Canvas::Type::IMAGE;
     this->filename = filename;
     image_texture = xd::create<xd::texture>(normalize_slashes(filename),
         trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+    redraw_needed = true;
 }
 
 void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
+    type = Canvas::Type::SPRITE;
     this->filename = filename;
     sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
     set_pose(pose_name, "", Direction::NONE);
+    redraw_needed = true;
+}
+
+template<class ...Args>
+void Canvas::add_child(const std::string& name, Args... args) {
+    children.emplace_back(args...);
+    children.back()->set_name(name);
+    if (children.back()->get_type() != get_type()) {
+        throw std::runtime_error("Child canvas " + name + " has a different type than its parent");
+    }
+    redraw_needed = true;
+}
+
+void Canvas::remove_child(const std::string& name) {
+    children.erase(
+        std::remove_if(children.begin(), children.end(),
+            [&name](std::unique_ptr<Canvas>& c) { return c->get_name() == name; }
+        ), children.end());
+    redraw_needed = true;
 }
 
 void Canvas::set_text(const std::string& text) {
     if (this->text == text && !this->text.empty())
         return;
     this->text = text;
+    redraw_needed = true;
     // Split tags across multiple lines
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
     text_lines = split(text, "\n");
@@ -129,6 +158,7 @@ void Canvas::set_font(const std::string& font_file) {
     if (!file_exists(font_file))
         throw std::runtime_error("Couldn't read font file " + font_file);
     font = xd::create<xd::font>(font_file);
+    redraw_needed = true;
 }
 
 void Canvas::link_font(const std::string& type, const std::string& font_file) {

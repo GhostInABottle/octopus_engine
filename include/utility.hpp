@@ -68,6 +68,23 @@ inline float calculate_alpha(long current, long start, long duration) {
 inline bool check_close(float num1, float num2, float epsilon = 0.001f) {
     return std::fabs(num1 - num2) < epsilon;
 }
-
+// Check if two 2D vectors are are the same
+inline bool check_close(xd::vec2 first, xd::vec2 second, float epsilon = 0.001f) {
+    return check_close(first.x, second.x, epsilon)
+        && check_close(first.y, second.y, epsilon);
+}
+// Check if two 3D vectors are are the same
+inline bool check_close(xd::vec3 first, xd::vec3 second, float epsilon = 0.001f) {
+    return check_close(first.x, second.x, epsilon)
+        && check_close(first.y, second.y, epsilon)
+        && check_close(first.z, second.z, epsilon);
+}
+// Check if two 4D vectors are are the same
+inline bool check_close(xd::vec4 first, xd::vec4 second, float epsilon = 0.001f) {
+    return check_close(first.x, second.x, epsilon)
+        && check_close(first.y, second.y, epsilon)
+        && check_close(first.z, second.z, epsilon)
+        && check_close(first.w, second.w, epsilon);
+}
 
 #endif
