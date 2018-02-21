@@ -747,11 +747,15 @@ void Scripting_Interface::setup_scripts() {
             .property("text_shadow_offset", &Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset)
             .property("text_shadow_color", &Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color)
             .property("text_type", &Canvas::get_text_type, &Canvas::set_text_type)
+            .property("child_count", &Canvas::get_child_count)
             .def("reset_text_outline", &Canvas::reset_text_outline)
             .def("reset_text_shadow", &Canvas::reset_text_shadow)
             .def("reset_text_type", &Canvas::reset_text_type)
             .def("set_font", &Canvas::set_font)
             .def("link_font", &Canvas::link_font)
+            .def("remove_child", &Canvas::remove_child)
+            .def("get_child", (Canvas* (Canvas::*)(std::size_t)) &Canvas::get_child)
+            .def("get_child", (Canvas* (Canvas::*)(const std::string&)) &Canvas::get_child)
             .def("show", tag_function<void (Canvas*)>([](Canvas* canvas) {
                 canvas->set_visible(true);
             }))
@@ -826,7 +830,38 @@ void Scripting_Interface::setup_scripts() {
                         )
                     );
                 }
-            ), adopt(result)),
+            ), adopt(result))
+            .def("add_child_image", tag_function<Canvas* (Canvas*, const std::string&, const std::string&, float, float)>(
+                [&](Canvas* parent, const std::string& name, const std::string& filename, float x, float y) -> Canvas* {
+                    auto extension = filename.substr(filename.find_last_of(".") + 1);
+                    if (extension == "spr")
+                        return parent->add_child(name, *game, filename, "", xd::vec2(x, y));
+                    else
+                        return parent->add_child(name, filename, xd::vec2(x, y));
+                }
+            ))
+            // Add child (with hex trans color or sprite with pose name)
+            .def("add_child_image", tag_function<Canvas* (Canvas*, const std::string&, const std::string&, float, float, const std::string&)>(
+                [&](Canvas* parent, const std::string& name, const std::string& filename, float x, float y, const std::string& trans_or_pose) -> Canvas* {
+                    auto extension = filename.substr(filename.find_last_of(".") + 1);
+                    if (extension == "spr")
+                        return parent->add_child(name, *game, filename, trans_or_pose, xd::vec2(x, y));
+                    else
+                        return parent->add_child(name, filename, xd::vec2(x, y), hex_to_color(trans_or_pose));
+                }
+            ))
+            // Add child (with transparent color as vec4)
+            .def("add_child_image", tag_function<Canvas* (Canvas*, const std::string&, const std::string&, float, float, const xd::vec4&)>(
+                [&](Canvas* parent, const std::string& name, const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
+                    return parent->add_child(name, filename, xd::vec2(x, y), trans);
+                }
+            ))
+            // Add child (with text and position)
+            .def("add_child_text", tag_function<Canvas* (Canvas*, const std::string&, float, float, const std::string&)>(
+                [&](Canvas* parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
+                    return parent->add_child(name, *game, xd::vec2(x, y), text, true);
+                }
+            )),
         // Canvas constructor
         def("Canvas", tag_function<Canvas* (const std::string&, float, float)>(
             [&](const std::string& filename, float x, float y) -> Canvas* {
@@ -867,12 +902,6 @@ void Scripting_Interface::setup_scripts() {
                 auto canvas = std::make_shared<Canvas>(*game, xd::vec2(x, y), text);
                 game->add_canvas(canvas);
                 return canvas.get();
-            }
-        )),
-        // Child canvas constructor (with text and position)
-        def("Canvas", tag_function<Canvas* (Canvas*, const std::string&, float, float, const std::string&)>(
-            [&](Canvas* parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
-                return parent->add_child(name, *game, xd::vec2(x, y), text, true);
             }
         )),
         // Show some text

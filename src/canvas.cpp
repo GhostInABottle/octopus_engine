@@ -13,20 +13,23 @@
 #include "../include/log.hpp"
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
+        color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+    children_type = Canvas::Type::SPRITE;
     set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
+         color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+    children_type = Canvas::Type::IMAGE;
     set_image(filename);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), redraw_needed(true) {
+        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
+        color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+    children_type = Canvas::Type::IMAGE;
     set_image(filename, trans);
 }
 
@@ -35,22 +38,27 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
         font(game.get_font()), color(1.0f), visible(false),
         formatter(xd::create<xd::stock_text_formatter>()),
         style(new xd::font_style(game.get_font_style())),
-        camera_relative_text(camera_relative), redraw_needed(true) {
+        camera_relative(camera_relative), redraw_needed(true) {
     setup_fbo();
     type = Canvas::Type::TEXT;
+    children_type = type;
     set_text(text);
 }
 
 void Canvas::setup_fbo() {
-    if (xd::framebuffer::extension_supported()) {
+    if (Configurations::get<bool>("debug.use-fbo")
+            && xd::framebuffer::extension_supported()) {
         int width = Configurations::get<int>("debug.width");
         int height = Configurations::get<int>("debug.height");
+        framebuffer = std::make_unique<xd::framebuffer>();
         fbo_texture = xd::create<xd::texture>(width, height, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
     }
 }
 
 void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
+    if (this->filename == filename)
+        return;
     type = Canvas::Type::IMAGE;
     this->filename = filename;
     image_texture = xd::create<xd::texture>(normalize_slashes(filename),
@@ -59,9 +67,11 @@ void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
 }
 
 void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
+    if (this->filename == filename)
+        return;
     type = Canvas::Type::SPRITE;
     this->filename = filename;
-    sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
+    sprite = std::make_unique<Sprite>(game, Sprite_Data::load(manager, filename));
     set_pose(pose_name, "", Direction::NONE);
     redraw_needed = true;
 }
@@ -71,6 +81,17 @@ void Canvas::remove_child(const std::string& name) {
         std::remove_if(children.begin(), children.end(),
             [&name](std::unique_ptr<Canvas>& c) { return c->get_name() == name; }
         ), children.end());
+    // Update children type if needed
+    if (!children.empty() && children_type == Type::MIXED) {
+        auto child_type = children[0]->get_type();
+        for (auto& c : children) {
+            if (c->get_type() != child_type) {
+                child_type = Type::MIXED;
+                break;
+            }
+            children_type = child_type;
+        }
+    }
     redraw_needed = true;
 }
 
@@ -156,4 +177,19 @@ void Canvas::link_font(const std::string& type, const std::string& font_file) {
     } else {
         LOGGER_W << "Couldn't read '" << type << "' font file " << font_file;
     }
+}
+
+bool Canvas::should_redraw(int time) const {
+    bool redraw_children = std::any_of(std::begin(children), std::end(children),
+        [time](const std::unique_ptr<Canvas>& c) { return c->should_redraw(time);  });
+    static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
+    bool time_to_update = time - last_drawn_time > ms_between_refresh;
+    // Sprites and images are always redrawn, might change it later
+    return redraw_needed || type != Canvas::Type::TEXT
+        || redraw_children || time_to_update;
+}
+
+void Canvas::mark_as_drawn(int time) {
+    redraw_needed = false;
+    last_drawn_time = time;
 }

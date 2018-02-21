@@ -21,12 +21,11 @@ private:
     void render_canvas(Game& game, Canvas* canvas, Canvas* parent = nullptr);
     void render_text(Game& game, Canvas* canvas, Canvas* parent = nullptr);
     void render_image(Game& game, Canvas* canvas, Canvas* parent = nullptr);
+    bool should_redraw(Game& game, Canvas* canvas);
 	std::string last_drawn_text;
-	int last_drawn_time;
-	int ms_between_refresh;
     xd::sprite_batch batch;
     bool drawn_to_batch;
-    bool framebuffer_supported;
+    bool fbo_supported;
 };
 
 #endif

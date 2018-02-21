@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include <xd/graphics/types.hpp>
 #include <xd/graphics/texture.hpp>
 #include <xd/graphics/font.hpp>
@@ -20,7 +21,7 @@ namespace xd {
 
 class Canvas : public Sprite_Holder {
 public:
-    enum class Type { IMAGE, SPRITE, TEXT };
+    enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     // Create a canvas from a sprite
     Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position);
     // Create a canvas from an image file name
@@ -34,8 +35,8 @@ public:
     Canvas* add_child(const std::string& name, Args&&... args) {
         children.emplace_back(new Canvas(std::forward<Args>(args)...));
         children.back()->set_name(name);
-        if (children.back()->get_type() != get_type()) {
-            throw std::runtime_error("Child canvas " + name + " has a different type than its parent");
+        if (children.back()->get_type() != children_type) {
+            children_type = Type::MIXED;
         }
         redraw_needed = true;
         return children.back().get();
@@ -58,7 +59,7 @@ public:
         return nullptr;
     }
     // Get number of children
-    std::size_t child_count() const {
+    std::size_t get_child_count() const {
         return children.size();
     }
     // Setup FBO texture
@@ -102,6 +103,8 @@ public:
         return position;
     }
     void set_position(xd::vec2 position) {
+        if (this->position == position)
+            return;
         this->position = position;
         redraw_needed = true;
     }
@@ -109,6 +112,8 @@ public:
         return position.x;
     }
     void set_x(float x) {
+        if (position.x == x)
+            return;
         position.x = x;
         redraw_needed = true;
     }
@@ -116,6 +121,8 @@ public:
         return position.y;
     }
     void set_y(float y) {
+        if (position.y == y)
+            return;
         position.y = y;
         redraw_needed = true;
     }
@@ -123,6 +130,8 @@ public:
         return origin;
     }
     void set_origin(xd::vec2 origin) {
+        if (this->origin == origin)
+            return;
         this->origin = origin;
         redraw_needed = true;
     }
@@ -130,6 +139,8 @@ public:
         return magnification;
     }
     void set_magnification(xd::vec2 magnification) {
+        if (this->magnification == magnification)
+            return;
         this->magnification = magnification;
         redraw_needed = true;
     }
@@ -137,6 +148,11 @@ public:
         return scissor_box;
     }
     void set_scissor_box(xd::rect scissor_box) {
+        if (this->scissor_box.x == scissor_box.x
+                && this->scissor_box.y == scissor_box.y
+                && this->scissor_box.w == scissor_box.w
+                && this->scissor_box.h == scissor_box.h)
+            return;
         this->scissor_box = scissor_box;
         redraw_needed = true;
     }
@@ -144,6 +160,8 @@ public:
         return angle;
     }
     void set_angle(float angle) {
+        if (this->angle == angle)
+            return;
         this->angle = angle;
         redraw_needed = true;
     }
@@ -151,6 +169,8 @@ public:
         return color.a;
     }
     void set_opacity(float opacity) {
+        if (this->color.a == opacity)
+            return;
         this->color.a = opacity;
         redraw_needed = true;
     }
@@ -158,6 +178,8 @@ public:
         return color;
     }
     void set_color(xd::vec4 color) {
+        if (this->color == color)
+            return;
         this->color = color;
         redraw_needed = true;
     }
@@ -165,7 +187,10 @@ public:
         return visible;
     }
     void set_visible(bool visible) {
+        if (this->visible == visible)
+            return;
         this->visible = visible;
+        redraw_needed = true;
     }
     std::string get_filename() const {
         return filename;
@@ -176,8 +201,8 @@ public:
     xd::texture::ptr get_fbo_texture() const {
         return fbo_texture;
     }
-    const xd::framebuffer& get_framebuffer() const {
-        return framebuffer;
+    const xd::framebuffer* get_framebuffer() const {
+        return framebuffer.get();
     }
     std::vector<std::string>& get_text_lines() {
         return text_lines;
@@ -185,13 +210,15 @@ public:
     xd::font_style* get_style() const {
         return style.get();
     }
-    bool is_camera_relative_text() const {
-        return camera_relative_text;
+    bool is_camera_relative() const {
+        return camera_relative;
     }
     int get_font_size() const {
         return style->size();
     }
     void set_font_size(int size) {
+        if (style->size() == size)
+            return;
         style->size() = size;
         redraw_needed = true;
     }
@@ -199,6 +226,8 @@ public:
         return style->color();
     }
     void set_text_color(xd::vec4 color) {
+        if (style->color() == color)
+            return;
         style->color() = color;
         redraw_needed = true;
     }
@@ -206,6 +235,8 @@ public:
         return style->line_height();
     }
     void set_line_height(float height) {
+        if (style->line_height() == height)
+            return;
         style->line_height() = height;
         redraw_needed = true;
     }
@@ -217,6 +248,8 @@ public:
     void set_text_outline_width(int width) {
         if (!style->has_outline())
             style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (style->outline().width == width)
+            return;
         style->outline().width = width;
         redraw_needed = true;
     }
@@ -228,8 +261,13 @@ public:
     void set_text_outline_color(xd::vec4 color) {
         if (!style->has_outline())
             style->outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (style->outline().color == color)
+            return;
         style->outline().color = color;
         redraw_needed = true;
+    }
+    bool has_outline() const {
+        return style->has_outline();
     }
     void reset_text_outline() {
         style->reset_outline();
@@ -243,6 +281,8 @@ public:
     void set_text_shadow_offset(xd::vec2 offset) {
         if (!style->has_shadow())
             style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (style->shadow().x == offset.x && style->shadow().y == offset.y)
+            return;
         style->shadow().x = offset.x;
         style->shadow().y = offset.y;
         redraw_needed = true;
@@ -255,8 +295,13 @@ public:
     void set_text_shadow_color(xd::vec4 color) {
         if (!style->has_shadow())
             style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (style->shadow().color == color)
+            return;
         style->shadow().color = color;
         redraw_needed = true;
+    }
+    bool has_shadow() const {
+        return style->has_shadow();
     }
     void reset_text_shadow() {
         style->reset_shadow();
@@ -268,8 +313,13 @@ public:
         return style->type();
     }
     void set_text_type(const std::string& type) {
+        if (style->type() == type)
+            return;
         style->type(type);
         redraw_needed = true;
+    }
+    bool has_text_type() const {
+        return style->has_type();
     }
     void reset_text_type() {
         style->reset_type();
@@ -278,20 +328,18 @@ public:
     Canvas::Type get_type() const {
         return type;
     }
-    bool should_redraw() const {
-        bool redraw_children = std::any_of(std::begin(children), std::end(children),
-            [](const std::unique_ptr<Canvas>& c) { return c->should_redraw();  });
-        // Sprites and images are always redrawn, might change it later
-        return redraw_needed || type != Canvas::Type::TEXT || redraw_children;
+    Canvas::Type get_children_type() const {
+        return children_type;
     }
-    void mark_redrawn() {
-        redraw_needed = false;
-    }
+    bool should_redraw(int time) const;
+    void mark_as_drawn(int time);
 private:
     // Optional name used to identify the canvas
     std::string name;
     // Type of Canvas content
     Type type;
+    // Type of Canvas children
+    Type children_type;
     // Canvas position
     xd::vec2 position;
     // Drawing origin
@@ -312,9 +360,9 @@ private:
     xd::texture::ptr image_texture;
     // Used when FBO is supported for faster rendering
     xd::texture::ptr fbo_texture;
-    xd::framebuffer framebuffer;
+    std::unique_ptr<xd::framebuffer> framebuffer;
     // Optional sprite
-    Sprite::ptr sprite;
+    std::unique_ptr<Sprite> sprite;
     // Text to print
     std::string text;
     // Text lines
@@ -327,12 +375,14 @@ private:
     std::unique_ptr<xd::font_style> style;
     // Text formatter
     xd::text_formatter::ptr formatter;
-    // Is text canvas rendered relative to camera?
-    bool camera_relative_text;
+    // Render relative to camera? (by default: false for text, true otherwise)
+    bool camera_relative;
     // List of child canvases that are rendered with this one
     std::vector<std::unique_ptr<Canvas>> children;
     // Did something change that requires the canvas to be redrawn?
     bool redraw_needed;
+    // When was the last time the canvas was redrawn
+    int last_drawn_time;
 };
 
 #endif
