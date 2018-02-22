@@ -13,7 +13,7 @@ class Canvas;
 
 class Canvas_Renderer : public xd::render_component<Map> {
 public:
-	Canvas_Renderer();
+    Canvas_Renderer();
     void render(Map& map);
 private:
     void setup_framebuffer(Game& game, Canvas* canvas);
@@ -22,7 +22,7 @@ private:
     void render_text(Game& game, Canvas* canvas, Canvas* parent = nullptr);
     void render_image(Game& game, Canvas* canvas, Canvas* parent = nullptr);
     bool should_redraw(Game& game, Canvas* canvas);
-	std::string last_drawn_text;
+    std::string last_drawn_text;
     xd::sprite_batch batch;
     bool drawn_to_batch;
     bool fbo_supported;

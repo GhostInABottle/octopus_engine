@@ -171,7 +171,7 @@ struct Sprite::Impl {
                     break;
             }
             // If no tags, use first pose
-            if (matched_pose == -1) 
+            if (matched_pose == -1)
                 matched_pose = 0;
             // Update pose cache
             tag_map[tag_string] = matched_pose;
@@ -282,13 +282,13 @@ float Sprite::get_speed() const {
 }
 
 void Sprite::set_speed(float speed) {
-	// Scale sprite speed in the opposite direction of object speed,
-	// between 0.5 for max speed (10) and 2 for min speed (0)
-	// but also make sure object speed 1 maps to sprite speed 1
-	// s-speed = s-min + (s-max - s-min) * (o-speed - o-min) / (o-max - o-min)
-	speed = std::max(0.0f, std::min(pimpl->max_speed, speed));
-	if (speed <= 1)
-		pimpl->speed = 2.0f - speed;
-    else 
-		pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (pimpl->max_speed - 1.0f);
+    // Scale sprite speed in the opposite direction of object speed,
+    // between 0.5 for max speed (10) and 2 for min speed (0)
+    // but also make sure object speed 1 maps to sprite speed 1
+    // s-speed = s-min + (s-max - s-min) * (o-speed - o-min) / (o-max - o-min)
+    speed = std::max(0.0f, std::min(pimpl->max_speed, speed));
+    if (speed <= 1)
+        pimpl->speed = 2.0f - speed;
+    else
+        pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (pimpl->max_speed - 1.0f);
 }

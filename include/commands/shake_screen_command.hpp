@@ -7,13 +7,13 @@ class Game;
 
 class Shake_Screen_Command : public Command {
 public:
-	Shake_Screen_Command(Game& game, float strength, float speed, long duration);
-	void execute() {}
-	bool is_complete() const;
+    Shake_Screen_Command(Game& game, float strength, float speed, long duration);
+    void execute() {}
+    bool is_complete() const;
 private:
-	Game& game;
-	long start_time;
-	long duration;
+    Game& game;
+    long start_time;
+    long duration;
 };
 
 

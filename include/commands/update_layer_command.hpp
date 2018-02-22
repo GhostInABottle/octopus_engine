@@ -8,16 +8,16 @@ struct Layer;
 
 class Update_Layer_Command : public Command {
 public:
-	Update_Layer_Command(Game& game, Layer& layer, float opacity, long duration);
-	void execute();
-	bool is_complete() const;
+    Update_Layer_Command(Game& game, Layer& layer, float opacity, long duration);
+    void execute();
+    bool is_complete() const;
 private:
-	Layer& layer;
-	Game& game;
-	float old_opacity;
-	float new_opacity;
-	long start_time;
-	long duration;
+    Layer& layer;
+    Game& game;
+    float old_opacity;
+    float new_opacity;
+    long start_time;
+    long duration;
 };
 
 

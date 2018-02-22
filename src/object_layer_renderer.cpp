@@ -36,7 +36,7 @@ void Object_Layer_Renderer::render(Map& map) {
                 b_order = std::numeric_limits<float>().max();
 
             return check_close(a_order, b_order) ?
-				a->get_id() < b->get_id() : a_order < b_order;
+                a->get_id() < b->get_id() : a_order < b_order;
     });
 
     for (auto& object : object_layer.objects) {

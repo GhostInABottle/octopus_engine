@@ -8,7 +8,6 @@
 #include "../include/utility.hpp"
 
 Canvas_Renderer::Canvas_Renderer() {
-    
     fbo_supported = Configurations::get<bool>("debug.use-fbo")
         && xd::framebuffer::extension_supported();
 }
@@ -28,7 +27,7 @@ void Canvas_Renderer::render(Map& map) {
                 game.get_camera()->enable_scissor_test(scissor);
             }
             batch.clear();
-            
+
             render_canvas(game, canvas.get());
 
             if (drawn_to_batch) {
@@ -111,8 +110,7 @@ void Canvas_Renderer::render_canvas(Game& game, Canvas* canvas, Canvas* parent) 
         if (redraw || redraw_parent) {
             render_text(game, canvas, parent);
         }
-        
-        
+
         bool has_text_children = child_count > 0 && children_type == Canvas::Type::TEXT;
         if (fbo_supported && !is_text_child && !has_text_children) {
             // Finish up previous FBO

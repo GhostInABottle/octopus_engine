@@ -33,9 +33,9 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
         auto object_ptr = Map_Object::load(*object_node, game);
         auto object = std::shared_ptr<Map_Object>(object_ptr.release());
         map.add_object(object, -1, layer_ptr);
-		if (object->get_name().empty()) {
-			object->set_name("UNTITLED" + std::to_string(object->get_id()));
-		}
+        if (object->get_name().empty()) {
+            object->set_name("UNTITLED" + std::to_string(object->get_id()));
+        }
     }
 
     layer_ptr->renderer.reset(new Object_Layer_Renderer(*layer_ptr, camera));

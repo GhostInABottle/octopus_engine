@@ -54,7 +54,7 @@ struct Pose {
     std::unordered_map<std::string, std::string> tags;
     // List of frames
     std::vector<Frame> frames;
-    
+
     Pose() : duration(100), repeats(-1) {}
 };
 

@@ -30,17 +30,17 @@ int Game::game_height;
 
 struct Game::Impl {
     Impl(bool editor_mode) :
-			editor_mode(editor_mode),
-			show_fps(Configurations::get<bool>("debug.show-fps")),
-			show_time(Configurations::get<bool>("debug.show-time")),
-			pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
-			paused(false),
-			focus_pause(false),
-			music_was_paused(false),
-			was_stopped(false),
-			pause_start_time(0),
-			total_paused_time(0),
-			current_shader(nullptr) {}
+            editor_mode(editor_mode),
+            show_fps(Configurations::get<bool>("debug.show-fps")),
+            show_time(Configurations::get<bool>("debug.show-time")),
+            pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
+            paused(false),
+            focus_pause(false),
+            music_was_paused(false),
+            was_stopped(false),
+            pause_start_time(0),
+            total_paused_time(0),
+            current_shader(nullptr) {}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     std::vector<xd::sound::ptr> sounds;
     std::string playing_music_name;
@@ -77,12 +77,12 @@ struct Game::Impl {
     void render_shader(Game& game);
 };
 
-Game::Game(bool editor_mode) : 
+Game::Game(bool editor_mode) :
         window(editor_mode ? nullptr : new xd::window(
-            Configurations::get<std::string>("game.title"), 
+            Configurations::get<std::string>("game.title"),
             Configurations::get<int>("game.screen-width"),
             Configurations::get<int>("game.screen-height"),
-            xd::window_options(Configurations::get<bool>("game.fullscreen"), 
+            xd::window_options(Configurations::get<bool>("game.fullscreen"),
                 false, false, false, 8, 0, 0, 2, 0))),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         pimpl(new Impl(editor_mode)),
@@ -94,13 +94,13 @@ Game::Game(bool editor_mode) :
     // Setup fonts
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
         .line_height(12.0f).force_autohint(true);
-	auto font_file = Configurations::get<std::string>("font.default");
+    auto font_file = Configurations::get<std::string>("font.default");
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     auto italic_font_file = Configurations::get<std::string>("font.italic");
     if (!file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
-	font = xd::create<xd::font>(font_file);
+    font = xd::create<xd::font>(font_file);
     if (!bold_font_file.empty()) {
         if (file_exists(bold_font_file)) {
             font->link_font("bold", xd::create<xd::font>(bold_font_file));
@@ -126,7 +126,7 @@ Game::Game(bool editor_mode) :
     auto player_ptr = new Map_Object(
         *this,
         "player",
-        Configurations::get<std::string>("startup.player-sprite"), 
+        Configurations::get<std::string>("startup.player-sprite"),
         xd::vec2(
             Configurations::get<float>("startup.player-position-x"),
             Configurations::get<float>("startup.player-position-y")
@@ -215,7 +215,7 @@ void Game::frame_update() {
     camera->update();
     map->update();
     // Remove finished sounds
-    auto removed = std::remove_if(pimpl->sounds.begin(), pimpl->sounds.end(), 
+    auto removed = std::remove_if(pimpl->sounds.begin(), pimpl->sounds.end(),
         [](const xd::sound::ptr& s) { return s->stopped(); });
     pimpl->sounds.erase(removed, pimpl->sounds.end());
     // Switch map if needed
@@ -368,7 +368,7 @@ void Game::load_map(const std::string& filename) {
     map = Map::load(*this, filename);
     if (!pimpl->editor_mode) {
         // Add player to the map
-		player->set_id(-1);
+        player->set_id(-1);
         player->set_position(pimpl->next_position);
         player->face(pimpl->next_direction);
         map->add_object(player);
@@ -394,7 +394,7 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
 }
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
-	map->get_canvases().push_back(canvas);
+    map->get_canvases().push_back(canvas);
 }
 
 void Game::Impl::render_shader(Game& game) {
@@ -428,7 +428,7 @@ void Game::process_keymap() {
     std::string map_file = Configurations::get<std::string>("controls.mapping-file");
     std::ifstream input(map_file);
     if (input) {
-		// Map key names to XD keys
+        // Map key names to XD keys
         std::unordered_map<std::string, xd::key> key_names;
         key_names["LEFT"] = xd::KEY_LEFT;
         key_names["RIGHT"] = xd::KEY_RIGHT;
@@ -453,7 +453,7 @@ void Game::process_keymap() {
                 key_names["GAMEPAD-" + std::to_string(i + 1)] = xd::JOYSTICK(i);
             }
         }
-		// Read keymap file and bind keys based on name
+        // Read keymap file and bind keys based on name
         std::string line;
         int counter = 0;
         while(std::getline(input, line))
@@ -485,7 +485,7 @@ void Game::process_keymap() {
             }
         }
     } else {
-		// Default mapping
+        // Default mapping
         LOGGER_W << "Couldn't read key mapping file \"" << map_file << "\", using default key mapping.";
         window->bind_key(xd::KEY_ESC, "pause");
         window->bind_key(xd::KEY_LEFT, "left");

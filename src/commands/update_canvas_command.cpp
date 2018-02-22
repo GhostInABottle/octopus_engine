@@ -11,14 +11,14 @@ Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas) :
 }
 
 Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas,
-	    long duration, xd::vec2 pos, xd::vec2 mag, float angle, float opacity) :
-	    game(game),
-	    canvas(canvas),
-	    new_position(pos),
-	    new_magnification(mag),
-	    new_angle(angle),
-	    new_opacity(opacity),
-	    duration(duration) {
+        long duration, xd::vec2 pos, xd::vec2 mag, float angle, float opacity) :
+        game(game),
+        canvas(canvas),
+        new_position(pos),
+        new_magnification(mag),
+        new_angle(angle),
+        new_opacity(opacity),
+        duration(duration) {
     reset(false);
 }
 
@@ -38,16 +38,16 @@ void Update_Canvas_Command::reset(bool reset_new) {
 }
 
 void Update_Canvas_Command::execute() {
-	float alpha = calculate_alpha(game.ticks(), start_time, duration);
+    float alpha = calculate_alpha(game.ticks(), start_time, duration);
     update_canvas(alpha);
 }
 
 bool Update_Canvas_Command::is_complete() const {
-	bool complete = stopped || game.ticks() - start_time > duration;
-	if (complete) {
+    bool complete = stopped || game.ticks() - start_time > duration;
+    if (complete) {
         update_canvas(1.0f);
-	}
-	return complete;
+    }
+    return complete;
 }
 
 void Update_Canvas_Command::update_canvas(float alpha) const {

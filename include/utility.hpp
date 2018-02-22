@@ -57,12 +57,12 @@ xd::vec3 lerp(const xd::vec3& start, const xd::vec3& end, float alpha);
 xd::vec4 lerp(const xd::vec4& start, const xd::vec4& end, float alpha);
 // Returns how much of a duration has passed
 inline float calculate_alpha(long current, long start, long duration) {
-	float alpha = 1.0f;
-	if (duration != 0) {
-		alpha = static_cast<float>(current - start) / duration;
-		alpha = std::min(std::max(alpha, 0.0f), 1.0f);
-	}
-	return alpha;
+    float alpha = 1.0f;
+    if (duration != 0) {
+        alpha = static_cast<float>(current - start) / duration;
+        alpha = std::min(std::max(alpha, 0.0f), 1.0f);
+    }
+    return alpha;
 }
 // Check if two floating point numbers are close
 inline bool check_close(float num1, float num2, float epsilon = 0.001f) {

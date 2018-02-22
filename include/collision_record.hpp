@@ -43,7 +43,7 @@ struct Collision_Record {
         return type == Collision_Types::OBJECT ||
             type == Collision_Types::AREA_OBJECT;
     }
-    Collision_Record(Collision_Types type = Collision_Types::NONE, 
+    Collision_Record(Collision_Types type = Collision_Types::NONE,
         const Map_Object* this_object = nullptr,
         Map_Object* other_object = nullptr);
     void set(Collision_Types type, Map_Object* other_object);

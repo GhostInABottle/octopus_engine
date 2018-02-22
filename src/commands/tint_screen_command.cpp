@@ -4,17 +4,17 @@
 #include "../../include/utility.hpp"
 
 Tint_Screen_Command::Tint_Screen_Command(Game& game, xd::vec4 color, long duration) :
-	game(game), old_color(game.get_camera()->get_tint_color()), new_color(color),
-	start_time(game.ticks()), duration(duration) {}
+    game(game), old_color(game.get_camera()->get_tint_color()), new_color(color),
+    start_time(game.ticks()), duration(duration) {}
 
 void Tint_Screen_Command::execute() {
-	float alpha = calculate_alpha(game.ticks(), start_time, duration);
-	game.get_camera()->set_tint_color(lerp(old_color, new_color, alpha));
+    float alpha = calculate_alpha(game.ticks(), start_time, duration);
+    game.get_camera()->set_tint_color(lerp(old_color, new_color, alpha));
 }
 
 bool Tint_Screen_Command::is_complete() const {
-	bool complete = stopped || game.ticks() - start_time > duration;
-	if (complete)
-		game.get_camera()->set_tint_color(new_color);
-	return complete;
+    bool complete = stopped || game.ticks() - start_time > duration;
+    if (complete)
+        game.get_camera()->set_tint_color(new_color);
+    return complete;
 }

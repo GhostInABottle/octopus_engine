@@ -22,7 +22,7 @@ std::string read_file(const std::string& filename) {
 
 void read_properties(Properties& properties, rapidxml::xml_node<>& parent_node) {
     if (auto props_node = parent_node.first_node("properties")) {
-        for (auto prop_node = props_node->first_node("property"); 
+        for (auto prop_node = props_node->first_node("property");
                 prop_node; prop_node = prop_node->next_sibling("property")) {
             std::string name = prop_node->first_attribute("name")->value();
             std::string value = prop_node->first_attribute("value")->value();
@@ -99,7 +99,7 @@ std::string timestamp(bool date_only) {
         oss << std::setw(2) << std::setfill('0') << local_time.tm_min << ":";
         oss << std::setw(2) << std::setfill('0') << local_time.tm_sec;
     }
-    
+
     return oss.str();
 }
 

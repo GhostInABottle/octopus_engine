@@ -136,10 +136,10 @@ void Scripting_Interface::setup_scripts() {
             .def("wait", tag_function<void (Command_Result*)>(result_wait), yield)
             .def("stop", &Command_Result::stop),
         def("wait", tag_function<void (int)>([&](int duration) {
-            wait(*game, duration); 
+            wait(*game, duration);
         }), yield),
         def("wait", tag_function<void (const std::string&)>([&](const std::string& key) {
-            wait_press(*game, key); 
+            wait_press(*game, key);
         }), yield),
         def("text_width", tag_function<float (const std::string&)>(
             [&](const std::string& text) {
@@ -303,6 +303,11 @@ void Scripting_Interface::setup_scripts() {
                 return direction_to_vector(static_cast<Direction>(dir));
             }
         )),
+        def("vector_to_direction", tag_function<int (xd::vec2 vec)>(
+            [](xd::vec2 vec) {
+                return static_cast<int>(vector_to_direction(vec));
+            }
+        )),
         def("direction_to_string", tag_function<std::string (int)>(
             [](int dir) {
                 return direction_to_string(static_cast<Direction>(dir));
@@ -406,7 +411,7 @@ void Scripting_Interface::setup_scripts() {
                     }
                 )
             )
-            .def("get_magnification", tag_function<xd::vec2 (Map_Object*)>( 
+            .def("get_magnification", tag_function<xd::vec2 (Map_Object*)>(
                 [](Map_Object* obj) -> xd::vec2 {
                     auto sprite = obj->get_sprite();
                     if (sprite)
@@ -962,7 +967,7 @@ void Scripting_Interface::setup_scripts() {
             .property("selected", tag_function<int (Choice_Result*)>(
                 [](Choice_Result* cr) { return cr->choice_index() + 1; })),
         // Show some text followed by a list of choices
-        def("choices", 
+        def("choices",
             tag_function<Choice_Result* (Map_Object&, const std::string&, const object&)>(
                 [&](Map_Object& obj, const std::string& text, const object& table) {
                     std::vector<std::string> choices;
@@ -977,7 +982,7 @@ void Scripting_Interface::setup_scripts() {
                     return si->register_choice_command(command);
                 }
         ), adopt(result)),
-        def("choices", 
+        def("choices",
             tag_function<Choice_Result* (xd::vec2&, const std::string&, const object&)>(
                 [&](xd::vec2& position, const std::string& text, const object& table) {
                     std::vector<std::string> choices;

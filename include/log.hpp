@@ -13,7 +13,7 @@
 // Levels of log messages
 enum class Log_Level { error, warning, info, debug };
 
-// A simple logging class. Usage: 
+// A simple logging class. Usage:
 // Log(level).lvalue() << stuff
 // LOGGER(level) << stuff
 // LOGGER_L << stuff
@@ -35,7 +35,7 @@ public:
         log_file << "- " << timestamp();
         log_file << " " << log_level_to_string(current_level);
         log_file << ": ";
-        log_file << this->str() << std::endl; 
+        log_file << this->str() << std::endl;
         log_file.flush();
     }
     // To avoid rvalue issues in stringstream(e.g. char* being treated as void*)

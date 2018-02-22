@@ -39,7 +39,7 @@ struct Global_Fixture
 BOOST_GLOBAL_FIXTURE(Global_Fixture);
 
 BOOST_AUTO_TEST_CASE(map_load) {
-    char text[] = 
+    char text[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
         <map version=\"1.0\" orientation=\"orthogonal\" width=\"50\" height=\"40\" tilewidth=\"8\" tileheight=\"8\"> \
             <properties> \

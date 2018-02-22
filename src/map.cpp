@@ -25,21 +25,21 @@
 #include <algorithm>
 
 namespace detail {
-	std::string generate_unique_name(std::unordered_set<std::string> names,
-			std::string base_name = "UNTITLED") {
-		int i = 1;
-		base_name = capitalize(base_name);
-		std::string name = base_name;
-		while (names.find(name) != names.end()) {
-			name = base_name + std::to_string(i++);
-		}
-		return name;
-	}
+    std::string generate_unique_name(std::unordered_set<std::string> names,
+            std::string base_name = "UNTITLED") {
+        int i = 1;
+        base_name = capitalize(base_name);
+        std::string name = base_name;
+        while (names.find(name) != names.end()) {
+            name = base_name + std::to_string(i++);
+        }
+        return name;
+    }
 }
 
 Map::Map(Game& game) :
         game(game),
-		next_object_id(1),
+        next_object_id(1),
         scripting_interface(new Scripting_Interface(game)),
         collision_tileset(nullptr),
         collision_layer(nullptr),
@@ -86,7 +86,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             speed : (direction & Direction::UP) != Direction::NONE ?
             -speed : 0.0f;
     xd::rect this_box(
-        position.x + x_change + bounding_box.x, 
+        position.x + x_change + bounding_box.x,
         position.y + y_change + bounding_box.y,
         bounding_box.w,
         bounding_box.h
@@ -123,7 +123,6 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     } else
                         return obj_result;
                 }
-                    
             }
         }
         if (obj_result.type == Collision_Types::OBJECT)
@@ -181,8 +180,8 @@ Map_Object* Map::add_object(Map_Object* object, int layer_index, Object_Layer* l
 }
 
 Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* layer) {
-	// If layer isn't specified try getting a layer named "objects",
-	// if none is found use the 'middle' object layer
+    // If layer isn't specified try getting a layer named "objects",
+    // if none is found use the 'middle' object layer
     if (!layer) {
         if (layer_index < 0) {
             layer = static_cast<Object_Layer*>(get_layer("objects"));
@@ -191,56 +190,56 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
                     object_layers.size() / 2.0));
                 layer = object_layers[layer_index];
             }
-		}
-		else if (static_cast<unsigned>(layer_index) > object_layers.size()) {
-			layer = *object_layers.begin();
-		}
-		else {
-			layer = object_layers[layer_index];
-		}
+        }
+        else if (static_cast<unsigned>(layer_index) > object_layers.size()) {
+            layer = *object_layers.begin();
+        }
+        else {
+            layer = object_layers[layer_index];
+        }
     }
     object->set_layer(layer);
-	// Update ID counter for new objects
-	int id = object->get_id();
-	if (id == -1) {
-		id = next_object_id;
-		object->set_id(id);
-	}
-	if (id >= next_object_id) {
-		next_object_id = id + 1;
-	}
-	// Add to object map and to layer
-	auto name = capitalize(object->get_name());
-	auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
-	object_name_to_id.insert(mapping);
-	objects[id] = object;
+    // Update ID counter for new objects
+    int id = object->get_id();
+    if (id == -1) {
+        id = next_object_id;
+        object->set_id(id);
+    }
+    if (id >= next_object_id) {
+        next_object_id = id + 1;
+    }
+    // Add to object map and to layer
+    auto name = capitalize(object->get_name());
+    auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
+    object_name_to_id.insert(mapping);
+    objects[id] = object;
     layer->objects.push_back(object.get());
     return object.get();
 }
 
 Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
-	xd::vec2 pos, Direction dir) {
-	auto object_ptr = new Map_Object(game, name, sprite_file, pos, dir);
-	add_object(object_ptr);
-	if (name.empty())
-		object_ptr->set_name("UNTITLED" + object_ptr->get_id());
-	return object_ptr;
+    xd::vec2 pos, Direction dir) {
+    auto object_ptr = new Map_Object(game, name, sprite_file, pos, dir);
+    add_object(object_ptr);
+    if (name.empty())
+        object_ptr->set_name("UNTITLED" + object_ptr->get_id());
+    return object_ptr;
 }
 
 Map_Object* Map::get_object(const std::string& name) {
     auto cap_name = capitalize(name);
-	if (object_name_to_id.find(cap_name) != object_name_to_id.end()) {
-		int id = object_name_to_id.find(cap_name)->second;
-		return get_object(id);
-	}
-	return nullptr;
+    if (object_name_to_id.find(cap_name) != object_name_to_id.end()) {
+        int id = object_name_to_id.find(cap_name)->second;
+        return get_object(id);
+    }
+    return nullptr;
 }
 
 Map_Object* Map::get_object(int id) {
-	if (objects.find(id) != objects.end())
-		return objects[id].get();
-	else
-		return nullptr;
+    if (objects.find(id) != objects.end())
+        return objects[id].get();
+    else
+        return nullptr;
 }
 
 void Map::delete_object(const std::string& name) {
@@ -248,7 +247,7 @@ void Map::delete_object(const std::string& name) {
 }
 
 void Map::delete_object(int id) {
-	delete_object(get_object(id));
+    delete_object(get_object(id));
 }
 
 void Map::delete_object(Map_Object* object) {
@@ -259,12 +258,12 @@ void Map::delete_object(Map_Object* object) {
         std::remove(layer_objects.begin(), layer_objects.end(), object),
         layer_objects.end()
     );
-	erase_object_references(object);
+    erase_object_references(object);
 }
 
 void Map::erase_object_references(Map_Object* object) {
-	object_name_to_id.erase(capitalize(object->get_name()));
-	objects.erase(object->get_id());
+    object_name_to_id.erase(capitalize(object->get_name()));
+    objects.erase(object->get_id());
 }
 
 int Map::layer_count() {
@@ -291,26 +290,26 @@ Layer* Map::get_layer(const std::string& name) {
 }
 
 void Map::add_layer(Layer_Types type) {
-	std::shared_ptr<Layer> layer;
-	switch (type) {
-	case Layer_Types::OBJECT:
-		layer = std::make_shared<Object_Layer>();
-		break;
-	case Layer_Types::IMAGE:
-		layer = std::make_shared<Image_Layer>();
-		break;
-	case Layer_Types::TILE:
-		layer = std::make_shared<Tile_Layer>();
-		break;
-	default:
-		return;
-	}
-	std::unordered_set<std::string> names;
-	for (auto& layer : layers) {
-		names.insert(layer->name);
-	}
-	layer->name = detail::generate_unique_name(names);
-	layers.push_back(layer);
+    std::shared_ptr<Layer> layer;
+    switch (type) {
+    case Layer_Types::OBJECT:
+        layer = std::make_shared<Object_Layer>();
+        break;
+    case Layer_Types::IMAGE:
+        layer = std::make_shared<Image_Layer>();
+        break;
+    case Layer_Types::TILE:
+        layer = std::make_shared<Tile_Layer>();
+        break;
+    default:
+        return;
+    }
+    std::unordered_set<std::string> names;
+    for (auto& layer : layers) {
+        names.insert(layer->name);
+    }
+    layer->name = detail::generate_unique_name(names);
+    layers.push_back(layer);
     if (type == Layer_Types::OBJECT)
         object_layers.push_back((Object_Layer*)layer.get());
 }
@@ -327,7 +326,7 @@ void Map::delete_layer(const std::string& name) {
             auto obj_layer = static_cast<Object_Layer*>(*layer);
             for (auto& obj : obj_layer->objects)
             {
-				erase_object_references(obj);
+                erase_object_references(obj);
             }
             layer = object_layers.erase(layer);
         }
@@ -438,8 +437,8 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         if (auto source_node = tileset_node->first_attribute("source")) {
             std::string source = source_node->value();
             tileset_ptr = Tileset::load(source);
-			tileset_ptr->first_id = lexical_cast<int>(
-				tileset_node->first_attribute("firstgid")->value());
+            tileset_ptr->first_id = lexical_cast<int>(
+                tileset_node->first_attribute("firstgid")->value());
         } else {
             tileset_ptr = Tileset::load(*tileset_node);
         }

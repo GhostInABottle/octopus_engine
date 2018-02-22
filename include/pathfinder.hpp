@@ -16,7 +16,7 @@ namespace std {
     struct hash<xd::ivec2> {
        std::hash<int> xh;
        std::hash<int> yh;
-        size_t operator()(xd::ivec2 v) const throw() { 
+        size_t operator()(xd::ivec2 v) const throw() {
                 return xh(v.x) ^ yh(v.y);
         }
     };
@@ -125,7 +125,7 @@ private:
     // Can we skip this node? (because it's already in a list)
     bool skip_node(const Node& node);
     // No. of frames to wait before attempting to find another path in case
-    // of collision; -1 disables such collision behevior. 
+    // of collision; -1 disables such collision behevior.
     const static int collision_wait = 5;
     // Maximum no. of attempts to find another path on collision. (-1 = infinity)
     const static int collision_limit = 30;

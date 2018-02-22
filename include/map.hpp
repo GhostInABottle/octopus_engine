@@ -71,20 +71,20 @@ public:
         int layer_index = -1, Object_Layer* layer = nullptr);
     Map_Object* add_object(Map_Object* object,
         int layer_index = -1, Object_Layer* layer = nullptr);
-	// Create and add an object
-	Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
-		xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
+    // Create and add an object
+    Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
+        xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
     Map_Object* get_object(const std::string& name);
-	// Get object by ID
-	Map_Object* get_object(int id);
+    // Get object by ID
+    Map_Object* get_object(int id);
     // Get all objects
     Object_Map& get_objects() {
         return objects;
     }
     // Delete object
     void delete_object(const std::string& name);
-	void delete_object(int id);
+    void delete_object(int id);
     void delete_object(Map_Object* object);
     // Get number of layers
     int layer_count();
@@ -92,9 +92,9 @@ public:
     Layer* get_layer(int id);
     // Get layer by name
     Layer* get_layer(const std::string& name);
-	// Add a new layer
-	void add_layer(Layer_Types type);
-	// Delete layer with given name
+    // Add a new layer
+    void add_layer(Layer_Types type);
+    // Delete layer with given name
     void delete_layer(const std::string& name);
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
@@ -169,16 +169,16 @@ private:
     int tile_height;
     // Map file name
     std::string filename;
-	// Counter to set IDs of new objects
-	int next_object_id;
+    // Counter to set IDs of new objects
+    int next_object_id;
     // Map properties
     Properties properties;
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Hash table of object IDs to objects
     Object_Map objects;
-	// Hash table of object names to IDs
-	std::unordered_multimap<std::string, int> object_name_to_id;
+    // Hash table of object names to IDs
+    std::unordered_multimap<std::string, int> object_name_to_id;
     // List of map tilesets
     std::vector<Tileset> tilesets;
     // Obstruction data tileset
@@ -199,8 +199,8 @@ private:
     bool needs_redraw;
     // Did any objects move?
     bool objects_moved;
-	// Remove object from ID and name hash tables
-	void erase_object_references(Map_Object* object);
+    // Remove object from ID and name hash tables
+    void erase_object_references(Map_Object* object);
 };
 
 class Map_Renderer : public xd::render_component<Map> {

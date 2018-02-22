@@ -6,12 +6,12 @@
 
 
 Show_Pose_Command::Show_Pose_Command(Sprite_Holder* holder,
-	const std::string& pose_name, const std::string& state,
-	Direction dir) : holder(holder) {
-	holder->set_pose(pose_name, state, dir);
+    const std::string& pose_name, const std::string& state,
+    Direction dir) : holder(holder) {
+    holder->set_pose(pose_name, state, dir);
 }
 
 bool Show_Pose_Command::is_complete() const {
-	auto sprite = holder->get_sprite();
-	return stopped || sprite->get_pose().repeats == -1 || sprite->is_stopped();
+    auto sprite = holder->get_sprite();
+    return stopped || sprite->get_pose().repeats == -1 || sprite->is_stopped();
 }

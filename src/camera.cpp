@@ -48,7 +48,7 @@ namespace detail {
 
 }
 
-Camera::Camera(Game& game) 
+Camera::Camera(Game& game)
         : game(game),
         position(xd::vec2(0.0f, 0.0f)),
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),

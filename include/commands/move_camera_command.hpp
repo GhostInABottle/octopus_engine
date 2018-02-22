@@ -10,16 +10,16 @@ class Map_Object;
 
 class Move_Camera_Command : public Command {
 public:
-	Move_Camera_Command(Camera& camera, float x, float y, float speed);
-	Move_Camera_Command(Camera& camera, Direction dir, float pixels, float speed);
-	void execute();
-	bool is_complete() const;
+    Move_Camera_Command(Camera& camera, float x, float y, float speed);
+    Move_Camera_Command(Camera& camera, Direction dir, float pixels, float speed);
+    void execute();
+    bool is_complete() const;
 private:
-	Camera& camera;
-	const Map_Object* camera_object;
-	xd::vec2 direction;
-	float pixels;
-	float speed;
+    Camera& camera;
+    const Map_Object* camera_object;
+    xd::vec2 direction;
+    float pixels;
+    float speed;
 };
 
 #endif

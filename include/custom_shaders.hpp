@@ -5,7 +5,7 @@
 
 class Custom_Shader : public xd::shader_program {
 public:
-	Custom_Shader(const std::string& vertex_src, const std::string& fragment_src);
+    Custom_Shader(const std::string& vertex_src, const std::string& fragment_src);
 };
 
 #endif

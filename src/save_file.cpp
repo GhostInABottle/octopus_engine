@@ -115,7 +115,7 @@ namespace detail {
     }
 }
 
-Save_File::Save_File(lua_State* state, luabind::object data) : 
+Save_File::Save_File(lua_State* state, luabind::object data) :
     state(state), data(data) {}
 
 std::ostream& operator<<(std::ostream& stream, const Save_File& save_file) {

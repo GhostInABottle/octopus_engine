@@ -97,7 +97,7 @@ public:
 
 class Screen_Shaker : public xd::logic_component<Camera> {
 public:
-    Screen_Shaker(float str, float spd) 
+    Screen_Shaker(float str, float spd)
             : strength(str), speed(spd), direction(1), offset(0) {}
     float shake_offset() { return offset; }
     void update(Camera& camera);

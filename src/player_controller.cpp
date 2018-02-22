@@ -44,7 +44,7 @@ void Player_Controller::update(Map_Object& object) {
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
             auto rec = map->passable(object, dir, check_type);
-            auto& others = rec.other_objects; 
+            auto& others = rec.other_objects;
             if (others.find(collision.other_object->get_name()) == others.end()) {
                 passable = true;
                 break;
@@ -75,9 +75,9 @@ void Player_Controller::update(Map_Object& object) {
             }
         }
     } else if (collision.type == Collision_Types::NONE) {
-		auto old_area = object.get_collision_area();
-		if (old_area)
-			old_area->run_exit_script();
+        auto old_area = object.get_collision_area();
+        if (old_area)
+            old_area->run_exit_script();
         object.set_collision_area(nullptr);
     }
 

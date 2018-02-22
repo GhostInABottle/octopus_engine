@@ -106,8 +106,8 @@ public:
     Map* get_map() { return map.get(); }
     // Create a new map
     void new_map(xd::ivec2 map_size, xd::ivec2 tile_size);
-	// Add a canvas to current map
-	void add_canvas(std::shared_ptr<Canvas> canvas);
+    // Add a canvas to current map
+    void add_canvas(std::shared_ptr<Canvas> canvas);
     // Get the camera
     Camera* get_camera() { return camera.get(); }
     // Get the player

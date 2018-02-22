@@ -3,7 +3,7 @@
 
 class Command {
 public:
-	Command() : stopped(false) {}
+    Command() : stopped(false) {}
     // Called while the command isn't completed
     virtual void execute() = 0;
     // Is the command completed?
@@ -14,7 +14,7 @@ public:
     virtual void stop() { stopped = true; }
     virtual ~Command() = 0;
 protected:
-	bool stopped;
+    bool stopped;
 };
 
 #endif

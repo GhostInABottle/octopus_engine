@@ -3,7 +3,7 @@
 #include "../../include/tileset.hpp"
 
 BOOST_AUTO_TEST_CASE(tileset_load) {
-    char text[] = 
+    char text[] =
         "<tileset firstgid=\"1\" name=\"test sheet\" tilewidth=\"8\" tileheight=\"8\"> \
             <properties> \
                 <property name=\"prop1\" value=\"1\"/> \

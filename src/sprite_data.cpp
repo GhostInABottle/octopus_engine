@@ -36,7 +36,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node) {
     using boost::lexical_cast;
-    
+
     std::unique_ptr<Sprite_Data> sprite_ptr(new Sprite_Data(manager));
 
     // Image and transparent color
@@ -57,7 +57,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     }
 
     // Poses
-    for (auto pose_node = node.first_node("Pose"); 
+    for (auto pose_node = node.first_node("Pose");
             pose_node; pose_node = pose_node->next_sibling("Pose")) {
         Pose pose;
         if (auto node = pose_node->first_node("Bounding-Box")) {
@@ -100,7 +100,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
         }
 
         // Frames
-        for (auto frame_node = pose_node->first_node("Frame"); 
+        for (auto frame_node = pose_node->first_node("Frame");
                 frame_node; frame_node = frame_node->next_sibling("Frame")) {
             Frame frame;
             if (auto attr = frame_node->first_attribute("Duration"))
@@ -160,7 +160,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
         int pose_index = sprite_ptr->poses.size() - 1;
 
         // Tags
-        for (auto tag_node = pose_node->first_node("Tag"); 
+        for (auto tag_node = pose_node->first_node("Tag");
                 tag_node; tag_node = tag_node->next_sibling("Tag")) {
             std::string key = capitalize(tag_node->first_attribute("Key")->value());
             std::string value = capitalize(tag_node->first_attribute("Value")->value());
