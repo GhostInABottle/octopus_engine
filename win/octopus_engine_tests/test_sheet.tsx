@@ -3,7 +3,7 @@
  <properties>
   <property name="prop1" value="1"/>
  </properties>
- <image source="test_tileset.gif" trans="ff00ff" width="128" height="256"/>
+ <image source="../data/test_tileset.gif" trans="ff00ff" width="128" height="256"/>
  <tile id="0">
   <properties>
    <property name="a" value="b"/>

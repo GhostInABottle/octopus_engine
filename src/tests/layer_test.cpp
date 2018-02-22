@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
 BOOST_AUTO_TEST_CASE(image_layer_load) {
     char text[] = 
         "<imagelayer name=\"some image\" width=\"40\" height=\"40\" opacity=\"0.55\" visible=\"0\" > \
-            <image source=\"test_tileset.gif\" trans=\"ff5fff\"/> \
+            <image source=\"../data/test_tileset.gif\" trans=\"ff5fff\"/> \
             <properties> \
                 <property name=\"test\" value=\"1\"/> \
             </properties> \
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
     BOOST_CHECK_EQUAL(layer->visible, false);
     BOOST_CHECK_EQUAL(layer->properties["test"], "1");
     Image_Layer* image_layer = static_cast<Image_Layer*>(layer.get());
-    BOOST_CHECK_EQUAL(image_layer->image_source, "test_tileset.gif");
+    BOOST_CHECK_EQUAL(image_layer->image_source, "../data/test_tileset.gif");
     BOOST_CHECK_CLOSE(image_layer->image_trans_color.g, 0.372549f, 0.1f);
     BOOST_CHECK(image_layer->image_texture.get());
 }

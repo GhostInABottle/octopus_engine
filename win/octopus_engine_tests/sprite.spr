@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Sprite Image="../data/player.png" Transparent-Color="#FF00FF">
+  <Pose Name="Walk Up" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="42" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="42" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Walk Right" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="21" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="21" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Walk Down" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="0" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Walk Left" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="63" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="63" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Face Up" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="42" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Face Right" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="21" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Face Down" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="0" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Face Left" Duration="180">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="63" Y="0" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Name="Pose Test" Duration="180" Repeats="3">
+    <Bounding-Box X="0" Y="29" Width="21" Height="12" />
+    <Frame>
+      <Rectangle X="0" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame Duration="600" X-Mag="1.98833334" Angle="29" Tween="true">
+      <Rectangle X="0" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame X-Mag="2" Angle="30">
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+    <Frame Duration="600" Tween="true">
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="0" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+</Sprite>

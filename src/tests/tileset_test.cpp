@@ -8,7 +8,7 @@ BOOST_AUTO_TEST_CASE(tileset_load) {
             <properties> \
                 <property name=\"prop1\" value=\"1\"/> \
             </properties> \
-            <image source=\"test_tileset.gif\" trans=\"ff00ff\" width=\"128\" height=\"256\"/> \
+            <image source=\"../data/test_tileset.gif\" trans=\"ff00ff\" width=\"128\" height=\"256\"/> \
             <tile id=\"0\"> \
                 <properties> \
                     <property name=\"a\" value=\"b\"/> \
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(tileset_load) {
     BOOST_CHECK_EQUAL(tileset->tile_width, 8);
     BOOST_CHECK_EQUAL(tileset->tile_height, 8);
     BOOST_CHECK_EQUAL(tileset->properties["prop1"], "1");
-    BOOST_CHECK_EQUAL(tileset->image_source, "test_tileset.gif");
+    BOOST_CHECK_EQUAL(tileset->image_source, "../data/test_tileset.gif");
     BOOST_CHECK_EQUAL(tileset->tiles.size(), 2);
     BOOST_CHECK_EQUAL(tileset->tiles[0].properties["x"], "y");
     BOOST_CHECK_EQUAL(tileset->tiles[1].id, 272);

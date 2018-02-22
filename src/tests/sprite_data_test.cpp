@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load_file) {
 BOOST_AUTO_TEST_CASE(sprite_data_load) {
     char text[] =
         "<?xml version=\"1.0\"?> \
-        <Sprite Image=\"player.png\"> \
+        <Sprite Image=\"../data/player.png\"> \
           <Pose Name=\"Cool Pose\" Repeats=\"3\"> \
             <Bounding-Box X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
             <Frame Duration=\"200\" X-Mag=\"2.5\" Y-Mag=\"4.0\" Angle=\"10\" Opacity=\"0.5\" Tween=\"true\"> \

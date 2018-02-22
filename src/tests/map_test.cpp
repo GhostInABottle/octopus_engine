@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(map_load) {
                 <properties> \
                     <property name=\"prop1\" value=\"1\"/> \
                 </properties> \
-                <image source=\"test_tileset.gif\" trans=\"ff00ff\" width=\"128\" height=\"256\"/> \
+                <image source=\"../data/test_tileset.gif\" trans=\"ff00ff\" width=\"128\" height=\"256\"/> \
                 <tile id=\"0\"> \
                     <properties> \
                         <property name=\"a\" value=\"b\"/> \
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(map_load) {
                 </tile> \
             </tileset> \
             <tileset firstgid=\"513\" name=\"collision\" tilewidth=\"8\" tileheight=\"8\"> \
-                <image source=\"obstruction.png\" trans=\"ff00ff\" width=\"64\" height=\"8\"/> \
+                <image source=\"../data/obstruction.png\" trans=\"ff00ff\" width=\"64\" height=\"8\"/> \
             </tileset> \
             <layer name=\"ground\" width=\"40\" height=\"40\"> \
                 <properties> \
