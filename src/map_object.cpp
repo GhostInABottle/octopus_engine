@@ -10,15 +10,14 @@
 #include <boost/lexical_cast.hpp>
 
 Map_Object::Map_Object(Game& game, std::string name,
-        xd::asset_manager* manager, std::string sprite_file,
-        xd::vec2 pos, Direction dir) :
+        std::string sprite_file, xd::vec2 pos, Direction dir) :
         game(game), layer(nullptr), id(-1), color(1.0f), gid(-1), opacity(1.0f),
         visible(true), disabled(false), stopped(false), frozen(false),
         passthrough(false), speed(1), name(name), position(pos), state("FACE"),
         direction(dir), collision_area(nullptr), triggered_object(nullptr),
         draw_order(NORMAL) {
-    if (manager && !sprite_file.empty()) {
-        set_sprite(game, *manager, sprite_file);
+    if (!sprite_file.empty()) {
+        set_sprite(game, sprite_file);
     }
     position.y -= get_bounding_box().y;
 }
@@ -141,13 +140,6 @@ void  Map_Object::set_exit_script_source(const std::string& script) {
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
-    // Player sprite needs to be persisted across maps
-    auto& manager = this == game.get_player() ? game.get_asset_manager() :
-        game.get_map()->get_asset_manager();
-    set_sprite(game, manager, filename, pose_name);
-}
-
-void Map_Object::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
     if (!file_exists(filename)) {
         LOGGER_W << "Tried to set sprite for map object " << name <<
                     " to nonexistent file " << filename;
@@ -158,7 +150,8 @@ void Map_Object::set_sprite(Game& game, xd::asset_manager& manager, const std::s
             return;
         del_component(sprite);
     }
-    sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
+    sprite = xd::create<Sprite>(game,
+        Sprite_Data::load(game.get_asset_manager(), filename));
     add_component(sprite);
     set_pose(pose_name);
 }
@@ -227,8 +220,7 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
     return node;
 }
 
-std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, 
-        Game& game, xd::asset_manager& manager) {
+std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& game) {
     using boost::lexical_cast;
     std::unique_ptr<Map_Object> object_ptr(new Map_Object(game));
 
@@ -258,7 +250,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node,
     read_properties(properties, node);
 
     if (properties.find("sprite") != properties.end())
-        object_ptr->set_sprite(game, manager, properties["sprite"]);
+        object_ptr->set_sprite(game, properties["sprite"]);
     if (properties.find("direction") != properties.end())
         object_ptr->direction = string_to_direction(properties["direction"]);
     if (properties.find("pose") != properties.end())

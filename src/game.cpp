@@ -14,6 +14,7 @@
 #include "../include/log.hpp"
 #include <xd/graphics.hpp>
 #include <xd/factory.hpp>
+#include <xd/asset_manager.hpp>
 #include <xd/lua/virtual_machine.hpp>
 #include <luabind/luabind.hpp>
 #include <algorithm>
@@ -68,7 +69,7 @@ struct Game::Impl {
     xd::shader_program* current_shader;
     xd::sprite_batch full_screen_batch;
     xd::texture::ptr full_screen_texture;
-    // Asset manager for player sprite
+    // Texture asset manager
     xd::asset_manager asset_manager;
     // The shared Lua virtual machine
     xd::lua::virtual_machine vm;
@@ -125,7 +126,6 @@ Game::Game(bool editor_mode) :
     auto player_ptr = new Map_Object(
         *this,
         "player",
-        &pimpl->asset_manager,
         Configurations::get<std::string>("startup.player-sprite"), 
         xd::vec2(
             Configurations::get<float>("startup.player-position-x"),
@@ -395,11 +395,6 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
 	map->get_canvases().push_back(canvas);
-}
-
-void Game::remove_canvas(std::shared_ptr<Canvas> canvas) {
-	auto& cvs = map->get_canvases();
-	cvs.erase(std::remove(cvs.begin(), cvs.end(), canvas), cvs.end());
 }
 
 void Game::Impl::render_shader(Game& game) {

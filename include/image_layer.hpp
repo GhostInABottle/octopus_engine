@@ -11,9 +11,6 @@
 
 class Game;
 class Camera;
-namespace xd {
-    class asset_manager;
-}
 
 struct Image_Layer : public Layer, public Sprite_Holder {
     // Does the layer repeat?
@@ -37,14 +34,14 @@ struct Image_Layer : public Layer, public Sprite_Holder {
     Image_Layer() : repeat(false), fixed(false) {}
     // Set the sprite
     using Sprite_Holder::set_sprite;
-    void set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name = "");
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
     // Set image
     void set_image(const std::string& filename);
     // Get the sprite, if any
     Sprite* get_sprite() { return sprite.get(); }
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Layer> load(rapidxml::xml_node<>& node,
-        Game& game, const Camera& camera, xd::asset_manager& manager);
+        Game& game, const Camera& camera);
 };
 
 #endif

@@ -9,7 +9,6 @@
 #include <xd/system.hpp>
 #include <xd/entity.hpp>
 #include <xd/graphics/sprite_batch.hpp>
-#include <xd/asset_manager.hpp>
 #include <xd/types.hpp>
 #include "rapidxml.hpp"
 #include "common.hpp"
@@ -126,13 +125,10 @@ public:
     std::string get_filename() const {
         return filename;
     }
-    xd::asset_manager& get_asset_manager() {
-        return asset_manager;
-    }
     const Tileset& get_tileset(int index) const {
         return tilesets[index];
     }
-    std::vector<std::shared_ptr<Canvas>>& get_canvases() {
+    std::vector<std::weak_ptr<Canvas>>& get_canvases() {
         return canvases;
     }
     bool get_objects_moved() const {
@@ -179,8 +175,6 @@ private:
     Properties properties;
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
-    // Texture asset manager
-    xd::asset_manager asset_manager;
     // Hash table of object IDs to objects
     Object_Map objects;
 	// Hash table of object names to IDs
@@ -196,7 +190,7 @@ private:
     // List of map layers
     std::vector<std::shared_ptr<Layer>> layers;
     // List of canvases to draw
-    std::vector<std::shared_ptr<Canvas>> canvases;
+    std::vector<std::weak_ptr<Canvas>> canvases;
     // Background music
     std::string background_music;
     // Startup script files

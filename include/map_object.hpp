@@ -28,8 +28,7 @@ public:
         bool is_global;
     };
     // Map object onstructor
-    Map_Object(Game& game, std::string name = "",
-        xd::asset_manager* manager = nullptr, std::string sprite_file = "",
+    Map_Object(Game& game, std::string name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
@@ -175,10 +174,7 @@ public:
     const Sprite* get_sprite() const {
         return sprite.get();
     }
-    // Set sprite using map's asset manager for NPCs and global one for player
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
-    // Set sprite using specified asset manager
-    void set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name = "");
     float get_speed() const {
         return speed;
     }
@@ -234,8 +230,7 @@ public:
     // Serialize object to TMX data
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load the object from TMX data
-    static std::unique_ptr<Map_Object> load(rapidxml::xml_node<>& node,
-        Game& game, xd::asset_manager& manager);
+    static std::unique_ptr<Map_Object> load(rapidxml::xml_node<>& node, Game& game);
 private:
     // Game instance
     Game& game;

@@ -30,7 +30,7 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
     // Objects
     for (auto object_node = node.first_node("object");
             object_node; object_node = object_node->next_sibling("object")) {
-        auto object_ptr = Map_Object::load(*object_node, game, map.get_asset_manager());
+        auto object_ptr = Map_Object::load(*object_node, game);
         auto object = std::shared_ptr<Map_Object>(object_ptr.release());
         map.add_object(object, -1, layer_ptr);
 		if (object->get_name().empty()) {

@@ -16,7 +16,10 @@ Canvas_Renderer::Canvas_Renderer() {
 void Canvas_Renderer::render(Map& map) {
     auto& game = map.get_game();
     auto& canvases = map.get_canvases();
-    for (auto& canvas : canvases) {
+    for (auto& weak_canvas : canvases) {
+        auto canvas = weak_canvas.lock();
+        if (!canvas)
+            continue;
         if (canvas->is_visible()) {
             // Limit drawing to scissor rectangle, if specified
             xd::rect scissor = canvas->get_scissor_box();

@@ -220,7 +220,7 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
 
 Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
 	xd::vec2 pos, Direction dir) {
-	auto object_ptr = new Map_Object(game, name, &asset_manager, sprite_file, pos, dir);
+	auto object_ptr = new Map_Object(game, name, sprite_file, pos, dir);
 	add_object(object_ptr);
 	if (name.empty())
 		object_ptr->set_name("UNTITLED" + object_ptr->get_id());
@@ -462,7 +462,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         }
         else if (node_name == "imagelayer") {
             layer = std::shared_ptr<Layer>(Image_Layer::load(*layer_node, game,
-                *game.get_camera(), map_ptr->asset_manager));
+                *game.get_camera()));
         }
         else if (node_name == "objectgroup") {
             layer = std::shared_ptr<Layer>(Object_Layer::load(*layer_node, game, *game.get_camera(), *map_ptr));

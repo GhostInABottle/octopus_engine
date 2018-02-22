@@ -21,7 +21,3 @@ void Sprite_Holder::reset() {
     if (get_sprite())
         get_sprite()->reset();
 }
-
-void Sprite_Holder::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
-    set_sprite(game, game.get_asset_manager(), filename, pose_name);
-}

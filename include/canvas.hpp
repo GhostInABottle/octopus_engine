@@ -67,7 +67,7 @@ public:
     // Update the image
     void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
-    void set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name = "");
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
     // Update the text for a text canvas
     void set_text(const std::string& text);
     // Get the current canvas text
@@ -313,7 +313,7 @@ public:
         return style->type();
     }
     void set_text_type(const std::string& type) {
-        if (style->type() == type)
+        if (style->has_type() && style->type() == type)
             return;
         style->type(type);
         redraw_needed = true;

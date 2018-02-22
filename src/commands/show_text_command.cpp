@@ -168,7 +168,6 @@ bool Show_Text_Command::is_complete() const {
         return false;
     if ((stopped || complete) && canvas->is_visible()) {
         canvas->set_visible(false);
-        game.remove_canvas(canvas);
         if (duration == -1) {
             game.get_player()->set_disabled(was_disabled);
         }

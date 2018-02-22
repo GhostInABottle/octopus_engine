@@ -17,6 +17,7 @@
 #include "../include/log.hpp"
 #include <luabind/adopt_policy.hpp>
 #include <luabind/tag_function.hpp>
+#include <luabind/std_shared_ptr_converter.hpp>
 #include <xd/audio.hpp>
 
 Game* Scripting_Interface::game = nullptr;
@@ -725,7 +726,7 @@ void Scripting_Interface::setup_scripts() {
             }
         )),
         // A drawing canvas
-        class_<Canvas, Sprite_Holder>("Canvas_Class")
+        class_<Canvas, Sprite_Holder, std::shared_ptr<Sprite_Holder>>("Canvas_Class")
             .property("position", &Canvas::get_position, &Canvas::set_position)
             .property("x", &Canvas::get_x, &Canvas::set_x)
             .property("y", &Canvas::get_y, &Canvas::set_y)
@@ -863,8 +864,8 @@ void Scripting_Interface::setup_scripts() {
                 }
             )),
         // Canvas constructor
-        def("Canvas", tag_function<Canvas* (const std::string&, float, float)>(
-            [&](const std::string& filename, float x, float y) -> Canvas* {
+        def("Canvas", tag_function<std::shared_ptr<Sprite_Holder> (const std::string&, float, float)>(
+            [&](const std::string& filename, float x, float y) -> std::shared_ptr<Sprite_Holder> {
                 std::shared_ptr<Canvas> canvas;
                 auto extension = filename.substr(filename.find_last_of(".") + 1);
                 if (extension == "spr")
@@ -872,20 +873,20 @@ void Scripting_Interface::setup_scripts() {
                 else
                     canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y));
                 game->add_canvas(canvas);
-                return canvas.get();
+                return canvas;
             }
         )),
         // Canvas constructor (with transparent color as vec4)
-        def("Canvas", tag_function<Canvas* (const std::string&, float, float, const xd::vec4&)>(
-            [&](const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
+        def("Canvas", tag_function<std::shared_ptr<Sprite_Holder>(const std::string&, float, float, const xd::vec4&)>(
+            [&](const std::string& filename, float x, float y, const xd::vec4& trans) -> std::shared_ptr<Sprite_Holder> {
                 auto canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y), trans);
                 game->add_canvas(canvas);
-                return canvas.get();
+                return canvas;
             }
         )),
         // Canvas constructor (with hex trans color or sprite with pose name)
-        def("Canvas", tag_function<Canvas* (const std::string&, float, float, const std::string&)>(
-            [&](const std::string& filename, float x, float y, const std::string& trans_or_pose) -> Canvas* {
+        def("Canvas", tag_function<std::shared_ptr<Sprite_Holder>(const std::string&, float, float, const std::string&)>(
+            [&](const std::string& filename, float x, float y, const std::string& trans_or_pose) -> std::shared_ptr<Sprite_Holder> {
                std::shared_ptr<Canvas> canvas;
                 auto extension = filename.substr(filename.find_last_of(".") + 1);
                 if (extension == "spr")
@@ -893,15 +894,15 @@ void Scripting_Interface::setup_scripts() {
                 else
                     canvas = std::make_shared<Canvas>(filename, xd::vec2(x, y), hex_to_color(trans_or_pose));
                 game->add_canvas(canvas);
-                return canvas.get();
+                return canvas;
             }
         )),
         // Canvas constructor (with text and position)
-        def("Canvas", tag_function<Canvas* (float, float, const std::string&)>(
-            [&](float x, float y, const std::string& text) -> Canvas* {
+        def("Canvas", tag_function<std::shared_ptr<Sprite_Holder> (float, float, const std::string&)>(
+            [&](float x, float y, const std::string& text) -> std::shared_ptr<Sprite_Holder> {
                 auto canvas = std::make_shared<Canvas>(*game, xd::vec2(x, y), text);
                 game->add_canvas(canvas);
-                return canvas.get();
+                return canvas;
             }
         )),
         // Show some text

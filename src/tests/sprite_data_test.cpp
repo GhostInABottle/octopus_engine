@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <xd/asset_manager.hpp>
 #include "../../include/rapidxml.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/map.hpp"

@@ -16,7 +16,7 @@ Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_na
         position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
         color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
     children_type = Canvas::Type::SPRITE;
-    set_sprite(game, game.get_map()->get_asset_manager(), sprite, pose_name);
+    set_sprite(game, sprite, pose_name);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position) :
@@ -66,12 +66,13 @@ void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
     redraw_needed = true;
 }
 
-void Canvas::set_sprite(Game& game, xd::asset_manager& manager, const std::string& filename, const std::string& pose_name) {
+void Canvas::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
     if (this->filename == filename)
         return;
     type = Canvas::Type::SPRITE;
     this->filename = filename;
-    sprite = std::make_unique<Sprite>(game, Sprite_Data::load(manager, filename));
+    sprite = std::make_unique<Sprite>(game,
+        Sprite_Data::load(game.get_asset_manager(), filename));
     set_pose(pose_name, "", Direction::NONE);
     redraw_needed = true;
 }

@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <xd/audio/music.hpp>
+#include <xd/asset_manager.hpp>
 #include "../../include/rapidxml.hpp"
 #include "../../include/map.hpp"
 #include "../../include/game.hpp"
@@ -51,8 +52,7 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
     rapidxml::xml_node<>* node = doc.first_node("imagelayer");
     BOOST_CHECK(node);
     xd::asset_manager manager;
-    auto layer = Image_Layer::load(*node, *detail::game, *detail::game->get_camera(),
-        detail::game->get_asset_manager());
+    auto layer = Image_Layer::load(*node, *detail::game, *detail::game->get_camera());
     BOOST_CHECK_EQUAL(layer->name, "some image");
     BOOST_CHECK_CLOSE(layer->opacity, 0.55f, 0.001f);
     BOOST_CHECK_EQUAL(layer->visible, false);

@@ -1,6 +1,7 @@
 #include "../include/image_layer.hpp"
 #include "../include/image_layer_renderer.hpp"
 #include "../include/image_layer_updater.hpp"
+#include "../include/game.hpp"
 #include "../include/utility.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/sprite_data.hpp"
@@ -9,14 +10,14 @@
 #include <xd/system.hpp>
 #include <xd/factory.hpp>
 
-void Image_Layer::set_sprite(Game& game, xd::asset_manager& manager,
-        const std::string& filename, const std::string& pose_name) {
+void Image_Layer::set_sprite(Game& game, const std::string& filename,
+        const std::string& pose_name) {
     if (!file_exists(filename)) {
         LOGGER_W << "Tried to set sprite for layer " << name <<
                     " to nonexistent file " << filename;
         return;
     }
-    sprite = xd::create<Sprite>(game, Sprite_Data::load(manager, filename));
+    sprite = xd::create<Sprite>(game, Sprite_Data::load(game.get_asset_manager(), filename));
     set_pose(pose_name, "", Direction::NONE);
 }
 
@@ -46,8 +47,7 @@ rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
     return node;
 }
 
-std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
-        const Camera& camera, xd::asset_manager& manager) {
+std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera) {
     using boost::lexical_cast;
     Image_Layer* layer_ptr = new Image_Layer();
     layer_ptr->Layer::load(node);
@@ -69,7 +69,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
 
     // Image
     if (!sprite.empty()) {
-        layer_ptr->set_sprite(game, manager, sprite, pose);
+        layer_ptr->set_sprite(game, sprite, pose);
     } else if (auto image_node = node.first_node("image")) {
         std::string filename = image_node->first_attribute("source")->value();
         layer_ptr->image_source = normalize_slashes(filename);
