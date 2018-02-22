@@ -40,7 +40,8 @@ struct Game::Impl {
             was_stopped(false),
             pause_start_time(0),
             total_paused_time(0),
-            current_shader(nullptr) {}
+            current_shader(nullptr),
+            debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     std::vector<xd::sound::ptr> sounds;
     std::string playing_music_name;
@@ -73,6 +74,8 @@ struct Game::Impl {
     xd::asset_manager asset_manager;
     // The shared Lua virtual machine
     xd::lua::virtual_machine vm;
+    // Debug font style (FPS and time display)
+    xd::font_style debug_style;
     // Render a full-screen shader
     void render_shader(Game& game);
 };
@@ -94,6 +97,7 @@ Game::Game(bool editor_mode) :
     // Setup fonts
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
         .line_height(12.0f).force_autohint(true);
+    pimpl->debug_style.line_height(12.0f).force_autohint(true);
     auto font_file = Configurations::get<std::string>("font.default");
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     auto italic_font_file = Configurations::get<std::string>("font.italic");
@@ -241,13 +245,14 @@ void Game::render() {
         if (pimpl->current_shader)
             pimpl->render_shader(*this);
         // Draw FPS
-        if (pimpl->show_fps)
-            text_renderer.render(font, style, 5, 230,
+        if (pimpl->show_fps) {
+            text_renderer.render(font, pimpl->debug_style, 5, 230,
                 "FPS: " + boost::lexical_cast<std::string>(fps()));
+        }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
             auto seconds = std::to_string(clock->total_seconds());
-            text_renderer.render(font, style, 5, 220, seconds);
+            text_renderer.render(font, pimpl->debug_style, 5, 220, seconds);
         }
         window->swap();
     }
