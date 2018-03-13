@@ -103,7 +103,7 @@ void Canvas::set_text(const std::string& text) {
     redraw_needed = true;
     // Split tags across multiple lines
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
-    text_lines = split(text, "\n");
+    text_lines = split(text, "\n", false);
     if (text_lines.size() > 1) {
         struct tag_info {
             bool open;

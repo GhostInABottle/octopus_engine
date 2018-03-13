@@ -28,7 +28,7 @@ rapidxml::xml_attribute<>* xml_attribute(rapidxml::xml_document<>& doc,
 // Trim a string from both sides
 std::string trim(std::string s);
 // Split a string to a vector
-std::vector<std::string> split(const std::string& original, const std::string& delims);
+std::vector<std::string> split(const std::string& original, const std::string& delims, bool compress = true);
 // Return timestamp in "YYYY-MM-DD HH:MM:SS" format
 std::string timestamp(bool date_only = false);
 // Capitalize all characters in a string
