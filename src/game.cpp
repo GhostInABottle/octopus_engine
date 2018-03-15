@@ -251,7 +251,7 @@ void Game::render() {
         }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
-            auto seconds = std::to_string(clock->total_seconds());
+            auto seconds = std::to_string(clock->seconds());
             text_renderer.render(font, pimpl->debug_style, 5, 220, seconds);
         }
         window->swap();
@@ -325,8 +325,8 @@ bool Game::stopped() const {
     return clock->stopped();
 }
 
-int Game::total_seconds() const {
-    return clock->total_seconds();
+int Game::seconds() const {
+    return clock->seconds();
 }
 
 int Game::ticks() const {

@@ -15,12 +15,7 @@ public:
     // Resume game time
     void resume_time();
     // Get total time in seconds without applying a multipler
-    int actual_seconds() const;
-    // Get total time in seconds after applying multiplier
-    int total_seconds() const {
-        return static_cast<int>(actual_seconds() * time_multiplier);
-    }
-    void add_seconds(int seconds);
+    int seconds() const;
 private:
     Game& game;
     int start_time;
@@ -28,7 +23,6 @@ private:
     int stop_start_time;
     int total_stopped_time;
     int added_time;
-    float time_multiplier;
 };
 
 #endif

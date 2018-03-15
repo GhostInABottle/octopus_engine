@@ -484,7 +484,7 @@ void Scripting_Interface::setup_scripts() {
             .property("fps", &Game::fps)
             .property("frame_count", &Game::frame_count)
             .property("stopped", &Game::stopped)
-            .property("total_seconds", &Game::total_seconds)
+            .property("seconds", &Game::seconds)
             .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
@@ -523,11 +523,6 @@ void Scripting_Interface::setup_scripts() {
             .def("resume_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->resume_time();
             }))
-            .def("add_seconds", tag_function <void (Game*, int)>(
-                [](Game* game, int seconds) {
-                    game->get_clock()->add_seconds(seconds);
-                }
-            ))
             .def("load_map", tag_function<void (Game*, const std::string&, float, float, int)>(
                 [](Game* game, const std::string& filename, float x, float y, int dir) {
                     game->set_next_map(filename, x, y, static_cast<Direction>(dir));

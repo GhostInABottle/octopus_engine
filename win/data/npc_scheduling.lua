@@ -1,3 +1,10 @@
+local time_multiplier = tonumber(game:get_config('debug.time-multiplier'))
+
+-- Adjusted total seconds, includes added/paused time and modified by multiplier
+function total_seconds()
+    return game.seconds / time_multiplier
+end
+
 -- Get the seconds portion of given time
 function time_to_seconds(seconds)
     return seconds % 60
@@ -39,7 +46,7 @@ function NPC:__init(name, data)
     -- NPC direction
     self.direction = DOWN
     -- How fast game time is vs real time
-    self.time_multiplier = tonumber(game:get_config('debug.time-multiplier'))
+    self.time_multiplier = time_multiplier
     -- Time taken for a single frame
     self.frame_time = 1000 / tonumber(game:get_config('debug.logic-fps'))
     -- Last position
@@ -147,7 +154,7 @@ end
 -- Mark current keypoint as completed
 function NPC:complete_keypoint()
     self.last_keypoint.status = 'completed'
-    self.last_keypoint.completion_day = time_to_days(game.total_seconds)
+    self.last_keypoint.completion_day = time_to_days(total_seconds())
     self.last_keypoint.command_index = 1
     self.expected_completion = -1
 end
@@ -208,7 +215,7 @@ function NPC:process_map_command()
         end
         self.script_command = Wait_Command(
             duration * 1000,
-            time_without_days(game.total_seconds) * 1000)
+            time_without_days(total_seconds()) * 1000)
     elseif command.type == 'visibility' then
         self.visible = command.visible
         self.object.visible = command.visible
@@ -395,7 +402,6 @@ function NPC:advance_keypoint(keypoint, index, day)
             keypoint = schedule.keypoints[index]
             keypoint.day = prior_day
             keypoint.day_type = prior_day_type
-            keypoint.timestamp = -1
         else
             break
         end
@@ -518,8 +524,8 @@ function NPC:update()
         end
         return
     end
-    local day = time_to_days(game.total_seconds)
-    local current_time = time_without_days(game.total_seconds)
+    local day = time_to_days(total_seconds())
+    local current_time = time_without_days(total_seconds())
     if same_map and self:execute_pending_command(current_time) then
         return
     end

@@ -124,8 +124,8 @@ public:
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
     bool stopped() const;
-    // Total game time in seconds (with multiplier)
-    int total_seconds() const;
+    // Total game time in seconds
+    int seconds() const;
     // Time elapsed since game started (in ms)
     int ticks() const;
     // Manually set ticks
