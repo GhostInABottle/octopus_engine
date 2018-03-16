@@ -15,7 +15,7 @@ namespace detail {
             obj = map.add_new_object(name, sprite, pos);
         }
         obj->set_pose(type);
-        obj->set_opacity(0.5);
+        obj->set_opacity(0.25);
         obj->set_passthrough(true);
     }
 }
@@ -93,7 +93,7 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
     auto tile_pos = static_cast<xd::ivec2>(pos) / tile_width;
     if (!object.is_passthrough() && !map.tile_passable(tile_pos.x, tile_pos.y)) {
         if (detail::debug_mode)
-            detail::show_test_tile(map, tile_pos.x, tile_pos.y, "Block");
+            detail::show_test_tile(map, tile_pos.x, tile_pos.y, "TPass");
         return;
     }
     auto dir = facing_direction(parent.pos, pos, true);

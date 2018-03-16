@@ -7,6 +7,7 @@
 #include "../command.hpp"
 #include "../direction.hpp"
 #include "../collision_check_types.hpp"
+#include "../collision_record.hpp"
 
 struct Node;
 class Map_Object;
@@ -25,10 +26,12 @@ public:
     bool is_complete(int ticks) const;
 private:
     void init();
+    Collision_Record move_object(Direction dir);
     Map& map;
     Map_Object& object;
     xd::vec2 destination;
     std::deque<Direction> path;
+    bool path_found;
     float pixels;
     bool keep_trying;
     int last_attempt_time;

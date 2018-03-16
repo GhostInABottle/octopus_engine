@@ -113,7 +113,7 @@ inline Direction facing_direction(xd::ivec2 pos1, xd::ivec2 pos2) {
 }
 
 inline bool is_diagonal(Direction dir) {
-    Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1); 
+    Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
     return (dir & dir_minus_1) != Direction::NONE;
 }
 #endif
