@@ -118,18 +118,21 @@ void Camera::setup_opengl() const {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Camera::center_at(float x, float y) {
-    set_position(x - game.game_width / 2, y - game.game_height / 2);
+void Camera::center_at(xd::vec2 pos) {
+    set_position(pos - xd::vec2(game.game_width / 2, game.game_height / 2));
 }
 
-void Camera::set_position(float x, float y) {
+void Camera::center_at(const Map_Object& object) {
+    set_position(get_centered_position(object));
+}
+
+void Camera::set_position(xd::vec2 pos) {
     auto map = game.get_map();
     float map_width = static_cast<float>(map->get_width() * map->get_tile_width());
     float map_height = static_cast<float>(map->get_height() * map->get_tile_height());
     float right_limit = map_width - game.game_width;
     float bottom_limit = map_height - game.game_height;
-    position.x = x;
-    position.y = y;
+    position = pos;
     if (position.x < 0)
         position.x = 0;
     if (position.x > right_limit)
@@ -138,6 +141,17 @@ void Camera::set_position(float x, float y) {
         position.y = 0;
     if (position.y > bottom_limit)
         position.y = bottom_limit;
+}
+
+xd::vec2 Camera::get_centered_position(const Map_Object& object) {
+    xd::vec2 position = object.get_position();
+    auto sprite = object.get_sprite();
+    float width = sprite ? sprite->get_size().x : 0.0f;
+    float height = sprite ? sprite->get_size().y : 0.0f;
+    return xd::vec2(
+         position.x + width / 2 - game.game_width / 2,
+        position.y + height / 2 - game.game_height / 2
+    );
 }
 
 void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
@@ -196,8 +210,7 @@ void Object_Tracker::update(Camera& camera) {
     auto obj = camera.get_object();
     if (!obj)
         return;
-    xd::vec2 position = obj->get_position();
-    camera.center_at(position.x, position.y);
+    camera.center_at(*obj);
 }
 
 void Screen_Shaker::update(Camera& camera) {

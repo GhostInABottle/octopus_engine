@@ -595,7 +595,7 @@ void Scripting_Interface::setup_scripts() {
         class_<Camera>("Camera")
             .property("tint_color", &Camera::get_tint_color,
                 &Camera::set_tint_color)
-            .property("position", &Camera::get_position)
+            .property("position", &Camera::get_position, &Camera::set_position)
             .def("move", tag_function<Command_Result* (Camera*, int, float, float)>(
                 [&](Camera* camera, int dir, float pixels, float speed) {
                     auto si = game->get_current_scripting_interface();
@@ -646,7 +646,13 @@ void Scripting_Interface::setup_scripts() {
                     );
                 }
             ), adopt(result))
-            .def("center_at", &Camera::center_at)
+            .def("center_at", (void (Camera::*)(xd::vec2)) &Camera::center_at)
+            .def("center_at", (void (Camera::*)(const Map_Object&)) &Camera::center_at)
+            .def("center_at", tag_function<void (Camera*, float, float)>(
+                [](Camera* camera, float x, float y) {
+                    camera->center_at(xd::vec2(x, y));
+                }
+            ))
             .def("track_object", tag_function<void (Camera*, Map_Object*)>([&](Camera* camera, Map_Object* object) {
                 camera->set_object(object);
             }))
