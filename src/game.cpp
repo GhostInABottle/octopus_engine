@@ -44,7 +44,6 @@ struct Game::Impl {
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     std::vector<xd::sound::ptr> sounds;
-    std::string playing_music_name;
     bool show_fps;
     bool show_time;
     // Was game started in editor mode?
@@ -298,7 +297,6 @@ xd::lua::virtual_machine* Game::get_lua_vm() {
 }
 
 xd::music::ptr Game::load_music(const std::string& filename) {
-    pimpl->playing_music_name = filename;
     if (music)
         music->stop();
     music.reset(new xd::music(filename));
@@ -382,7 +380,8 @@ void Game::load_map(const std::string& filename) {
         player->set_collision_area(nullptr);
         // Play background music
         auto bg_music = map->get_bg_music_filename();
-        if (!bg_music.empty() && bg_music != pimpl->playing_music_name) {
+        auto playing_music = music ? music->get_filename() : "";
+        if (!bg_music.empty() && bg_music != music->get_filename()) {
             load_music(bg_music);
             music->set_looping(true);
             music->play();

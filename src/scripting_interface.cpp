@@ -485,6 +485,7 @@ void Scripting_Interface::setup_scripts() {
             .property("frame_count", &Game::frame_count)
             .property("stopped", &Game::stopped)
             .property("seconds", &Game::seconds)
+            .property("playing_music", &Game::playing_music)
             .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
@@ -515,7 +516,6 @@ void Scripting_Interface::setup_scripts() {
                 [](Game* game, const std::string& key) {
                     return game->triggered_once(key);
             }))
-            .def("playing_music", &Game::playing_music)
             .def("run_script", &Game::run_script)
             .def("stop_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->stop_time();
@@ -694,6 +694,7 @@ void Scripting_Interface::setup_scripts() {
             .property("volume", &xd::sound::get_volume, &xd::sound::set_volume)
             .property("pitch", &xd::sound::get_pitch, &xd::sound::set_pitch)
             .property("looping", &xd::sound::get_looping, &xd::sound::set_looping)
+            .property("filename", &xd::sound::get_filename)
             .def("play", &xd::sound::play)
             .def("pause", &xd::sound::pause)
             .def("stop", &xd::sound::stop)
@@ -712,6 +713,7 @@ void Scripting_Interface::setup_scripts() {
             .property("volume", &xd::music::get_volume, &xd::music::set_volume)
             .property("pitch", &xd::music::get_pitch, &xd::music::set_pitch)
             .property("looping", &xd::music::get_looping, &xd::music::set_looping)
+            .property("filename", &xd::music::get_filename)
             .def("play", &xd::music::play)
             .def("pause", &xd::music::pause)
             .def("stop", &xd::music::stop)

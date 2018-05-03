@@ -51,8 +51,8 @@ local objects = current_map:get_objects()
 for i,v in ipairs(objects) do
     print(i,": ", v.name)
 end
-print("Pausing music")
-local music = game:playing_music()
+local music = game.playing_music
+print("Pausing music " .. music.filename)
 music:pause()
 local o = current_map:get_object("jimbo")
 print("Type of Object:", type(o), " - type of Vec2: ", type(Vec2(0,0)))
