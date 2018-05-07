@@ -398,7 +398,7 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
 }
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
-    map->get_canvases().push_back(canvas);
+    map->add_canvas(canvas);
 }
 
 void Game::Impl::render_shader(Game& game) {

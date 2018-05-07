@@ -99,6 +99,12 @@ public:
     void set_name(const std::string& name) {
         this->name = name;
     }
+    int get_priority() const {
+        return priority;
+    }
+    void set_priority(int priority) {
+        this->priority = priority;
+    }
     xd::vec2 get_position() const {
         return position;
     }
@@ -336,6 +342,8 @@ public:
 private:
     // Optional name used to identify the canvas
     std::string name;
+    // Canvas priority, higher priority canvases are drawn on top
+    int priority;
     // Type of Canvas content
     Type type;
     // Type of Canvas children

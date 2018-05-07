@@ -44,7 +44,8 @@ Map::Map(Game& game) :
         collision_tileset(nullptr),
         collision_layer(nullptr),
         needs_redraw(true),
-        objects_moved(true) {
+        objects_moved(true),
+        canvases_sorted(false) {
     add_component(xd::create<Map_Renderer>());
     add_component(xd::create<Map_Updater>());
     add_component(xd::create<Canvas_Renderer>());
@@ -340,6 +341,32 @@ void Map::delete_layer(const std::string& name) {
               return capitalize(layer->name) == cap_name;
         }
     ), layers.end());
+}
+
+void Map::add_canvas(std::shared_ptr<Canvas> canvas) {
+    canvases_sorted = false;
+    canvas->set_priority(canvases.size());
+    canvases.push_back(canvas);
+}
+
+const std::vector<std::weak_ptr<Canvas>>& Map::get_canvases() {
+    if (!canvases_sorted) {
+        canvases_sorted = true;
+        std::sort(canvases.begin(), canvases.end(),
+            [](std::weak_ptr<Canvas>& weak_a, std::weak_ptr<Canvas> weak_b) {
+                auto a = weak_a.lock();
+                auto b = weak_b.lock();
+                if (a && b) {
+                    return a->get_priority() < b->get_priority();
+                } else if (a) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        );
+    }
+    return canvases;
 }
 
 void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {

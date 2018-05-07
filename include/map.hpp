@@ -96,6 +96,16 @@ public:
     void add_layer(Layer_Types type);
     // Delete layer with given name
     void delete_layer(const std::string& name);
+    // Add a canvas to the map
+    void add_canvas(std::shared_ptr<Canvas> canvas);
+    // Erase canvases that match a predicate function
+    template<typename Predicate>
+    void erase_canvases(Predicate func) {
+        canvases.erase(std::remove_if(
+            std::begin(canvases), std::end(canvases), func), std::end(canvases));
+    }
+    // Return a sorted list of canvases
+    const std::vector<std::weak_ptr<Canvas>>& get_canvases();
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Save map to specified file name
@@ -127,9 +137,6 @@ public:
     }
     const Tileset& get_tileset(int index) const {
         return tilesets[index];
-    }
-    std::vector<std::weak_ptr<Canvas>>& get_canvases() {
-        return canvases;
     }
     bool get_objects_moved() const {
         return objects_moved;
@@ -199,6 +206,8 @@ private:
     bool needs_redraw;
     // Did any objects move?
     bool objects_moved;
+    // Is canvas list already sorted?
+    bool canvases_sorted;
     // Remove object from ID and name hash tables
     void erase_object_references(Map_Object* object);
 };

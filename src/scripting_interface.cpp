@@ -735,6 +735,8 @@ void Scripting_Interface::setup_scripts() {
         )),
         // A drawing canvas
         class_<Canvas, Sprite_Holder, std::shared_ptr<Sprite_Holder>>("Canvas_Class")
+            .property("name", &Canvas::get_name, &Canvas::set_name)
+            .property("priority", &Canvas::get_priority, &Canvas::set_priority)
             .property("position", &Canvas::get_position, &Canvas::set_position)
             .property("x", &Canvas::get_x, &Canvas::set_x)
             .property("y", &Canvas::get_y, &Canvas::set_y)
