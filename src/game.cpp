@@ -43,7 +43,6 @@ struct Game::Impl {
             current_shader(nullptr),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
     std::unique_ptr<Scripting_Interface> scripting_interface;
-    std::vector<xd::sound::ptr> sounds;
     bool show_fps;
     bool show_time;
     // Was game started in editor mode?
@@ -217,10 +216,6 @@ void Game::frame_update() {
     pimpl->scripting_interface->update();
     camera->update();
     map->update();
-    // Remove finished sounds
-    auto removed = std::remove_if(pimpl->sounds.begin(), pimpl->sounds.end(),
-        [](const xd::sound::ptr& s) { return s->stopped(); });
-    pimpl->sounds.erase(removed, pimpl->sounds.end());
     // Switch map if needed
     if (!pimpl->next_map.empty())
         load_map(pimpl->next_map);
@@ -301,11 +296,6 @@ xd::music::ptr Game::load_music(const std::string& filename) {
         music->stop();
     music.reset(new xd::music(filename));
     return music;
-}
-
-xd::sound::ptr Game::load_sound(const std::string& filename) {
-    pimpl->sounds.push_back(xd::create<xd::sound>(filename));
-    return pimpl->sounds.back();
 }
 
 void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {

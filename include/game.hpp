@@ -92,8 +92,6 @@ public:
     xd::lua::virtual_machine* get_lua_vm();
     // Play some music
     xd::music::ptr load_music(const std::string& filename);
-    // Play some sound effect
-    xd::sound::ptr load_sound(const std::string& filename);
     // Get the music currently playing
     xd::music::ptr playing_music() { return music; }
     // Modelview projection matrix

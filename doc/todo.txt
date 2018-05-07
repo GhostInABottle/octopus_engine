@@ -1,4 +1,3 @@
-- Better management of sound files (track them per map?)
 - Allow running a script while game is paused.
 - Proper Linux distributables (.deb files? autopackage?)
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)

@@ -699,11 +699,11 @@ void Scripting_Interface::setup_scripts() {
             .def("pause", &xd::sound::pause)
             .def("stop", &xd::sound::stop)
             .def("set_loop_points", &xd::sound::set_loop_points),
-        def("Sound", tag_function<xd::sound::ptr (const std::string&)>(
+        def("Sound", tag_function<xd::sound* (const std::string&)>(
             [&](const std::string& filename) {
-                return game->load_sound(filename);
+                return new xd::sound(filename);
             }
-        )),
+        ), adopt(result)),
         // Background music
         class_<xd::music>("Music_Class")
             .property("playing", &xd::music::playing)

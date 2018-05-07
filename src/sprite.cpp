@@ -8,6 +8,8 @@
 #include <xd/audio.hpp>
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
+#include <vector>
 
 namespace detail {
     xd::vec4 default_color(1, 1, 1, 1);
@@ -46,6 +48,8 @@ struct Sprite::Impl {
     float speed;
     // Maximum possible speed modifier
     const static float max_speed;
+    // List of playing sounds
+    std::vector<std::shared_ptr<xd::sound>> playing_sounds;
 
     Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
         game(game), data(std::move(data))
@@ -56,6 +60,13 @@ struct Sprite::Impl {
     }
 
     void update() {
+        // Remove finished sounds
+        if (!playing_sounds.empty()) {
+            auto removed = std::remove_if(playing_sounds.begin(), playing_sounds.end(),
+                [](const std::shared_ptr<xd::sound>& s) { return s->stopped(); });
+            playing_sounds.erase(removed, playing_sounds.end());
+        }
+
         if (frame_count == 0 || finished)
             return;
 
@@ -75,8 +86,9 @@ struct Sprite::Impl {
 
         // If animation is still not finished...
         if (!current_frame->sound_file.empty() && last_sound_frame != frame_index) {
-            auto sound = game.load_sound(current_frame->sound_file);
+            auto sound = std::make_shared<xd::sound>(current_frame->sound_file);
             sound->play();
+            playing_sounds.push_back(sound);
             last_sound_frame = frame_index;
         }
         if (game.ticks() - old_time > frame_time) {
