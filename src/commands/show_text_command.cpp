@@ -85,7 +85,8 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
     canvas->set_opacity(0.0f);
     game.add_canvas(canvas);
     // Show text above other images
-    canvas->set_priority(canvas->get_priority() + 1000);
+    canvas->set_priority(canvas->get_priority() +
+        Configurations::get<int>("debug.text-canvas-priority"));
     canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
     canvas_updater->set_new_opacity(1.0f);
     canvas_updater->set_duration(Configurations::get<int>("game.text-fade-duration"));

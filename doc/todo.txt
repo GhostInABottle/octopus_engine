@@ -3,4 +3,3 @@
 - Fix pathfinding bugs (empty path, accuracy problems, etc.)
 - Move more Octopus City Blues-specific code to Lua.
 - Pimpl idiom for Map_Object and Canvas to reduce header dependencies.
-- Make canvas priority for show text command a configurable value.

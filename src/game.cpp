@@ -345,15 +345,35 @@ void Game::set_shader(const std::string& vertex, const std::string& fragment) {
 }
 
 void Game::save(const std::string& filename, Save_File& save_file) const {
-    std::ofstream of(filename, std::ios::binary);
-    of << save_file;
+    try {
+        std::ofstream ofs(normalize_slashes(filename), std::ios::binary);
+        if (!ofs) {
+            throw std::runtime_error("Unable to open file for writing");
+        }
+        ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+        ofs << save_file;
+    } catch (const std::ios_base::failure& e) {
+        LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
+    } catch (const std::runtime_error& e) {
+        LOGGER_E << "Error saving file " << filename << " - message: " << e.what();
+    }
 }
 
 std::unique_ptr<Save_File> Game::load(const std::string& filename) {
     lua_State* state = pimpl->scripting_interface->lua_state();
     std::unique_ptr<Save_File> file(new Save_File(state, luabind::object()));
-    std::ifstream ifs(filename, std::ios::binary);
-    ifs >> *file;
+    try {
+        std::ifstream ifs(normalize_slashes(filename), std::ios::binary);
+        if (!ifs) {
+            throw std::runtime_error("File doesn't exist or can't be opened");
+        }
+        ifs.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+        ifs >> *file;
+    } catch (const std::ios_base::failure& e) {
+        LOGGER_E << "Error loading file " << filename << " - error code: " << e.code() << " - message: " << e.what();
+    } catch (const std::runtime_error& e) {
+        LOGGER_E << "Error loading file " << filename << " - message: " << e.what();
+    }
     return file;
 }
 
@@ -371,7 +391,7 @@ void Game::load_map(const std::string& filename) {
         // Play background music
         auto bg_music = map->get_bg_music_filename();
         auto playing_music = music ? music->get_filename() : "";
-        if (!bg_music.empty() && bg_music != music->get_filename()) {
+        if (!bg_music.empty() && bg_music != playing_music) {
             load_music(bg_music);
             music->set_looping(true);
             music->play();

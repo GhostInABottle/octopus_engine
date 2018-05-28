@@ -533,15 +533,20 @@ void Scripting_Interface::setup_scripts() {
                     return Configurations::get_string(key);
                 }
             ))
-            .def("save", tag_function<void (Game*, const std::string&, object)>(
+            .def("save", tag_function<bool (Game*, const std::string&, object)>(
                 [&](Game* game, const std::string& filename, object obj) {
                     Save_File file(vm.lua_state(), obj);
                     game->save(filename, file);
+                    return file.is_valid();
                 }
             ))
             .def("load", tag_function<luabind::object (Game*, const std::string&)>(
                 [&](Game* game, const std::string& filename) {
-                    return game->load(filename)->lua_data();
+                    auto file = game->load(filename);
+                    if (file->is_valid())
+                        return file->lua_data();
+                    else
+                        return luabind::object();
                 }
             )),
         // Game map

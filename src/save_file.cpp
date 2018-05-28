@@ -1,7 +1,9 @@
 #include "../include/save_file.hpp"
+#include "../include/configurations.hpp"
 #include <iostream>
 #include <luabind/luabind.hpp>
 #include <string>
+#include <stdexcept>
 
 namespace detail {
     template<typename T>
@@ -104,7 +106,11 @@ namespace detail {
             read(stream, type_tag);
             if (type_tag == end_table_marker)
                 return obj;
+
             object key = read_value(stream, state, type_tag);
+            if (!key.is_valid())
+                throw std::runtime_error("Invalid object key");
+
             // Read value
             read(stream, type_tag);
             object val = read_value(stream, state, type_tag);
@@ -118,11 +124,22 @@ namespace detail {
 Save_File::Save_File(lua_State* state, luabind::object data) :
     state(state), data(data) {}
 
-std::ostream& operator<<(std::ostream& stream, const Save_File& save_file) {
+std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
+    save_file.valid = false;
+    detail::write(stream, Configurations::get<unsigned int>("debug.save-signature"));
     detail::write_object(stream, save_file.data);
+    save_file.valid = true;
     return stream;
 }
 std::istream& operator>>(std::istream& stream, Save_File& save_file) {
+    save_file.valid = false;
+    unsigned int signature;
+    detail::read(stream, signature);
+    if (signature != Configurations::get<unsigned int>("debug.save-signature")) {
+        throw std::runtime_error("Invalid file signature");
+    }
+
     save_file.data = detail::read_object(stream, save_file.state);
+    save_file.valid = true;
     return stream;
 }

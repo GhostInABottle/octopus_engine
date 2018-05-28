@@ -50,6 +50,8 @@ void Configurations::parse(const std::string& filename) {
     defaults["debug.canvas-fps"] = 40;
     defaults["debug.use-fbo"] = true;
     defaults["debug.seed-lua-rng"] = true;
+    defaults["debug.save-signature"] = 0x7BEDEADu;
+    defaults["debug.text-canvas-priority"] = 1000;
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
     defaults["startup.player-position-x"] = 70.0f;
@@ -68,6 +70,8 @@ std::string Configurations::get_string(const std::string& name) {
         return get<std::string>(name);
     if (type == typeid(int))
         return boost::lexical_cast<std::string>(get<int>(name));
+    if (type == typeid(unsigned int))
+        return boost::lexical_cast<std::string>(get<unsigned int>(name));
     if (type == typeid(float))
         return boost::lexical_cast<std::string>(get<float>(name));
     if (type == typeid(bool))
