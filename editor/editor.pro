@@ -38,7 +38,6 @@ SOURCES += main.cpp\
     ../src/log.cpp \
     ../src/map.cpp \
     ../src/map_object.cpp \
-    ../src/npc.cpp \
     ../src/object_layer.cpp \
     ../src/object_layer_renderer.cpp \
     ../src/object_layer_updater.cpp \
@@ -124,7 +123,6 @@ HEADERS  += main_window.hpp \
     ../include/image_layer.hpp \
     ../include/image_layer_renderer.hpp \
     ../include/image_layer_updater.hpp \
-    ../include/keypoint.hpp \
     ../include/layer.hpp \
     ../include/layer_renderer.hpp \
     ../include/layer_types.hpp \
@@ -132,7 +130,6 @@ HEADERS  += main_window.hpp \
     ../include/log.hpp \
     ../include/map.hpp \
     ../include/map_object.hpp \
-    ../include/npc.hpp \
     ../include/object_layer.hpp \
     ../include/object_layer_renderer.hpp \
     ../include/object_layer_updater.hpp \

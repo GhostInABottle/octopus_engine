@@ -210,10 +210,14 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
         next_object_id = id + 1;
     }
     // Add to object map and to layer
-    auto name = capitalize(object->get_name());
-    auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
+    auto name = object->get_name();
+    if (name.empty()) {
+        name+= "UNTITLED" + std::to_string(id);
+    }
+    auto mapping = std::unordered_multimap<std::string, int>::value_type(capitalize(name), id);
     object_name_to_id.insert(mapping);
     objects[id] = object;
+    object->set_name(name);
     layer->objects.push_back(object.get());
     return object.get();
 }
@@ -222,8 +226,6 @@ Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
     xd::vec2 pos, Direction dir) {
     auto object_ptr = new Map_Object(game, name, sprite_file, pos, dir);
     add_object(object_ptr);
-    if (name.empty())
-        object_ptr->set_name("UNTITLED" + object_ptr->get_id());
     return object_ptr;
 }
 

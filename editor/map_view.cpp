@@ -116,7 +116,7 @@ void Map_View::delete_layer(const std::string& name) {
 }
 
 void Map_View::add_object() {
-    auto object = get_map()->add_object();
+    auto object = get_map()->add_new_object();
     object->set_size(xd::vec2(16, 16));
 }
 
