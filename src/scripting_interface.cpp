@@ -201,7 +201,7 @@ void Scripting_Interface::setup_scripts() {
                     duration,
                     false,
                     Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y);
-                if (start_time < 0) {
+                if (start_time >= 0) {
                     command->set_start_time(start_time);
                 }
                 return new Command_Result(command);
