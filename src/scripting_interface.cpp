@@ -30,14 +30,6 @@ Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_v
 }
 
 void Scripting_Interface::update() {
-    try {
-        if (scheduler.pending_tasks() > 0)
-            scheduler.run();
-    } catch (const luabind::error& e) {
-        std::string err(lua_tostring(e.state(), -1));
-        LOGGER_E << "Lua Error: " << err;
-        throw;
-    }
     // Execute pending commands
     for (auto i = commands.begin(); i < commands.end();) {
         auto command = *i;
@@ -47,6 +39,14 @@ void Scripting_Interface::update() {
             continue;
         }
         ++i;
+    }
+    try {
+        if (scheduler.pending_tasks() > 0)
+            scheduler.run();
+    } catch (const luabind::error& e) {
+        std::string err(lua_tostring(e.state(), -1));
+        LOGGER_E << "Lua Error: " << err;
+        throw;
     }
 }
 
@@ -132,7 +132,8 @@ void Scripting_Interface::setup_scripts() {
         class_<Command_Result>("Command_Result")
             .def("is_complete", &Command_Result::operator())
             .def("is_complete", (bool (Command_Result::*)(int) const) &Command_Result::is_complete)
-            .def("execute", &Command_Result::execute)
+            .def("execute", (void (Command_Result::*)()) &Command_Result::execute)
+            .def("execute",  (void (Command_Result::*)(int)) &Command_Result::execute)
             .def("wait", tag_function<void (Command_Result*)>(result_wait), yield)
             .def("stop", &Command_Result::stop),
         def("wait", tag_function<void (int)>([&](int duration) {
@@ -190,16 +191,20 @@ void Scripting_Interface::setup_scripts() {
             }
         ), adopt(result)),
         // A command for showing text (used in NPC scheduling)
-        def("Text_Command", tag_function<Command_Result* (Map_Object*, const std::string&, long)>(
-            [&](Map_Object* object, const std::string& text, long duration) {
-                return new Command_Result(std::make_shared<Show_Text_Command>(
+        def("Text_Command", tag_function<Command_Result* (Map_Object*, const std::string&, long, long)>(
+            [&](Map_Object* object, const std::string& text, long duration, long start_time) {
+                auto command = std::make_shared<Show_Text_Command>(
                     *game,
                     Show_Text_Command::text_position(object),
                     std::vector<std::string>{},
                     text,
                     duration,
                     false,
-                    Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y));
+                    Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y);
+                if (start_time < 0) {
+                    command->set_start_time(start_time);
+                }
+                return new Command_Result(command);
             }
         ), adopt(result)),
         // A command to show an object's pose (used in NPC scheduling)

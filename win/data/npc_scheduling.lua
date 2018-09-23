@@ -2,7 +2,7 @@ local time_multiplier = tonumber(game:get_config('debug.time-multiplier'))
 
 -- Adjusted total seconds, includes added/paused time and modified by multiplier
 function total_seconds()
-    return game.seconds / time_multiplier
+    return game.seconds * time_multiplier
 end
 
 -- Get the seconds portion of given time
@@ -167,7 +167,7 @@ function NPC:should_skip_command(command)
 end
 
 -- Process the next keypoint command
-function NPC:process_map_command()
+function NPC:process_map_command(current_time)
     if not self.object or not self.last_keypoint then return end
     self.script_command = nil
     local keypoint = self.last_keypoint
@@ -189,7 +189,8 @@ function NPC:process_map_command()
             object = current_map:get_object(command.object)
         end
         if object then
-            self.script_command = Text_Command(object, command.text, command.duration * 1000)
+            self.script_command = Text_Command(object, command.text,
+                command.duration * 1000, current_time * 1000)
         end
     elseif command.type == 'pose' then
         local state = command.state or ''
@@ -215,7 +216,7 @@ function NPC:process_map_command()
         end
         self.script_command = Wait_Command(
             duration * 1000,
-            time_without_days(total_seconds()) * 1000)
+            current_time * 1000)
     elseif command.type == 'visibility' then
         self.visible = command.visible
         self.object.visible = command.visible
@@ -290,18 +291,17 @@ end
 function NPC:execute_pending_command(current_time)
     if not self.script_command then return false end
 
+    self.script_command:execute(current_time * 1000)
     if self.script_command:is_complete(current_time * 1000) then
         local keypoint = self.last_keypoint
         if keypoint.status ~= 'pending' then
             -- Normal keypoint command processing
             keypoint.command_index = keypoint.command_index + 1
-            self:process_map_command()
+            self:process_map_command(current_time)
         else
             -- NPC was moving to keypoint's starting position
             self.script_command = nil
         end
-    else
-        self.script_command:execute()
     end
 
     if self.object then
@@ -432,18 +432,17 @@ function NPC:move_to_keypoint(current_time)
                 true,
                 true)
             local simulated_ticks = 0
-            local time_passed = (current_time - self.last_keypoint.timestamp) / self.time_multiplier
+            local time_passed = current_time - self.last_keypoint.timestamp
             -- Simulate movement to keypoint position since timestamp
             if time_passed > 1 then
                 -- Make player passable to prevent getting stuck at player position
                 player.passthrough = true
                 while simulated_ticks <= time_passed * 1000 do
                     local simulated_time = current_time * 1000 + simulated_ticks
+                    self.script_command:execute(simulated_time)
                     if self.script_command:is_complete(simulated_time) then
                         self.script_command = nil
                         break
-                    else
-                        self.script_command:execute()
                     end
                     self.position_map = self.map_name
                     self.position = self.object.real_position
@@ -494,14 +493,13 @@ function NPC:simulate_commands(current_time, time_passed)
     player.passthrough = true
     self.last_keypoint.status = 'started'
     local simulated_ticks = 0
-    self:process_map_command()
+    self:process_map_command(current_time)
     while self.script_command and simulated_ticks <= time_passed * 1000 do
         local simulated_time = current_time * 1000 + simulated_ticks
+        self.script_command:execute(simulated_time)
         if self.script_command:is_complete(simulated_time) then
             self.last_keypoint.command_index = self.last_keypoint.command_index + 1
-            self:process_map_command()
-        else
-            self.script_command:execute()
+            self:process_map_command(math.floor(simulated_time / 1000))
         end
         if self.object then
             self.position_map = self.map_name
@@ -559,6 +557,7 @@ function NPC:update()
                     self.data.sprite,
                     self.position,
                     self.direction)
+                self.object.x = self.object.x - self.object.bounding_box.x
             end
             self.object.type = 'npc'
             self.object.direction = self.direction
@@ -572,11 +571,11 @@ function NPC:update()
         if self.last_keypoint.status == 'completed' then
             return
         end
-        local time_passed = (current_time - self.last_keypoint.start_time) / self.time_multiplier
+        local time_passed = current_time - self.last_keypoint.start_time
         if time_passed > 1 then
             self:simulate_commands(current_time, time_passed)
         else
-            self:process_map_command()
+            self:process_map_command(current_time)
         end
     else -- If action is on another map
         -- Wait for any pending commands

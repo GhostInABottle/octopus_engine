@@ -22,84 +22,83 @@ namespace std {
     };
 }
 
-struct Node {
-    int tile_width, tile_height;
-    xd::vec2 pos;
-    Node* parent;
-    // cost of getting to this node
-    int g;
-    // distance to goal (heuristic)
-    int h;
-    Node(
-        int tile_width = 1,
-        int tile_height = 1,
-        xd::vec2 pos = xd::vec2(),
-        Node* parent = nullptr,
-        int g = 0,
-        int h = 0) :
-        tile_width(tile_width),
-        tile_height(tile_height),
-        pos(pos),
-        parent(parent),
-        g(g),
-        h(h) {}
-    // Total cost at this node
-    // f(n) = g(n) + h(n)
-    int cost() const {
-        return g + h;
-    }
-    xd::ivec2 tile_pos() const {
-        return xd::ivec2(
-            static_cast<int>(pos.x) / tile_width,
-            static_cast<int>(pos.y) / tile_height);
-    }
-    bool operator==(const Node& other) const {
-        return other.tile_pos() == tile_pos();
-    }
-    bool operator<(const Node& other) const {
-        return cost() > other.cost();
-    }
-    // Check if another node is within the range of this one
-    bool in_range(Node& other, int range) const;
-};
-template <typename T>
-class Heap {
-public:
-    void push(T element) {
-        elements.push_back(element);
-        std::push_heap(elements.begin(), elements.end());
-    }
-    T pop() {
-        std::pop_heap(elements.begin(), elements.end());
-        T last = elements.back();
-        elements.pop_back();
-        return last;
-    }
-    int index(T element) {
-        auto iter = std::find(elements.begin(), elements.end(), element);
-        if (iter != elements.end())
-            return iter - elements.begin();
-        else
-            return -1;
-    }
-    bool empty() const {
-        return elements.empty();
-    }
-    T& operator[](int index) {
-        return elements[index];
-    }
-    void update() {
-        std::make_heap(elements.begin(), elements.end());
-    }
-private:
-    std::vector<T> elements;
-};
-
 class Map;
 class Map_Object;
 
 class Pathfinder {
 public:
+    struct Node {
+        int tile_width, tile_height;
+        xd::vec2 pos;
+        Node* parent;
+        // cost of getting to this node
+        int g;
+        // distance to goal (heuristic)
+        int h;
+        Node(
+            int tile_width = 1,
+            int tile_height = 1,
+            xd::vec2 pos = xd::vec2(),
+            Node* parent = nullptr,
+            int g = 0,
+            int h = 0) :
+            tile_width(tile_width),
+            tile_height(tile_height),
+            pos(pos),
+            parent(parent),
+            g(g),
+            h(h) {}
+        // Total cost at this node
+        // f(n) = g(n) + h(n)
+        int cost() const {
+            return g + h;
+        }
+        xd::ivec2 tile_pos() const {
+            return xd::ivec2(
+                static_cast<int>(pos.x) / tile_width,
+                static_cast<int>(pos.y) / tile_height);
+        }
+        bool operator==(const Node& other) const {
+            return other.tile_pos() == tile_pos();
+        }
+        bool operator<(const Node& other) const {
+            return cost() > other.cost();
+        }
+        // Check if another node is within the range of this one
+        bool in_range(Node& other, int range) const;
+    };
+    template <typename T>
+    class Heap {
+    public:
+        void push(T element) {
+            elements.push_back(element);
+            std::push_heap(elements.begin(), elements.end());
+        }
+        T pop() {
+            std::pop_heap(elements.begin(), elements.end());
+            T last = elements.back();
+            elements.pop_back();
+            return last;
+        }
+        int index(T element) {
+            auto iter = std::find(elements.begin(), elements.end(), element);
+            if (iter != elements.end())
+                return iter - elements.begin();
+            else
+                return -1;
+        }
+        bool empty() const {
+            return elements.empty();
+        }
+        T& operator[](int index) {
+            return elements[index];
+        }
+        void update() {
+            std::make_heap(elements.begin(), elements.end());
+        }
+    private:
+        std::vector<T> elements;
+    };
     Pathfinder(Map& map, Map_Object& object,
         xd::vec2 dest, int range = 0, bool close = false,
         Collision_Check_Types check_type = Collision_Check_Types::BOTH);

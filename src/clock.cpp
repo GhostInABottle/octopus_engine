@@ -21,7 +21,7 @@ void Clock::resume_time() {
     time_stop = false;
     total_stopped_time += game.ticks() - stop_start_time;
 }
-// Get total time in seconds without applying a multipler
+// Get total time in seconds without stopped time
 int Clock::seconds() const {
     int stopped_time = total_stopped_time +
         (time_stop ? game.ticks() - stop_start_time : 0);

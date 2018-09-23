@@ -1,6 +1,7 @@
 #ifndef HPP_MOVE_OBJECT_COMMAND
 #define HPP_MOVE_OBJECT_COMMAND
 
+#include <string>
 #include "../direction.hpp"
 #include "../command.hpp"
 
@@ -18,6 +19,7 @@ private:
     float pixels;
     bool skip_blocking;
     bool change_facing;
+    std::string old_state;
 };
 
 #endif

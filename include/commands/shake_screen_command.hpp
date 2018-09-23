@@ -16,6 +16,4 @@ private:
     long duration;
 };
 
-
-
 #endif

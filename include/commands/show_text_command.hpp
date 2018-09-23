@@ -41,9 +41,11 @@ public:
         Text_Position_Type pos_type = Text_Position_Type::EXACT_X
         | Text_Position_Type::EXACT_Y | Text_Position_Type::CAMERA_RELATIVE);
     void execute();
+    void execute(int ticks);
     bool is_complete() const;
     int choice_index() const { return selected_choice; }
     std::string full_text() const;
+    void set_start_time(long start) { this->start_time = start;  }
     static xd::vec2 text_position(Map_Object* object);
 private:
     void update_choice();

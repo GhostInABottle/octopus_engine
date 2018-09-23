@@ -6,7 +6,8 @@
 Move_Object_Command::Move_Object_Command(Map_Object& object, Direction dir,
     float pixels, bool skip_blocking, bool change_facing)
     : object(object), direction(dir), pixels(pixels),
-    skip_blocking(skip_blocking), change_facing(change_facing) {
+    skip_blocking(skip_blocking), change_facing(change_facing),
+    old_state(object.get_state()) {
     if (direction == Direction::FORWARD)
         direction = object.get_direction();
     else if (direction == Direction::BACKWARD) {
@@ -22,11 +23,12 @@ void Move_Object_Command::execute() {
         pixels -= object.get_speed();
     else if (skip_blocking)
         pixels = 0.0f;
+
+    if (is_complete()) {
+        object.update_state(old_state);
+    }
 }
 
 bool Move_Object_Command::is_complete() const {
-    bool complete = stopped || object.is_stopped() || pixels <= 0;
-    if (complete)
-        object.update_state("FACE");
-    return complete;
+    return stopped || object.is_stopped() || pixels <= 0;
 }

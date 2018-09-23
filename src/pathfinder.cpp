@@ -38,7 +38,7 @@ Pathfinder::Pathfinder(Map& map, Map_Object& object,
     detail::debug_mode = !Configurations::get<std::string>("debug.pathfinding-sprite").empty();
 }
 
-bool Node::in_range(Node& other, int range) const {
+bool Pathfinder::Node::in_range(Node& other, int range) const {
     auto this_pos = tile_pos();
     auto other_pos = other.tile_pos();
     int abs_sx = std::abs(this_pos.x - other_pos.x);
@@ -120,7 +120,7 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
     }
 }
 
-std::vector<Node> Pathfinder::get_adjacent_nodes(Node& node) {
+std::vector<Pathfinder::Node> Pathfinder::get_adjacent_nodes(Node& node) {
     std::vector<Node> nodes;
     xd::vec2 new_pos;
     for (int i = -1; i <= 1; ++i) {

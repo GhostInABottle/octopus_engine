@@ -8,13 +8,10 @@ Tint_Screen_Command::Tint_Screen_Command(Game& game, xd::vec4 color, long durati
     start_time(game.ticks()), duration(duration) {}
 
 void Tint_Screen_Command::execute() {
-    float alpha = calculate_alpha(game.ticks(), start_time, duration);
+    float alpha = is_complete() ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
     game.get_camera()->set_tint_color(lerp(old_color, new_color, alpha));
 }
 
 bool Tint_Screen_Command::is_complete() const {
-    bool complete = stopped || game.ticks() - start_time > duration;
-    if (complete)
-        game.get_camera()->set_tint_color(new_color);
-    return complete;
+    return stopped || game.ticks() - start_time > duration;;
 }

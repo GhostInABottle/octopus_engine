@@ -11,6 +11,7 @@ public:
     bool is_complete() const { return command->is_complete(); }
     bool is_complete(int ticks) const { return command->is_complete(ticks); }
     void execute() { command->execute(); }
+    void execute(int ticks) { command->execute(ticks); }
 	void stop() { command->stop(); }
 protected:
     std::shared_ptr<Command> command;

@@ -28,5 +28,5 @@ void Move_Camera_Command::execute() {
 }
 
 bool Move_Camera_Command::is_complete() const {
-    return check_close(pixels, 0.0f, 1.0f);
+    return pixels <= 0;
 }

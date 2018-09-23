@@ -2,14 +2,9 @@
 #define HPP_MOVE_OBJECT_TO_COMMAND
 
 #include <memory>
-#include <deque>
-#include <xd/graphics/types.hpp>
 #include "../command.hpp"
-#include "../direction.hpp"
 #include "../collision_check_types.hpp"
-#include "../collision_record.hpp"
 
-struct Node;
 class Map_Object;
 class Map;
 
@@ -20,24 +15,11 @@ public:
         bool keep_trying = false);
     ~Move_Object_To_Command();
     void execute();
-    bool is_complete() const {
-        return is_complete(0);
-    }
-    bool is_complete(int ticks) const;
+    bool is_complete() const;
 private:
-    void init();
-    Collision_Record move_object(Direction dir);
-    Map& map;
-    Map_Object& object;
-    xd::vec2 destination;
-    std::deque<Direction> path;
-    bool path_found;
-    float pixels;
-    bool keep_trying;
-    int last_attempt_time;
-    bool blocked;
-    Collision_Check_Types check_type;
-    std::unique_ptr<Node> nearest;
+    struct Impl;
+    friend struct Impl;
+    std::unique_ptr<Impl> pimpl;
 };
 
 #endif

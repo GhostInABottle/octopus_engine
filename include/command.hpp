@@ -6,6 +6,8 @@ public:
     Command() : stopped(false) {}
     // Called while the command isn't completed
     virtual void execute() = 0;
+    // Version with specific time
+    virtual void execute(int ticks) { execute(); }
     // Is the command completed?
     virtual bool is_complete() const = 0;
     // Would the command be complete by the given time?

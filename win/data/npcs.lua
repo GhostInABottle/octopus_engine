@@ -21,13 +21,13 @@ return {
                             },
                             {
                                 type = 'wait',
-                                duration = 1,
+                                duration = 2,
                             },
                             {
                                 type = 'text',
                                 text = 'hello my friend',
                                 object = 'jimbo',
-                                duration = 3,
+                                duration = 4,
                                 condition = function()
                                     return current_map:get_object('jimbo')
                                 end,
