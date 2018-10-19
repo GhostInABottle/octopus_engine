@@ -34,6 +34,7 @@ private:
     float new_opacity;
     long start_time;
     long duration;
+    bool complete;
 };
 
 

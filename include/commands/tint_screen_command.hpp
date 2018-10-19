@@ -17,6 +17,7 @@ private:
     xd::vec4 new_color;
     long start_time;
     long duration;
+    bool complete;
 };
 
 #endif

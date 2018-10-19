@@ -20,6 +20,7 @@ private:
     bool skip_blocking;
     bool change_facing;
     std::string old_state;
+    bool complete;
 };
 
 #endif

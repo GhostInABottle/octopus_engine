@@ -20,6 +20,7 @@ private:
     float new_volume;
     long start_time;
     long duration;
+    bool complete;
 };
 
 

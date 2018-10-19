@@ -9,13 +9,15 @@ Update_Layer_Command::Update_Layer_Command(Game& game, Layer& layer, float opaci
     old_opacity(layer.opacity),
     new_opacity(opacity),
     start_time(game.ticks()),
-    duration(duration) {}
+    duration(duration),
+    complete(false) {}
 
 void Update_Layer_Command::execute() {
-    float alpha = is_complete() ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
+    complete = stopped || game.ticks() - start_time > duration;
+    float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
     layer.opacity = lerp(old_opacity, new_opacity, alpha);
 }
 
 bool Update_Layer_Command::is_complete() const {
-    return stopped || game.ticks() - start_time > duration;
+    return complete;
 }

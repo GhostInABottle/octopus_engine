@@ -15,7 +15,7 @@ struct Move_Object_To_Command::Impl {
         Collision_Check_Types check_type, bool keep_trying)
         : map(map), object(object), destination(x, y), path_found(false), pixels(0.0f),
         check_type(check_type), keep_trying(keep_trying), last_attempt_time(0),
-        blocked(false), nearest(nullptr), old_state(object.get_state()) {}
+        blocked(false), complete(false), nearest(nullptr), old_state(object.get_state()) {}
     Map& map;
     Map_Object& object;
     xd::vec2 destination;
@@ -25,11 +25,13 @@ struct Move_Object_To_Command::Impl {
     bool keep_trying;
     int last_attempt_time;
     bool blocked;
+    bool complete;
     Collision_Check_Types check_type;
     std::unique_ptr<Pathfinder::Node> nearest;
     std::string old_state;
     // Setup the pathfinder
     void init() {
+        complete = false;
         path_found = false;
         Pathfinder finder(map, object, destination, 0, true, check_type);
         if (nearest)
@@ -71,6 +73,12 @@ struct Move_Object_To_Command::Impl {
             return;
         }
 
+        auto check_completion = [&](bool is_stopped) {
+            auto pos = object.get_real_position();
+            return is_stopped || object.is_stopped() || (!path_found && !keep_trying) ||
+                (check_close(pos.x, destination.x, 1) && check_close(pos.y, destination.y, 1));
+        };
+
         int index = static_cast<int>(pixels) / map.get_tile_width();
         int max_index = static_cast<int>(path.size() - 1);
 
@@ -80,13 +88,15 @@ struct Move_Object_To_Command::Impl {
                 pixels += object.get_speed();
             else
                 blocked = true;
-            if (is_complete(stopped)) {
+
+            if (complete = check_completion(stopped)) {
                 object.update_state(old_state);
             }
+
             return;
         }
 
-        if (!is_complete(stopped)) {
+        if (!(complete = check_completion(stopped))) {
             // Try to manually move to the destination
             auto pos = object.get_real_position();
             auto tile_width = static_cast<float>(map.get_tile_width());
@@ -100,15 +110,13 @@ struct Move_Object_To_Command::Impl {
             }
         }
 
-        if (is_complete(stopped)) {
+        if (complete = check_completion(stopped)) {
             object.update_state(old_state);
         }
     }
     // Is movement complete
     bool is_complete(bool stopped) const {
-        auto pos = object.get_real_position();
-        return stopped || object.is_stopped() || (!path_found && !keep_trying) ||
-            (check_close(pos.x, destination.x, 1) && check_close(pos.y, destination.y, 1));
+        return complete;
     }
 };
 

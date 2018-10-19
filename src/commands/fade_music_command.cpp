@@ -9,13 +9,15 @@ Fade_Music_Command::Fade_Music_Command(Game& game, xd::music& music, float volum
     old_volume(music.get_volume()),
     new_volume(volume),
     start_time(game.ticks()),
-    duration(duration) {}
+    duration(duration),
+    complete(false) {}
 
 void Fade_Music_Command::execute() {
-    float alpha = is_complete() ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
+    complete = stopped || game.ticks() - start_time > duration;
+    float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
     music.set_volume(lerp(old_volume, new_volume, alpha));
 }
 
 bool Fade_Music_Command::is_complete() const {
-    return stopped || game.ticks() - start_time > duration;;
+    return complete;
 }
