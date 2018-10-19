@@ -142,6 +142,7 @@
       <SDLCheck>
       </SDLCheck>
       <PreprocessorDefinitions>LUABIND_CPLUSPLUS_LUA;SFML_STATIC;XD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +158,7 @@
       <SDLCheck>
       </SDLCheck>
       <PreprocessorDefinitions>LUABIND_CPLUSPLUS_LUA;SFML_STATIC;XD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

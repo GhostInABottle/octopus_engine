@@ -51,6 +51,7 @@ namespace detail {
 Camera::Camera(Game& game)
         : game(game),
         position(xd::vec2(0.0f, 0.0f)),
+        magnification(1.0f),
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         shaker(nullptr)
 {

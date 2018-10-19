@@ -24,7 +24,7 @@ namespace detail {
 }
 
 Map_View::Map_View(QWidget* parent) :
-    QGLWidget(parent),
+    QOpenGLWidget(parent),
     initialized(false),
     scale_index(1),
     selected_object(nullptr),
@@ -46,6 +46,7 @@ void Map_View::load_map(const std::string& name) {
         return;
     }
     refresh_scrollbars();
+    resizeGL(width(), height());
     emit map_changed(map_name);
 }
 
@@ -158,7 +159,7 @@ void Map_View::initializeGL() {
         tick_timer = new QElapsedTimer();
         tick_timer->start();
         draw_timer = new QTimer(this);
-        connect(draw_timer, &QTimer::timeout, this, &Map_View::updateGL);
+        connect(draw_timer, &QTimer::timeout, this, (void (QWidget::*)())&Map_View::update);
         draw_timer->start(16);
         update_timer = new QTimer(this);
         connect(update_timer, &QTimer::timeout, this, &Map_View::logic_update);
@@ -189,8 +190,8 @@ void Map_View::paintGL() {
 }
 
 void Map_View::resizeGL(int width, int height) {
-    Game::game_width = map_width();
-    Game::game_height = map_height();
+    Game::game_width = width / get_scale();
+    Game::game_height = height / get_scale();
     game->set_size(width, height);
 }
 
@@ -254,7 +255,7 @@ void Map_View::keyPressEvent(QKeyEvent* event) {
     } else if (event->key() == Qt::Key_Minus && scale_index > 0) {
         scale_index--;
     } else {
-        QGLWidget::keyPressEvent(event);
+        QOpenGLWidget::keyPressEvent(event);
     }
     if (scale_index != old_scale_index) {
         refresh_scrollbars();

@@ -1,7 +1,7 @@
 #ifndef MAP_VIEW_HPP
 #define MAP_VIEW_HPP
 
-#include <QtOpenGL/QGLWidget>
+#include <QOpenGLWidget>
 #include <memory>
 #include <QTimer>
 #include <QElapsedTimer>
@@ -16,10 +16,10 @@ class Map_Object;
 struct Layer;
 class QMouseEvent;
 
-class Map_View : public QGLWidget {
+class Map_View : public QOpenGLWidget {
     Q_OBJECT
 public:
-    explicit Map_View(QWidget* parent = 0);
+    explicit Map_View(QWidget* parent = nullptr);
     void load_map(const std::string& name);
     int map_width() const;
     int map_height() const;

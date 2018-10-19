@@ -40,7 +40,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -48,6 +48,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -64,6 +65,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
