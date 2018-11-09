@@ -96,7 +96,7 @@ struct Sprite::Impl {
             if (tweening)
                 tweening = false;
             frame_index++;
-            if (frame_index >= frame_count - 1) {
+            if (frame_index >= frame_count) {
                 repeat_count++;
                 last_sound_frame = -1;
             }

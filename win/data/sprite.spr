@@ -4,6 +4,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Up" />
     <Tag Key="State" Value="Walk" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="42" Y="41" Width="21" Height="41" />
     </Frame>
@@ -21,6 +22,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Right" />
     <Tag Key="State" Value="Walk" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="21" Y="41" Width="21" Height="41" />
     </Frame>
@@ -38,6 +40,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Down" />
     <Tag Key="State" Value="Walk" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="0" Y="41" Width="21" Height="41" />
     </Frame>
@@ -55,6 +58,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Left" />
     <Tag Key="State" Value="Walk" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="63" Y="41" Width="21" Height="41" />
     </Frame>
@@ -72,6 +76,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Up" />
     <Tag Key="State" Value="Face" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="42" Y="0" Width="21" Height="41" />
     </Frame>
@@ -80,6 +85,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Right" />
     <Tag Key="State" Value="Face" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="21" Y="0" Width="21" Height="41" />
     </Frame>
@@ -88,6 +94,7 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Down" />
     <Tag Key="State" Value="Face" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="0" Y="0" Width="21" Height="41" />
     </Frame>
@@ -96,11 +103,12 @@
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Left" />
     <Tag Key="State" Value="Face" />
+    <Tag Key="Name" Value="Default" />
     <Frame>
       <Rectangle X="63" Y="0" Width="21" Height="41" />
     </Frame>
   </Pose>
-  <Pose Duration="180" Repeats="3">
+  <Pose Duration="180" Repeats="2">
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Name" Value="Pose Test" />
     <Tag Key="State" Value="Face" />
@@ -113,7 +121,7 @@
     <Frame>
       <Rectangle X="0" Y="123" Width="21" Height="41" />
     </Frame>
-    <Frame Duration="600" X-Mag="1.98833334" Angle="31" Opacity="0.25875" Tween="true">
+    <Frame Duration="600" X-Mag="1.99" Angle="31" Opacity="0.2575" Tween="true">
       <Rectangle X="0" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame X-Mag="2" Angle="32" Opacity="0.25">
