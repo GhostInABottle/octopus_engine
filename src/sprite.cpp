@@ -77,31 +77,37 @@ struct Sprite::Impl {
         frame_time = static_cast<int>(frame_time * speed);
 
         // If the number of repeats is reached then animation is finished
-        if (pose->repeats != -1 && repeat_count >= pose->repeats) {
+        if (finished_repeating()) {
             // Make sure the last frame is complete before finishing
             if (game.ticks() - old_time > frame_time)
                 finished = true;
             return;
         }
 
-        // If animation is still not finished...
         if (!current_frame->sound_file.empty() && last_sound_frame != frame_index) {
             auto sound = std::make_shared<xd::sound>(current_frame->sound_file);
             sound->play();
             playing_sounds.push_back(sound);
             last_sound_frame = frame_index;
         }
+
         if (game.ticks() - old_time > frame_time) {
             old_time = game.ticks();
             if (tweening)
                 tweening = false;
+
             frame_index++;
             if (frame_index >= frame_count) {
                 repeat_count++;
                 last_sound_frame = -1;
+                if (finished_repeating()) {
+                    frame_index--;
+                    return;
+                }
             }
             frame_index %= frame_count;
         }
+
         current_frame = &pose->frames[frame_index];
         if (!tweening && current_frame->tween_frame) {
             Frame& prev_frame = pose->frames[frame_index - 1];
@@ -140,6 +146,10 @@ struct Sprite::Impl {
 
     std::string get_filename() const {
         return data->filename;
+    }
+
+    bool finished_repeating() const {
+        return pose->repeats != -1 && repeat_count >= pose->repeats;
     }
 
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
