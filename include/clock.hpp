@@ -5,7 +5,7 @@ class Game;
 
 class Clock {
 public:
-    Clock(Game& game);
+    explicit Clock(Game& game);
     // Get game ticks
     int ticks() const;
     // Check if game time is stopped
@@ -22,7 +22,6 @@ private:
     bool time_stop;
     int stop_start_time;
     int total_stopped_time;
-    int added_time;
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 Tint_Screen_Command::Tint_Screen_Command(Game& game, xd::vec4 color, long duration) :
     game(game), old_color(game.get_camera()->get_tint_color()), new_color(color),
-    start_time(game.ticks()), duration(duration) {}
+    start_time(game.ticks()), duration(duration), complete(false) {}
 
 void Tint_Screen_Command::execute() {
     complete = stopped || game.ticks() - start_time > duration;

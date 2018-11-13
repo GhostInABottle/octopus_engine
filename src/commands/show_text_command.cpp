@@ -15,14 +15,14 @@ Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
         | Text_Position_Type::CAMERA_RELATIVE) {}
 
 Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
-    std::vector<std::string> choices, const std::string& text) :
+    const std::vector<std::string>& choices, const std::string& text) :
     Show_Text_Command(game, text_position(object), choices, text, -1, false,
         Text_Position_Type::CENTERED_X
         | Text_Position_Type::BOTTOM_Y
         | Text_Position_Type::CAMERA_RELATIVE) {}
 
 Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
-    std::vector<std::string> choices, const std::string& text,
+    const std::vector<std::string>& choices, const std::string& text,
     long duration, bool center, Text_Position_Type pos_type) :
         game(game), position(position), choices(choices), text(text),
         duration(duration), start_time(game.ticks()), complete(false) {

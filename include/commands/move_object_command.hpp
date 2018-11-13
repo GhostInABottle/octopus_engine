@@ -11,8 +11,8 @@ class Move_Object_Command : public Command {
 public:
     Move_Object_Command(Map_Object& object, Direction dir, float pixels,
         bool skip_blocking, bool change_facing);
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     Map_Object& object;
     Direction direction;

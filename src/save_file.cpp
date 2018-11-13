@@ -122,7 +122,7 @@ namespace detail {
 }
 
 Save_File::Save_File(lua_State* state, luabind::object data) :
-    state(state), data(data) {}
+    state(state), data(data), valid(true) {}
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
     save_file.valid = false;

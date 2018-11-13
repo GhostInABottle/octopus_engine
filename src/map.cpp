@@ -314,7 +314,7 @@ void Map::add_layer(Layer_Types type) {
     layer->name = detail::generate_unique_name(names);
     layers.push_back(layer);
     if (type == Layer_Types::OBJECT)
-        object_layers.push_back((Object_Layer*)layer.get());
+        object_layers.push_back(static_cast<Object_Layer*>(layer.get()));
 }
 
 void Map::delete_layer(const std::string& name) {

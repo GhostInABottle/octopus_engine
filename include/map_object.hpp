@@ -28,7 +28,7 @@ public:
         bool is_global;
     };
     // Map object onstructor
-    Map_Object(Game& game, std::string name = "", std::string sprite_file = "",
+    Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
@@ -168,13 +168,13 @@ public:
     void set_draw_order(Draw_Order order) {
         draw_order = order;
     }
-    Sprite* get_sprite() {
+    Sprite* get_sprite() override {
         return sprite.get();
     }
     const Sprite* get_sprite() const {
         return sprite.get();
     }
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     float get_speed() const {
         return speed;
     }

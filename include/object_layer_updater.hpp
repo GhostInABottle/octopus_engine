@@ -5,8 +5,8 @@
 
 class Object_Layer_Updater : public Layer_Updater {
 public:
-    Object_Layer_Updater(Layer* layer) : Layer_Updater(layer) {}
-    void update(Map& map);
+    explicit Object_Layer_Updater(Layer* layer) : Layer_Updater(layer) {}
+    void update(Map& map) override;
 };
 
 #endif

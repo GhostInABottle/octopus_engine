@@ -29,7 +29,7 @@ int Game::game_width;
 int Game::game_height;
 
 struct Game::Impl {
-    Impl(bool editor_mode) :
+    explicit Impl(bool editor_mode) :
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),

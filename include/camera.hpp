@@ -11,7 +11,7 @@ class Screen_Shaker;
 
 class Camera : public xd::entity<Camera> {
 public:
-    Camera(Game& game);
+    explicit Camera(Game& game);
     // Calculate viewport rectangle based on screen width and height
     void calculate_viewport(int width, int height);
     // Setup viewport for rendering
@@ -88,7 +88,7 @@ private:
 
 class Camera_Renderer : public xd::render_component<Camera> {
 public:
-    Camera_Renderer(Game& game) : game(game) {}
+    explicit Camera_Renderer(Game& game) : game(game) {}
     void render(Camera& camera);
 private:
     Game& game;

@@ -13,7 +13,7 @@ class Choice_Result;
 
 class Scripting_Interface {
 public:
-    Scripting_Interface(Game& game);
+    explicit Scripting_Interface(Game& game);
     void update();
     void run_script(const std::string& script);
     void set_globals();

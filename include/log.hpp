@@ -20,7 +20,7 @@ enum class Log_Level { error, warning, info, debug };
 class Log : public std::stringstream {
 public:
     // Constructor: sets the level
-    Log(Log_Level level = Log_Level::info) : current_level(level) {
+    explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
         if (!log_file.is_open()) {
             std::string file_name = Configurations::get<std::string>("logging.filename");
             log_file.open(file_name.c_str(), std::ios_base::app);

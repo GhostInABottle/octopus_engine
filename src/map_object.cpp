@@ -9,7 +9,7 @@
 #include "../include/log.hpp"
 #include <boost/lexical_cast.hpp>
 
-Map_Object::Map_Object(Game& game, std::string name,
+Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
         game(game), layer(nullptr), id(-1), color(1.0f), gid(-1), opacity(1.0f),
         visible(true), disabled(false), stopped(false), frozen(false),

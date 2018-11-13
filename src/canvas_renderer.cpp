@@ -7,7 +7,7 @@
 #include "../include/configurations.hpp"
 #include "../include/utility.hpp"
 
-Canvas_Renderer::Canvas_Renderer() {
+Canvas_Renderer::Canvas_Renderer() : drawn_to_batch(false) {
     fbo_supported = Configurations::get<bool>("debug.use-fbo")
         && xd::framebuffer::extension_supported();
 }

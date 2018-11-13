@@ -5,8 +5,8 @@
 
 class Image_Layer_Updater : public Layer_Updater {
 public:
-    Image_Layer_Updater(Layer* layer) : Layer_Updater(layer) {}
-    void update(Map& map);
+    explicit Image_Layer_Updater(Layer* layer) : Layer_Updater(layer) {}
+    void update(Map& map) override;
 };
 
 #endif

@@ -8,7 +8,7 @@ class Game;
 class Player_Controller : public xd::logic_component<Map_Object>
 {
 public:
-    Player_Controller(Game& game);
+    explicit Player_Controller(Game& game);
     void update(Map_Object& object);
 private:
     Game& game;

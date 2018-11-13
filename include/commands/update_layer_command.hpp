@@ -9,8 +9,8 @@ struct Layer;
 class Update_Layer_Command : public Command {
 public:
     Update_Layer_Command(Game& game, Layer& layer, float opacity, long duration);
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     Layer& layer;
     Game& game;

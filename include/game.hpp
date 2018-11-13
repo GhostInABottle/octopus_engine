@@ -28,7 +28,7 @@ namespace xd {
 
 class Game {
 public:
-    Game(bool editor_mode = false);
+    explicit Game(bool editor_mode = false);
     ~Game();
     // Main game loop
     void run();

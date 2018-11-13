@@ -45,11 +45,9 @@ public:
     void remove_child(const std::string& name);
     // Find a child by name
     Canvas* get_child(const std::string& name) {
-        for (auto& child : children) {
-            if (child->name == name)
-                return child.get();
-        }
-        return nullptr;
+        auto child = std::find_if(children.begin(), children.end(),
+            [&](auto& child) { return child->name == name; });
+        return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by index
     Canvas* get_child(std::size_t index) {
@@ -67,7 +65,7 @@ public:
     // Update the image
     void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     // Update the text for a text canvas
     void set_text(const std::string& text);
     // Get the current canvas text
@@ -79,7 +77,7 @@ public:
     // Set bold and italic fonts
     void link_font(const std::string& type, const std::string& font_file);
     // Get the sprite, if any
-    Sprite* get_sprite() { return sprite.get(); }
+    Sprite* get_sprite() override { return sprite.get(); }
     // Get canvas width
     int get_width() const {
         if (image_texture)

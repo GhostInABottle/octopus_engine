@@ -11,8 +11,8 @@ class Game;
 class Fade_Music_Command : public Command {
 public:
     Fade_Music_Command(Game& game, xd::music& music, float volume, long duration);
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     xd::music& music;
     Game& game;

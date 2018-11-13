@@ -8,8 +8,8 @@ class Game;
 class Shake_Screen_Command : public Command {
 public:
     Shake_Screen_Command(Game& game, float strength, float speed, long duration);
-    void execute() {}
-    bool is_complete() const;
+    void execute()  override {}
+    bool is_complete() const override;
 private:
     Game& game;
     long start_time;

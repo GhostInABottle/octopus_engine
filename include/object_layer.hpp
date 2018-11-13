@@ -17,7 +17,7 @@ struct Object_Layer : public Layer {
     // List of objects
     std::vector<Map_Object*> objects;
 
-    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) override;
     static std::unique_ptr<Layer> load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map);
 };
 

@@ -12,8 +12,8 @@ class Move_Camera_Command : public Command {
 public:
     Move_Camera_Command(Camera& camera, float x, float y, float speed);
     Move_Camera_Command(Camera& camera, Direction dir, float pixels, float speed);
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     Camera& camera;
     const Map_Object* camera_object;

@@ -18,8 +18,8 @@ public:
     void set_new_angle(float angle) { new_angle = angle;  }
     void set_new_opacity(float opacity) { new_opacity = opacity;  }
     void set_duration(long ms) { duration = ms; }
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     void update_canvas(float alpha) const;
     Game& game;

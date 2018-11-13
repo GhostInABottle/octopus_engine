@@ -34,15 +34,15 @@ public:
     Show_Text_Command(Game& game, Map_Object* object,
         const std::string& text, long duration = -1);
     Show_Text_Command(Game& game, Map_Object* object,
-        std::vector<std::string> choices, const std::string& text = "");
+        const std::vector<std::string>& choices, const std::string& text = "");
     Show_Text_Command(Game& game, xd::vec2 position,
-        std::vector<std::string> choices, const std::string& text,
+        const std::vector<std::string>& choices, const std::string& text,
         long duration = -1, bool center = false,
         Text_Position_Type pos_type = Text_Position_Type::EXACT_X
         | Text_Position_Type::EXACT_Y | Text_Position_Type::CAMERA_RELATIVE);
-    void execute();
-    void execute(int ticks);
-    bool is_complete() const;
+    void execute() override;
+    void execute(int ticks) override;
+    bool is_complete() const override;
     int choice_index() const { return selected_choice; }
     std::string full_text() const;
     void set_start_time(long start) { this->start_time = start;  }

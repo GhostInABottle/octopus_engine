@@ -9,8 +9,8 @@ class Game;
 class Tint_Screen_Command : public Command {
 public:
     Tint_Screen_Command(Game& game, xd::vec4 color, long duration);
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     Game& game;
     xd::vec4 old_color;

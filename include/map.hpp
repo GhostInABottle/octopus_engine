@@ -39,7 +39,7 @@ public:
     typedef std::shared_ptr<Map_Object> Object_Ptr;
     typedef std::unordered_map<int, Object_Ptr> Object_Map;
     // Constructor and destructor
-    Map(Game& game);
+    explicit Map(Game& game);
     ~Map();
     // Get map name
     std::string get_name() const {

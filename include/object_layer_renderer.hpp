@@ -7,7 +7,7 @@ class Object_Layer_Renderer : public Layer_Renderer {
 public:
     Object_Layer_Renderer(const Layer& layer, const Camera& camera)
         : Layer_Renderer(layer, camera) {}
-    void render(Map& map);
+    void render(Map& map) override;
 };
 
 #endif

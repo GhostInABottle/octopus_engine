@@ -70,7 +70,7 @@ struct Sprite_Data {
     // Asset manager
     xd::asset_manager& asset_manager;
 
-    Sprite_Data(xd::asset_manager& manager);
+    explicit Sprite_Data(xd::asset_manager& manager);
     ~Sprite_Data();
 
     static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, const std::string& filename);

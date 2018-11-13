@@ -11,8 +11,8 @@ class Show_Pose_Command : public Command {
 public:
     Show_Pose_Command(Sprite_Holder* holder, const std::string& pose_name,
         const std::string& state = "", Direction dir = Direction::NONE);
-    void execute() {}
-    bool is_complete() const;
+    void execute() override {}
+    bool is_complete() const override;
 private:
     Sprite_Holder* holder;
 };

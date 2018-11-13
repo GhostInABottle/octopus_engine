@@ -15,8 +15,8 @@
 
 // Used to simplify NPC scheduling
 class Dummy_Command : public Command {
-    void execute() {}
-    bool is_complete() const { return true; }
+    void execute() override {}
+    bool is_complete() const override { return true; }
 };
 
 

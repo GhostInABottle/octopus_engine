@@ -30,7 +30,6 @@ void Tile_Layer::resize(xd::ivec2 new_size) {
 
 rapidxml::xml_node<>* Tile_Layer::save(rapidxml::xml_document<>& doc) {
     auto node = Layer::save(doc, "layer");
-    std::string raw_data;
     uLongf src_size = tiles.size() * 4;
     uLongf dest_size = compressBound(src_size);
     std::vector<Bytef> dest_bytes(dest_size);

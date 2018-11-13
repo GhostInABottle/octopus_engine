@@ -144,8 +144,6 @@ private:
     bool get_close;
     // Goal node before pathfinding
     Node original_goal;
-    // Number of times path was obstructed and recalculated
-    int collision_counter;
     // List of nodes to be checked
     Heap<Node> open_list;
     // Hash table of already checked tiles

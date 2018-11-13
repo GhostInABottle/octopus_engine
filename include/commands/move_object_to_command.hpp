@@ -14,8 +14,8 @@ public:
         Collision_Check_Types check_type = Collision_Check_Types::BOTH,
         bool keep_trying = false);
     ~Move_Object_To_Command();
-    void execute();
-    bool is_complete() const;
+    void execute() override;
+    bool is_complete() const override;
 private:
     struct Impl;
     friend struct Impl;

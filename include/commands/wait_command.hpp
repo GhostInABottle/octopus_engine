@@ -8,9 +8,9 @@ class Game;
 class Wait_Command : public Command {
 public:
     Wait_Command(Game& game, int duration, int start = -1);
-    void execute() {}
-    bool is_complete() const;
-    bool is_complete(int ticks) const;
+    void execute() override {}
+    bool is_complete() const override;
+    bool is_complete(int ticks) const override;
 private:
     Game& game;
     int start_time;

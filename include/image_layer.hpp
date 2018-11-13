@@ -34,12 +34,12 @@ struct Image_Layer : public Layer, public Sprite_Holder {
     Image_Layer() : repeat(false), fixed(false) {}
     // Set the sprite
     using Sprite_Holder::set_sprite;
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "");
+    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     // Set image
     void set_image(const std::string& filename);
     // Get the sprite, if any
-    Sprite* get_sprite() { return sprite.get(); }
-    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
+    Sprite* get_sprite() override { return sprite.get(); }
+    rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) override;
     static std::unique_ptr<Layer> load(rapidxml::xml_node<>& node,
         Game& game, const Camera& camera);
 };
