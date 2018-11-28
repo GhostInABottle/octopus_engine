@@ -34,15 +34,21 @@ public:
     template<class ...Args>
     Canvas* add_child(const std::string& name, Args&&... args) {
         children.emplace_back(new Canvas(std::forward<Args>(args)...));
-        children.back()->set_name(name);
-        if (children.back()->get_type() != children_type) {
+        auto& child = children.back();
+        child->set_name(name);
+        if (child->get_type() != children_type) {
             children_type = Type::MIXED;
         }
+        child->set_priority(get_priority() + children.size());
+        child->inherit_properties(*this);
+
         redraw_needed = true;
         return children.back().get();
     }
     // Remove a child
     void remove_child(const std::string& name);
+    // Inherit certain properties from another canvas
+    void inherit_properties(const Canvas& parent);
     // Find a child by name
     Canvas* get_child(const std::string& name) {
         auto child = std::find_if(children.begin(), children.end(),
@@ -216,6 +222,9 @@ public:
     }
     bool is_camera_relative() const {
         return camera_relative;
+    }
+    const std::string get_font_filename() const {
+        return font->filename();
     }
     int get_font_size() const {
         return style->size();

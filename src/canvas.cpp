@@ -13,28 +13,28 @@
 #include "../include/log.hpp"
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
-        color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
     children_type = Canvas::Type::SPRITE;
     set_sprite(game, sprite, pose_name);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
-         color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
     children_type = Canvas::Type::IMAGE;
     set_image(filename);
 }
 
 Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
-        position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f),
-        color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
     children_type = Canvas::Type::IMAGE;
     set_image(filename, trans);
 }
 
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) :
-        position(position), text_renderer(&game.get_text_renderer()),
+        priority(0), position(position), text_renderer(&game.get_text_renderer()),
         font(game.get_font()), color(1.0f), visible(false),
         formatter(xd::create<xd::stock_text_formatter>()),
         style(new xd::font_style(game.get_font_style())),
@@ -94,6 +94,30 @@ void Canvas::remove_child(const std::string& name) {
         }
     }
     redraw_needed = true;
+}
+
+void Canvas::inherit_properties(const Canvas& parent) {
+    // Child inherits parent properties
+    set_color(parent.get_color());
+    set_angle(parent.get_angle());
+    set_magnification(parent.get_magnification());
+    set_origin(parent.get_origin());
+    set_scissor_box(parent.get_scissor_box());
+
+    if (parent.get_type() == Canvas::Type::TEXT && parent.get_type() == type) {
+        set_font(parent.get_font_filename());
+        set_font_size(parent.get_font_size());
+        if (parent.has_text_type())
+            set_text_type(parent.get_text_type());
+        if (parent.has_outline()) {
+            set_text_outline_color(parent.get_text_outline_color());
+            set_text_outline_width(parent.get_text_outline_width());
+        }
+        if (parent.has_shadow()) {
+            set_text_shadow_color(parent.get_text_shadow_color());
+            set_text_shadow_offset(parent.get_text_shadow_offset());
+        }
+    }
 }
 
 void Canvas::set_text(const std::string& text) {
@@ -166,6 +190,8 @@ void Canvas::render_text(const std::string& text, float x, float y) {
 }
 
 void Canvas::set_font(const std::string& font_file) {
+    if (font_file == get_font_filename())
+        return;
     if (!file_exists(font_file))
         throw std::runtime_error("Couldn't read font file " + font_file);
     font = xd::create<xd::font>(font_file);

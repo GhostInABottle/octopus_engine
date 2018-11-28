@@ -164,24 +164,8 @@ void Canvas_Renderer::render_text(Game& game, Canvas* canvas, Canvas* parent) {
     auto camera_pos = game.get_camera()->get_position();
     if (parent) {
         pos += parent->get_position();
-        // Override setting with parent's, where it converges from default
-        if (parent->get_type() == Canvas::Type::TEXT) {
-            if (check_close(style->color(), xd::vec4(1.0f)))
-                style->color() = parent->get_color();
-            static int default_font_size = Configurations::get<int>("font.size");
-            if (canvas->get_font_size() == default_font_size)
-                style->size() = parent->get_font_size();
-            if (!canvas->has_text_type() && parent->has_text_type())
-                style->type() = parent->get_text_type();
-            if (!canvas->has_outline() && parent->has_outline())
-                style->outline(parent->get_text_outline_width(),
-                    parent->get_text_outline_color());
-            if (!canvas->has_shadow() && parent->has_shadow()) {
-                auto offset = parent->get_text_shadow_offset();
-                style->shadow(offset.x, offset.y, parent->get_text_shadow_color());
-            }
-        }
     }
+
     for (auto line : lines) {
         float draw_x = pos.x;
         float draw_y = pos.y;
@@ -202,20 +186,13 @@ void Canvas_Renderer::render_image(Game& game, Canvas* canvas, Canvas* parent) {
     xd::vec4 color = canvas->get_color();
     if (parent) {
         pos += parent->get_position();
-        if (check_close(color, xd::vec4(1.0f)))
-            color = parent->get_color();
     }
+
     if (auto sprite = canvas->get_sprite()) {
         sprite->render(batch, xd::vec2(pos.x, pos.y), 1.0f, color);
     } else {
         float angle = canvas->get_angle();
         xd::vec2 magnification = canvas->get_magnification();
-        if (parent) {
-            if (check_close(angle, 0.0f))
-                angle = parent->get_angle();
-            if (check_close(magnification, xd::vec2(1.0f)))
-                magnification = parent->get_magnification();
-        }
         batch.add(canvas->get_image_texture(), pos.x, pos.y,
             xd::radians(angle), magnification, color, canvas->get_origin());
     }
