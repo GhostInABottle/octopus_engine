@@ -2,6 +2,8 @@
 #include "../../include/utility.hpp"
 #include "../../include/direction_utilities.hpp"
 
+BOOST_AUTO_TEST_SUITE(utility_tests)
+
 namespace detail {
     inline void check_color(const xd::vec4& resulting_color, const xd::vec4& expected_color) {
         float epsilon = 0.01f;
@@ -33,3 +35,5 @@ BOOST_AUTO_TEST_CASE(utility_is_diagonal) {
     BOOST_CHECK(!is_diagonal(Direction::LEFT));
     BOOST_CHECK(!is_diagonal(Direction::UP));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -769,6 +769,7 @@ void Scripting_Interface::setup_scripts() {
             .property("text_shadow_color", &Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color)
             .property("text_type", &Canvas::get_text_type, &Canvas::set_text_type)
             .property("child_count", &Canvas::get_child_count)
+            .property("permissive_tag_parsing", &Canvas::get_permissive_tag_parsing, &Canvas::set_permissive_tag_parsing)
             .def("reset_text_outline", &Canvas::reset_text_outline)
             .def("reset_text_shadow", &Canvas::reset_text_shadow)
             .def("reset_text_type", &Canvas::reset_text_type)

@@ -1,5 +1,6 @@
 Release
 Debug
+data
 *.user
 /obstruction.png
 /player.png

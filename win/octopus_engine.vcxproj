@@ -124,6 +124,7 @@
     <ClCompile Include="..\src\sprite.cpp" />
     <ClCompile Include="..\src\sprite_data.cpp" />
     <ClCompile Include="..\src\sprite_holder.cpp" />
+    <ClCompile Include="..\src\text_parser.cpp" />
     <ClCompile Include="..\src\tileset.cpp" />
     <ClCompile Include="..\src\tile_layer.cpp" />
     <ClCompile Include="..\src\tile_layer_renderer.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\include\sprite.hpp" />
     <ClInclude Include="..\include\sprite_data.hpp" />
     <ClInclude Include="..\include\sprite_holder.hpp" />
+    <ClInclude Include="..\include\text_parser.hpp" />
     <ClInclude Include="..\include\tileset.hpp" />
     <ClInclude Include="..\include\tile_layer.hpp" />
     <ClInclude Include="..\include\tile_layer_renderer.hpp" />

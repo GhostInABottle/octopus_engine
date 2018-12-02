@@ -13,6 +13,7 @@
 #include <xd/graphics/framebuffer.hpp>
 #include "sprite_holder.hpp"
 #include "sprite.hpp"
+#include "text_parser.hpp"
 
 class Game;
 namespace xd {
@@ -24,10 +25,8 @@ public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     // Create a canvas from a sprite
     Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position);
-    // Create a canvas from an image file name
-    Canvas(const std::string& filename, xd::vec2 position);
-    // Create a canvas with a transparent color
-    Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans);
+    // Create an image canvas with an optional transparent color
+    Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
     // Create a canvas with some text
     Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
@@ -344,9 +343,17 @@ public:
     Canvas::Type get_children_type() const {
         return children_type;
     }
+    bool get_permissive_tag_parsing() const {
+        return permissive_tag_parsing;
+    }
+    void set_permissive_tag_parsing(bool value) {
+        permissive_tag_parsing = value;
+    }
     bool should_redraw(int time) const;
     void mark_as_drawn(int time);
 private:
+    // Sets shared default values
+    Canvas(xd::vec2 position);
     // Optional name used to identify the canvas
     std::string name;
     // Canvas priority, higher priority canvases are drawn on top
@@ -398,6 +405,10 @@ private:
     bool redraw_needed;
     // When was the last time the canvas was redrawn
     int last_drawn_time;
+    // Used for parsing text tags
+    Text_Parser parser;
+    // Ignore missing tags
+    bool permissive_tag_parsing;
 };
 
 #endif

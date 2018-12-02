@@ -40,7 +40,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -117,12 +122,15 @@
     <ClCompile Include="..\..\src\sprite.cpp" />
     <ClCompile Include="..\..\src\sprite_data.cpp" />
     <ClCompile Include="..\..\src\sprite_holder.cpp" />
+    <ClCompile Include="..\..\src\tests\game_fixture.cpp" />
     <ClCompile Include="..\..\src\tests\layer_test.cpp" />
     <ClCompile Include="..\..\src\tests\map_test.cpp" />
     <ClCompile Include="..\..\src\tests\sprite_data_test.cpp" />
+    <ClCompile Include="..\..\src\tests\text_parser_test.cpp" />
     <ClCompile Include="..\..\src\tests\tileset_test.cpp" />
     <ClCompile Include="..\..\src\tests\utility_test.cpp" />
     <ClCompile Include="..\..\src\test_main.cpp" />
+    <ClCompile Include="..\..\src\text_parser.cpp" />
     <ClCompile Include="..\..\src\tileset.cpp" />
     <ClCompile Include="..\..\src\tile_layer.cpp" />
     <ClCompile Include="..\..\src\tile_layer_renderer.cpp" />
@@ -193,6 +201,8 @@
     <ClInclude Include="..\..\include\sprite.hpp" />
     <ClInclude Include="..\..\include\sprite_data.hpp" />
     <ClInclude Include="..\..\include\sprite_holder.hpp" />
+    <ClInclude Include="..\..\include\tests\game_fixture.hpp" />
+    <ClInclude Include="..\..\include\text_parser.hpp" />
     <ClInclude Include="..\..\include\tileset.hpp" />
     <ClInclude Include="..\..\include\tile_layer.hpp" />
     <ClInclude Include="..\..\include\tile_layer_renderer.hpp" />

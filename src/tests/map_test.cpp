@@ -2,8 +2,7 @@
 #include "../../include/rapidxml.hpp"
 #include "../../include/map.hpp"
 #include "../../include/tile_layer.hpp"
-#include "../../include/game.hpp"
-#include "../../include/configurations.hpp"
+#include "../../include/tests/game_fixture.hpp"
 
 namespace detail {
     void check_map(Map& map) {
@@ -19,24 +18,9 @@ namespace detail {
         BOOST_CHECK_EQUAL(layer->properties["@Description"], "ground layer");
         BOOST_CHECK_EQUAL(layer->tiles[10], 132);
     }
-    Game* game;
 }
 
-struct Global_Fixture
-{
-    Global_Fixture() {
-        Configurations::parse("config.ini");
-        Game::game_width = Configurations::get<int>("debug.width");
-        Game::game_height = Configurations::get<int>("debug.height");
-        detail::game = new Game();
-    }
-    ~Global_Fixture()
-    {
-        delete detail::game;
-    }
-};
-
-BOOST_GLOBAL_FIXTURE(Global_Fixture);
+BOOST_FIXTURE_TEST_SUITE(map_tests, Game_Fixture)
 
 BOOST_AUTO_TEST_CASE(map_load) {
     char text[] =
@@ -81,17 +65,19 @@ BOOST_AUTO_TEST_CASE(map_load) {
     doc.parse<0>(text);
     rapidxml::xml_node<>* node = doc.first_node("map");
     BOOST_CHECK(node);
-    auto map = Map::load(*detail::game, *node);
+    auto map = Map::load(*game, *node);
     detail::check_map(*map);
 }
 
 
 BOOST_AUTO_TEST_CASE(map_load_file) {
-    auto map = Map::load(*detail::game, "test_tiled.tmx");
+    auto map = Map::load(*game, "test_tiled.tmx");
     detail::check_map(*map);
 }
 
 BOOST_AUTO_TEST_CASE(map_load_file_external_tileset) {
-    auto map = Map::load(*detail::game, "test_tiled_external_tileset.tmx");
+    auto map = Map::load(*game, "test_tiled_external_tileset.tmx");
     detail::check_map(*map);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

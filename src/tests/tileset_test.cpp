@@ -2,6 +2,8 @@
 #include "../../include/rapidxml.hpp"
 #include "../../include/tileset.hpp"
 
+BOOST_AUTO_TEST_SUITE(tileset_tests)
+
 BOOST_AUTO_TEST_CASE(tileset_load) {
     char text[] =
         "<tileset firstgid=\"1\" name=\"test sheet\" tilewidth=\"8\" tileheight=\"8\"> \
@@ -37,3 +39,5 @@ BOOST_AUTO_TEST_CASE(tileset_load) {
     BOOST_CHECK_EQUAL(tileset->tiles[1].id, 272);
     BOOST_CHECK_EQUAL(tileset->tiles[1].properties["test"], "va");
 }
+
+BOOST_AUTO_TEST_SUITE_END()

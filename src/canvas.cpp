@@ -12,33 +12,29 @@
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 
-Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) :
-        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+Canvas::Canvas(xd::vec2 position) :
+    priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
+    angle(0.0f), color(1.0f), visible(false), redraw_needed(true),
+    permissive_tag_parsing(false) {}
+
+Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(position) {
+    camera_relative = false;
     children_type = Canvas::Type::SPRITE;
     set_sprite(game, sprite, pose_name);
 }
 
-Canvas::Canvas(const std::string& filename, xd::vec2 position) :
-        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
-    children_type = Canvas::Type::IMAGE;
-    set_image(filename);
-}
-
-Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
-        priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-        angle(0.0f), color(1.0f), visible(false), camera_relative(false), redraw_needed(true) {
+Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) : Canvas(position) {
+    camera_relative = false;
     children_type = Canvas::Type::IMAGE;
     set_image(filename, trans);
 }
 
-Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) :
-        priority(0), position(position), text_renderer(&game.get_text_renderer()),
-        font(game.get_font()), color(1.0f), visible(false),
-        formatter(xd::create<xd::stock_text_formatter>()),
-        style(new xd::font_style(game.get_font_style())),
-        camera_relative(camera_relative), redraw_needed(true) {
+Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) : Canvas(position) {
+    text_renderer = &game.get_text_renderer();
+    font = game.get_font();
+    formatter = xd::create<xd::stock_text_formatter>();
+    style = std::make_unique<xd::font_style>(game.get_font_style());
+    camera_relative = camera_relative;
     setup_fbo();
     type = Canvas::Type::TEXT;
     children_type = type;
@@ -128,58 +124,33 @@ void Canvas::set_text(const std::string& text) {
     // Split tags across multiple lines
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
     text_lines = split(text, "\n", false);
-    if (text_lines.size() > 1) {
-        struct tag_info {
-            bool open;
-            std::string name;
-            std::string value;
-        };
-        std::unordered_map<std::string, std::deque<int>> tags;
-        std::vector<tag_info> tag_infos;
-        for (unsigned int i = 0; i < text_lines.size(); i++) {
-            std::string line = text_lines[i];
-            std::string open_tags;
-            for (auto tag : tag_infos) {
-                if (tag.open) {
-                    auto open_tag = "{" + tag.name;
-                    if (!tag.value.empty())
-                        open_tag += "=" + tag.value;
-                    open_tag += "}";
-                    open_tags += open_tag;
+    if (text_lines.size() > 1 || permissive_tag_parsing) {
+
+        std::unordered_map<std::string, std::string> tag_values;
+        std::vector<Token> tokens;
+
+        for (auto& line : text_lines) {
+
+            auto line_tokens = parser.Parse(line, permissive_tag_parsing);
+            tokens.insert(tokens.end(), line_tokens.begin(), line_tokens.end());
+
+            for (auto& token : tokens) {
+                if (token.unmatched) {
+                    if (token.type == "opening_tag") {
+                        line += "{/" + token.tag + "}";
+                        if (!token.value.empty())
+                            tag_values[token.tag] = token.value;
+                    } else if (token.type == "closing_tag") {
+                        auto open_tag = "{" + token.tag;
+                        if (tag_values.find(token.tag) != tag_values.end()) {
+                            open_tag += "=" + tag_values[token.tag];
+                            tag_values.erase(token.tag);
+                        }
+                        open_tag += "}";
+                        line = open_tag + line;
+                    }
+                    token.unmatched = false;
                 }
-            }
-            text_lines[i] = open_tags + text_lines[i];
-            static std::regex opening("\\{(\\w+)=?((\\w|,)+)?\\}");
-            static std::regex closing("\\{/(\\w+)\\}");
-            std::smatch open_results;
-            auto start = line.cbegin();
-            while (std::regex_search(start, line.cend(), open_results, opening)) {
-                tag_info info;
-                info.name = open_results[1].str();
-                if (open_results.size() > 2)
-                    info.value = open_results[2].str();
-                info.open = true;
-                tag_infos.push_back(info);
-                tags[info.name].push_back(tag_infos.size() - 1);
-                start += open_results.position() + 1;
-            }
-            std::smatch close_results;
-            start = line.cbegin();
-            while (std::regex_search(start, line.cend(), close_results, closing)) {
-                auto close_tag = close_results[1].str();
-                if (tags.find(close_tag) != tags.end()) {
-                    auto& ids = tags[close_tag];
-                    int id = ids[0];
-                    tag_infos[id].open = false;
-                    ids.pop_front();
-                } else {
-                    LOGGER_E << "Closing tag " + close_tag + " didn't match any open tags in line: " + line;
-                }
-                start += close_results.position() + 1;
-            }
-            for (auto tag = tag_infos.rbegin(); tag != tag_infos.rend(); ++tag) {
-                if (tag->open)
-                    text_lines[i] += "{/" + tag->name + "}";
             }
         }
     }

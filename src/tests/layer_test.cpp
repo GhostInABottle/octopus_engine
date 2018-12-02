@@ -3,18 +3,16 @@
 #include <xd/asset_manager.hpp>
 #include "../../include/rapidxml.hpp"
 #include "../../include/map.hpp"
-#include "../../include/game.hpp"
 #include "../../include/tile_layer.hpp"
 #include "../../include/image_layer.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/object_layer.hpp"
+#include "../../include/tests/game_fixture.hpp"
 
-namespace detail {
-    extern Game* game;
-}
+BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)
 
 BOOST_AUTO_TEST_CASE(tile_layer_load) {
-    char text[] = 
+    char text[] =
         "<layer name=\"ground\" width=\"40\" height=\"40\"> \
             <properties> \
                 <property name=\"@Description\" value=\"ground layer\"/> \
@@ -27,7 +25,7 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
     doc.parse<0>(text);
     rapidxml::xml_node<>* node = doc.first_node("layer");
     BOOST_CHECK(node);
-    auto layer = Tile_Layer::load(*node, *detail::game->get_camera());
+    auto layer = Tile_Layer::load(*node, *game->get_camera());
     BOOST_CHECK_EQUAL(layer->name, "ground");
     BOOST_CHECK_EQUAL(layer->width, 40);
     BOOST_CHECK_EQUAL(layer->height, 40);
@@ -40,7 +38,7 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
 }
 
 BOOST_AUTO_TEST_CASE(image_layer_load) {
-    char text[] = 
+    char text[] =
         "<imagelayer name=\"some image\" width=\"40\" height=\"40\" opacity=\"0.55\" visible=\"0\" > \
             <image source=\"../data/test_tileset.gif\" trans=\"ff5fff\"/> \
             <properties> \
@@ -52,7 +50,7 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
     rapidxml::xml_node<>* node = doc.first_node("imagelayer");
     BOOST_CHECK(node);
     xd::asset_manager manager;
-    auto layer = Image_Layer::load(*node, *detail::game, *detail::game->get_camera());
+    auto layer = Image_Layer::load(*node, *game, *game->get_camera());
     BOOST_CHECK_EQUAL(layer->name, "some image");
     BOOST_CHECK_CLOSE(layer->opacity, 0.55f, 0.001f);
     BOOST_CHECK_EQUAL(layer->visible, false);
@@ -64,7 +62,7 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
 }
 
 BOOST_AUTO_TEST_CASE(object_layer_load) {
-    char text[] = 
+    char text[] =
         "<objectgroup color=\"#ff0000\" name=\"obj layer\" width=\"40\" height=\"40\"> \
             <properties> \
                 <property name=\"jimbo\" value=\"yeah right\"/> \
@@ -80,8 +78,8 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     doc.parse<0>(text);
     rapidxml::xml_node<>* node = doc.first_node("objectgroup");
     BOOST_CHECK(node);
-    Map map(*detail::game);
-    auto layer = Object_Layer::load(*node, *detail::game, *detail::game->get_camera(), map);
+    Map map(*game);
+    auto layer = Object_Layer::load(*node, *game, *game->get_camera(), map);
     BOOST_CHECK_EQUAL(layer->name, "obj layer");
     BOOST_CHECK_EQUAL(layer->width, 40);
     BOOST_CHECK_EQUAL(layer->height, 40);
@@ -103,3 +101,5 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     BOOST_CHECK_CLOSE(obj2.get_size()[0], 8.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj2.get_size()[1], 16.0f, 0.1f);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

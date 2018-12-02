@@ -5,6 +5,8 @@
 #include "../../include/map.hpp"
 #include "../../include/game.hpp"
 
+BOOST_AUTO_TEST_SUITE(sprite_data_tests)
+
 BOOST_AUTO_TEST_CASE(sprite_data_load_file) {
     xd::asset_manager manager;
     auto sprite_data = Sprite_Data::load(manager, "sprite.spr");
@@ -54,3 +56,5 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_CLOSE(main_pose.frames[0].magnification.y, 4.0f, epsilon);
     BOOST_CHECK_CLOSE(main_pose.frames[0].opacity, 0.5f, epsilon);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
