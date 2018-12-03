@@ -21,7 +21,7 @@ namespace detail {
     void validate_tokens(const Text_Parser& parser, const std::string& text, std::vector<Token> expectedTokens) {
         std::vector<Token> actualTokens;
 
-        BOOST_CHECK_NO_THROW(actualTokens = parser.Parse(text));
+        BOOST_CHECK_NO_THROW(actualTokens = parser.parse(text));
 
         BOOST_CHECK_EQUAL(actualTokens.size(), expectedTokens.size());
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(text_parser_exceptions) {
     Text_Parser parser;
 
     for (auto& invalid : detail::invalid_cases) {
-        BOOST_CHECK_THROW(parser.Parse(invalid), parsing_exception);
+        BOOST_CHECK_THROW(parser.parse(invalid), parsing_exception);
     }
 }
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(text_parser_no_exceptions_if_permissive) {
     Text_Parser parser;
 
     for (auto& invalid : detail::invalid_cases) {
-        BOOST_CHECK_NO_THROW(parser.Parse(invalid, true));
+        BOOST_CHECK_NO_THROW(parser.parse(invalid, true));
     }
 }
 

@@ -23,7 +23,7 @@ public:
 // Analyzes text and returns list of tokens
 class Text_Parser {
 public:
-    std::vector<Token> Parse(const std::string& text, bool permissive = false) const;
+    std::vector<Token> parse(const std::string& text, bool permissive = false) const;
 };
 
 #endif

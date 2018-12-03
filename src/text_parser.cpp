@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "../include/log.hpp"
 
-std::vector<Token> Text_Parser::Parse(const std::string& text, bool permissive) const
+std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) const
 {
     std::vector<Token> tokens;
 
@@ -109,14 +109,10 @@ std::vector<Token> Text_Parser::Parse(const std::string& text, bool permissive) 
                 }
                 start++;
             }
-            if (error)
-                break;
 
             auto unclosed_tag = tag_token.tag.empty() || (has_value && tag_token.value.empty());
-            if (validate_condition(unclosed_tag, "tag was not closed "))
-                break;
-
-            tokens.push_back(tag_token);
+            if (!error && !validate_condition(unclosed_tag, "tag was not closed "))
+                tokens.push_back(tag_token);
         }
 
         if (start != end) {
@@ -125,16 +121,14 @@ std::vector<Token> Text_Parser::Parse(const std::string& text, bool permissive) 
             text_token.start_index = start - text.begin();
             text_token.type = "text";
             std::string parsed_text;
-            bool error = false;
             while (start != end)
             {
                 if (*start != '{' && *start != '}')
                     parsed_text += *start;
-                else if (validate_condition(*start == '}', "unexpected closing tag")) {
-                    error = true;
+                else if (*start == '{')
                     break;
-                } else
-                    break;
+
+                validate_condition(*start == '}', "unexpected closing tag");
                 start++;
             }
 
@@ -143,9 +137,6 @@ std::vector<Token> Text_Parser::Parse(const std::string& text, bool permissive) 
                 text_token.end_index = parsed_text.empty() ? text_token.start_index : start - text.begin() - 1;
                 tokens.push_back(text_token);
             }
-            if (error)
-                break;
-
         }
     }
 

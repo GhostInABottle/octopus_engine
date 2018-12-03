@@ -131,7 +131,7 @@ void Canvas::set_text(const std::string& text) {
 
         for (auto& line : text_lines) {
 
-            auto line_tokens = parser.Parse(line, permissive_tag_parsing);
+            auto line_tokens = parser.parse(line, permissive_tag_parsing);
             tokens.insert(tokens.end(), line_tokens.begin(), line_tokens.end());
 
             for (auto& token : tokens) {

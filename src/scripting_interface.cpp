@@ -743,6 +743,27 @@ void Scripting_Interface::setup_scripts() {
                 return game->load_music(filename).get();
             }
         )),
+        // Parsed text token
+        class_<Token>("Token")
+            .def_readonly("type", &Token::type)
+            .def_readonly("tag", &Token::tag)
+            .def_readonly("value", &Token::value)
+            .def_readonly("unmatched", &Token::unmatched)
+            .def_readonly("start_index", &Token::start_index)
+            .def_readonly("end_index", &Token::end_index),
+        // Canvas parser
+        class_<Text_Parser>("Text_Parser")
+            .def(constructor<>())
+            .def("parse", tag_function<luabind::object (Text_Parser&, const std::string&, bool)>(
+                [&](Text_Parser& parser, const std::string& text, bool permissive) {
+                    luabind::object objects = luabind::newtable(vm.lua_state());
+                    auto tokens = parser.parse(text, permissive);
+                    for (size_t i = 1; i <= tokens.size(); ++i) {
+                        objects[i] = tokens[i - 1];
+                    }
+                    return objects;
+                }
+            )),
         // A drawing canvas
         class_<Canvas, Sprite_Holder, std::shared_ptr<Sprite_Holder>>("Canvas_Class")
             .property("name", &Canvas::get_name, &Canvas::set_name)
