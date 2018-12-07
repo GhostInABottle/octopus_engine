@@ -34,7 +34,7 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
     font = game.get_font();
     formatter = xd::create<xd::stock_text_formatter>();
     style = std::make_unique<xd::font_style>(game.get_font_style());
-    camera_relative = camera_relative;
+    this->camera_relative = camera_relative;
     setup_fbo();
     type = Canvas::Type::TEXT;
     children_type = type;
