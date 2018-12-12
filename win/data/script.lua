@@ -61,7 +61,7 @@ c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
     print("Showing some text")
-    text(o, "{typewriter}Test?\n\n {rainbow}Hello, world!{/rainbow}{/typewriter}\nHow{bold} about {/bold}that?"):wait()
+    text(o, "{color=blue}Test?\n\n {rainbow}Hello,\nd{color=green}ea{/color}r\n world!{/rainbow}{/color}\nHow{bold} about {/bold}that?"):wait()
     text(Vec2(100, 100), "{typewriter}Slowly now...{/typewriter}", 2000):wait()
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
     wait(500)

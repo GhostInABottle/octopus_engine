@@ -1,5 +1,3 @@
-#include <regex>
-#include <unordered_map>
 #include <cmath>
 #include <xd/graphics/stock_text_formatter.hpp>
 #include <xd/graphics/simple_text_renderer.hpp>
@@ -125,31 +123,24 @@ void Canvas::set_text(const std::string& text) {
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
     text_lines = split(text, "\n", false);
     if (text_lines.size() > 1 || permissive_tag_parsing) {
-
-        std::unordered_map<std::string, std::string> tag_values;
-        std::vector<Token> tokens;
-
+        std::string open_tags;
         for (auto& line : text_lines) {
+            line = open_tags + line;
+            open_tags = "";
 
             auto line_tokens = parser.parse(line, permissive_tag_parsing);
-            tokens.insert(tokens.end(), line_tokens.begin(), line_tokens.end());
 
-            for (auto& token : tokens) {
-                if (token.unmatched) {
-                    if (token.type == "opening_tag") {
-                        line += "{/" + token.tag + "}";
-                        if (!token.value.empty())
-                            tag_values[token.tag] = token.value;
-                    } else if (token.type == "closing_tag") {
-                        auto open_tag = "{" + token.tag;
-                        if (tag_values.find(token.tag) != tag_values.end()) {
-                            open_tag += "=" + tag_values[token.tag];
-                            tag_values.erase(token.tag);
-                        }
-                        open_tag += "}";
-                        line = open_tag + line;
+            for (auto i = line_tokens.rbegin(); i != line_tokens.rend(); i++) {
+                auto& token = *i;
+                if (token.unmatched && token.type == "opening_tag") {
+                    // Close open tag and remember it for following lines
+                    line += "{/" + token.tag + "}";
+                    auto tag = "{" + token.tag;
+                    if (!token.value.empty()) {
+                        tag += "=" + token.value;
                     }
-                    token.unmatched = false;
+                    tag += "}";
+                    open_tags = tag + open_tags;
                 }
             }
         }
