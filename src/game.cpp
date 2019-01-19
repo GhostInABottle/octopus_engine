@@ -40,6 +40,7 @@ struct Game::Impl {
             was_stopped(false),
             pause_start_time(0),
             total_paused_time(0),
+            exit_requested(false),
             current_shader(nullptr),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
     std::unique_ptr<Scripting_Interface> scripting_interface;
@@ -64,6 +65,8 @@ struct Game::Impl {
     // Keep track of paused time
     int pause_start_time;
     int total_paused_time;
+    // Is it time to exit the main loop?
+    bool exit_requested;
     // Full-screen shader data
     xd::shader_program* current_shader;
     xd::sprite_batch full_screen_batch;
@@ -182,7 +185,7 @@ Game::~Game() {
 }
 
 void Game::run() {
-    for (;;) {
+    while (!pimpl->exit_requested) {
         window->update();
         if (window->closed())
             break;
@@ -275,6 +278,10 @@ void Game::resume() {
         music->play();
     set_shader(Configurations::get<std::string>("game.vertex-shader"),
         Configurations::get<std::string>("game.fragment-shader"));
+}
+
+void Game::exit() {
+    pimpl->exit_requested = true;
 }
 
 void Game::set_size(int width, int height) {

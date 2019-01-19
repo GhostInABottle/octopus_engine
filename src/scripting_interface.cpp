@@ -491,6 +491,7 @@ void Scripting_Interface::setup_scripts() {
             .property("stopped", &Game::stopped)
             .property("seconds", &Game::seconds)
             .property("playing_music", &Game::playing_music)
+            .def("exit", &Game::exit)
             .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {

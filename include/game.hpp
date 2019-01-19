@@ -40,6 +40,8 @@ public:
     void pause();
     // Resume game
     void resume();
+    // Exit game
+    void exit();
     // Window width
     int width() const {
         return window ? window->framebuffer_width() : 1;
