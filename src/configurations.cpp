@@ -35,6 +35,7 @@ void Configurations::parse(const std::string& filename) {
     defaults["font.bold"] = std::string();
     defaults["font.italic"] = std::string();
     defaults["font.size"] = 12;
+    defaults["font.line-height"] = 12.0f;
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");

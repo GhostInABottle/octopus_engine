@@ -97,7 +97,8 @@ Game::Game(bool editor_mode) :
     camera.reset(new Camera(*this));
     // Setup fonts
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
-        .line_height(12.0f).force_autohint(true);
+        .line_height(Configurations::get<float>("font.line-height"))
+        .force_autohint(true);
     pimpl->debug_style.line_height(12.0f).force_autohint(true);
     auto font_file = Configurations::get<std::string>("font.default");
     auto bold_font_file = Configurations::get<std::string>("font.bold");
