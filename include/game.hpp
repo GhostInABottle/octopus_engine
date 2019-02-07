@@ -19,7 +19,6 @@ class Canvas;
 class Clock;
 class Save_File;
 namespace xd {
-    class shader_program;
     class asset_manager;
     namespace lua {
         class virtual_machine;
@@ -96,8 +95,6 @@ public:
     xd::music::ptr load_music(const std::string& filename);
     // Get the music currently playing
     xd::music::ptr playing_music() { return music; }
-    // Modelview projection matrix
-    xd::mat4 get_mvp() const { return geometry.mvp(); }
     // Load map file and set as current map at the end of the frame
     void set_next_map(const std::string& filename, float x, float y, Direction dir);
     // Load the map right away
@@ -132,8 +129,6 @@ public:
     void set_ticks(int ticks) {
         editor_ticks = ticks;
     }
-    // Apply a certain shader
-    void set_shader(const std::string& vertex, const std::string& fragment);
     // Save game
     void save(const std::string& filename, Save_File& save_file) const;
     // Load game
@@ -153,7 +148,6 @@ private:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
     Scripting_Interface* current_scripting_interface;
-    xd::transform_geometry geometry;
     std::shared_ptr<Map_Object> player;
     xd::music::ptr music;
     xd::font::ptr font;

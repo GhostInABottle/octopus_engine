@@ -2,6 +2,7 @@
 #include "../include/tile_layer.hpp"
 #include "../include/map.hpp"
 #include "../include/game.hpp"
+#include "../include/camera.hpp"
 #include <xd/system.hpp>
 #include <xd/graphics.hpp>
 
@@ -30,5 +31,5 @@ void Tile_Layer_Renderer::render(Map& map) {
         cache = batch.create_batches();
         needs_redraw = false;
     }
-    batch.draw(map.get_game().get_mvp(), cache, map.get_game().ticks());
+    batch.draw(camera.get_mvp(), cache, map.get_game().ticks());
 }

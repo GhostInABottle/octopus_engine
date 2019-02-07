@@ -9,19 +9,22 @@
 #include "map.hpp"
 
 class Game;
+class Camera;
 class Canvas;
 
 class Canvas_Renderer : public xd::render_component<Map> {
 public:
-    Canvas_Renderer();
+    Canvas_Renderer(Game& game, Camera& camera);
     void render(Map& map);
 private:
-    void setup_framebuffer(Game& game, Canvas* canvas);
-    void render_framebuffer(Game& game, Canvas* canvas);
-    void render_canvas(Game& game, Canvas* canvas, Canvas* parent = nullptr);
-    void render_text(Game& game, Canvas* canvas, Canvas* parent = nullptr);
-    void render_image(Game& game, Canvas* canvas, Canvas* parent = nullptr);
-    bool should_redraw(Game& game, Canvas* canvas);
+    void setup_framebuffer(Canvas* canvas);
+    void render_framebuffer(Canvas* canvas);
+    void render_canvas(Canvas* canvas, Canvas* parent = nullptr);
+    void render_text(Canvas* canvas, Canvas* parent = nullptr);
+    void render_image(Canvas* canvas, Canvas* parent = nullptr);
+    bool should_redraw(Canvas* canvas);
+    Game& game;
+    Camera& camera;
     std::string last_drawn_text;
     xd::sprite_batch batch;
     bool drawn_to_batch;

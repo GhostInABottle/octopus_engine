@@ -1,6 +1,7 @@
 #ifndef HPP_CAMERA
 #define HPP_CAMERA
 
+#include <memory>
 #include <xd/system.hpp>
 #include <xd/graphics/types.hpp>
 #include <xd/entity.hpp>
@@ -18,6 +19,8 @@ public:
     void update_viewport(float shake_offset = 0.0f) const;
     // Setup initial OpenGL state
     void setup_opengl() const;
+    // Set OpenGL clear color
+    void set_clear_color(xd::vec4 color) const;
     // Center camera at position
     void center_at(xd::vec2 pos);
     // Center camera at object
@@ -32,6 +35,10 @@ public:
     void enable_scissor_test(xd::rect rect, xd::rect custom_viewport = xd::rect());
     // Disable scissor test
     void disable_scissor_test();
+    // Apply a certain shader
+    void set_shader(const std::string& vertex, const std::string& fragment);
+    // Render current shader
+    void render_shader();
     // Get screen magnification
     float get_magnification() const {
         return magnification;
@@ -50,6 +57,13 @@ public:
     }
     xd::rect get_viewport() const {
         return viewport;
+    }
+    xd::transform_geometry& get_geometry() {
+        return geometry;
+    }
+    // Modelview projection matrix
+    xd::mat4 get_mvp() const {
+        return geometry.mvp();
     }
     xd::vec4 get_tint_color() const {
         return tint_color;
@@ -78,12 +92,18 @@ private:
     float magnification;
     // Viewport rectangle
     xd::rect viewport;
+    // Projection and model view matrices
+    xd::transform_geometry geometry;
     // Screen tint color
     xd::vec4 tint_color;
     // Tracked map object
     Map_Object* object;
     // Screen shaker component
     Screen_Shaker* shaker;
+    // Implementation details
+    struct Impl;
+    friend struct Impl;
+    std::unique_ptr<Impl> pimpl;
 };
 
 class Camera_Renderer : public xd::render_component<Camera> {

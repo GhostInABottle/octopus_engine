@@ -4,6 +4,8 @@
 #include "../include/map_object.hpp"
 #include "../include/utility.hpp"
 #include "../include/configurations.hpp"
+#include "../include/log.hpp"
+#include "../include/custom_shaders.hpp"
 #include <xd/graphics/vertex_batch.hpp>
 #include <xd/graphics/shader_program.hpp>
 #include <xd/graphics/shaders.hpp>
@@ -14,12 +16,29 @@
     #include <GL/gl.h>
 #endif
 
-namespace detail {
+struct Camera::Impl {
+    explicit Impl() :
+            current_shader(nullptr) {}
+    // Update OpenGL viewport
+    void update_viewport(xd::rect viewport, float shake_offset = 0.0f) const {
+        glViewport(static_cast<int>(viewport.x + shake_offset),
+            static_cast<int>(viewport.y),
+            static_cast<int>(viewport.w),
+            static_cast<int>(viewport.h));
+    }
+    // Full-screen shader data
+    xd::shader_program* current_shader;
+    xd::sprite_batch full_screen_batch;
+    xd::texture::ptr full_screen_texture;
+    // Apply a certain shader
+    void set_shader(const std::string& vertex, const std::string& fragment);
+    // Render a full-screen shader
+    void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry);
+    // Draw a quad (for screen tint)
     struct quad_vertex
     {
         xd::vec2 pos;
     };
-
     struct quad_vertex_traits : xd::vertex_traits<quad_vertex>
     {
         quad_vertex_traits()
@@ -27,25 +46,70 @@ namespace detail {
             bind_vertex_attribute(xd::VERTEX_POSITION, &quad_vertex::pos);
         }
     };
-
     void draw_quad(xd::mat4 mvp, xd::rect rect,
-            const xd::vec4& color, GLenum draw_mode = GL_QUADS) {
-        static xd::flat_shader shader;
-        // Setup uniforms
-        mvp = xd::translate(mvp, xd::vec3(rect.x, rect.y, 0.0f));
-        shader.setup(mvp, color);
-        // Set quad vertex positions
-        quad_vertex quad[4];
-        quad[0].pos = xd::vec2(0.0f, rect.h);
-        quad[1].pos = xd::vec2(rect.w, rect.h);
-        quad[2].pos = xd::vec2(rect.w, 0.0f);
-        quad[3].pos = xd::vec2(0.0f, 0.0f);
-        // Load and render batch
-        xd::vertex_batch<quad_vertex_traits> batch(draw_mode);
-        batch.load(&quad[0], 4);
-        batch.render();
-    }
+        const xd::vec4& color, GLenum draw_mode = GL_QUADS);
+};
 
+void Camera::Impl::set_shader(const std::string& vertex, const std::string& fragment) {
+    std::string vsrc, fsrc;
+    if (!vertex.empty() && !fragment.empty()) {
+        try {
+            vsrc = read_file(vertex);
+            fsrc = read_file(fragment);
+        } catch (const std::runtime_error& err) {
+            LOGGER_W << "Error loading shaders: " << err.what();
+            vsrc = fsrc = "";
+        }
+    }
+    if (!vsrc.empty()) {
+        current_shader = new Custom_Shader(vsrc, fsrc);
+        full_screen_batch.set_shader(current_shader);
+    } else {
+        current_shader = nullptr;
+    }
+}
+
+void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry) {
+    int w = game.width();
+    int h = game.height();
+    if (!full_screen_texture)
+        full_screen_texture = xd::create<xd::texture>(w, h, nullptr,
+            xd::vec4(0), GL_CLAMP, GL_CLAMP);
+    full_screen_texture->copy_read_buffer(0, 0, w, h);
+    full_screen_batch.clear();
+    full_screen_batch.add(full_screen_texture, 0, 0);
+    geometry.projection().push(
+    xd::ortho<float>(
+            0, static_cast<float>(w), // left, right
+            0, static_cast<float>(h), // bottom, top
+            -1, 1 // near, far
+        )
+    );
+    geometry.model_view().push(xd::mat4());
+    glViewport(0, 0, w, h);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    full_screen_batch.draw(geometry.mvp(), game.ticks());
+    update_viewport(viewport);
+    geometry.model_view().pop();
+    geometry.projection().pop();
+}
+
+void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
+    const xd::vec4& color, GLenum draw_mode) {
+    static xd::flat_shader shader;
+    // Setup uniforms
+    mvp = xd::translate(mvp, xd::vec3(rect.x, rect.y, 0.0f));
+    shader.setup(mvp, color);
+    // Set quad vertex positions
+    Camera::Impl::quad_vertex quad[4];
+    quad[0].pos = xd::vec2(0.0f, rect.h);
+    quad[1].pos = xd::vec2(rect.w, rect.h);
+    quad[2].pos = xd::vec2(rect.w, 0.0f);
+    quad[3].pos = xd::vec2(0.0f, 0.0f);
+    // Load and render batch
+    xd::vertex_batch<Camera::Impl::quad_vertex_traits> batch(draw_mode);
+    batch.load(&quad[0], 4);
+    batch.render();
 }
 
 Camera::Camera(Game& game)
@@ -54,7 +118,8 @@ Camera::Camera(Game& game)
         magnification(1.0f),
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         object(nullptr),
-        shaker(nullptr)
+        shaker(nullptr),
+        pimpl(new Impl())
 {
     calculate_viewport(game.width(), game.height());
     // Add components
@@ -106,10 +171,7 @@ void Camera::calculate_viewport(int width, int height) {
 }
 
 void Camera::update_viewport(float shake_offset) const {
-    glViewport(static_cast<int>(viewport.x + shake_offset),
-        static_cast<int>(viewport.y),
-        static_cast<int>(viewport.w),
-        static_cast<int>(viewport.h));
+    pimpl->update_viewport(viewport, shake_offset);
 }
 
 void Camera::setup_opengl() const {
@@ -118,6 +180,10 @@ void Camera::setup_opengl() const {
     glAlphaFunc(GL_GREATER, 0.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Camera::set_clear_color(xd::vec4 color) const {
+    glClearColor(color.r, color.g, color.b, color.a);
 }
 
 void Camera::center_at(xd::vec2 pos) {
@@ -158,7 +224,7 @@ xd::vec2 Camera::get_centered_position(const Map_Object& object) {
 
 void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
     GLenum draw_mode = fill ? GL_QUADS :  GL_LINE_LOOP;
-    detail::draw_quad(game.get_mvp(), rect, color, draw_mode);
+    pimpl->draw_quad(geometry.mvp(), rect, color, draw_mode);
 }
 
 void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
@@ -178,6 +244,15 @@ void Camera::disable_scissor_test() {
     glDisable(GL_SCISSOR_TEST);
 }
 
+void Camera::set_shader(const std::string& vertex, const std::string& fragment) {
+    pimpl->set_shader(vertex, fragment);
+}
+
+void Camera::render_shader() {
+    if (!pimpl->current_shader) return;
+    pimpl->render_shader(game, viewport, geometry);
+}
+
 void Camera::start_shaking(float strength, float speed) {
     auto shaker_comp = xd::create<Screen_Shaker>(strength, speed);
     shaker = static_cast<Screen_Shaker*>(shaker_comp.get());
@@ -195,9 +270,26 @@ float Camera::shake_offset() const {
 }
 
 void Camera_Renderer::render(Camera& camera) {
-    if (camera.is_shaking())
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    auto& geometry = camera.get_geometry();
+    geometry.projection().load(
+        xd::ortho<float>(
+            0, static_cast<float>(game.game_width), // left, right
+            static_cast<float>(game.game_height), 0, // bottom, top
+            -1, 1 // near, far
+        )
+    );
+    geometry.model_view().identity();
+    auto cam_pos = camera.get_position();
+    geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
+
+    if (camera.is_shaking()) {
         camera.update_viewport(camera.shake_offset());
+    }
+
     game.get_map()->render();
+
     auto tint_color = camera.get_tint_color();
     if (tint_color.a > 0.0f) {
         auto pos = camera.get_position();
@@ -206,6 +298,8 @@ void Camera_Renderer::render(Camera& camera) {
             static_cast<float>(game.game_height));
         camera.draw_rect(rect, tint_color);
     }
+
+    camera.render_shader();
 }
 
 void Object_Tracker::update(Camera& camera) {

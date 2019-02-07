@@ -4,6 +4,7 @@
 #include "../include/map.hpp"
 #include "../include/game.hpp"
 #include "../include/utility.hpp"
+#include "../include/camera.hpp"
 #include <algorithm>
 #include <limits>
 
@@ -43,5 +44,5 @@ void Object_Layer_Renderer::render(Map& map) {
         object->render();
     }
 
-    batch.draw(map.get_game().get_mvp(), map.get_game().ticks());
+    batch.draw(camera.get_mvp(), map.get_game().ticks());
 }

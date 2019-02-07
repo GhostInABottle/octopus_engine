@@ -9,7 +9,6 @@
 #include "../include/command.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility.hpp"
-#include "../include/custom_shaders.hpp"
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
 #include <xd/graphics.hpp>
@@ -41,7 +40,6 @@ struct Game::Impl {
             pause_start_time(0),
             total_paused_time(0),
             exit_requested(false),
-            current_shader(nullptr),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
@@ -67,18 +65,12 @@ struct Game::Impl {
     int total_paused_time;
     // Is it time to exit the main loop?
     bool exit_requested;
-    // Full-screen shader data
-    xd::shader_program* current_shader;
-    xd::sprite_batch full_screen_batch;
-    xd::texture::ptr full_screen_texture;
     // Texture asset manager
     xd::asset_manager asset_manager;
     // The shared Lua virtual machine
     xd::lua::virtual_machine vm;
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
-    // Render a full-screen shader
-    void render_shader(Game& game);
 };
 
 Game::Game(bool editor_mode) :
@@ -123,7 +115,7 @@ Game::Game(bool editor_mode) :
     }
 
     auto clear_color = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+    camera->set_clear_color(clear_color);
 
     if (editor_mode)
         return;
@@ -177,7 +169,7 @@ Game::Game(bool editor_mode) :
     int logic_fps = Configurations::get<int>("debug.logic-fps");
     window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
     // Setup shader, if any
-    set_shader(Configurations::get<std::string>("game.vertex-shader"),
+    camera->set_shader(Configurations::get<std::string>("game.vertex-shader"),
         Configurations::get<std::string>("game.fragment-shader"));
 }
 
@@ -226,22 +218,8 @@ void Game::frame_update() {
 }
 
 void Game::render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    geometry.projection().load(
-        xd::ortho<float>(
-            0, static_cast<float>(game_width), // left, right
-            static_cast<float>(game_height), 0, // bottom, top
-            -1, 1 // near, far
-        )
-    );
-    geometry.model_view().identity();
-    auto cam_pos = camera->get_position();
-    geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
     camera->render();
     if (!pimpl->editor_mode) {
-        // Draw shader, if any
-        if (pimpl->current_shader)
-            pimpl->render_shader(*this);
         // Draw FPS
         if (pimpl->show_fps) {
             text_renderer.render(font, pimpl->debug_style, 5, 230,
@@ -266,7 +244,7 @@ void Game::pause() {
         if (!pimpl->music_was_paused)
             music->pause();
     }
-    set_shader(Configurations::get<std::string>("game.pause-vertex-shader"),
+    camera->set_shader(Configurations::get<std::string>("game.pause-vertex-shader"),
         Configurations::get<std::string>("game.pause-fragment-shader"));
 }
 
@@ -277,7 +255,7 @@ void Game::resume() {
         clock->resume_time();
     if (music && !pimpl->music_was_paused)
         music->play();
-    set_shader(Configurations::get<std::string>("game.vertex-shader"),
+    camera->set_shader(Configurations::get<std::string>("game.vertex-shader"),
         Configurations::get<std::string>("game.fragment-shader"));
 }
 
@@ -331,25 +309,6 @@ int Game::ticks() const {
     int stopped_time = pimpl->total_paused_time + (pimpl->paused ?
         window->ticks() - pimpl->pause_start_time : 0);
     return window->ticks() - stopped_time;
-}
-
-void Game::set_shader(const std::string& vertex, const std::string& fragment) {
-    std::string vsrc, fsrc;
-    if (!vertex.empty() && !fragment.empty()) {
-        try {
-            vsrc = read_file(vertex);
-            fsrc = read_file(fragment);
-        } catch (const std::runtime_error& err) {
-            LOGGER_W << "Error loading shaders: " << err.what();
-            vsrc = fsrc = "";
-        }
-    }
-    if (!vsrc.empty()) {
-        pimpl->current_shader = new Custom_Shader(vsrc, fsrc);
-        pimpl->full_screen_batch.set_shader(pimpl->current_shader);
-    } else {
-        pimpl->current_shader = nullptr;
-    }
 }
 
 void Game::save(const std::string& filename, Save_File& save_file) const {
@@ -417,31 +376,6 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
     map->add_canvas(canvas);
-}
-
-void Game::Impl::render_shader(Game& game) {
-    int w = game.width();
-    int h = game.height();
-    if (!full_screen_texture)
-        full_screen_texture = xd::create<xd::texture>(w, h, nullptr,
-            xd::vec4(0), GL_CLAMP, GL_CLAMP);
-    full_screen_texture->copy_read_buffer(0, 0, w, h);
-    full_screen_batch.clear();
-    full_screen_batch.add(full_screen_texture, 0, 0);
-    game.geometry.projection().push(
-    xd::ortho<float>(
-            0, static_cast<float>(w), // left, right
-            0, static_cast<float>(h), // bottom, top
-            -1, 1 // near, far
-        )
-    );
-    game.geometry.model_view().push(xd::mat4());
-    glViewport(0, 0, w, h);
-    game.window->clear();
-    full_screen_batch.draw(game.get_mvp(), game.ticks());
-    game.camera->update_viewport();
-    game.geometry.model_view().pop();
-    game.geometry.projection().pop();
 }
 
 void Game::process_keymap() {

@@ -48,7 +48,7 @@ Map::Map(Game& game) :
         canvases_sorted(false) {
     add_component(xd::create<Map_Renderer>());
     add_component(xd::create<Map_Updater>());
-    add_component(xd::create<Canvas_Renderer>());
+    add_component(xd::create<Canvas_Renderer>(game, *game.get_camera()));
     add_component(xd::create<Canvas_Updater>());
 }
 
