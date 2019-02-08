@@ -27,8 +27,6 @@ public:
     void center_at(const Map_Object& object);
     // Update position within map bounds
     void set_position(xd::vec2 pos);
-    // Returns a position centered on object
-    xd::vec2 get_centered_position(const Map_Object& object);
     // Draw a rectangle
     void draw_rect(xd::rect rect, xd::vec4 color, bool fill = true);
     // Enable scissor test to limit drawing to a certain rectangle (game coords)
