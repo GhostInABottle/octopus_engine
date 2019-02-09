@@ -31,18 +31,23 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.save-folder"] = std::string();
     defaults["game.text-fade-duration"] = 250;
     defaults["game.choice-press-delay"] = 250;
+
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();
     defaults["font.italic"] = std::string();
     defaults["font.size"] = 12;
     defaults["font.line-height"] = 12.0f;
+
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");
+
     defaults["logging.filename"] = std::string("game.log");
     defaults["logging.level"] = std::string("debug");
+
     defaults["debug.width"] = 320;
     defaults["debug.height"] = 240;
+    defaults["debug.magnification"] = 1.0f;
     defaults["debug.show-fps"] = true;
     defaults["debug.show-time"] = false;
     defaults["debug.logic-fps"] = 40;
@@ -53,6 +58,7 @@ void Configurations::parse(const std::string& filename) {
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
     defaults["debug.text-canvas-priority"] = 1000;
+
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
     defaults["startup.player-position-x"] = 70.0f;

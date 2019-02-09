@@ -11,8 +11,8 @@ void Image_Layer_Updater::update(Map& map) {
         image_layer->sprite->update();
     if (image_layer->repeat) {
         image_layer->position += image_layer->velocity;
-        if (image_layer->position.x > map.get_game().game_width &&
-                image_layer->position.y > map.get_game().game_height)
+        if (image_layer->position.x > map.get_game().game_width() &&
+                image_layer->position.y > map.get_game().game_height())
             image_layer->position = xd::vec2(0.0f, 0.0f);
     }
 }

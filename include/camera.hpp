@@ -37,14 +37,6 @@ public:
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render current shader
     void render_shader();
-    // Get screen magnification
-    float get_magnification() const {
-        return magnification;
-    }
-    // Set screen magnification
-    void set_magnification(float mag) {
-        magnification = mag;
-    }
     // Start shaking screen
     void start_shaking(float strength, float speed);
     // Cease shaking screen
@@ -86,8 +78,6 @@ private:
     Game& game;
     // Camera position
     xd::vec2 position;
-    // Screen magnification
-    float magnification;
     // Viewport rectangle
     xd::rect viewport;
     // Projection and model view matrices

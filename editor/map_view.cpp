@@ -53,7 +53,7 @@ void Map_View::load_map(const std::string& name) {
 void Map_View::new_map() {
     selected_object = nullptr;
     map_name = "";
-    game->new_map(xd::ivec2(40, 30), xd::ivec2(8));
+    game->new_map(xd::ivec2(25, 15), xd::ivec2(16));
     emit map_changed("");
 }
 
@@ -79,16 +79,6 @@ void Map_View::open_map() {
             QString(), tr("Map Files (*.tmx)")).toStdString();
     if (!filename.empty())
         load_map(filename);
-}
-
-int Map_View::map_width() const {
-    auto map = game->get_map();
-    return map->get_width() * map->get_tile_width();
-}
-
-int Map_View::map_height() const {
-    auto map = game->get_map();
-    return map->get_height() * map->get_tile_height();
 }
 
 Game* Map_View::get_game() {
@@ -152,8 +142,6 @@ void Map_View::initializeGL() {
             throw xd::window_creation_failed();
         }
         Configurations::parse("config.ini");
-        Game::game_width = 1;
-        Game::game_height = 1;
         game.reset(new Game(true));
         new_map();
         tick_timer = new QElapsedTimer();
@@ -164,8 +152,8 @@ void Map_View::initializeGL() {
         update_timer = new QTimer(this);
         connect(update_timer, &QTimer::timeout, this, &Map_View::logic_update);
         update_timer->start(25);
-        game->get_camera()->set_magnification(get_scale());
-        emit resize(map_width(), map_height());
+        auto map = game->get_map();
+        emit resize(map->get_pixel_width(), map->get_pixel_height());
     } catch (std::exception& e) {
         QMessageBox::warning(this, tr(e.what()),
            tr(e.what()));
@@ -175,24 +163,28 @@ void Map_View::initializeGL() {
 void Map_View::paintGL() {
     // If map size changed, resize viewport and scroll bars
     if (get_map()->is_changed()) {
-        refresh_scrollbars();
         resizeGL(width(), height());
+        refresh_scrollbars();
     }
     // Render everything
-    game->render();
     auto camera = game->get_camera();
+    camera->update_viewport();
+    game->render();
+
     if (selected_object) {
         auto object_box = detail::get_object_box(selected_object);
         camera->draw_rect(object_box, xd::vec4(1.0f), false);
     }
-    xd::rect map_border(0.1f, 0.0f, map_width() - 0.1f, map_height() - 0.1f);
+    auto map = game->get_map();
+    xd::rect map_border(0.1f, 0.0f,
+        map->get_pixel_width() - 0.1f,
+        map->get_pixel_height() - 0.1f);
     camera->draw_rect(map_border, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f), false);
 }
 
 void Map_View::resizeGL(int width, int height) {
-    Game::game_width = width / get_scale();
-    Game::game_height = height / get_scale();
     game->set_size(width, height);
+    game->set_magnification(get_scale());
 }
 
 void Map_View::mousePressEvent(QMouseEvent* mouse_event) {
@@ -249,7 +241,7 @@ void Map_View::mouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void Map_View::keyPressEvent(QKeyEvent* event) {
-    float old_scale_index = scale_index;
+    int old_scale_index = scale_index;
     if (event->key() == Qt::Key_Plus && scale_index < 4) {
         scale_index++;
     } else if (event->key() == Qt::Key_Minus && scale_index > 0) {
@@ -258,8 +250,8 @@ void Map_View::keyPressEvent(QKeyEvent* event) {
         QOpenGLWidget::keyPressEvent(event);
     }
     if (scale_index != old_scale_index) {
-        refresh_scrollbars();
         resizeGL(width(), height());
+        refresh_scrollbars();
     }
 }
 
@@ -269,8 +261,9 @@ void Map_View::logic_update() {
 }
 
 void Map_View::refresh_scrollbars() {
-    game->get_camera()->set_magnification(get_scale());
-    int min_width = static_cast<int>(map_width() * get_scale());
-    int min_height = static_cast<int>(map_height() * get_scale());
+    game->set_magnification(get_scale());
+    auto map = game->get_map();
+    int min_width = static_cast<int>(map->get_pixel_width() * get_scale());
+    int min_height = static_cast<int>(map->get_pixel_height() * get_scale());
     setMinimumSize(min_width, min_height);
 }

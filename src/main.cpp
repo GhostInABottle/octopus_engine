@@ -31,8 +31,6 @@ int main() {
 #endif
         Configurations::parse("config.ini");
         LOGGER_I << "Reticulating Splines";
-        Game::game_width = Configurations::get<int>("debug.width");
-        Game::game_height = Configurations::get<int>("debug.height");
         Game game;
         game.run();
 

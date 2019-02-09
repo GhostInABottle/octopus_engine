@@ -46,13 +46,13 @@ void Canvas_Renderer::setup_framebuffer(Canvas* canvas) {
     auto scissor_box = canvas->get_scissor_box();
     if (scissor_box.w > 0) {
         // Use a texture-sized viewport when calculating scissor box
-        xd::rect viewport = xd::rect(0, 0, game.game_width, game.game_height);
+        xd::rect viewport = xd::rect(0, 0, game.game_width(), game.game_height());
         camera.enable_scissor_test(scissor_box, viewport);
     }
     auto framebuffer = canvas->get_framebuffer();
     framebuffer->attach_color_texture(canvas->get_fbo_texture(), 0);
     framebuffer->bind();
-    glViewport(0, 0, game.game_width, game.game_height);
+    glViewport(0, 0, game.game_width(), game.game_height());
     glPushAttrib(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -74,8 +74,8 @@ void Canvas_Renderer::render_framebuffer(Canvas* canvas) {
     xd::transform_geometry geometry;
     geometry.projection().push(
         xd::ortho<float>(
-            0, static_cast<float>(game.game_width), // left, right
-            0, static_cast<float>(game.game_height), // bottom, top
+            0, static_cast<float>(game.game_width()), // left, right
+            0, static_cast<float>(game.game_height()), // bottom, top
             -1, 1 // near, far
             )
     );
@@ -176,7 +176,7 @@ void Canvas_Renderer::render_text(Canvas* canvas, Canvas* parent) {
             draw_y -= camera_pos.y;
         }
 
-        canvas->render_text(line, draw_x, game.game_height - draw_y);
+        canvas->render_text(line, draw_x, game.game_height() - draw_y);
         pos.y += style->line_height();
     }
 }

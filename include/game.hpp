@@ -41,16 +41,24 @@ public:
     void resume();
     // Exit game
     void exit();
-    // Window width
+    // Screen dimensions
     int width() const {
-        return window ? window->framebuffer_width() : 1;
+        return window ? window->framebuffer_width() : editor_size.x;
     }
-    // Window height
     int height() const {
-        return window ? window->framebuffer_height() : 1;
+        return window ? window->framebuffer_height() : editor_size.y;
     }
     // Manually set window size (for editor)
     void set_size(int width, int height);
+    // Game dimensions
+    int game_width() const;
+    int game_height() const;
+    // Get screen magnification
+    float get_magnification() const {
+        return magnification;
+    }
+    // Set screen magnification
+    void set_magnification(float mag);
     // Frames per seconds
     int fps() const {
         return window->fps();
@@ -135,12 +143,9 @@ public:
     std::unique_ptr<Save_File> load(const std::string& filename);
     // Process key-mapping string
     void process_keymap();
-    // Game width
-    static int game_width;
-    // Game height
-    static int game_height;
 private:
     std::unique_ptr<xd::window> window;
+    float magnification;
     struct Impl;
     friend struct Impl;
     std::unique_ptr<Impl> pimpl;
@@ -154,6 +159,7 @@ private:
     xd::font_style style;
     xd::simple_text_renderer text_renderer;
     int editor_ticks;
+    xd::ivec2 editor_size;
 };
 
 #endif

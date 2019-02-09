@@ -24,9 +24,6 @@
 #include <iomanip>
 #include <stdexcept>
 
-int Game::game_width;
-int Game::game_height;
-
 struct Game::Impl {
     explicit Impl(bool editor_mode) :
             editor_mode(editor_mode),
@@ -40,7 +37,9 @@ struct Game::Impl {
             pause_start_time(0),
             total_paused_time(0),
             exit_requested(false),
-            debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")){}
+            debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
+            game_width(Configurations::get<int>("debug.width")),
+            game_height(Configurations::get<int>("debug.height")) {}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
     bool show_time;
@@ -71,6 +70,10 @@ struct Game::Impl {
     xd::lua::virtual_machine vm;
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
+    // Game width
+    int game_width;
+    // Game height
+    int game_height;
 };
 
 Game::Game(bool editor_mode) :
@@ -80,13 +83,18 @@ Game::Game(bool editor_mode) :
             Configurations::get<int>("game.screen-height"),
             xd::window_options(Configurations::get<bool>("game.fullscreen"),
                 false, false, false, 8, 0, 0, 2, 0))),
+        magnification(Configurations::get<float>("debug.magnification")),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         pimpl(new Impl(editor_mode)),
         current_scripting_interface(nullptr),
-        text_renderer(static_cast<float>(game_width), static_cast<float>(game_height)) {
+        text_renderer(0, 0),
+        editor_size(1, 1) {
     xd::audio::init();
     clock.reset(new Clock(*this));
     camera.reset(new Camera(*this));
+    text_renderer.reset_projection(
+        static_cast<float>(game_width()),
+        static_cast<float>(game_height()));
     // Setup fonts
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
         .line_height(Configurations::get<float>("font.line-height"))
@@ -221,14 +229,15 @@ void Game::render() {
     camera->render();
     if (!pimpl->editor_mode) {
         // Draw FPS
+        auto height = static_cast<float>(game_height());
         if (pimpl->show_fps) {
-            text_renderer.render(font, pimpl->debug_style, 5, 230,
+            text_renderer.render(font, pimpl->debug_style, 5, height - 10,
                 "FPS: " + boost::lexical_cast<std::string>(fps()));
         }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
             auto seconds = std::to_string(clock->seconds());
-            text_renderer.render(font, pimpl->debug_style, 5, 220, seconds);
+            text_renderer.render(font, pimpl->debug_style, 5, height - 20, seconds);
         }
         window->swap();
     }
@@ -264,8 +273,31 @@ void Game::exit() {
 }
 
 void Game::set_size(int width, int height) {
+    if (pimpl->editor_mode) {
+        editor_size = xd::ivec2(width, height);
+        pimpl->game_width = static_cast<int>(map->get_pixel_width() * magnification);
+        pimpl->game_height = static_cast<int>(map->get_pixel_height() * magnification);
+    } else {
+        window->set_size(width, height);
+    }
     camera->calculate_viewport(width, height);
     camera->update_viewport();
+}
+
+int Game::game_width() const {
+    return static_cast<int>(pimpl->game_width / magnification);
+}
+
+int Game::game_height() const {
+    return static_cast<int>(pimpl->game_height / magnification);
+}
+
+void Game::set_magnification(float mag) {
+    magnification = mag;
+    camera->calculate_viewport(width(), height());
+    text_renderer.reset_projection(
+        static_cast<float>(game_width()),
+        static_cast<float>(game_height()));
 }
 
 void Game::run_script(const std::string& script) {

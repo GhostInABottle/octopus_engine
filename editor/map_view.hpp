@@ -21,8 +21,6 @@ class Map_View : public QOpenGLWidget {
 public:
     explicit Map_View(QWidget* parent = nullptr);
     void load_map(const std::string& name);
-    int map_width() const;
-    int map_height() const;
     Game* get_game();
     Map* get_map();
     Map_Object* get_object(const std::string& name);

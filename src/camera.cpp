@@ -15,7 +15,7 @@
 #else
     #include <GL/gl.h>
 #endif
-#include <cmath>
+#include <algorithm>
 
 struct Camera::Impl {
     explicit Impl() :
@@ -26,13 +26,6 @@ struct Camera::Impl {
             static_cast<int>(viewport.y),
             static_cast<int>(viewport.w),
             static_cast<int>(viewport.h));
-    }
-    // Get game dimensions based on magnification
-    xd::vec2 get_magnified_game_size(const Game& game, float magnification) {
-        return xd::vec2{
-            std::floor(game.game_width / magnification),
-            std::floor(game.game_height / magnification)
-        };
     }
     // Full-screen shader data
     xd::shader_program* current_shader;
@@ -123,7 +116,6 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
 Camera::Camera(Game& game)
         : game(game),
         position(xd::vec2(0.0f, 0.0f)),
-        magnification(1.0f),
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         object(nullptr),
         shaker(nullptr),
@@ -140,18 +132,17 @@ Camera::Camera(Game& game)
 void Camera::calculate_viewport(int width, int height) {
     // Calculate viewport rectangle
     auto scale_mode = Configurations::get<std::string>("game.scale-mode");
-    float screen_width = static_cast<float>(width);
-    float screen_height = static_cast<float>(height);
-    auto game_size = pimpl->get_magnified_game_size(game, magnification);
-    float game_width = game_size.x;
-    float game_height =game_size.y;
+    auto screen_width = static_cast<float>(width);
+    auto screen_height = static_cast<float>(height);
+    auto game_width = static_cast<float>(game.game_width());
+    auto game_height = static_cast<float>(game.game_height());
     if (scale_mode == "stretch") {
         viewport.w = screen_width;
         viewport.h = screen_height;
     } else {
         if (scale_mode == "none") {
-            viewport.w = game_width;
-            viewport.h = game_height;
+            viewport.w = std::min(screen_width, game_width * game.get_magnification());
+            viewport.h = std::min(screen_height, game_height * game.get_magnification());
         } else if (scale_mode == "aspect" ||
                 screen_width < game_width || screen_height < game_height) {
             float target_ratio = game_width / game_height;
@@ -196,8 +187,7 @@ void Camera::set_clear_color(xd::vec4 color) const {
 }
 
 void Camera::center_at(xd::vec2 pos) {
-    auto game_size = pimpl->get_magnified_game_size(game, magnification);
-    set_position(pos - xd::vec2(game_size.x / 2, game_size.y / 2));
+    set_position(pos - xd::vec2(game.game_width() / 2, game.game_height() / 2));
 }
 
 void Camera::center_at(const Map_Object& object) {
@@ -213,11 +203,10 @@ void Camera::center_at(const Map_Object& object) {
 
 void Camera::set_position(xd::vec2 pos) {
     auto map = game.get_map();
-    float map_width = static_cast<float>(map->get_width() * map->get_tile_width());
-    float map_height = static_cast<float>(map->get_height() * map->get_tile_height());
-    auto game_size = pimpl->get_magnified_game_size(game, magnification);
-    float right_limit = map_width - game_size.x;
-    float bottom_limit = map_height - game_size.y;
+    float map_width = static_cast<float>(map->get_pixel_height());
+    float map_height = static_cast<float>(map->get_pixel_height());
+    float right_limit = map_width - game.game_width();
+    float bottom_limit = map_height - game.game_height();
     position = pos;
     if (position.x < 0)
         position.x = 0;
@@ -235,14 +224,14 @@ void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
 }
 
 void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
-    if (custom_viewport.w == 0)
+    if (custom_viewport.w == 0) {
         custom_viewport = viewport;
-    auto game_size = pimpl->get_magnified_game_size(game, magnification);
+    }
     xd::vec2 scale{
-        custom_viewport.w / game_size.x,
-        custom_viewport.h / game_size.y
+        custom_viewport.w / game.game_width(),
+        custom_viewport.h / game.game_height()
     };
-    int y = game.game_height - static_cast<int>(rect.y + rect.h);
+    int y = game.game_height() - static_cast<int>(rect.y + rect.h);
     glEnable(GL_SCISSOR_TEST);
     glScissor(static_cast<int>(custom_viewport.x + rect.x * scale.x),
         static_cast<int>(custom_viewport.y + y * scale.y),
@@ -282,8 +271,8 @@ float Camera::shake_offset() const {
 void Camera_Renderer::render(Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-     float game_width = game.game_width / camera.get_magnification();
-     float game_height = game.game_height / camera.get_magnification();
+     auto game_width = static_cast<float>(game.game_width());
+     auto game_height = static_cast<float>(game.game_height());
 
     auto& geometry = camera.get_geometry();
     geometry.projection().load(

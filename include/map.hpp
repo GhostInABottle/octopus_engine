@@ -132,6 +132,12 @@ public:
     int get_tile_height() const {
         return tile_height;
     }
+    int get_pixel_width() const {
+        return width * tile_width;
+    }
+    int get_pixel_height() const {
+        return height * tile_height;
+    }
     std::string get_filename() const {
         return filename;
     }

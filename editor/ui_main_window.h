@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.1
+** Created by: Qt User Interface Compiler version 5.12.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -12,11 +12,9 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -65,36 +63,36 @@ public:
     void setupUi(QMainWindow *Main_Window)
     {
         if (Main_Window->objectName().isEmpty())
-            Main_Window->setObjectName(QStringLiteral("Main_Window"));
+            Main_Window->setObjectName(QString::fromUtf8("Main_Window"));
         Main_Window->resize(821, 600);
         action_open_project = new QAction(Main_Window);
-        action_open_project->setObjectName(QStringLiteral("action_open_project"));
+        action_open_project->setObjectName(QString::fromUtf8("action_open_project"));
         action_save = new QAction(Main_Window);
-        action_save->setObjectName(QStringLiteral("action_save"));
+        action_save->setObjectName(QString::fromUtf8("action_save"));
         action_save_as = new QAction(Main_Window);
-        action_save_as->setObjectName(QStringLiteral("action_save_as"));
+        action_save_as->setObjectName(QString::fromUtf8("action_save_as"));
         action_open_map = new QAction(Main_Window);
-        action_open_map->setObjectName(QStringLiteral("action_open_map"));
+        action_open_map->setObjectName(QString::fromUtf8("action_open_map"));
         action_new_map = new QAction(Main_Window);
-        action_new_map->setObjectName(QStringLiteral("action_new_map"));
+        action_new_map->setObjectName(QString::fromUtf8("action_new_map"));
         central_widget = new QWidget(Main_Window);
-        central_widget->setObjectName(QStringLiteral("central_widget"));
+        central_widget->setObjectName(QString::fromUtf8("central_widget"));
         central_widget->setAutoFillBackground(true);
         widget_layout = new QHBoxLayout(central_widget);
         widget_layout->setSpacing(6);
         widget_layout->setContentsMargins(11, 11, 11, 11);
-        widget_layout->setObjectName(QStringLiteral("widget_layout"));
+        widget_layout->setObjectName(QString::fromUtf8("widget_layout"));
         horizontal_layout = new QHBoxLayout();
         horizontal_layout->setSpacing(6);
-        horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
+        horizontal_layout->setObjectName(QString::fromUtf8("horizontal_layout"));
         scroll_area = new QScrollArea(central_widget);
-        scroll_area->setObjectName(QStringLiteral("scroll_area"));
+        scroll_area->setObjectName(QString::fromUtf8("scroll_area"));
         scroll_area->setContextMenuPolicy(Qt::ActionsContextMenu);
         scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scroll_area->setWidgetResizable(true);
         scroll_contents = new QWidget();
-        scroll_contents->setObjectName(QStringLiteral("scroll_contents"));
+        scroll_contents->setObjectName(QString::fromUtf8("scroll_contents"));
         scroll_contents->setGeometry(QRect(0, 0, 598, 525));
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
@@ -110,19 +108,19 @@ public:
 
         Main_Window->setCentralWidget(central_widget);
         menu_bar = new QMenuBar(Main_Window);
-        menu_bar->setObjectName(QStringLiteral("menu_bar"));
+        menu_bar->setObjectName(QString::fromUtf8("menu_bar"));
         menu_bar->setGeometry(QRect(0, 0, 821, 21));
         menu_file = new QMenu(menu_bar);
-        menu_file->setObjectName(QStringLiteral("menu_file"));
+        menu_file->setObjectName(QString::fromUtf8("menu_file"));
         Main_Window->setMenuBar(menu_bar);
         main_toolbar = new QToolBar(Main_Window);
-        main_toolbar->setObjectName(QStringLiteral("main_toolbar"));
+        main_toolbar->setObjectName(QString::fromUtf8("main_toolbar"));
         Main_Window->addToolBar(Qt::TopToolBarArea, main_toolbar);
         status_bar = new QStatusBar(Main_Window);
-        status_bar->setObjectName(QStringLiteral("status_bar"));
+        status_bar->setObjectName(QString::fromUtf8("status_bar"));
         Main_Window->setStatusBar(status_bar);
         dock_widget = new QDockWidget(Main_Window);
-        dock_widget->setObjectName(QStringLiteral("dock_widget"));
+        dock_widget->setObjectName(QString::fromUtf8("dock_widget"));
         sizePolicy.setHeightForWidth(dock_widget->sizePolicy().hasHeightForWidth());
         dock_widget->setSizePolicy(sizePolicy);
         dock_widget->setMinimumSize(QSize(200, 243));
@@ -130,7 +128,7 @@ public:
         dock_widget->setAutoFillBackground(true);
         dock_widget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
         dock_contents = new QWidget();
-        dock_contents->setObjectName(QStringLiteral("dock_contents"));
+        dock_contents->setObjectName(QString::fromUtf8("dock_contents"));
         sizePolicy.setHeightForWidth(dock_contents->sizePolicy().hasHeightForWidth());
         dock_contents->setSizePolicy(sizePolicy);
         dock_contents->setMinimumSize(QSize(175, 0));
@@ -138,20 +136,20 @@ public:
         dock_layout = new QHBoxLayout(dock_contents);
         dock_layout->setSpacing(6);
         dock_layout->setContentsMargins(11, 11, 11, 11);
-        dock_layout->setObjectName(QStringLiteral("dock_layout"));
+        dock_layout->setObjectName(QString::fromUtf8("dock_layout"));
         lists_layout = new QVBoxLayout();
         lists_layout->setSpacing(6);
-        lists_layout->setObjectName(QStringLiteral("lists_layout"));
+        lists_layout->setObjectName(QString::fromUtf8("lists_layout"));
         tab_widget = new QTabWidget(dock_contents);
-        tab_widget->setObjectName(QStringLiteral("tab_widget"));
+        tab_widget->setObjectName(QString::fromUtf8("tab_widget"));
         map_tab = new QWidget();
-        map_tab->setObjectName(QStringLiteral("map_tab"));
+        map_tab->setObjectName(QString::fromUtf8("map_tab"));
         gridLayout = new QGridLayout(map_tab);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         map_list = new QListView(map_tab);
-        map_list->setObjectName(QStringLiteral("map_list"));
+        map_list->setObjectName(QString::fromUtf8("map_list"));
         map_list->setAutoFillBackground(true);
         map_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -159,26 +157,26 @@ public:
 
         tab_widget->addTab(map_tab, QString());
         layer_tab = new QWidget();
-        layer_tab->setObjectName(QStringLiteral("layer_tab"));
+        layer_tab->setObjectName(QString::fromUtf8("layer_tab"));
         gridLayout_2 = new QGridLayout(layer_tab);
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
-        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         layer_list = new QListView(layer_tab);
-        layer_list->setObjectName(QStringLiteral("layer_list"));
+        layer_list->setObjectName(QString::fromUtf8("layer_list"));
         layer_list->setAutoFillBackground(true);
 
         gridLayout_2->addWidget(layer_list, 0, 0, 1, 1);
 
         tab_widget->addTab(layer_tab, QString());
         object_tab = new QWidget();
-        object_tab->setObjectName(QStringLiteral("object_tab"));
+        object_tab->setObjectName(QString::fromUtf8("object_tab"));
         gridLayout_3 = new QGridLayout(object_tab);
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
-        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         object_list = new QListView(object_tab);
-        object_list->setObjectName(QStringLiteral("object_list"));
+        object_list->setObjectName(QString::fromUtf8("object_list"));
         object_list->setAutoFillBackground(true);
 
         gridLayout_3->addWidget(object_list, 0, 0, 1, 1);
@@ -210,28 +208,28 @@ public:
 
     void retranslateUi(QMainWindow *Main_Window)
     {
-        Main_Window->setWindowTitle(QApplication::translate("Main_Window", "Octopus Editor", Q_NULLPTR));
-        action_open_project->setText(QApplication::translate("Main_Window", "Open &Project...", Q_NULLPTR));
+        Main_Window->setWindowTitle(QApplication::translate("Main_Window", "Octopus Editor", nullptr));
+        action_open_project->setText(QApplication::translate("Main_Window", "Open &Project...", nullptr));
 #ifndef QT_NO_SHORTCUT
-        action_open_project->setShortcut(QApplication::translate("Main_Window", "Ctrl+P", Q_NULLPTR));
+        action_open_project->setShortcut(QApplication::translate("Main_Window", "Ctrl+P", nullptr));
 #endif // QT_NO_SHORTCUT
-        action_save->setText(QApplication::translate("Main_Window", "&Save", Q_NULLPTR));
+        action_save->setText(QApplication::translate("Main_Window", "&Save", nullptr));
 #ifndef QT_NO_SHORTCUT
-        action_save->setShortcut(QApplication::translate("Main_Window", "Ctrl+S", Q_NULLPTR));
+        action_save->setShortcut(QApplication::translate("Main_Window", "Ctrl+S", nullptr));
 #endif // QT_NO_SHORTCUT
-        action_save_as->setText(QApplication::translate("Main_Window", "Save As...", Q_NULLPTR));
-        action_open_map->setText(QApplication::translate("Main_Window", "&Open Map...", Q_NULLPTR));
+        action_save_as->setText(QApplication::translate("Main_Window", "Save As...", nullptr));
+        action_open_map->setText(QApplication::translate("Main_Window", "&Open Map...", nullptr));
 #ifndef QT_NO_SHORTCUT
-        action_open_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+O", Q_NULLPTR));
+        action_open_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+O", nullptr));
 #endif // QT_NO_SHORTCUT
-        action_new_map->setText(QApplication::translate("Main_Window", "&New Map", Q_NULLPTR));
+        action_new_map->setText(QApplication::translate("Main_Window", "&New Map", nullptr));
 #ifndef QT_NO_SHORTCUT
-        action_new_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+N", Q_NULLPTR));
+        action_new_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+N", nullptr));
 #endif // QT_NO_SHORTCUT
-        menu_file->setTitle(QApplication::translate("Main_Window", "&File", Q_NULLPTR));
-        tab_widget->setTabText(tab_widget->indexOf(map_tab), QApplication::translate("Main_Window", "Maps", Q_NULLPTR));
-        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QApplication::translate("Main_Window", "Layers", Q_NULLPTR));
-        tab_widget->setTabText(tab_widget->indexOf(object_tab), QApplication::translate("Main_Window", "Objects", Q_NULLPTR));
+        menu_file->setTitle(QApplication::translate("Main_Window", "&File", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(map_tab), QApplication::translate("Main_Window", "Maps", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QApplication::translate("Main_Window", "Layers", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(object_tab), QApplication::translate("Main_Window", "Objects", nullptr));
     } // retranslateUi
 
 };

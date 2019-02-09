@@ -25,42 +25,16 @@ function print_table(tt, indent, done)
     return tostring(tt) .. "\n"
   end
 end
-local tbl = {
-    a = 'aa',
-    b = 'ba',
-    c = 'ca',
-    d = 6.5,
-    e = false,
-    f = {
-        x = 1,
-        y = true,
-        z = 'w',
-    },
-    g = nil,
-    x = function() end
-}
-print ("Saving a table:")
-print(print_table(tbl))
-game:save('data/test_save.txt', tbl)
-tbl2 = game:load('data/test_save.txt')
-print("And loading it back:")
-print(print_table(tbl2))
+
 player.disabled = true
-print("Objects:")
-local objects = current_map:get_objects()
-for i,v in ipairs(objects) do
-    print(i,": ", v.name)
-end
-local music = game.playing_music
-print("Pausing music " .. music.filename)
-music:pause()
 local o = current_map:get_object("jimbo")
-print("Type of Object:", type(o), " - type of Vec2: ", type(Vec2(0,0)))
-local c = choices(o, "Run text tests?", { 'Yes', 'No' })
+local c = choices(o, "What do you want to test?",
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Other' })
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
-    print("Showing some text")
+    -- Text
+    text(o, "Showing some text"):wait()
     text(o, "{shake=0}Now...{/shake}{shake=10}This here{/shake} {shake=30}is some{/shake} {shake=50}weird{/shake}{shake=70} shaking {/shake}{shake=90}text,{/shake}{shake} isn't it?{/shake}"):wait()
     text(o, "{color=blue}Test?\n\n {rainbow}Hello,\nd{color=green}ea{/color}r\n world!{/rainbow}{/color}\nHow{bold} about {/bold}that?"):wait()
     text(Vec2(100, 100), "{typewriter}Slowly now...{/typewriter}", 2000):wait()
@@ -71,73 +45,128 @@ if c.selected == 1 then
     text_canvas:link_font('bold2', 'data/Roboto-Bold.ttf')
     text_canvas:show()
     wait(1500)
-    print('Font size ' .. text_canvas.font_size)
+    print(o, 'Font size ' .. text_canvas.font_size)
     text_canvas.font_size = 15
     function color_to_s(color)
      return '(' .. color.r .. ', ' .. color.g .. ', ' .. color.b .. ', ' .. color.a .. ')'
     end
-    print('Text color ' .. color_to_s(text_canvas.text_color))
+    print(o, 'Text color ' .. color_to_s(text_canvas.text_color))
     text_canvas.text_color = Color('red')
-    print('Line height ' .. text_canvas.line_height)
+    print(o, 'Line height ' .. text_canvas.line_height)
     text_canvas.line_height = 20
-    print('Outline width ' .. text_canvas.text_outline_width)
+    print(o, 'Outline width ' .. text_canvas.text_outline_width)
     text_canvas.text_outline_width = 2
-    print('Outline color ' .. color_to_s(text_canvas.text_outline_color))
+    print(o, 'Outline color ' .. color_to_s(text_canvas.text_outline_color))
     text_canvas.text_outline_color = Color('yellow')
-    print('Shadow offset (' .. text_canvas.text_shadow_offset.x .. ', ' .. text_canvas.text_shadow_offset.y .. ')')
+    print(o, 'Shadow offset (' .. text_canvas.text_shadow_offset.x .. ', ' .. text_canvas.text_shadow_offset.y .. ')')
     text_canvas.text_shadow_offset = Vec2(-18, -18)
-    print('Shadow color ' .. color_to_s(text_canvas.text_shadow_color))
+    print(o, 'Shadow color ' .. color_to_s(text_canvas.text_shadow_color))
     text_canvas.text_shadow_color = Color('blue')
     wait(2000)
-    print('Type: ' .. text_canvas.text_type)
+    print(o, 'Type: ' .. text_canvas.text_type)
     text_canvas.text_type = 'bold'
     wait(2000)
-    print('Setting font')
+    print(o, 'Setting font')
     text_canvas:set_font('data/Roboto-Bold.ttf')
-    print('Setting linked font')
+    print(o, 'Setting linked font')
     text_canvas:link_font('italic', 'data/Roboto-Italic.ttf')
     text_canvas:link_font('bold', 'data/Roboto-Regular.ttf')
     text_canvas:link_font('bold2', 'data/Roboto-Italic.ttf')
     wait(3000)
-    print('Test permissive mode')
+    print(o, 'Test permissive mode')
     text_canvas.permissive_tag_parsing = true
     text_canvas.text = 'Hello {italic}thing'
     wait(1000)
     text_canvas:hide()
     text_canvas = nil
+elseif c.selected == 2 then
+    -- Canvas
+    text(o, "Showing a canvas"):wait()
+    local canvas = Canvas("data/player.png", 100, 100, "#FF00FF")
+    canvas.magnification = Vec2(0, 0)
+    canvas:show()
+    text(o, "Updating it"):wait()
+    canvas:update(200, 100, 1, 1, 180, 1, 1500):wait()
+    wait(500)
+    canvas:update(100, 100, 1, 1, 0, 0, 1500):wait()
+    canvas = nil
+    text(o, "Garbage collecting canvases"):wait()
+    collectgarbage()
+elseif c.selected == 3 then
+    -- Object
+    print("Objects:")
+    local objects = current_map:get_objects()
+    for i,v in ipairs(objects) do
+        print(i,": ", v.name)
+    end
+    text(o, "Moving object"):wait()
+    o:move(UP, 32, true, false):wait()
+    o:move(LEFT, 32):wait()
+    o:move(UP, 32):wait()
+    o:move(RIGHT, 64):wait()
+    o:move(DOWN, 100):wait()
+    o:face(RIGHT)
+    o:move(BACKWARD, 50):wait()
+    text(o, "Showing a pose"):wait()
+    o:show_pose("Pose Test"):wait()
+    o:show_pose("Default"):wait()
+    o:face(LEFT)
+elseif c.selected == 4 then
+    -- Camera
+    text(o, "Tinting screen"):wait()
+    camera:tint_screen(Color(0.4, 0.2, 0.6, 0.3), 500):wait()
+    text(o, "Setting magnification"):wait()
+    local old_mag = game.magnification
+    game.magnification = 2
+    wait(500)
+    text(o, "...And resetting it"):wait()
+    game.magnification = old_mag
+    wait(500)
+    local w = game.width
+    local h = game.height
+    text(o, "Changing screen size to 800, 800"):wait()
+    game:set_size(800, 800)
+    wait(500)
+    text(o, "Changing it back to " .. w .. ", " .. h):wait()
+    game:set_size(w, h)
+    wait(500)
+    text(o, "Moving camera"):wait()
+    camera:move(UP, 120, 1):wait()
+    camera:move_to(player, 1):wait()
+    camera:track_object(player)
+    text(o, "Tinting screen back"):wait()
+    camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
+else
+    -- Others
+    local music = game.playing_music
+    text(o, "Pausing music " .. music.filename):wait()
+    music:pause()
+    local tbl = {
+        a = 'aa',
+        b = 'ba',
+        c = 'ca',
+        d = 6.5,
+        e = false,
+        f = {
+            x = 1,
+            y = true,
+            z = 'w',
+        },
+        g = nil,
+        x = function() end
+    }
+    text(o, "Saving a table where f.x = 1"):wait()
+    print(print_table(tbl))
+    game:save('data/test_save.txt', tbl)
+    tbl2 = game:load('data/test_save.txt')
+    text(o, "And loading it back. Loaded f.x = " .. tbl2.f.x):wait()
+    print(print_table(tbl2))
+    text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
+    text(o, "UP | RIGHT = " .. bitor(UP, RIGHT)):wait()
+    text(o, "Waiting 1000 ms then resuming music"):wait()
+    wait(1000)
+    music:play()
 end
-print("Tinting screen")
-camera:tint_screen(Color(0.4, 0.2, 0.6, 0.3), 1000)
-print("Showing a canvas")
-local canvas = Canvas("data/player.png", 100, 100, "#FF00FF")
-canvas.magnification = Vec2(0, 0)
-canvas:show()
-print("Updating it")
-canvas:update(200, 100, 1, 1, 180, 1, 1500):wait()
-wait(500)
-canvas:update(100, 100, 1, 1, 0, 0, 1500):wait()
-canvas = nil
-print("Garbage collecting canvases")
-collectgarbage()
-print("Resuming music")
-music:play()
-print("Moving object")
-o:move(UP, 32, true, false):wait()
-print("Moving camera")
-camera:move(UP, 120, 1):wait()
-camera:move_to(player, 1):wait()
-camera:track_object(player)
-print("Moving object")
-o:move(LEFT, 32):wait()
-o:move(UP, 32):wait()
-o:move(RIGHT, 64):wait()
-o:move(DOWN, 100):wait()
-o:face(RIGHT)
-o:move(BACKWARD, 50):wait()
-print("Tinting screen")
+text(o, "That's all!"):wait()
 player.disabled = false
-camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 1000):wait()
-print("Showing a pose")
-o:show_pose("Pose Test"):wait()
-o:show_pose("Default"):wait()
-o:face(LEFT)
+

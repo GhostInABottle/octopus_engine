@@ -68,11 +68,6 @@ void Scripting_Interface::set_globals() {
     vm.globals()["current_map"] = game->get_map();
     vm.globals()["camera"] = game->get_camera();
     vm.globals()["player"] = game->get_player();
-    // Resolution
-    vm.globals()["game_width"] = Game::game_width;
-    vm.globals()["game_height"] = Game::game_height;
-    vm.globals()["screen_width"] = game->width();
-    vm.globals()["screen_height"] = game->height();
     // Directions
     vm.globals()["UP"] = static_cast<int>(Direction::UP);
     vm.globals()["RIGHT"] = static_cast<int>(Direction::RIGHT);
@@ -169,6 +164,12 @@ void Scripting_Interface::setup_scripts() {
                 LOGGER_E << message;
             }
         )),
+        def("bitor", tag_function<int(int, int)>([](int a, int b) { return a | b; })),
+        def("bitand", tag_function<int(int, int)>([](int a, int b) { return a & b; })),
+        def("bitxor", tag_function<int(int, int)>([](int a, int b) { return a ^ b; })),
+        def("bitnot", tag_function<int(int)>([](int a) { return ~a; })),
+        def("rshift", tag_function<int(int, int)>([](int a, int b) { return a >> b; })),
+        def("lshift", tag_function<int(int, int)>([](int a, int b) { return a << b; })),
         // A generic command for waiting (used in NPC scheduling)
         def("Wait_Command", tag_function<Command_Result* (int, int)>(
             [&](int duration, int start_time) {
@@ -416,7 +417,7 @@ void Scripting_Interface::setup_scripts() {
                     }
                 )
             )
-            .def("get_magnification", tag_function<xd::vec2 (Map_Object*)>(
+            .property("magnification", tag_function<xd::vec2 (Map_Object*)>(
                 [](Map_Object* obj) -> xd::vec2 {
                     auto sprite = obj->get_sprite();
                     if (sprite)
@@ -485,12 +486,16 @@ void Scripting_Interface::setup_scripts() {
         class_<Game>("Game")
             .property("width", &Game::width)
             .property("height", &Game::height)
+            .property("game_width", &Game::game_width)
+            .property("game_height", &Game::game_height)
+            .property("magnification", &Game::get_magnification, &Game::set_magnification)
             .property("ticks", &Game::ticks)
             .property("fps", &Game::fps)
             .property("frame_count", &Game::frame_count)
             .property("stopped", &Game::stopped)
             .property("seconds", &Game::seconds)
             .property("playing_music", &Game::playing_music)
+            .def("set_size", &Game::set_size)
             .def("exit", &Game::exit)
             .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
@@ -631,8 +636,8 @@ void Scripting_Interface::setup_scripts() {
                     auto sprite = object->get_sprite();
                     float width = sprite ? sprite->get_size().x : 0.0f;
                     float height = sprite ? sprite->get_size().y : 0.0f;
-                    float x = position.x + width / 2 - game->game_width / 2;
-                    float y = position.y + height / 2 - game->game_height / 2;
+                    float x = position.x + width / 2 - game->game_width() / 2;
+                    float y = position.y + height / 2 - game->game_height() / 2;
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
                         std::make_shared<Move_Camera_Command>(*camera, x, y, speed)

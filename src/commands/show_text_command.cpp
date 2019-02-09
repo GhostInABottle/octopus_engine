@@ -63,19 +63,19 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
         pos.y -= text_height;
     }
     if (center) {
-        pos.x = game.game_width / 2 - text_width / 2;
+        pos.x = game.game_width() / 2 - text_width / 2;
     } else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
         pos.x -= text_width / 2;
     }
 
     if (camera_relative) {
         // Make sure text fits on the screen
-        if (pos.x + text_width > Game::game_width - 10)
-            pos.x = static_cast<float>(Game::game_width - text_width - 10);
+        if (pos.x + text_width > game.game_width() - 10)
+            pos.x = static_cast<float>(game.game_width() - text_width - 10);
         if (pos.x < 10.0f)
             pos.x = 10.0f;
-        if (pos.y + text_height > Game::game_height - 10)
-            pos.y = static_cast<float>(Game::game_height - text_height * 2);
+        if (pos.y + text_height > game.game_height() - 10)
+            pos.y = static_cast<float>(game.game_height() - text_height * 2);
         if (pos.y < 25.0f)
             pos.y = 25.0f;
     }
