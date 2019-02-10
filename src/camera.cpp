@@ -134,15 +134,16 @@ void Camera::calculate_viewport(int width, int height) {
     auto scale_mode = Configurations::get<std::string>("game.scale-mode");
     auto screen_width = static_cast<float>(width);
     auto screen_height = static_cast<float>(height);
-    auto game_width = static_cast<float>(game.game_width());
-    auto game_height = static_cast<float>(game.game_height());
+    auto game_width = static_cast<float>(game.game_width(false));
+    auto game_height = static_cast<float>(game.game_height(false));
+
     if (scale_mode == "stretch") {
         viewport.w = screen_width;
         viewport.h = screen_height;
     } else {
         if (scale_mode == "none") {
-            viewport.w = std::min(screen_width, game_width * game.get_magnification());
-            viewport.h = std::min(screen_height, game_height * game.get_magnification());
+            viewport.w = std::min(screen_width, game_width);
+            viewport.h = std::min(screen_height, game_height);
         } else if (scale_mode == "aspect" ||
                 screen_width < game_width || screen_height < game_height) {
             float target_ratio = game_width / game_height;
@@ -207,15 +208,9 @@ void Camera::set_position(xd::vec2 pos) {
     float map_height = static_cast<float>(map->get_pixel_height());
     float right_limit = map_width - game.game_width();
     float bottom_limit = map_height - game.game_height();
-    position = pos;
-    if (position.x < 0)
-        position.x = 0;
-    if (position.x > right_limit)
-        position.x = right_limit;
-    if (position.y < 0)
-        position.y = 0;
-    if (position.y > bottom_limit)
-        position.y = bottom_limit;
+
+    position = xd::vec2{std::min(right_limit, std::max(0.0f, pos.x)),
+                        std::min(bottom_limit, std::max(0.0f, pos.y))};
 }
 
 void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
@@ -227,16 +222,16 @@ void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
     if (custom_viewport.w == 0) {
         custom_viewport = viewport;
     }
-    xd::vec2 scale{
-        custom_viewport.w / game.game_width(),
-        custom_viewport.h / game.game_height()
-    };
-    int y = game.game_height() - static_cast<int>(rect.y + rect.h);
+
+    int y = static_cast<int>(game.game_height() -rect.y + rect.h);
+    xd::vec2 scale{custom_viewport.w / game.game_width(),
+                   custom_viewport.h / game.game_height()};
+
     glEnable(GL_SCISSOR_TEST);
     glScissor(static_cast<int>(custom_viewport.x + rect.x * scale.x),
-        static_cast<int>(custom_viewport.y + y * scale.y),
-        static_cast<int>(rect.w * scale.x),
-        static_cast<int>(rect.h * scale.y));
+             static_cast<int>(custom_viewport.y + y * scale.y),
+             static_cast<int>(rect.w * scale.x),
+             static_cast<int>(rect.h * scale.y));
 }
 
 void Camera::disable_scissor_test() {
@@ -271,17 +266,13 @@ float Camera::shake_offset() const {
 void Camera_Renderer::render(Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-     auto game_width = static_cast<float>(game.game_width());
-     auto game_height = static_cast<float>(game.game_height());
+     auto width = static_cast<float>(game.game_width());
+     auto height = static_cast<float>(game.game_height());
 
     auto& geometry = camera.get_geometry();
-    geometry.projection().load(
-        xd::ortho<float>(
-            0, game_width,      // left, right
-            game_height, 0,     // bottom, top
-            -1, 1               // near, far
-        )
-    );
+    // left, right, bottom, top, near, far
+    geometry.projection().load(xd::ortho<float>(0, width, height, 0, -1, 1));
+
     geometry.model_view().identity();
     auto cam_pos = camera.get_position();
     geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
@@ -295,7 +286,7 @@ void Camera_Renderer::render(Camera& camera) {
     auto tint_color = camera.get_tint_color();
     if (tint_color.a > 0.0f) {
         auto pos = camera.get_position();
-        xd::rect rect{pos.x, pos.y, game_width, game_height};
+        xd::rect rect{pos.x, pos.y, width, height};
         camera.draw_rect(rect, tint_color);
     }
 

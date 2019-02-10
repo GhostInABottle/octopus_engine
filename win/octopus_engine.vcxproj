@@ -101,6 +101,7 @@
     <ClCompile Include="..\src\commands\update_canvas_command.cpp" />
     <ClCompile Include="..\src\commands\update_layer_command.cpp" />
     <ClCompile Include="..\src\commands\wait_command.cpp" />
+    <ClCompile Include="..\src\commands\zoom_command.cpp" />
     <ClCompile Include="..\src\command_result.cpp" />
     <ClCompile Include="..\src\configurations.cpp" />
     <ClCompile Include="..\src\game.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\include\commands\show_pose_command.hpp" />
     <ClInclude Include="..\include\commands\tint_screen_command.hpp" />
     <ClInclude Include="..\include\commands\wait_command.hpp" />
+    <ClInclude Include="..\include\commands\zoom_command.hpp" />
     <ClInclude Include="..\include\command_result.hpp" />
     <ClInclude Include="..\include\common.hpp" />
     <ClInclude Include="..\include\configurations.hpp" />

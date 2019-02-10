@@ -52,7 +52,7 @@ void Canvas_Renderer::setup_framebuffer(Canvas* canvas) {
     auto framebuffer = canvas->get_framebuffer();
     framebuffer->attach_color_texture(canvas->get_fbo_texture(), 0);
     framebuffer->bind();
-    glViewport(0, 0, game.game_width(), game.game_height());
+    glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
     glPushAttrib(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);

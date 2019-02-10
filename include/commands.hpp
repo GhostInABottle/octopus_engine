@@ -12,6 +12,7 @@
 #include "commands/shake_screen_command.hpp"
 #include "commands/show_text_command.hpp"
 #include "commands/wait_command.hpp"
+#include "commands/zoom_command.hpp"
 
 // Used to simplify NPC scheduling
 class Dummy_Command : public Command {

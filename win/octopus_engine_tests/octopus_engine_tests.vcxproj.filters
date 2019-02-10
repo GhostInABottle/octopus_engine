@@ -255,6 +255,9 @@
     <ClCompile Include="..\..\src\tests\game_fixture.cpp">
       <Filter>Source Files\tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\commands\zoom_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\utility.hpp">
@@ -412,6 +415,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\tests\game_fixture.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\zoom_command.hpp">
+      <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

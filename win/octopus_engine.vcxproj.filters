@@ -228,6 +228,12 @@
     <ClCompile Include="..\vendor\xd\src\graphics\framebuffer.cpp">
       <Filter>Source Files\xd\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\text_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\commands\zoom_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utility.hpp">
@@ -393,6 +399,12 @@
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\include\commands\wait_command.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\text_parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\commands\zoom_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>

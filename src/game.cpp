@@ -38,8 +38,8 @@ struct Game::Impl {
             total_paused_time(0),
             exit_requested(false),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
-            game_width(Configurations::get<int>("debug.width")),
-            game_height(Configurations::get<int>("debug.height")) {}
+            game_width(Configurations::get<float>("debug.width")),
+            game_height(Configurations::get<float>("debug.height")) {}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
     bool show_time;
@@ -71,9 +71,9 @@ struct Game::Impl {
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
     // Game width
-    int game_width;
+    float game_width;
     // Game height
-    int game_height;
+    float game_height;
 };
 
 Game::Game(bool editor_mode) :
@@ -275,8 +275,8 @@ void Game::exit() {
 void Game::set_size(int width, int height) {
     if (pimpl->editor_mode) {
         editor_size = xd::ivec2(width, height);
-        pimpl->game_width = static_cast<int>(map->get_pixel_width() * magnification);
-        pimpl->game_height = static_cast<int>(map->get_pixel_height() * magnification);
+        pimpl->game_width = map->get_pixel_width() * magnification;
+        pimpl->game_height = map->get_pixel_height() * magnification;
     } else {
         window->set_size(width, height);
     }
@@ -284,17 +284,18 @@ void Game::set_size(int width, int height) {
     camera->update_viewport();
 }
 
-int Game::game_width() const {
-    return static_cast<int>(pimpl->game_width / magnification);
+float Game::game_width(bool magnified) const {
+    return magnified ? pimpl->game_width / magnification : pimpl->game_width;
 }
 
-int Game::game_height() const {
-    return static_cast<int>(pimpl->game_height / magnification);
+float Game::game_height(bool magnified) const {
+    return magnified ? pimpl->game_height / magnification : pimpl->game_height;
 }
 
 void Game::set_magnification(float mag) {
     magnification = mag;
     camera->calculate_viewport(width(), height());
+    camera->update_viewport();
     text_renderer.reset_projection(
         static_cast<float>(game_width()),
         static_cast<float>(game_height()));

@@ -486,8 +486,8 @@ void Scripting_Interface::setup_scripts() {
         class_<Game>("Game")
             .property("width", &Game::width)
             .property("height", &Game::height)
-            .property("game_width", &Game::game_width)
-            .property("game_height", &Game::game_height)
+            .property("game_width", tag_function<float (Game*)>([](Game* game) { return game->game_width(); }))
+            .property("game_height", tag_function<float (Game*)>([](Game* game) { return game->game_height(); }))
             .property("magnification", &Game::get_magnification, &Game::set_magnification)
             .property("ticks", &Game::ticks)
             .property("fps", &Game::fps)
@@ -653,12 +653,19 @@ void Scripting_Interface::setup_scripts() {
                 }
             ), adopt(result))
             .def("tint_screen", tag_function<Command_Result* (Camera*, const std::string&, long)>(
-                [&](Camera* camera, const std::string& color, long duration) {
+                [&](Camera* camera, const std::string& hex_color, long duration) {
+                    auto si = game->get_current_scripting_interface();
+                    auto color = hex_to_color(hex_color);
+                    return si->register_command(
+                        std::make_shared<Tint_Screen_Command>(*game, color, duration)
+                    );
+                }
+            ), adopt(result))
+            .def("zoom", tag_function<Command_Result* (Camera*, float, long)>(
+                [&](Camera* camera, float scale, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
-                        std::make_shared<Tint_Screen_Command>(
-                            *game, hex_to_color(color), duration
-                        )
+                        std::make_shared<Zoom_Command>(*game, scale, duration)
                     );
                 }
             ), adopt(result))

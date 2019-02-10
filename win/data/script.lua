@@ -122,6 +122,10 @@ elseif c.selected == 4 then
     text(o, "...And resetting it"):wait()
     game.magnification = old_mag
     wait(500)
+    text(o, "Gradually zooming in"):wait()
+    camera:zoom(2, 3000):wait()
+    text(o, "...and out"):wait()
+    camera:zoom(old_mag, 3000):wait()
     local w = game.width
     local h = game.height
     text(o, "Changing screen size to 800, 800"):wait()

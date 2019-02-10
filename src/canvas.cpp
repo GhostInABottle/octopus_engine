@@ -42,8 +42,8 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
 void Canvas::setup_fbo() {
     if (Configurations::get<bool>("debug.use-fbo")
             && xd::framebuffer::extension_supported()) {
-        int width = Configurations::get<int>("debug.width");
-        int height = Configurations::get<int>("debug.height");
+        int width = static_cast<int>(Configurations::get<float>("debug.width"));
+        int height = static_cast<int>(Configurations::get<float>("debug.height"));
         framebuffer = std::make_unique<xd::framebuffer>();
         fbo_texture = xd::create<xd::texture>(width, height, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);

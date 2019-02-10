@@ -51,8 +51,8 @@ public:
     // Manually set window size (for editor)
     void set_size(int width, int height);
     // Game dimensions
-    int game_width() const;
-    int game_height() const;
+    float game_width(bool magnified = true) const;
+    float game_height(bool magnified = true) const;
     // Get screen magnification
     float get_magnification() const {
         return magnification;

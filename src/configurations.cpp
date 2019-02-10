@@ -45,8 +45,8 @@ void Configurations::parse(const std::string& filename) {
     defaults["logging.filename"] = std::string("game.log");
     defaults["logging.level"] = std::string("debug");
 
-    defaults["debug.width"] = 320;
-    defaults["debug.height"] = 240;
+    defaults["debug.width"] = 320.0f;
+    defaults["debug.height"] = 240.0f;
     defaults["debug.magnification"] = 1.0f;
     defaults["debug.show-fps"] = true;
     defaults["debug.show-time"] = false;

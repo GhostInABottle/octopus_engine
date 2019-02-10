@@ -98,7 +98,8 @@ SOURCES += main.cpp\
     ../src/commands/update_layer_command.cpp \
     ../src/commands/wait_command.cpp \
     ../vendor/xd/src/graphics/framebuffer.cpp \
-    ../src/text_parser.cpp
+    ../src/text_parser.cpp \
+    ../src/commands/zoom_command.cpp
     
 
 HEADERS  += main_window.hpp \
@@ -392,6 +393,7 @@ HEADERS  += main_window.hpp \
     ../include/commands/update_layer_command.hpp \
     ../include/commands/wait_command.hpp \
     ../vendor/xd/include/xd/graphics/framebuffer.hpp \
-    ../include/text_parser.hpp
+    ../include/text_parser.hpp \
+    ../include/commands/zoom_command.hpp
 
 FORMS    += main_window.ui
