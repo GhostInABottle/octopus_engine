@@ -204,7 +204,7 @@ void Camera::center_at(const Map_Object& object) {
 
 void Camera::set_position(xd::vec2 pos) {
     auto map = game.get_map();
-    float map_width = static_cast<float>(map->get_pixel_height());
+    float map_width = static_cast<float>(map->get_pixel_width());
     float map_height = static_cast<float>(map->get_pixel_height());
     float right_limit = map_width - game.game_width();
     float bottom_limit = map_height - game.game_height();
