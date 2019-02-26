@@ -16,6 +16,7 @@
 #include "text_parser.hpp"
 
 class Game;
+class Shake_Decorator;
 namespace xd {
     class simple_text_renderer;
 }
@@ -29,6 +30,8 @@ public:
     Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
     // Create a canvas with some text
     Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
+    // Destructor for incomplete types
+    ~Canvas();
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class ...Args>
     Canvas* add_child(const std::string& name, Args&&... args) {
@@ -409,6 +412,8 @@ private:
     Text_Parser parser;
     // Ignore missing tags
     bool permissive_tag_parsing;
+    // Shaking text decorator
+    std::unique_ptr<Shake_Decorator> shake_decorator;
 };
 
 #endif

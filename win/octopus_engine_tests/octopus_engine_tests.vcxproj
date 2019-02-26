@@ -120,6 +120,7 @@
     <ClCompile Include="..\..\src\player_controller.cpp" />
     <ClCompile Include="..\..\src\save_file.cpp" />
     <ClCompile Include="..\..\src\scripting_interface.cpp" />
+    <ClCompile Include="..\..\src\shake_decorator.cpp" />
     <ClCompile Include="..\..\src\sprite.cpp" />
     <ClCompile Include="..\..\src\sprite_data.cpp" />
     <ClCompile Include="..\..\src\sprite_holder.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\include\rapidxml.hpp" />
     <ClInclude Include="..\..\include\save_file.hpp" />
     <ClInclude Include="..\..\include\scripting_interface.hpp" />
+    <ClInclude Include="..\..\include\shake_decorator.hpp" />
     <ClInclude Include="..\..\include\sprite.hpp" />
     <ClInclude Include="..\..\include\sprite_data.hpp" />
     <ClInclude Include="..\..\include\sprite_holder.hpp" />

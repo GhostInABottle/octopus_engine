@@ -234,6 +234,9 @@
     <ClCompile Include="..\src\commands\zoom_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shake_decorator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\utility.hpp">
@@ -406,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="..\include\commands\zoom_command.hpp">
       <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\shake_decorator.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

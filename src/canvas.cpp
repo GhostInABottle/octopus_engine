@@ -7,6 +7,7 @@
 #include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/sprite_data.hpp"
+#include "../include/shake_decorator.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 
@@ -31,6 +32,10 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
     text_renderer = &game.get_text_renderer();
     font = game.get_font();
     formatter = xd::create<xd::stock_text_formatter>();
+    shake_decorator = std::make_unique<Shake_Decorator>(game);
+    formatter->register_decorator("shake", [&](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+        shake_decorator->operator()(decorator, text, args);
+    });
     style = std::make_unique<xd::font_style>(game.get_font_style());
     this->camera_relative = camera_relative;
     setup_fbo();
@@ -38,6 +43,8 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
     children_type = type;
     set_text(text);
 }
+
+Canvas::~Canvas() = default;
 
 void Canvas::setup_fbo() {
     if (Configurations::get<bool>("debug.use-fbo")
