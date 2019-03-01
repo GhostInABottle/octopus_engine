@@ -1,20 +1,50 @@
 #include <random>
 #include "../include/game.hpp"
+#include "../include/configurations.hpp"
 #include "../include/shake_decorator.hpp"
 
 Shake_Decorator::Shake_Decorator(Game& game) : game(game) {}
 
 void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+
+    // Delete old states
+    for(auto it = std::begin(states); it != std::end(states);)
+    {
+      if (game.ticks() - it->second.last_shake > 1000)
+        it = states.erase(it);
+      else
+        ++it;
+    }
+
+    auto power = 100 - args.get<int>(0, 0);
+    auto key = text.get_unformatted() + " -|- " + std::to_string(power);
+    auto& state = states[key];
+
+    if (state.displacements.empty()) {
+        state.displacements.resize(text.length());
+    }
+
+    static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
+    bool time_to_update = game.ticks() - state.last_shake > ms_between_refresh;
+
     static std::mt19937 engine;
     static std::uniform_int_distribution<int> displacement(-1, 1);
     static std::uniform_int_distribution<int> shake_chance(1, 100);
 
-    auto power = 100 - args.get<int>(0, 0);
-    auto shake = shake_chance(engine) > power;
+    if (time_to_update) {
+        state.last_shake = game.ticks();
+        state.shake = shake_chance(engine) > power;
+    }
 
     for (auto i = text.begin(); i != text.end(); ++i) {
-        if (shake) {
-            decorator.push_position(glm::ivec2(displacement(engine), displacement(engine)));
+        if (state.shake) {
+            auto pos = std::distance(text.begin(), i);
+            if (time_to_update) {
+                state.displacements[pos].x = displacement(engine);
+                state.displacements[pos].y = displacement(engine);
+            }
+
+            decorator.push_position(state.displacements[pos]);
             decorator.push_text(*i);
             decorator.pop_position();
         } else {

@@ -40,11 +40,13 @@ if c.selected == 1 then
     text(Vec2(100, 100), "{typewriter}Slowly now...{/typewriter}", 2000):wait()
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
     wait(500)
+    text(o, 'Manually showing text with a canvas'):wait()
     local text_canvas = Canvas(40, 40, "{type=bold2}This{/type} is a {bold}Canvas{/bold} {italic}test{/italic},\n will it work?")
     text_canvas.scissor_box = Rect(30, 20, 140, 60)
     text_canvas:link_font('bold2', 'data/Roboto-Bold.ttf')
     text_canvas:show()
     wait(1500)
+    text(o, 'Changing text properties'):wait()
     print(o, 'Font size ' .. text_canvas.font_size)
     text_canvas.font_size = 15
     function color_to_s(color)

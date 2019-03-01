@@ -86,7 +86,7 @@ void Canvas_Renderer::render_framebuffer(Canvas* canvas) {
 }
 
 void Canvas_Renderer::render_canvas(Canvas* canvas, Canvas* parent) {
-    if (!canvas->is_visible()) {
+    if (!canvas->is_visible() || canvas->get_opacity() == 0.0f) {
         canvas->mark_as_drawn(game.ticks());
         return;
     }

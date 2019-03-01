@@ -10,6 +10,7 @@
 #include "../include/configurations.hpp"
 #include "../include/utility.hpp"
 #include "../include/save_file.hpp"
+#include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
 #include <xd/graphics.hpp>
 #include <xd/factory.hpp>
@@ -92,6 +93,7 @@ Game::Game(bool editor_mode) :
     xd::audio::init();
     clock.reset(new Clock(*this));
     camera.reset(new Camera(*this));
+    shake_decorator.reset(new Shake_Decorator(*this));
     text_renderer.reset_projection(
         static_cast<float>(game_width()),
         static_cast<float>(game_height()));

@@ -223,7 +223,7 @@ void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
         custom_viewport = viewport;
     }
 
-    int y = static_cast<int>(game.game_height() -rect.y + rect.h);
+    int y = static_cast<int>(game.game_height() - (rect.y + rect.h));
     xd::vec2 scale{custom_viewport.w / game.game_width(),
                    custom_viewport.h / game.game_height()};
 

@@ -18,6 +18,7 @@ class Scripting_Interface;
 class Canvas;
 class Clock;
 class Save_File;
+class Shake_Decorator;
 namespace xd {
     class asset_manager;
     namespace lua {
@@ -125,6 +126,8 @@ public:
     xd::font::ptr get_font() { return font; }
     // Get style
     const xd::font_style& get_font_style() { return style; }
+    // Get decorator for shaking text
+    Shake_Decorator* get_shake_decorator() { return shake_decorator.get(); }
     // Get clock
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
@@ -160,6 +163,7 @@ private:
     xd::simple_text_renderer text_renderer;
     int editor_ticks;
     xd::ivec2 editor_size;
+    std::unique_ptr<Shake_Decorator> shake_decorator;
 };
 
 #endif
