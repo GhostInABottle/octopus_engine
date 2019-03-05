@@ -30,6 +30,7 @@ SOURCES += main.cpp\
     ../src/command_result.cpp \
     ../src/configurations.cpp \
     ../src/custom_shaders.cpp \
+    ../src/editable.cpp \
     ../src/game.cpp \
     ../src/image_layer.cpp \
     ../src/image_layer_renderer.cpp \

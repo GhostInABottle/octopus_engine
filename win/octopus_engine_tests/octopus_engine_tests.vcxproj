@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\src\command_result.cpp" />
     <ClCompile Include="..\..\src\configurations.cpp" />
     <ClCompile Include="..\..\src\custom_shaders.cpp" />
+    <ClCompile Include="..\..\src\Editable.cpp" />
     <ClCompile Include="..\..\src\game.cpp" />
     <ClCompile Include="..\..\src\image_layer.cpp" />
     <ClCompile Include="..\..\src\image_layer_renderer.cpp" />

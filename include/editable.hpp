@@ -15,7 +15,7 @@ public:
     Property_Mapper* get_property_mapper() {
         return mapper.get();
     }
-    virtual ~Editable() = 0 {}
+    virtual ~Editable() = 0;
 private:
     std::unique_ptr<Property_Mapper> mapper;
 };
@@ -30,7 +30,7 @@ public:
     virtual void populate(QtTreePropertyBrowser* browser,
             QtVariantPropertyManager* manager) = 0;
     virtual void change_property(QtProperty* prop) = 0;
-    virtual ~Property_Mapper() = 0 {}
+    virtual ~Property_Mapper() = 0;
 };
 
 #endif
