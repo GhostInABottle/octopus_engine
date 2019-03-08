@@ -104,12 +104,6 @@ void Show_Text_Command::execute() {
 
 void Show_Text_Command::execute(int ticks) {
     if (is_complete()) {
-        if (canvas->is_visible()) {
-            canvas->set_visible(false);
-            if (duration == -1) {
-                game.get_player()->set_disabled(was_disabled);
-            }
-        }
         return;
     }
 
@@ -134,6 +128,12 @@ void Show_Text_Command::execute(int ticks) {
     if (complete) {
         canvas_updater->reset();
         canvas_updater->set_new_opacity(0.0f);
+        if (canvas->is_visible()) {
+            canvas->set_visible(false);
+        }
+        if (duration == -1) {
+            game.get_player()->set_disabled(was_disabled);
+        }
     }
 }
 

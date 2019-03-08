@@ -100,8 +100,8 @@ SOURCES += main.cpp\
     ../src/commands/wait_command.cpp \
     ../vendor/xd/src/graphics/framebuffer.cpp \
     ../src/text_parser.cpp \
-    ../src/commands/zoom_command.cpp
-    
+    ../src/commands/zoom_command.cpp \
+    ../src/shake_decorator.cpp
 
 HEADERS  += main_window.hpp \
     map_view.hpp \
