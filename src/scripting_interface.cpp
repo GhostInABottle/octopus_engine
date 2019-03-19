@@ -494,39 +494,49 @@ void Scripting_Interface::setup_scripts() {
             .property("frame_count", &Game::frame_count)
             .property("stopped", &Game::stopped)
             .property("seconds", &Game::seconds)
-            .property("playing_music", &Game::playing_music)
+            .property("playing_music", tag_function<xd::music* (Game*)>(
+                [](Game* game) {
+                    return game->playing_music().get();
+                }
+            ))
             .def("set_size", &Game::set_size)
             .def("exit", &Game::exit)
             .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->pressed(key);
-            }))
+                }
+            ))
             .def("pressed", (bool (Game::*)(const std::string&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->pressed(key);
-            }))
+                }
+            ))
             .def("triggered", (bool (Game::*)(const xd::key&, int) const) &Game::triggered)
             .def("triggered", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->triggered(key);
-            }))
+                }
+            ))
             .def("triggered", (bool (Game::*)(const std::string&, int) const) &Game::triggered)
             .def("triggered", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->triggered(key);
-            }))
+                }
+            ))
             .def("triggered_once", (bool (Game::*)(const xd::key&, int)) &Game::triggered_once)
             .def("triggered_once", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->triggered_once(key);
-            }))
+                }
+            ))
             .def("triggered_once", (bool (Game::*)(const std::string&, int)) &Game::triggered_once)
             .def("triggered_once", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->triggered_once(key);
-            }))
+                }
+            ))
             .def("run_script", &Game::run_script)
             .def("stop_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->stop_time();
@@ -537,8 +547,8 @@ void Scripting_Interface::setup_scripts() {
             .def("load_map", tag_function<void (Game*, const std::string&, float, float, int)>(
                 [](Game* game, const std::string& filename, float x, float y, int dir) {
                     game->set_next_map(filename, x, y, static_cast<Direction>(dir));
-                })
-            )
+                }
+            ))
             .def("get_config", tag_function<std::string (Game*, const std::string&)>(
                 [](Game*, const std::string& key) {
                     return Configurations::get_string(key);
@@ -558,6 +568,17 @@ void Scripting_Interface::setup_scripts() {
                         return file->lua_data();
                     else
                         return luabind::object();
+                }
+            ))
+            .def("load_music", tag_function<xd::music* (Game*, const std::string&)>(
+                [&](Game* game, const std::string& filename) {
+                    return game->load_music(filename).get();
+                }
+            ))
+            .def("play_music", tag_function<void (Game*, const std::string&)>(
+                [&](Game* game, const std::string& filename) {
+                    auto music = game->load_music(filename);
+                    music->play();
                 }
             )),
         // Game map
@@ -746,16 +767,11 @@ void Scripting_Interface::setup_scripts() {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(
                         std::make_shared<Fade_Music_Command>(
-                            *game, *music, volume, duration
+                            *game, volume, duration
                         )
                     );
                 }
             ), adopt(result)),
-        def("Music", tag_function<xd::music* (const std::string&)>(
-            [&](const std::string& filename) {
-                return game->load_music(filename).get();
-            }
-        )),
         // Parsed text token
         class_<Token>("Token")
             .def_readonly("type", &Token::type)

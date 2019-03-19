@@ -8,7 +8,6 @@
 #include <xd/graphics/types.hpp>
 #include <xd/graphics/simple_text_renderer.hpp>
 #include <xd/graphics/font.hpp>
-#include <xd/audio.hpp>
 #include "direction.hpp"
 
 class Camera;
@@ -21,6 +20,7 @@ class Save_File;
 class Shake_Decorator;
 namespace xd {
     class asset_manager;
+    class music;
     namespace lua {
         class virtual_machine;
     }
@@ -101,9 +101,9 @@ public:
     // Get the shared Lua virtual machine
     xd::lua::virtual_machine* get_lua_vm();
     // Play some music
-    xd::music::ptr load_music(const std::string& filename);
+    std::shared_ptr<xd::music> load_music(const std::string& filename);
     // Get the music currently playing
-    xd::music::ptr playing_music() { return music; }
+    std::shared_ptr<xd::music> playing_music() { return music; }
     // Load map file and set as current map at the end of the frame
     void set_next_map(const std::string& filename, float x, float y, Direction dir);
     // Load the map right away
@@ -157,7 +157,7 @@ private:
     std::unique_ptr<Map> map;
     Scripting_Interface* current_scripting_interface;
     std::shared_ptr<Map_Object> player;
-    xd::music::ptr music;
+    std::shared_ptr<xd::music> music;
     xd::font::ptr font;
     xd::font_style style;
     xd::simple_text_renderer text_renderer;

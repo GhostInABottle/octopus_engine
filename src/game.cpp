@@ -12,6 +12,7 @@
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
+#include <xd/audio.hpp>
 #include <xd/graphics.hpp>
 #include <xd/factory.hpp>
 #include <xd/asset_manager.hpp>
@@ -312,7 +313,7 @@ xd::lua::virtual_machine* Game::get_lua_vm() {
     return &pimpl->vm;
 }
 
-xd::music::ptr Game::load_music(const std::string& filename) {
+std::shared_ptr<xd::music> Game::load_music(const std::string& filename) {
     if (music)
         music->stop();
     music.reset(new xd::music(filename));
