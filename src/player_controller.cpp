@@ -56,6 +56,7 @@ void Player_Controller::update(Map_Object& object) {
                 Collision_Check_Types::TILE);
     }
 
+    object.set_collision_object(collision.other_object);
     // If action button pressed, activate NPC
     if (action_pressed && collision.other_object &&
             collision.input_triggerable()) {

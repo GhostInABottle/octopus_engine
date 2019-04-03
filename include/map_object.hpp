@@ -150,6 +150,12 @@ public:
         return exit_script.source;
     }
     void set_exit_script_source(const std::string& script);
+    Map_Object* get_collision_object() const {
+        return collision_object;
+    }
+    void set_collision_object(Map_Object* object) {
+        collision_object = object;
+    }
     Map_Object* get_collision_area() const {
         return collision_area;
     }
@@ -162,6 +168,7 @@ public:
     void set_triggered_object(Map_Object* obj) {
         triggered_object = obj;
     }
+    bool colliding_with_player() const;
     Draw_Order get_draw_order() const {
         return draw_order;
     }
@@ -272,9 +279,11 @@ private:
     Script trigger_script;
     // Script executed when exiting an area
     Script exit_script;
-    // Area the object is inside
+    // Object currently colliding with player
+    Map_Object* collision_object;
+    // Area the plaer is inside
     Map_Object* collision_area;
-    // Last object activated by this one
+    // Last object activated by player
     Map_Object* triggered_object;
     // Object properties
     Properties properties;

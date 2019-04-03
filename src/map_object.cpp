@@ -11,10 +11,25 @@
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
-        game(game), layer(nullptr), id(-1), color(1.0f), gid(-1), opacity(1.0f),
-        visible(true), disabled(false), stopped(false), frozen(false),
-        passthrough(false), speed(1), name(name), position(pos), state("FACE"),
-        direction(dir), collision_area(nullptr), triggered_object(nullptr),
+        game(game),
+        layer(nullptr),
+        id(-1),
+        color(1.0f),
+        gid(-1),
+        opacity(1.0f),
+        visible(true),
+        disabled(false),
+        stopped(false),
+        frozen(false),
+        passthrough(false),
+        speed(1),
+        name(name),
+        position(pos),
+        state("FACE"),
+        direction(dir),
+        collision_object(nullptr),
+        collision_area(nullptr),
+        triggered_object(nullptr),
         draw_order(NORMAL) {
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
@@ -137,6 +152,10 @@ void  Map_Object::set_trigger_script_source(const std::string& script) {
 void  Map_Object::set_exit_script_source(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
     exit_script.source = extension == "lua" ? read_file(script) : script;
+}
+
+bool Map_Object::colliding_with_player() const {
+    return this == game.get_player()->get_collision_object();
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {

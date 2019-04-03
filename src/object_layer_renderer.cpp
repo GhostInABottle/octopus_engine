@@ -5,8 +5,15 @@
 #include "../include/game.hpp"
 #include "../include/utility.hpp"
 #include "../include/camera.hpp"
+#include "../include/configurations.hpp"
 #include <algorithm>
 #include <limits>
+
+Object_Layer_Renderer::Object_Layer_Renderer(const Layer& layer, const Camera& camera)
+        : Layer_Renderer(layer, camera) {
+    auto color = hex_to_color(Configurations::get<std::string>("game.object-outline-color"));
+    batch.set_outline_color(color);
+}
 
 void Object_Layer_Renderer::render(Map& map) {
     if (!layer.visible)
@@ -41,7 +48,15 @@ void Object_Layer_Renderer::render(Map& map) {
     });
 
     for (auto& object : object_layer.objects) {
-        object->render();
+        if (object->colliding_with_player()) {
+            batch.draw(camera.get_mvp(), map.get_game().ticks());
+            batch.clear();
+            object->render();
+            batch.draw_outlined(camera.get_mvp(), map.get_game().ticks());
+            batch.clear();
+        } else {
+            object->render();
+        }
     }
 
     batch.draw(camera.get_mvp(), map.get_game().ticks());
