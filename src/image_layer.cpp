@@ -7,8 +7,8 @@
 #include "../include/sprite_data.hpp"
 #include "../include/log.hpp"
 #include <boost/lexical_cast.hpp>
-#include <xd/system.hpp>
-#include <xd/factory.hpp>
+#include "../include/xd/system.hpp"
+#include "../include/xd/factory.hpp"
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {

@@ -1,7 +1,7 @@
 #ifndef HPP_MOVE_CAMERA_COMMAND
 #define HPP_MOVE_CAMERA_COMMAND
 
-#include <xd/graphics/types.hpp>
+#include "../xd/graphics/types.hpp"
 #include "../direction.hpp"
 #include "../command.hpp"
 

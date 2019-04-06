@@ -2,8 +2,8 @@
 #include "../include/utility.hpp"
 #include "../include/exceptions.hpp"
 #include <boost/lexical_cast.hpp>
-#include <xd/system.hpp>
-#include <xd/factory.hpp>
+#include "../include/xd/system.hpp"
+#include "../include/xd/factory.hpp"
 
 rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "tileset");

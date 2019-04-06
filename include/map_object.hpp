@@ -2,9 +2,9 @@
 #define HPP_MAP_OBJECT
 
 #include <string>
-#include <xd/system.hpp>
-#include <xd/entity.hpp>
-#include <xd/graphics/types.hpp>
+#include "xd/system.hpp"
+#include "xd/entity.hpp"
+#include "xd/graphics/types.hpp"
 #include "rapidxml.hpp"
 #include "common.hpp"
 #include "direction.hpp"

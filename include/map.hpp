@@ -5,11 +5,11 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <xd/config.hpp>
-#include <xd/system.hpp>
-#include <xd/entity.hpp>
-#include <xd/graphics/sprite_batch.hpp>
-#include <xd/types.hpp>
+#include "xd/config.hpp"
+#include "xd/system.hpp"
+#include "xd/entity.hpp"
+#include "xd/graphics/sprite_batch.hpp"
+#include "xd/types.hpp"
 #include "rapidxml.hpp"
 #include "common.hpp"
 #include "direction.hpp"

@@ -6,10 +6,10 @@
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 #include "../include/custom_shaders.hpp"
-#include <xd/graphics/vertex_batch.hpp>
-#include <xd/graphics/shader_program.hpp>
-#include <xd/graphics/shaders.hpp>
-#include <xd/config.hpp>
+#include "../include/xd/graphics/vertex_batch.hpp"
+#include "../include/xd/graphics/shader_program.hpp"
+#include "../include/xd/graphics/shaders.hpp"
+#include "../include/xd/config.hpp"
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else

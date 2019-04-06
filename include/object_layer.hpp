@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include <xd/graphics/types.hpp>
+#include "xd/graphics/types.hpp"
 #include "layer.hpp"
 
 class Game;

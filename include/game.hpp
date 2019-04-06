@@ -4,10 +4,10 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <xd/system.hpp>
-#include <xd/graphics/types.hpp>
-#include <xd/graphics/simple_text_renderer.hpp>
-#include <xd/graphics/font.hpp>
+#include "xd/system.hpp"
+#include "xd/graphics/types.hpp"
+#include "xd/graphics/simple_text_renderer.hpp"
+#include "xd/graphics/font.hpp"
 #include "direction.hpp"
 
 class Camera;

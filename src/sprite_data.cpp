@@ -2,8 +2,8 @@
 #include "../include/exceptions.hpp"
 #include "../include/utility.hpp"
 #include <iostream>
-#include <xd/system.hpp>
-#include <xd/asset_manager.hpp>
+#include "../include/xd/system.hpp"
+#include "../include/xd/asset_manager.hpp"
 
 Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager) {}
 

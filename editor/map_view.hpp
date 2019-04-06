@@ -7,7 +7,7 @@
 #include <QElapsedTimer>
 #include <string>
 #include <vector>
-#include <xd/graphics/types.hpp>
+#include "../include/xd/graphics/types.hpp"
 #include "../include/layer_types.hpp"
 
 class Game;

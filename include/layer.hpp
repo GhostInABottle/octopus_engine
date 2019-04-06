@@ -3,7 +3,7 @@
 
 #include<memory>
 #include <string>
-#include <xd/graphics/types.hpp>
+#include "xd/graphics/types.hpp"
 #include "common.hpp"
 #include "editable.hpp"
 #include "rapidxml.hpp"

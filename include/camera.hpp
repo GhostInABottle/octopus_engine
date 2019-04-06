@@ -2,9 +2,9 @@
 #define HPP_CAMERA
 
 #include <memory>
-#include <xd/system.hpp>
-#include <xd/graphics/types.hpp>
-#include <xd/entity.hpp>
+#include "xd/system.hpp"
+#include "xd/graphics/types.hpp"
+#include "xd/entity.hpp"
 
 class Game;
 class Map_Object;

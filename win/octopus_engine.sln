@@ -5,8 +5,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine", "octopus_e
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "octopus_engine_tests", "octopus_engine_tests\octopus_engine_tests.vcxproj", "{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xd", "xd\xd.vcxproj", "{065DCECA-67DB-438B-9BF9-8B88D252F70C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

@@ -155,7 +155,8 @@ void  Map_Object::set_exit_script_source(const std::string& script) {
 }
 
 bool Map_Object::colliding_with_player() const {
-    return this == game.get_player()->get_collision_object();
+    auto player = game.get_player();
+    return player && player->get_collision_object() == this;
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {

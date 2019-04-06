@@ -3,8 +3,8 @@
 #include "../include/map.hpp"
 #include "../include/game.hpp"
 #include "../include/camera.hpp"
-#include <xd/system.hpp>
-#include <xd/graphics.hpp>
+#include "../include/xd/system.hpp"
+#include "../include/xd/graphics.hpp"
 
 
 // TODO: Support multiple tilesets

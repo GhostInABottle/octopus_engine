@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <xd/lua.hpp>
+#include "xd/lua.hpp"
 
 class Game;
 class Command;

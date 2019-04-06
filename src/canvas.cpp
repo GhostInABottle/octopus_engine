@@ -1,7 +1,7 @@
 #include <cmath>
-#include <xd/graphics/stock_text_formatter.hpp>
-#include <xd/graphics/simple_text_renderer.hpp>
-#include <xd/graphics/framebuffer.hpp>
+#include "../include/xd/graphics/stock_text_formatter.hpp"
+#include "../include/xd/graphics/simple_text_renderer.hpp"
+#include "../include/xd/graphics/framebuffer.hpp"
 #include "../include/canvas.hpp"
 #include "../include/utility.hpp"
 #include "../include/game.hpp"

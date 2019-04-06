@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include <xd/glm.hpp>
-#include <xd/graphics.hpp>
+#include "xd/glm.hpp"
+#include "xd/graphics.hpp"
 #include "rapidxml.hpp"
 #include "common.hpp"
 

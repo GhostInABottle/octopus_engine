@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <xd/graphics/types.hpp>
-#include <xd/graphics/texture.hpp>
+#include "xd/graphics/types.hpp"
+#include "xd/graphics/texture.hpp"
 #include "rapidxml.hpp"
 
 namespace xd {

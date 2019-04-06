@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
-#include <xd/audio/music.hpp>
-#include <xd/asset_manager.hpp>
+#include "../../include/xd/audio/music.hpp"
+#include "../../include/xd/asset_manager.hpp"
 #include "../../include/rapidxml.hpp"
 #include "../../include/map.hpp"
 #include "../../include/tile_layer.hpp"

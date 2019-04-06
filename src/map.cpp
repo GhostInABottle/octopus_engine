@@ -18,9 +18,9 @@
 #include <vector>
 #include <unordered_set>
 #include <boost/lexical_cast.hpp>
-#include <xd/system.hpp>
-#include <xd/factory.hpp>
-#include <xd/audio.hpp>
+#include "../include/xd/system.hpp"
+#include "../include/xd/factory.hpp"
+#include "../include/xd/audio.hpp"
 #include <fstream>
 #include <algorithm>
 

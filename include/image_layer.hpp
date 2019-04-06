@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <string>
-#include <xd/graphics/texture.hpp>
-#include <xd/graphics/types.hpp>
+#include "xd/graphics/texture.hpp"
+#include "xd/graphics/types.hpp"
 #include "sprite_holder.hpp"
 #include "sprite.hpp"
 #include "layer.hpp"

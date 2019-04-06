@@ -5,7 +5,7 @@
 #include "../../include/pathfinder.hpp"
 #include "../../include/direction.hpp"
 #include "../../include/direction_utilities.hpp"
-#include <xd/graphics/types.hpp>
+#include "../../include/xd/graphics/types.hpp"
 #include <deque>
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef HPP_UPDATE_CANVAS_COMMAND
 #define HPP_UPDATE_CANVAS_COMMAND
 
-#include <xd/graphics/types.hpp>
+#include "../xd/graphics/types.hpp"
 #include "../command.hpp"
 
 class Game;

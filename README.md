@@ -1,7 +1,7 @@
 Octopus Engine
 -----------
 
-A cross-platform 2D game engine used in [Octopus City Blues](http://octopuscityblues.com). Octopus Engine is an OpenGL engine written in C++11 and based on the [XD framework](https://github.com/firas-assaad/xd). It was developed to meet the needs of Octopus City Blues in particular, but it might be useful for other adventure games or RPGs.
+A cross-platform 2D game engine used in [Octopus City Blues](http://octopuscityblues.com). Octopus Engine is an OpenGL engine written in C++11 and based on the [XD framework](https://github.com/rekotiira/xd). It was developed to meet the needs of Octopus City Blues in particular, but it might be useful for other adventure games or RPGs.
 
 ### Features
 
@@ -22,7 +22,6 @@ See LICENSE.text file.
 
 Dependencies:
 
-  * [XD](https://github.com/firas-assaad/xd) - Should be placed in vendor/ directory
   * [FreeType](http://www.freetype.org/index.html)
   * [HarfBuzz](https://www.freedesktop.org/wiki/Software/HarfBuzz/)
   * [Lua 5.2](http://www.lua.org/)
@@ -33,5 +32,5 @@ Dependencies:
   * [GLEW](http://glew.sourceforge.net/)
   * [Qt 5.6](https://www.qt.io/) - For the editor
   
-Start by cloning my XD fork into the vendor/ directory. There are project files for Visual Studio 2015 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory.
+There are project files for Visual Studio 2015 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory.
  

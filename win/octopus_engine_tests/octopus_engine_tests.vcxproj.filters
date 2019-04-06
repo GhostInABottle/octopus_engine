@@ -13,21 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\xd">
-      <UniqueIdentifier>{48d60697-7e20-4a02-94bb-7c31427ddd87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\xd\audio">
-      <UniqueIdentifier>{3512c596-e1ec-4393-995f-c9f0ba287144}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\xd\graphics">
-      <UniqueIdentifier>{8bcd559e-9544-4ca0-8db3-e7c1622945fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\xd\lua">
-      <UniqueIdentifier>{66113f67-02d2-4b17-a133-5820c06a83fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\xd\system">
-      <UniqueIdentifier>{0d562553-d0c2-49fe-9aaf-3991c85d150d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\commands">
       <UniqueIdentifier>{207411ba-8c88-427c-824d-158af635386e}</UniqueIdentifier>
     </Filter>
@@ -36,6 +21,48 @@
     </Filter>
     <Filter Include="Source Files\tests">
       <UniqueIdentifier>{b8a1e1fd-403e-44a7-ae0f-b1c583ff4709}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd">
+      <UniqueIdentifier>{794a46c4-575f-4c32-8222-dc9e985fc52d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\audio">
+      <UniqueIdentifier>{7fd90b13-0213-4fcf-872b-cf7a256681a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\audio\detail">
+      <UniqueIdentifier>{e543a98e-0f88-4c77-b243-0c431addced1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\detail">
+      <UniqueIdentifier>{97949173-5bee-4582-9c1b-61fea5b99a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\graphics">
+      <UniqueIdentifier>{3f517450-3a68-4b9d-a4aa-a2b99ecb95e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\graphics\detail">
+      <UniqueIdentifier>{a17ae8c1-2b17-42c6-a3cb-586301cd0b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\lua">
+      <UniqueIdentifier>{7abc0ab3-d145-465a-9a6a-cee94f4e9459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\lua\detail">
+      <UniqueIdentifier>{04d9d47a-4fbb-4570-88ce-4b9485b3032a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xd\system">
+      <UniqueIdentifier>{9d101bf1-2f34-415f-8164-6abf3154482d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xd">
+      <UniqueIdentifier>{44c0d5e6-ba02-4352-9496-1420ea6f0c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xd\audio">
+      <UniqueIdentifier>{5f72b50c-9b14-4b3e-bf05-d5aaacdf15a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xd\graphics">
+      <UniqueIdentifier>{b8c7b1dc-d5bc-4c0d-b732-b158c354f5c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xd\lua">
+      <UniqueIdentifier>{c7c05a19-2c9f-4656-9357-ef4dd85753a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xd\system">
+      <UniqueIdentifier>{435a131a-a013-404d-8260-7ae7761fe610}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,54 +141,6 @@
     <ClCompile Include="..\..\src\canvas_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\audio\music.cpp">
-      <Filter>Source Files\xd\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\audio\sound.cpp">
-      <Filter>Source Files\xd\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\font.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\image.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\shader_program.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\shaders.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\simple_text_renderer.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\sprite_batch.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\stock_text_formatter.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\text_formatter.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\text_renderer.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\texture.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\lua\scheduler.cpp">
-      <Filter>Source Files\xd\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\lua\virtual_machine.cpp">
-      <Filter>Source Files\xd\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\system\input.cpp">
-      <Filter>Source Files\xd\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\system\window.cpp">
-      <Filter>Source Files\xd\system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\command_result.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -170,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\collision_record.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\audio\audio.cpp">
-      <Filter>Source Files\xd\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\custom_shaders.cpp">
       <Filter>Source Files</Filter>
@@ -225,9 +201,6 @@
     <ClCompile Include="..\..\src\commands\wait_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\vendor\xd\src\graphics\framebuffer.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\text_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -263,6 +236,60 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editable.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\audio\audio.cpp">
+      <Filter>Source Files\xd\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\audio\music.cpp">
+      <Filter>Source Files\xd\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\audio\sound.cpp">
+      <Filter>Source Files\xd\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\font.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\framebuffer.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\image.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\shader_program.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\shaders.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\simple_text_renderer.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\sprite_batch.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\stock_text_formatter.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\text_formatter.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\text_renderer.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\texture.cpp">
+      <Filter>Source Files\xd\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\lua\scheduler.cpp">
+      <Filter>Source Files\xd\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\lua\virtual_machine.cpp">
+      <Filter>Source Files\xd\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\system\input.cpp">
+      <Filter>Source Files\xd\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\system\window.cpp">
+      <Filter>Source Files\xd\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -427,6 +454,204 @@
     </ClInclude>
     <ClInclude Include="..\..\include\shake_decorator.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\asset_manager.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\asset_serializer.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\config.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\entity.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\event_bus.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\exception.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\factory.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\glm.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\ref_counted.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\system.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\types.hpp">
+      <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\audio.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\exceptions.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\music.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\sound.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\detail\audio_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\entity.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\identity.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\iterate_asset_manager.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\iterate_create.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\iterate_entity_constructor.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\iterate_factory_create.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\detail\noop_deleter.hpp">
+      <Filter>Header Files\xd\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\exceptions.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\font.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\font_style.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\framebuffer.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\image.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\matrix_stack.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\shader_program.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\shaders.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\simple_text_renderer.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\sprite_batch.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\stock_text_formatter.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\text_formatter.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\text_renderer.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\texture.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\transform_geometry.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\types.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\utility.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\vertex_batch.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\vertex_traits.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\font.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\image.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\iterate_render.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\sprite_batch.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\text_formatter.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\detail\vertex_traits.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\config.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\exceptions.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\function.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\scheduler.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\scheduler_task.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\types.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\virtual_machine.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\detail\iterate_function_call.hpp">
+      <Filter>Header Files\xd\lua\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\detail\iterate_scheduler_yield.hpp">
+      <Filter>Header Files\xd\lua\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\detail\scheduler.hpp">
+      <Filter>Header Files\xd\lua\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\lua\detail\scheduler_task.hpp">
+      <Filter>Header Files\xd\lua\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\system\exceptions.hpp">
+      <Filter>Header Files\xd\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\system\input.hpp">
+      <Filter>Header Files\xd\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\system\window.hpp">
+      <Filter>Header Files\xd\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\system\window_options.hpp">
+      <Filter>Header Files\xd\system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

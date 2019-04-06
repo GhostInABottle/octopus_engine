@@ -18,7 +18,7 @@
 #include <luabind/adopt_policy.hpp>
 #include <luabind/tag_function.hpp>
 #include <luabind/std_shared_ptr_converter.hpp>
-#include <xd/audio.hpp>
+#include "../include/xd/audio.hpp"
 
 Game* Scripting_Interface::game = nullptr;
 

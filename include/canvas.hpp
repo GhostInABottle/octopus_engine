@@ -6,11 +6,11 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
-#include <xd/graphics/types.hpp>
-#include <xd/graphics/texture.hpp>
-#include <xd/graphics/font.hpp>
-#include <xd/graphics/text_formatter.hpp>
-#include <xd/graphics/framebuffer.hpp>
+#include "xd/graphics/types.hpp"
+#include "xd/graphics/texture.hpp"
+#include "xd/graphics/font.hpp"
+#include "xd/graphics/text_formatter.hpp"
+#include "xd/graphics/framebuffer.hpp"
 #include "sprite_holder.hpp"
 #include "sprite.hpp"
 #include "text_parser.hpp"

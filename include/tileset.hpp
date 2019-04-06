@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <xd/graphics/texture.hpp>
-#include <xd/graphics/types.hpp>
+#include "xd/graphics/texture.hpp"
+#include "xd/graphics/types.hpp"
 #include "rapidxml.hpp"
 #include "common.hpp"
 

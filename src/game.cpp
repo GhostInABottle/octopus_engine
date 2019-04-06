@@ -12,11 +12,11 @@
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
-#include <xd/audio.hpp>
-#include <xd/graphics.hpp>
-#include <xd/factory.hpp>
-#include <xd/asset_manager.hpp>
-#include <xd/lua/virtual_machine.hpp>
+#include "../include/xd/audio.hpp"
+#include "../include/xd/graphics.hpp"
+#include "../include/xd/factory.hpp"
+#include "../include/xd/asset_manager.hpp"
+#include "../include/xd/lua/virtual_machine.hpp"
 #include <luabind/luabind.hpp>
 #include <algorithm>
 #include <functional>

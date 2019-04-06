@@ -1,7 +1,7 @@
 #ifndef HPP_TINT_SCREEN_COMMAND
 #define HPP_TINT_SCREEN_COMMAND
 
-#include <xd/graphics/types.hpp>
+#include "../xd/graphics/types.hpp"
 #include "../command.hpp"
 
 class Game;

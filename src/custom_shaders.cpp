@@ -1,5 +1,5 @@
 #include "../include/custom_shaders.hpp"
-#include <xd/graphics/vertex_traits.hpp>
+#include "../include/xd/graphics/vertex_traits.hpp"
 #include <boost/algorithm/string.hpp>
 #include <string>
 
