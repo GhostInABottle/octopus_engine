@@ -6,16 +6,16 @@
     <Tag Key="State" Value="Walk" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="42" Y="41" Width="21" Height="41" />
+      <Rectangle X="45" Y="41" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="42" Y="82" Width="21" Height="41" />
+      <Rectangle X="45" Y="82" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="42" Y="123" Width="21" Height="41" />
+      <Rectangle X="45" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="42" Y="164" Width="21" Height="41" />
+      <Rectangle X="45" Y="164" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -24,16 +24,16 @@
     <Tag Key="State" Value="Walk" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="21" Y="41" Width="21" Height="41" />
+      <Rectangle X="23" Y="41" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="21" Y="82" Width="21" Height="41" />
+      <Rectangle X="23" Y="82" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="21" Y="123" Width="21" Height="41" />
+      <Rectangle X="23" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="21" Y="164" Width="21" Height="41" />
+      <Rectangle X="23" Y="164" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -42,16 +42,16 @@
     <Tag Key="State" Value="Walk" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="0" Y="41" Width="21" Height="41" />
+      <Rectangle X="1" Y="41" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="82" Width="21" Height="41" />
+      <Rectangle X="1" Y="82" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="123" Width="21" Height="41" />
+      <Rectangle X="1" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="164" Width="21" Height="41" />
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -60,16 +60,16 @@
     <Tag Key="State" Value="Walk" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="63" Y="41" Width="21" Height="41" />
+      <Rectangle X="67" Y="41" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="63" Y="82" Width="21" Height="41" />
+      <Rectangle X="67" Y="82" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="63" Y="123" Width="21" Height="41" />
+      <Rectangle X="67" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="63" Y="164" Width="21" Height="41" />
+      <Rectangle X="67" Y="164" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -78,7 +78,7 @@
     <Tag Key="State" Value="Face" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="42" Y="0" Width="21" Height="41" />
+      <Rectangle X="45" Y="0" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -87,7 +87,7 @@
     <Tag Key="State" Value="Face" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="21" Y="0" Width="21" Height="41" />
+      <Rectangle X="23" Y="0" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -96,7 +96,7 @@
     <Tag Key="State" Value="Face" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="0" Y="0" Width="21" Height="41" />
+      <Rectangle X="1" Y="0" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180">
@@ -105,7 +105,7 @@
     <Tag Key="State" Value="Face" />
     <Tag Key="Name" Value="Default" />
     <Frame>
-      <Rectangle X="63" Y="0" Width="21" Height="41" />
+      <Rectangle X="67" Y="0" Width="21" Height="41" />
     </Frame>
   </Pose>
   <Pose Duration="180" Repeats="2">
@@ -113,25 +113,25 @@
     <Tag Key="Name" Value="Pose Test" />
     <Tag Key="State" Value="Face" />
     <Frame>
-      <Rectangle X="0" Y="41" Width="21" Height="41" />
+      <Rectangle X="1" Y="41" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="82" Width="21" Height="41" />
+      <Rectangle X="1" Y="82" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="123" Width="21" Height="41" />
+      <Rectangle X="1" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame Duration="600" X-Mag="1.99" Angle="31" Opacity="0.2575" Tween="true">
-      <Rectangle X="0" Y="123" Width="21" Height="41" />
+      <Rectangle X="1" Y="123" Width="21" Height="41" />
     </Frame>
     <Frame X-Mag="2" Angle="32" Opacity="0.25">
-      <Rectangle X="0" Y="164" Width="21" Height="41" />
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>
     <Frame Duration="600" Tween="true">
-      <Rectangle X="0" Y="164" Width="21" Height="41" />
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>
     <Frame>
-      <Rectangle X="0" Y="164" Width="21" Height="41" />
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>
   </Pose>
 </Sprite>
