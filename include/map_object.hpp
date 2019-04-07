@@ -169,7 +169,7 @@ public:
     void set_triggered_object(Map_Object* obj) {
         triggered_object = obj;
     }
-    bool colliding_with_player() const;
+    bool is_outlined() const;
     Draw_Order get_draw_order() const {
         return draw_order;
     }

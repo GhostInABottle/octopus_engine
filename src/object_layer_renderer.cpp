@@ -48,7 +48,7 @@ void Object_Layer_Renderer::render(Map& map) {
     });
 
     for (auto& object : object_layer.objects) {
-        if (object->colliding_with_player()) {
+        if (object->is_outlined()) {
             batch.draw(camera.get_mvp(), map.get_game().ticks());
             batch.clear();
             object->render();

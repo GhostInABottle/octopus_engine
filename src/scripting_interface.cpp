@@ -401,7 +401,7 @@ void Scripting_Interface::setup_scripts() {
             .property("triggered_object", &Map_Object::get_triggered_object, &Map_Object::set_triggered_object)
             .property("collision_object", &Map_Object::get_collision_object, &Map_Object::set_collision_object)
             .property("collision_area", &Map_Object::get_collision_area, &Map_Object::set_collision_area)
-            .property("colliding_with_player", &Map_Object::colliding_with_player)
+            .property("outlined", &Map_Object::is_outlined)
             .property("draw_order", &Map_Object::get_draw_order, &Map_Object::set_draw_order)
             .property("real_position", &Map_Object::get_real_position)
             .property("bounding_box", &Map_Object::get_bounding_box)

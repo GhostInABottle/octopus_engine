@@ -154,9 +154,10 @@ void  Map_Object::set_exit_script_source(const std::string& script) {
     exit_script.source = extension == "lua" ? read_file(script) : script;
 }
 
-bool Map_Object::colliding_with_player() const {
+bool Map_Object::is_outlined() const {
     auto player = game.get_player();
-    return player && player->get_collision_object() == this;
+    return player && player->get_collision_object() == this &&
+        !trigger_script.source.empty();
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
