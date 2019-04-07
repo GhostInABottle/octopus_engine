@@ -1,28 +1,28 @@
 #ifndef H_XD_TEXT_RENDERER
 #define H_XD_TEXT_RENDERER
 
-#include "../config.hpp"
 #include "../glm.hpp"
 #include "font.hpp"
 #include "text_formatter.hpp"
 #include "shaders.hpp"
 #include <string>
+#include <memory>
 
 namespace xd
 {
-    class XD_API text_renderer
+    class text_renderer
     {
     public:
         text_renderer();
-        explicit text_renderer(shader_program::ptr shader);
+        explicit text_renderer(shader_program* shader);
         virtual ~text_renderer();
 
-        void render(xd::font::ptr font, const xd::font_style& style, const mat4& mvp, const std::string& text);
-        void render_formatted(xd::font::ptr font, xd::text_formatter::ptr formatter,
+        void render(xd::font& font, const xd::font_style& style, const mat4& mvp, const std::string& text);
+        void render_formatted(xd::font& font, xd::text_formatter& formatter,
             const xd::font_style& style, const mat4& mvp, const std::string& text);
 
     private:
-        shader_program::ptr m_shader;
+        std::unique_ptr<shader_program> m_shader;
     };
 }
 

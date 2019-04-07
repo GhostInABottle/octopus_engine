@@ -7,7 +7,7 @@
 #include "utility.hpp"
 #include "configurations.hpp"
 
-// Ignore 'inheritance by dominance warning
+// Ignore 'inheritance by dominance' warning
 #pragma warning(push)
 #pragma warning(disable: 4250)
 // Levels of log messages

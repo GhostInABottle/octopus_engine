@@ -2,14 +2,9 @@
 #define H_XD_LUA_SCHEDULER
 
 #include "detail/scheduler.hpp"
-
-#include "../config.hpp"
-#include "../factory.hpp"
-#include "config.hpp"
 #include "types.hpp"
 #include "virtual_machine.hpp"
 #include "scheduler_task.hpp"
-#include <boost/config.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/ref.hpp>
 #ifndef LUABIND_CPLUSPLUS_LUA
@@ -24,17 +19,13 @@ extern "C"
 #include <list>
 #include <type_traits>
 
-#ifdef BOOST_NO_VARIADIC_TEMPLATES
-#include <boost/preprocessor/iteration/iterate.hpp>
-#endif
-
 namespace xd
 {
     namespace lua
     {
         // the lua scheduler, supports yielding threads
         // from both C++ and lua's side
-        class XD_LUA_API scheduler : public boost::noncopyable
+        class scheduler : public boost::noncopyable
         {
         public:
             scheduler(virtual_machine& vm);
@@ -42,7 +33,7 @@ namespace xd
             lua_State *current_thread();
             void start(luabind::object func);
             void run();
-            void yield(scheduler_task::ptr task);
+            void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();
 
             // a convenience function for starting a xd::lua::function<T>
@@ -58,19 +49,27 @@ namespace xd
             typename std::enable_if<std::is_base_of<scheduler_task, T>::value>::type
             yield(const T& task)
             {
-                yield(xd::create<T>(task));
+                yield(std::make_shared<T>(task));
+            }
+
+            // yields a shared_ptr to a task
+            template <typename T>
+            typename std::enable_if<std::is_base_of<scheduler_task, T>::value>::type
+            yield(std::shared_ptr<T> task)
+            {
+                yield(static_cast<std::shared_ptr<scheduler_task>>(task));
             }
 
             // we also want to support plain function types as tasks
             void yield(bool (*callback)())
             {
-                yield(xd::create<detail::callback_task>(callback));
+                yield(std::make_shared<detail::callback_task>(callback));
             }
 
             // for function tasks that have a result
             void yield(bool (*callback)(scheduler_task_result&))
             {
-                yield(xd::create<detail::callback_task_result>(callback));
+                yield(std::make_shared<detail::callback_task_result>(callback));
             }
 
             // for class types, assume we're dealing with a function object
@@ -90,7 +89,7 @@ namespace xd
             template <typename F>
             void yield(F f, bool (F::*callback)() const)
             {
-                yield(xd::create<detail::callback_task>(f));
+                yield(std::make_shared<detail::callback_task>(f));
             }
 
             // an overload for functor callbacks with a result
@@ -99,22 +98,14 @@ namespace xd
             template <typename F>
             void yield(F f, bool (F::*callback)(scheduler_task_result&) const)
             {
-                yield(xd::create<detail::callback_task_result>(f));
+                yield(std::make_shared<detail::callback_task_result>(f));
             }
 
-#ifndef BOOST_NO_VARIADIC_TEMPLATES
             template <typename Task, typename... Args>
             void yield(Args&&... args)
             {
-                yield(xd::lua::scheduler_task::ptr(new Task(std::forward<Args>(args)...)));
+                yield(std::shared_ptr<xd::lua::scheduler_task>(new Task(std::forward<Args>(args)...)));
             }
-#else
-            // generate convenience yield functions that allow to construct task in-place
-            // i.e. scheduler.yield<my_task>(param1, param2)
-            // maximum of XD_MAX_ARITY parameters supported
-            #define BOOST_PP_ITERATION_PARAMS_1 (3, (0, XD_MAX_ARITY, "../include/xd/lua/detail/iterate_scheduler_yield.hpp"))
-            #include BOOST_PP_ITERATE()
-#endif
 
             // a convenience function for registering a yielding, optionally stateful,
             // C++ function to lua. By specifying module you can export the function

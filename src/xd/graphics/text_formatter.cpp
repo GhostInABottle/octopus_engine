@@ -824,8 +824,8 @@ void xd::text_formatter::set_variable_delims(const std::string& open, const std:
     m_variable_close_delim = close;
 }
 
-void xd::text_formatter::render(const std::string& text, xd::font::ptr font, const xd::font_style& style,
-    xd::shader_program::ptr shader, const glm::mat4& mvp)
+void xd::text_formatter::render(const std::string& text, xd::font& font, const xd::font_style& style,
+    xd::shader_program& shader, const glm::mat4& mvp)
 {
     // parse the input
     detail::text_formatter::token_list tokens;
@@ -855,7 +855,7 @@ void xd::text_formatter::render(const std::string& text, xd::font::ptr font, con
                 if (current_str.length() != 0) {
                     if (style_stack.positions.size() != 0)
                         pos += style_stack.positions.back().value;
-                    font->render(current_str, style_stack.get_font_style(), shader, mvp, &pos);
+                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos);
                     if (style_stack.positions.size() != 0)
                         pos -= style_stack.positions.back().value;
                     current_str.clear();
@@ -880,7 +880,7 @@ void xd::text_formatter::render(const std::string& text, xd::font::ptr font, con
         if (current_str.length() != 0) {
             if (style_stack.positions.size() != 0)
                 pos += style_stack.positions.back().value;
-            font->render(current_str, style_stack.get_font_style(), shader, mvp, &pos);
+            font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos);
         }
     }
 }

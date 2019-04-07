@@ -3,7 +3,6 @@
 
 #include "detail/vertex_traits.hpp"
 
-#include "../config.hpp"
 #include "../vendor/glew/glew.h"
 #include <unordered_map>
 #include <type_traits>

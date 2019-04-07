@@ -131,7 +131,6 @@ SOURCES += main.cpp\
     ../src/layer.cpp \
     ../src/layer_renderer.cpp \
     ../src/log.cpp \
-    ../src/main.cpp \
     ../src/map.cpp \
     ../src/map_object.cpp \
     ../src/object_layer.cpp \
@@ -246,14 +245,9 @@ HEADERS  += main_window.hpp \
     ../include/xd/audio/sound.hpp \
     ../include/xd/detail/entity.hpp \
     ../include/xd/detail/identity.hpp \
-    ../include/xd/detail/iterate_asset_manager.hpp \
-    ../include/xd/detail/iterate_create.hpp \
-    ../include/xd/detail/iterate_entity_constructor.hpp \
-    ../include/xd/detail/iterate_factory_create.hpp \
     ../include/xd/detail/noop_deleter.hpp \
     ../include/xd/graphics/detail/font.hpp \
     ../include/xd/graphics/detail/image.hpp \
-    ../include/xd/graphics/detail/iterate_render.hpp \
     ../include/xd/graphics/detail/sprite_batch.hpp \
     ../include/xd/graphics/detail/text_formatter.hpp \
     ../include/xd/graphics/detail/vertex_traits.hpp \
@@ -276,11 +270,8 @@ HEADERS  += main_window.hpp \
     ../include/xd/graphics/utility.hpp \
     ../include/xd/graphics/vertex_batch.hpp \
     ../include/xd/graphics/vertex_traits.hpp \
-    ../include/xd/lua/detail/iterate_function_call.hpp \
-    ../include/xd/lua/detail/iterate_scheduler_yield.hpp \
     ../include/xd/lua/detail/scheduler.hpp \
     ../include/xd/lua/detail/scheduler_task.hpp \
-    ../include/xd/lua/config.hpp \
     ../include/xd/lua/exceptions.hpp \
     ../include/xd/lua/function.hpp \
     ../include/xd/lua/scheduler.hpp \
@@ -554,15 +545,12 @@ HEADERS  += main_window.hpp \
     ../include/xd/asset_manager.hpp \
     ../include/xd/asset_serializer.hpp \
     ../include/xd/audio.hpp \
-    ../include/xd/config.hpp \
     ../include/xd/entity.hpp \
     ../include/xd/event_bus.hpp \
     ../include/xd/exception.hpp \
-    ../include/xd/factory.hpp \
     ../include/xd/glm.hpp \
     ../include/xd/graphics.hpp \
     ../include/xd/lua.hpp \
-    ../include/xd/ref_counted.hpp \
     ../include/xd/system.hpp \
     ../include/xd/types.hpp \
     ../include/base64.hpp \

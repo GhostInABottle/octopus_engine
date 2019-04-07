@@ -1,7 +1,6 @@
 #ifndef H_XD_SYSTEM_WINDOW
 #define H_XD_SYSTEM_WINDOW
 
-#include "../ref_counted.hpp"
 #include "window_options.hpp"
 #include "input.hpp"
 #include "../graphics/transform_geometry.hpp"
@@ -13,21 +12,14 @@
 #include <functional>
 #include <string>
 
-#if defined(_MSC_VER) && !defined(XD_STATIC)
-// disable warning about boost::noncopyable not being dll-exportable
-// as well as the private members that can't be accessed by client
-#pragma warning(disable: 4275 4251)
-#endif
-
 struct GLFWwindow;
 
 namespace xd
 {
-    class XD_API window : public xd::ref_counted, public boost::noncopyable
+    class window : public boost::noncopyable
     {
     public:
         // typedefs
-        typedef boost::intrusive_ptr<window> ptr;
         typedef xd::event_bus<input_args>::callback_t input_event_callback_t;
         typedef std::function<void ()> tick_callback_t;
 

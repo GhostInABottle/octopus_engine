@@ -1,7 +1,6 @@
 #ifndef H_XD_SYSTEM_INPUT
 #define H_XD_SYSTEM_INPUT
 
-#include "../config.hpp"
 #include "../types.hpp"
 #include <boost/functional/hash.hpp>
 #include <boost/optional.hpp>
@@ -101,94 +100,81 @@ namespace xd
     }
 
     // pre-defined keyboard keys
-    extern XD_API const key KEY_LEFT;
-    extern XD_API const key KEY_RIGHT;
-    extern XD_API const key KEY_UP;
-    extern XD_API const key KEY_DOWN;
-    extern XD_API const key KEY_ENTER;
-    extern XD_API const key KEY_SPACE;
-    extern XD_API const key KEY_ESC;
-    extern XD_API const key KEY_A;
-    extern XD_API const key KEY_B;
-    extern XD_API const key KEY_C;
-    extern XD_API const key KEY_D;
-    extern XD_API const key KEY_E;
-    extern XD_API const key KEY_F;
-    extern XD_API const key KEY_G;
-    extern XD_API const key KEY_H;
-    extern XD_API const key KEY_I;
-    extern XD_API const key KEY_J;
-    extern XD_API const key KEY_K;
-    extern XD_API const key KEY_L;
-    extern XD_API const key KEY_M;
-    extern XD_API const key KEY_N;
-    extern XD_API const key KEY_O;
-    extern XD_API const key KEY_P;
-    extern XD_API const key KEY_Q;
-    extern XD_API const key KEY_R;
-    extern XD_API const key KEY_S;
-    extern XD_API const key KEY_T;
-    extern XD_API const key KEY_U;
-    extern XD_API const key KEY_V;
-    extern XD_API const key KEY_W;
-    extern XD_API const key KEY_X;
-    extern XD_API const key KEY_Y;
-    extern XD_API const key KEY_Z;
-    extern XD_API const key KEY_0;
-    extern XD_API const key KEY_1;
-    extern XD_API const key KEY_2;
-    extern XD_API const key KEY_3;
-    extern XD_API const key KEY_4;
-    extern XD_API const key KEY_5;
-    extern XD_API const key KEY_6;
-    extern XD_API const key KEY_7;
-    extern XD_API const key KEY_8;
-    extern XD_API const key KEY_9;
+    extern const key KEY_LEFT;
+    extern const key KEY_RIGHT;
+    extern const key KEY_UP;
+    extern const key KEY_DOWN;
+    extern const key KEY_ENTER;
+    extern const key KEY_SPACE;
+    extern const key KEY_ESC;
+    extern const key KEY_A;
+    extern const key KEY_B;
+    extern const key KEY_C;
+    extern const key KEY_D;
+    extern const key KEY_E;
+    extern const key KEY_F;
+    extern const key KEY_G;
+    extern const key KEY_H;
+    extern const key KEY_I;
+    extern const key KEY_J;
+    extern const key KEY_K;
+    extern const key KEY_L;
+    extern const key KEY_M;
+    extern const key KEY_N;
+    extern const key KEY_O;
+    extern const key KEY_P;
+    extern const key KEY_Q;
+    extern const key KEY_R;
+    extern const key KEY_S;
+    extern const key KEY_T;
+    extern const key KEY_U;
+    extern const key KEY_V;
+    extern const key KEY_W;
+    extern const key KEY_X;
+    extern const key KEY_Y;
+    extern const key KEY_Z;
+    extern const key KEY_0;
+    extern const key KEY_1;
+    extern const key KEY_2;
+    extern const key KEY_3;
+    extern const key KEY_4;
+    extern const key KEY_5;
+    extern const key KEY_6;
+    extern const key KEY_7;
+    extern const key KEY_8;
+    extern const key KEY_9;
 
     // pre-defined mouse keys
-    extern XD_API const key MOUSE_LEFT;
-    extern XD_API const key MOUSE_RIGHT;
-    extern XD_API const key MOUSE_MIDDLE;
-    extern XD_API const key MOUSE_1;
-    extern XD_API const key MOUSE_2;
-    extern XD_API const key MOUSE_3;
-    extern XD_API const key MOUSE_4;
-    extern XD_API const key MOUSE_5;
-    extern XD_API const key MOUSE_6;
-    extern XD_API const key MOUSE_7;
-    extern XD_API const key MOUSE_8;
+    extern const key MOUSE_LEFT;
+    extern const key MOUSE_RIGHT;
+    extern const key MOUSE_MIDDLE;
+    extern const key MOUSE_1;
+    extern const key MOUSE_2;
+    extern const key MOUSE_3;
+    extern const key MOUSE_4;
+    extern const key MOUSE_5;
+    extern const key MOUSE_6;
+    extern const key MOUSE_7;
+    extern const key MOUSE_8;
 
     // pre-defined joystick keys
-    extern XD_API const key JOYSTICK_BUTTON_1;
-    extern XD_API const key JOYSTICK_BUTTON_2;
-    extern XD_API const key JOYSTICK_BUTTON_3;
-    extern XD_API const key JOYSTICK_BUTTON_4;
-    extern XD_API const key JOYSTICK_BUTTON_5;
-    extern XD_API const key JOYSTICK_BUTTON_6;
-    extern XD_API const key JOYSTICK_BUTTON_7;
-    extern XD_API const key JOYSTICK_BUTTON_8;
-    extern XD_API const key JOYSTICK_BUTTON_9;
-    extern XD_API const key JOYSTICK_BUTTON_10;
-    extern XD_API const key JOYSTICK_BUTTON_11;
-    extern XD_API const key JOYSTICK_BUTTON_12;
-    extern XD_API const key JOYSTICK_AXIS_LEFT;
-    extern XD_API const key JOYSTICK_AXIS_RIGHT;
-    extern XD_API const key JOYSTICK_AXIS_UP;
-    extern XD_API const key JOYSTICK_AXIS_DOWN;
+    extern const key JOYSTICK_BUTTON_1;
+    extern const key JOYSTICK_BUTTON_2;
+    extern const key JOYSTICK_BUTTON_3;
+    extern const key JOYSTICK_BUTTON_4;
+    extern const key JOYSTICK_BUTTON_5;
+    extern const key JOYSTICK_BUTTON_6;
+    extern const key JOYSTICK_BUTTON_7;
+    extern const key JOYSTICK_BUTTON_8;
+    extern const key JOYSTICK_BUTTON_9;
+    extern const key JOYSTICK_BUTTON_10;
+    extern const key JOYSTICK_BUTTON_11;
+    extern const key JOYSTICK_BUTTON_12;
+    extern const key JOYSTICK_AXIS_LEFT;
+    extern const key JOYSTICK_AXIS_RIGHT;
+    extern const key JOYSTICK_AXIS_UP;
+    extern const key JOYSTICK_AXIS_DOWN;
 
-    // modifiers
-    /*extern XD_API const int mod_none;
-    extern XD_API const int mod_lshift;
-    extern XD_API const int mod_rshift;
-    extern XD_API const int mod_lctrl;
-    extern XD_API const int mod_rctrl;
-    extern XD_API const int mod_lalt;
-    extern XD_API const int mod_ralt;
-    extern XD_API const int mod_lmeta;
-    extern XD_API const int mod_rmeta;
-    extern XD_API const int mod_num;
-    extern XD_API const int mod_caps;
-    extern XD_API const int mod_mode;*/
 }
 
 // specialize hash<> for xd::key

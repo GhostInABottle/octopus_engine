@@ -7,9 +7,7 @@
 #include "exceptions.hpp"
 #include "font.hpp"
 #include "shader_program.hpp"
-#include "../ref_counted.hpp"
 #include "../vendor/utf8.h"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 #include <boost/noncopyable.hpp>
@@ -19,15 +17,7 @@
 #include <string>
 #include <functional>
 #include <unordered_map>
-
-#ifndef XD_STATIC
-// disable warnings about nonstandard extension
-// see: http://support.microsoft.com/kb/168958
-#pragma warning(disable: 4231)
-
-//XD_API_TEMPLATE template class XD_API std::allocator<char>;
-//XD_API_TEMPLATE template class XD_API std::basic_string<char, std::char_traits<char>, std::allocator<char> >;
-#endif
+#include <memory>
 
 namespace xd
 {
@@ -185,7 +175,7 @@ namespace xd
         friend class text_formatter;
     };
 
-    class XD_API text_decorator
+    class text_decorator
     {
     public:
         text_decorator(int level);
@@ -233,10 +223,9 @@ namespace xd
         friend class detail::text_formatter::decorate_text;
     };
 
-    class XD_API text_formatter : public xd::ref_counted
+    class text_formatter
     {
     public:
-        typedef boost::intrusive_ptr<text_formatter> ptr;
 
         typedef std::function<void (text_decorator&, const formatted_text&, const text_decorator_args&)> decorator_callback_t;
         typedef std::function<std::string (const std::string&)> variable_callback_t;
@@ -263,8 +252,8 @@ namespace xd
         void unregister_decorator(const std::string& name);
         void unregister_variable(const std::string& name);
 
-        void render(const std::string& text, xd::font::ptr font, const xd::font_style& style,
-            xd::shader_program::ptr shader, const glm::mat4& mvp);
+        void render(const std::string& text, xd::font& font, const font_style& style,
+            shader_program& shader, const glm::mat4& mvp);
 
     private:
         //typedef std::list<detail::text_formatter_token> token_list_t;

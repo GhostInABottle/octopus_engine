@@ -6,7 +6,6 @@
 #include <memory>
 #include <map>
 #include <memory>
-#include "../../../include/xd/factory.hpp"
 #include "../../../include/xd/graphics/font.hpp"
 #include "../../../include/xd/graphics/exceptions.hpp"
 #include "../../../include/xd/vendor/utf8.h"
@@ -118,11 +117,11 @@ xd::font::~font()
 
 void xd::font::link_font(const std::string& type, const std::string& filename)
 {
-    auto linked_font = xd::create<font>(filename);
+    auto linked_font = std::make_shared<font>(filename);
     m_linked_fonts[type] = linked_font;
 }
 
-void xd::font::link_font(const std::string& type, font::ptr font)
+void xd::font::link_font(const std::string& type, std::shared_ptr<font> font)
 {
     m_linked_fonts[type] = font;
 }
@@ -214,7 +213,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
 }
 
 void xd::font::render(const std::string& text, const font_style& style,
-    xd::shader_program::ptr shader, const glm::mat4& mvp, glm::vec2 *pos,
+    xd::shader_program* shader, const glm::mat4& mvp, glm::vec2 *pos,
     bool actual_rendering)
 {
     int load_flags = style.m_force_autohint ? FT_LOAD_FORCE_AUTOHINT : FT_LOAD_NO_HINTING;

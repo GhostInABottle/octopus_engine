@@ -87,7 +87,7 @@ private:
     // Tracked map object
     Map_Object* object;
     // Screen shaker component
-    Screen_Shaker* shaker;
+    std::shared_ptr<Screen_Shaker> shaker;
     // Implementation details
     struct Impl;
     friend struct Impl;

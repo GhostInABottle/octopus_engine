@@ -3,7 +3,6 @@
 
 #include "glm.hpp"
 #include "vendor/glew/glew.h"
-#include "factory.hpp"
 #include "graphics/exceptions.hpp"
 #include "graphics/font.hpp"
 #include "graphics/image.hpp"

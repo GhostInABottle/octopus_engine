@@ -3,10 +3,7 @@
 
 #include "detail/entity.hpp"
 
-#include "ref_counted.hpp"
 #include "event_bus.hpp"
-#include <boost/intrusive_ptr.hpp>
-#include <boost/config.hpp>
 #include <boost/any.hpp>
 #include <unordered_map>
 #include <functional>
@@ -16,28 +13,21 @@
 #include <map>
 #include <type_traits>
 
-#ifdef BOOST_NO_VARIADIC_TEMPLATES
-#include <boost/preprocessor/iteration/iterate.hpp>
-#endif
-
 namespace xd
 {
     template <typename T>
     struct logic_component : detail::logic_component<T>
     {
-        typedef boost::intrusive_ptr<logic_component> ptr;
     };
 
     template <typename T>
     struct render_component : detail::render_component<T>
     {
-        typedef boost::intrusive_ptr<render_component> ptr;
     };
 
     template <typename T>
     struct component : detail::component<T>
     {
-        typedef boost::intrusive_ptr<component> ptr;
     };
 
     class entity_placeholder
@@ -47,35 +37,14 @@ namespace xd
     };
 
     template <typename Class = entity_placeholder>
-    class entity : public xd::ref_counted
+    class entity
     {
     public:
-        // required for xd::factory
-        typedef boost::intrusive_ptr<Class> ptr;
+
         // component ptr typedefs
-        typedef typename xd::component<Class>::ptr component_ptr;
-        typedef typename xd::logic_component<Class>::ptr logic_component_ptr;
-        typedef typename xd::render_component<Class>::ptr render_component_ptr;
-
-/*
-#ifndef BOOST_NO_VARIADIC_TEMPLATES
-        // constructor that delegates parameters to the entity_base
-        template <typename... Args>
-        entity(Args&&... args)
-            : Base(std::forward<Args>(args)...)
-        {
-        }
-#else
-        // generate xd::entity::entity overloads with file iteration (up to XD_MAX_ARITY parameters)
-        #define BOOST_PP_ITERATION_PARAMS_1 (3, (1, XD_MAX_ARITY, "../include/xd/detail/iterate_entity_constructor.hpp"))
-        #include BOOST_PP_ITERATE()
-#endif
-
-        entity(const Base& base)
-            : Base(base)
-        {
-        }
-*/
+        typedef typename std::shared_ptr<xd::component<Class>> component_ptr;
+        typedef typename std::shared_ptr<xd::logic_component<Class>> logic_component_ptr;
+        typedef typename std::shared_ptr<xd::render_component<Class>> render_component_ptr;
 
         virtual ~entity()
         {
@@ -263,8 +232,8 @@ namespace xd
         }
 
     private:
-        typedef std::list<typename detail::logic_component<Class>::ptr> logic_component_list_t;
-        typedef std::list<typename detail::render_component<Class>::ptr> render_component_list_t;
+        typedef std::list<std::shared_ptr<detail::logic_component<Class>>> logic_component_list_t;
+        typedef std::list<std::shared_ptr<detail::render_component<Class>>> render_component_list_t;
 
         // data
         std::unordered_map<std::size_t, boost::any> m_type_to_data;

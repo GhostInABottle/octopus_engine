@@ -6,47 +6,47 @@
 
 namespace xd
 {
-    class XD_API flat_shader : public shader_program
+    class flat_shader : public shader_program
     {
     public:
         flat_shader();
         virtual void setup(const glm::mat4& mvp, const glm::vec4& color);
     };
 
-    class XD_API shaded_shader : public shader_program
+    class shaded_shader : public shader_program
     {
     public:
         shaded_shader();
         virtual void setup(const glm::mat4& mvp);
     };
 
-    class XD_API texture_shader : public shader_program
+    class texture_shader : public shader_program
     {
     public:
         texture_shader();
-        virtual void setup(const glm::mat4& mvp, const texture::ptr tex);
+        virtual void setup(const glm::mat4& mvp, const texture& tex);
     };
 
-    class XD_API texture_mask_shader : public shader_program
+    class texture_mask_shader : public shader_program
     {
     public:
         texture_mask_shader();
-        virtual void setup(const glm::mat4& mvp, const texture::ptr tex, const texture::ptr mask);
+        virtual void setup(const glm::mat4& mvp, const texture& tex, const texture& mask);
     };
 
-    class XD_API text_shader : public shader_program
+    class text_shader : public shader_program
     {
     public:
         text_shader();
     };
 
-    class XD_API sprite_shader : public shader_program
+    class sprite_shader : public shader_program
     {
     public:
         sprite_shader();
     };
 
-    class XD_API sprite_outline_shader : public shader_program
+    class sprite_outline_shader : public shader_program
     {
     public:
         sprite_outline_shader();

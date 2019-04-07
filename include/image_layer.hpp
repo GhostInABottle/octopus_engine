@@ -26,9 +26,9 @@ struct Image_Layer : public Layer, public Sprite_Holder {
     // Image transparent color
     xd::vec4 image_trans_color;
     // Image texture
-    xd::texture::ptr image_texture;
+    std::shared_ptr<xd::texture> image_texture;
     // Optional sprite
-    Sprite::ptr sprite;
+    std::unique_ptr<Sprite> sprite;
 
     // Constructor
     Image_Layer() : repeat(false), fixed(false) {}

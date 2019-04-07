@@ -1,8 +1,6 @@
 #ifndef H_XD_LUA_VIRTUAL_MACHINE
 #define H_XD_LUA_VIRTUAL_MACHINE
 
-#include "../config.hpp"
-#include "config.hpp"
 #include "types.hpp"
 #include "exceptions.hpp"
 #ifndef LUABIND_CPLUSPLUS_LUA
@@ -22,7 +20,7 @@ namespace xd
 {
     namespace lua
     {
-        class XD_LUA_API virtual_machine : public boost::noncopyable
+        class virtual_machine : public boost::noncopyable
         {
         public:
             virtual_machine();

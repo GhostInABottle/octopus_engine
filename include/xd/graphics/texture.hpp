@@ -2,20 +2,17 @@
 #define H_XD_GRAPHICS_TEXTURE
 
 #include "../vendor/glew/glew.h"
-#include "../ref_counted.hpp"
 #include "../asset_serializer.hpp"
 #include "image.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <memory>
 #include <string>
 
 namespace xd
 {
-    class XD_API texture : public xd::ref_counted, public boost::noncopyable
+    class texture : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<texture> ptr;
 
         texture(int width, int height, const void *data = 0, vec4 ck = vec4(0),
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,

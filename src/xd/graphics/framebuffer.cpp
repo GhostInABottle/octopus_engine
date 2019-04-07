@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include "../../../include/xd/graphics/framebuffer.hpp"
+#include "../../../include/xd/graphics/texture.hpp"
 
 
 xd::framebuffer::framebuffer()
@@ -26,7 +27,7 @@ void xd::framebuffer::unbind() const
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-void xd::framebuffer::attach_color_texture(xd::texture::ptr texture, int slot) const
+void xd::framebuffer::attach_color_texture(const xd::texture& texture, int slot) const
 {
     if (!extension_supported())
         return;
@@ -36,7 +37,7 @@ void xd::framebuffer::attach_color_texture(xd::texture::ptr texture, int slot) c
     auto attachment = static_cast<GLenum>(GL_COLOR_ATTACHMENT0_EXT + slot);
 
     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachment,
-        GL_TEXTURE_2D, texture->texture_id(), 0);
+        GL_TEXTURE_2D, texture.texture_id(), 0);
 
     GLenum error = glGetError();
     if (error == GL_INVALID_OPERATION) {

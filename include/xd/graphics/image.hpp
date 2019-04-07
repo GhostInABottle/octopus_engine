@@ -4,25 +4,16 @@
 #include "detail/image.hpp"
 
 #include "../glm.hpp"
-#include "../config.hpp"
-#include "../ref_counted.hpp"
 #include <boost/noncopyable.hpp>
-#include <boost/intrusive_ptr.hpp>
 #include <string>
 #include <memory>
 
-#ifndef XD_STATIC
-// disable warning about boost::noncopyable not being dll-exportable
-// as well as the private members that can't be accessed by client
-#pragma warning(disable: 4275 4251)
-#endif
 
 namespace xd
 {
-    class XD_API image : public xd::ref_counted, public boost::noncopyable
+    class image : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<image> pt;
 
         image(const std::string& filename);
         image(const std::string& filename, xd::vec4 color_key);

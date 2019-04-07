@@ -1,4 +1,3 @@
-#include "../../../include/xd/config.hpp"
 #include "../../../include/xd/system.hpp"
 #include "../../../include/xd/lua.hpp"
 #include <boost/function.hpp>

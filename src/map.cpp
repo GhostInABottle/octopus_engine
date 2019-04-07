@@ -19,7 +19,6 @@
 #include <unordered_set>
 #include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
-#include "../include/xd/factory.hpp"
 #include "../include/xd/audio.hpp"
 #include <fstream>
 #include <algorithm>
@@ -46,10 +45,10 @@ Map::Map(Game& game) :
         needs_redraw(true),
         objects_moved(true),
         canvases_sorted(false) {
-    add_component(xd::create<Map_Renderer>());
-    add_component(xd::create<Map_Updater>());
-    add_component(xd::create<Canvas_Renderer>(game, *game.get_camera()));
-    add_component(xd::create<Canvas_Updater>());
+    add_component(std::make_shared<Map_Renderer>());
+    add_component(std::make_shared<Map_Updater>());
+    add_component(std::make_shared<Canvas_Renderer>(game, *game.get_camera()));
+    add_component(std::make_shared<Canvas_Updater>());
 }
 
 Map::~Map() {}

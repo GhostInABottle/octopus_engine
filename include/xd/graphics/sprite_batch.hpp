@@ -1,34 +1,30 @@
 #ifndef H_XD_GRAPHICS_SPRITE_BATCH
 #define H_XD_GRAPHICS_SPRITE_BATCH
 
-#include <vector>
 #include "detail/sprite_batch.hpp"
 #include "vertex_batch.hpp"
-#include "../ref_counted.hpp"
 #include "transform_geometry.hpp"
-#include "texture.hpp"
 #include "types.hpp"
 #include "../glm.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
-
-#pragma warning(disable: 4275)
+#include <vector>
+#include <memory>
 
 namespace xd
 {
     class shader_program;
+    class texture;
     // sprite batch
-    class XD_API sprite_batch : public xd::ref_counted, public boost::noncopyable
+    class sprite_batch : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<sprite_batch> ptr;
 
         sprite_batch();
         virtual ~sprite_batch();
 
         void clear();
 
-        typedef std::vector<xd::vertex_batch<detail::sprite_vertex_traits>::ptr> batch_list;
+        typedef std::vector<std::shared_ptr<xd::vertex_batch<detail::sprite_vertex_traits>>> batch_list;
         batch_list create_batches();
 
         void draw(const xd::mat4& mvp_matrix, const batch_list& batches, int ticks = 0);
@@ -45,23 +41,24 @@ namespace xd
 
         void set_shader(shader_program* shader);
 
-        void add(const texture::ptr texture, float x, float y,
+        void add(const std::shared_ptr<texture>& texture, float x, float y,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
-        void add(const texture::ptr texture, float x, float y, float rotation, float scale,
+        void add(const std::shared_ptr<texture>& texture, float x, float y, float rotation, float scale,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
-        void add(const texture::ptr texture, float x, float y, float rotation, const vec2& scale,
+        void add(const std::shared_ptr<texture>& texture, float x, float y, float rotation, const vec2& scale,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
 
-        void add(const texture::ptr texture, const rect& src, float x, float y,
+        void add(const std::shared_ptr<texture>& texture, const rect& src, float x, float y,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
-        void add(const texture::ptr texture, const rect& src, float x, float y, float rotation, float scale,
+        void add(const std::shared_ptr<texture>& texture, const rect& src, float x, float y, float rotation, float scale,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
-        void add(const texture::ptr texture, const rect& src, float x, float y,
+        void add(const std::shared_ptr<texture>& texture, const rect& src, float x, float y,
             float rotation, const vec2& scale, const vec4& color = vec4(1),
             const vec2& origin = vec2(0, 0));
 
     private:
-        detail::sprite_batch_data *m_data;
+        std::unique_ptr<detail::sprite_batch_data> m_data;
+        std::unique_ptr<xd::vertex_batch<detail::sprite_vertex_traits>> m_batch;
         float m_scale;
         vec4 m_outline_color;
     };

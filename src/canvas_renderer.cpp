@@ -50,7 +50,7 @@ void Canvas_Renderer::setup_framebuffer(Canvas* canvas) {
         camera.enable_scissor_test(scissor_box, viewport);
     }
     auto framebuffer = canvas->get_framebuffer();
-    framebuffer->attach_color_texture(canvas->get_fbo_texture(), 0);
+    framebuffer->attach_color_texture(*canvas->get_fbo_texture(), 0);
     framebuffer->bind();
     glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
     glPushAttrib(GL_COLOR_BUFFER_BIT);

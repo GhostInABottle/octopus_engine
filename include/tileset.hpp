@@ -31,7 +31,7 @@ struct Tileset {
     // Image transparent color
     xd::vec4 image_trans_color;
     // Image texture
-    xd::texture::ptr image_texture;
+    std::shared_ptr<xd::texture> image_texture;
     // List of tiles properties
     std::vector<Tile> tiles;
 

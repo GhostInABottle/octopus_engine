@@ -10,7 +10,7 @@ namespace xd { namespace detail {
 
     struct sprite
     {
-        texture::ptr tex;
+        std::shared_ptr<texture> tex;
         rect src;
         float x, y;
         float rotation;
@@ -25,6 +25,7 @@ namespace xd { namespace detail {
         std::deque<sprite> sprites;
         std::unique_ptr<xd::shader_program> shader;
         std::unique_ptr<xd::shader_program> outline_shader;
+
         sprite_batch_data() :
             shader(new xd::sprite_shader),
             outline_shader(new xd::sprite_outline_shader) {}
@@ -41,7 +42,6 @@ xd::sprite_batch::sprite_batch()
 
 xd::sprite_batch::~sprite_batch()
 {
-    delete m_data;
 }
 
 void xd::sprite_batch::clear()
@@ -51,15 +51,13 @@ void xd::sprite_batch::clear()
 
 xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 {
-    std::vector<xd::vertex_batch<xd::detail::sprite_vertex_traits>::ptr> batches;
+    xd::sprite_batch::batch_list batches;
 
     // create a quad for rendering sprites
     xd::detail::sprite_vertex quad[4];
 
     // iterate through all sprites
     for (auto i = m_data->sprites.begin(); i != m_data->sprites.end(); ++i) {
-        // create a vertex batch for sending vertex data
-        xd::vertex_batch<xd::detail::sprite_vertex_traits>::ptr batch(new xd::vertex_batch<xd::detail::sprite_vertex_traits>(GL_QUADS));
         // so we need to type less ;)
         auto tw = i->tex->width();
         auto th = i->tex->height();
@@ -92,8 +90,8 @@ xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
         quad[2].texpos = vec2((src.x+src.w)/tw, src.y/th);
         quad[3].texpos = vec2(src.x/tw        , src.y/th);
 
-        // load the quad
-        batch->load(&quad[0], 4);
+        // create a vertex batch for sending vertex data
+        auto batch = std::make_shared<xd::vertex_batch<detail::sprite_vertex_traits>>(&quad[0], 4, GL_QUADS);
         batches.push_back(batch);
 
     }
@@ -151,7 +149,9 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
 void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, int ticks)
 {
     // create a vertex batch for sending vertex data
-    vertex_batch<detail::sprite_vertex_traits> batch(GL_QUADS);
+    if (!m_batch) {
+        m_batch = std::make_unique<xd::vertex_batch<detail::sprite_vertex_traits>>(GL_QUADS);
+    }
 
     // setup the shader
     shader.use();
@@ -165,8 +165,9 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
     // iterate through all sprites
     for (auto i = m_data->sprites.begin(); i != m_data->sprites.end(); ++i) {
         // so we need to type less ;)
-        auto tw = i->tex->width();
-        auto th = i->tex->height();
+        auto& tex = *i->tex;
+        auto tw = tex.width();
+        auto th = tex.height();
         auto& src = i->src;
         auto& origin = i->origin;
 
@@ -196,20 +197,20 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
         quad[2].texpos = vec2((src.x+src.w)/tw, src.y/th);
         quad[3].texpos = vec2(src.x/tw        , src.y/th);
 
-        // load the quad
-        batch.load(&quad[0], 4);
+        // load the batch data
+        m_batch->load(&quad[0], 4);
 
         // give required params to shader
         shader.bind_uniform("vPosition", vec4(i->x, i->y, i->depth, 0));
         shader.bind_uniform("vColor", i->color);
-        shader.bind_uniform("vColorKey", i->tex->color_key());
+        shader.bind_uniform("vColorKey", tex.color_key());
 
         // bind the texture
         i->tex->bind(GL_TEXTURE0);
-        shader.bind_uniform("vTexSize", vec2(i->tex->width(), i->tex->height()));
+        shader.bind_uniform("vTexSize", vec2(tw, th));
 
         // draw it
-        batch.render();
+        m_batch->render();
     }
 }
 
@@ -217,21 +218,21 @@ void xd::sprite_batch::set_shader(shader_program* shader) {
     m_data->shader.reset(shader);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, float x, float y,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,
         const xd::vec4& color, const xd::vec2& origin)
 {
     add(texture, rect(0, 0, texture->width(), texture->height()), x, y, 0,
         vec2(1, 1), color, origin);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, float x, float y,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,
         float rotation, float scale, const xd::vec4& color, const xd::vec2& origin)
 {
     add(texture, rect(0, 0, texture->width(), texture->height()),
         x, y, rotation, vec2(scale, scale), color, origin);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, float x, float y,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,
         float rotation, const xd::vec2& scale,
         const xd::vec4& color, const xd::vec2& origin)
 {
@@ -239,20 +240,20 @@ void xd::sprite_batch::add(const xd::texture::ptr texture, float x, float y,
         x, y, rotation, scale,color, origin);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, const xd::rect& src, float x, float y,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, const xd::rect& src, float x, float y,
         const xd::vec4& color, const xd::vec2& origin)
 {
     add(texture, src, x, y, 0, vec2(1, 1), color, origin);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, const xd::rect& src,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, const xd::rect& src,
         float x, float y, float rotation, float scale,
         const xd::vec4& color, const xd::vec2& origin)
 {
     add(texture, src, x, y, rotation, vec2(scale, scale), color, origin);
 }
 
-void xd::sprite_batch::add(const xd::texture::ptr texture, const xd::rect& src,
+void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, const xd::rect& src,
         float x, float y, float rotation, const xd::vec2& scale,
         const xd::vec4& color, const xd::vec2& origin)
 {

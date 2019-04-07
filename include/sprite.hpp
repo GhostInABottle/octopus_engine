@@ -15,7 +15,6 @@ class Map_Object;
 
 class Sprite : public xd::component<Map_Object> {
 public:
-    typedef boost::intrusive_ptr<Sprite> ptr;
     Sprite(Game& game, std::unique_ptr<Sprite_Data> data);
     // Render a frame
     void render(Map_Object& object);

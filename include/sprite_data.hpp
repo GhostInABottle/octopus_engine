@@ -27,7 +27,7 @@ struct Frame {
     // Is it an animation tween frame?
     bool tween_frame;
     // Frame image
-    xd::texture::ptr image;
+    std::shared_ptr<xd::texture> image;
     // Transparent color
     xd::vec4 transparent_color;
     // Frame sound effect filename
@@ -47,7 +47,7 @@ struct Pose {
     // Transform origin point
     xd::vec2 origin;
     // Pose image
-    xd::texture::ptr image;
+    std::shared_ptr<xd::texture> image;
     // Transparent color
     xd::vec4 transparent_color;
     // Hash table of tags
@@ -62,7 +62,7 @@ struct Sprite_Data {
     // Sprite file name
     std::string filename;
     // Sprite image
-    xd::texture::ptr image;
+    std::shared_ptr<xd::texture> image;
     // Transparent color
     xd::vec4 transparent_color;
     // List of poses

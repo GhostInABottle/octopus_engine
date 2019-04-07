@@ -1,13 +1,9 @@
 #ifndef H_XD_AUDIO_SOUND
 #define H_XD_AUDIO_SOUND
 
-#include "../ref_counted.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <utility>
-
-#pragma warning(disable: 4275)
 
 namespace xd
 {
@@ -17,10 +13,9 @@ namespace xd
     }
     class audio;
 
-    class XD_API sound : public xd::ref_counted, public boost::noncopyable
+    class sound : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<sound> ptr;
 
         sound(const std::string& filename, unsigned int flags = 0);
         virtual ~sound();

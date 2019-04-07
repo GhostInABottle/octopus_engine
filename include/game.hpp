@@ -123,7 +123,7 @@ public:
     // Get text renderer
     xd::simple_text_renderer& get_text_renderer() { return text_renderer; }
     // Get font
-    xd::font::ptr get_font() { return font; }
+    std::shared_ptr<xd::font> get_font() { return font; }
     // Get style
     const xd::font_style& get_font_style() { return style; }
     // Get decorator for shaking text
@@ -158,7 +158,7 @@ private:
     Scripting_Interface* current_scripting_interface;
     std::shared_ptr<Map_Object> player;
     std::shared_ptr<xd::music> music;
-    xd::font::ptr font;
+    std::shared_ptr<xd::font> font;
     xd::font_style style;
     xd::simple_text_renderer text_renderer;
     int editor_ticks;

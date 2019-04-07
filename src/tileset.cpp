@@ -3,7 +3,6 @@
 #include "../include/exceptions.hpp"
 #include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
-#include "../include/xd/factory.hpp"
 
 rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "tileset");
@@ -69,13 +68,13 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
             tileset_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
         // Load the texture
-        tileset_ptr->image_texture = xd::create<xd::texture>(
-            normalize_slashes(tileset_ptr->image_source), 
+        tileset_ptr->image_texture = std::make_shared<xd::texture>(
+            normalize_slashes(tileset_ptr->image_source),
             tileset_ptr->image_trans_color, GL_REPEAT, GL_REPEAT,
             GL_NEAREST, GL_NEAREST);
     }
     // Tiles
-    for (auto tile_node = node.first_node("tile"); 
+    for (auto tile_node = node.first_node("tile");
             tile_node; tile_node = tile_node->next_sibling("tile")) {
         Tile tile;
         tile.id = lexical_cast<int>(tile_node->first_attribute("id")->value());

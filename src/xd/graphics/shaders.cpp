@@ -98,10 +98,10 @@ xd::texture_shader::texture_shader()
     link();
 }
 
-void xd::texture_shader::setup(const glm::mat4& mvp, const texture::ptr tex)
+void xd::texture_shader::setup(const glm::mat4& mvp, const texture& tex)
 {
     use();
-    tex->bind(GL_TEXTURE0);
+    tex.bind(GL_TEXTURE0);
     bind_uniform("mvpMatrix", mvp);
     bind_uniform("colorMap", 0);
 }
@@ -138,11 +138,11 @@ xd::texture_mask_shader::texture_mask_shader()
     link();
 }
 
-void xd::texture_mask_shader::setup(const glm::mat4& mvp, const texture::ptr tex, const texture::ptr mask)
+void xd::texture_mask_shader::setup(const glm::mat4& mvp, const texture& tex, const texture& mask)
 {
     use();
-    tex->bind(GL_TEXTURE0);
-    mask->bind(GL_TEXTURE1);
+    tex.bind(GL_TEXTURE0);
+    mask.bind(GL_TEXTURE1);
     bind_uniform("mvpMatrix", mvp);
     bind_uniform("colorMap", 0);
     bind_uniform("maskMap", 1);

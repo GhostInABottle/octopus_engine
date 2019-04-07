@@ -204,14 +204,14 @@ public:
     std::string get_filename() const {
         return filename;
     }
-    xd::texture::ptr get_image_texture() const {
+    std::shared_ptr<xd::texture> get_image_texture() const {
         return image_texture;
     }
-    xd::texture::ptr get_fbo_texture() const {
+    std::shared_ptr<xd::texture> get_fbo_texture() const {
         return fbo_texture;
     }
-    const xd::framebuffer* get_framebuffer() const {
-        return framebuffer.get();
+    std::shared_ptr<xd::framebuffer> get_framebuffer() const {
+        return framebuffer;
     }
     std::vector<std::string>& get_text_lines() {
         return text_lines;
@@ -379,10 +379,10 @@ private:
     // Image filename
     std::string filename;
     // Image texture
-    xd::texture::ptr image_texture;
+    std::shared_ptr<xd::texture> image_texture;
     // Used when FBO is supported for faster rendering
-    xd::texture::ptr fbo_texture;
-    std::unique_ptr<xd::framebuffer> framebuffer;
+    std::shared_ptr<xd::texture> fbo_texture;
+    std::shared_ptr<xd::framebuffer> framebuffer;
     // Optional sprite
     std::unique_ptr<Sprite> sprite;
     // Text to print
@@ -390,13 +390,13 @@ private:
     // Text lines
     std::vector<std::string> text_lines;
     // Font to use
-    xd::font::ptr font;
+    std::shared_ptr<xd::font> font;
     // Text renderer
     xd::simple_text_renderer* text_renderer;
     // Text style
     std::unique_ptr<xd::font_style> style;
     // Text formatter
-    xd::text_formatter::ptr formatter;
+    std::unique_ptr<xd::text_formatter> formatter;
     // Render relative to camera? (by default: false for text, true otherwise)
     bool camera_relative;
     // List of child canvases that are rendered with this one

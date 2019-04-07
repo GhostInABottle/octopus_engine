@@ -1,7 +1,6 @@
 #ifndef HPP_LAYER_RENDERER
 #define HPP_LAYER_RENDERER
 
-#include "xd/config.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/sprite_batch.hpp"
 #include "xd/graphics/types.hpp"

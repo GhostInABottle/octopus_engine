@@ -8,7 +8,6 @@
 #include "../include/log.hpp"
 #include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
-#include "../include/xd/factory.hpp"
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
@@ -17,7 +16,7 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
                     " to nonexistent file " << filename;
         return;
     }
-    sprite = xd::create<Sprite>(game, Sprite_Data::load(game.get_asset_manager(), filename));
+    sprite = std::make_unique<Sprite>(game, Sprite_Data::load(game.get_asset_manager(), filename));
     set_pose(pose_name, "", Direction::NONE);
 }
 
@@ -28,7 +27,7 @@ void Image_Layer::set_image(const std::string& filename) {
         return;
     }
     image_source = normalize_slashes(filename);
-    image_texture = xd::create<xd::texture>(
+    image_texture = std::make_shared<xd::texture>(
         image_source, image_trans_color, GL_REPEAT, GL_REPEAT,
         GL_NEAREST, GL_NEAREST);
 }
@@ -77,7 +76,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
             layer_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
         // Load the texture
-        layer_ptr->image_texture = xd::create<xd::texture>(
+        layer_ptr->image_texture = std::make_shared<xd::texture>(
             layer_ptr->image_source, layer_ptr->image_trans_color,
             GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     } else {

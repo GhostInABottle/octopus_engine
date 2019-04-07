@@ -1,9 +1,6 @@
 #ifndef H_XD_LUA
 #define H_XD_LUA
 
-#include "config.hpp"
-#include "factory.hpp"
-#include "lua/config.hpp"
 #include "lua/types.hpp"
 #include "lua/exceptions.hpp"
 #include "lua/virtual_machine.hpp"

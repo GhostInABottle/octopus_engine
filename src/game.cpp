@@ -14,7 +14,6 @@
 #include "../include/log.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/graphics.hpp"
-#include "../include/xd/factory.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include <luabind/luabind.hpp>
@@ -109,17 +108,17 @@ Game::Game(bool editor_mode) :
     if (!file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
-    font = xd::create<xd::font>(font_file);
+    font = std::make_unique<xd::font>(font_file);
     if (!bold_font_file.empty()) {
         if (file_exists(bold_font_file)) {
-            font->link_font("bold", xd::create<xd::font>(bold_font_file));
+            font->link_font("bold", std::make_shared<xd::font>(bold_font_file));
         } else {
             LOGGER_W << "Couldn't read bold font file " << bold_font_file;
         }
     }
     if (!italic_font_file.empty()) {
         if (file_exists(italic_font_file)) {
-            font->link_font("italic", xd::create<xd::font>(italic_font_file));
+            font->link_font("italic", std::make_shared<xd::font>(italic_font_file));
         } else {
             LOGGER_W << "Couldn't read italic font file " << bold_font_file;
         }
@@ -143,7 +142,7 @@ Game::Game(bool editor_mode) :
     );
     player.reset(player_ptr);
     // Create input controller for player
-    auto controller = xd::create<Player_Controller>(*this);
+    auto controller = std::make_shared<Player_Controller>(*this);
     player->add_component(controller);
     // Add player to the map
     map->add_object(player);
@@ -234,13 +233,13 @@ void Game::render() {
         // Draw FPS
         auto height = static_cast<float>(game_height());
         if (pimpl->show_fps) {
-            text_renderer.render(font, pimpl->debug_style, 5, height - 10,
+            text_renderer.render(*font, pimpl->debug_style, 5, height - 10,
                 "FPS: " + boost::lexical_cast<std::string>(fps()));
         }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
             auto seconds = std::to_string(clock->seconds());
-            text_renderer.render(font, pimpl->debug_style, 5, height - 20, seconds);
+            text_renderer.render(*font, pimpl->debug_style, 5, height - 20, seconds);
         }
         window->swap();
     }

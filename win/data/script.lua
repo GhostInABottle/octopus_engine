@@ -47,35 +47,35 @@ if c.selected == 1 then
     text_canvas:show()
     wait(1500)
     text(o, 'Changing text properties'):wait()
-    print(o, 'Font size ' .. text_canvas.font_size)
+    print('Font size ' .. text_canvas.font_size)
     text_canvas.font_size = 15
     function color_to_s(color)
      return '(' .. color.r .. ', ' .. color.g .. ', ' .. color.b .. ', ' .. color.a .. ')'
     end
-    print(o, 'Text color ' .. color_to_s(text_canvas.text_color))
+    print('Text color ' .. color_to_s(text_canvas.text_color))
     text_canvas.text_color = Color('red')
-    print(o, 'Line height ' .. text_canvas.line_height)
+    print('Line height ' .. text_canvas.line_height)
     text_canvas.line_height = 20
-    print(o, 'Outline width ' .. text_canvas.text_outline_width)
+    print('Outline width ' .. text_canvas.text_outline_width)
     text_canvas.text_outline_width = 2
-    print(o, 'Outline color ' .. color_to_s(text_canvas.text_outline_color))
+    print('Outline color ' .. color_to_s(text_canvas.text_outline_color))
     text_canvas.text_outline_color = Color('yellow')
-    print(o, 'Shadow offset (' .. text_canvas.text_shadow_offset.x .. ', ' .. text_canvas.text_shadow_offset.y .. ')')
+    print('Shadow offset (' .. text_canvas.text_shadow_offset.x .. ', ' .. text_canvas.text_shadow_offset.y .. ')')
     text_canvas.text_shadow_offset = Vec2(-18, -18)
-    print(o, 'Shadow color ' .. color_to_s(text_canvas.text_shadow_color))
+    print('Shadow color ' .. color_to_s(text_canvas.text_shadow_color))
     text_canvas.text_shadow_color = Color('blue')
     wait(2000)
-    print(o, 'Type: ' .. text_canvas.text_type)
+    print('Type: ' .. text_canvas.text_type)
     text_canvas.text_type = 'bold'
     wait(2000)
-    print(o, 'Setting font')
+    print('Setting font')
     text_canvas:set_font('data/Roboto-Bold.ttf')
-    print(o, 'Setting linked font')
+    print('Setting linked font')
     text_canvas:link_font('italic', 'data/Roboto-Italic.ttf')
     text_canvas:link_font('bold', 'data/Roboto-Regular.ttf')
     text_canvas:link_font('bold2', 'data/Roboto-Italic.ttf')
     wait(3000)
-    print(o, 'Test permissive mode')
+    print('Test permissive mode')
     text_canvas.permissive_tag_parsing = true
     text_canvas.text = 'Hello {italic}thing'
     wait(1000)

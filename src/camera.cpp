@@ -9,7 +9,6 @@
 #include "../include/xd/graphics/vertex_batch.hpp"
 #include "../include/xd/graphics/shader_program.hpp"
 #include "../include/xd/graphics/shaders.hpp"
-#include "../include/xd/config.hpp"
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else
@@ -30,7 +29,7 @@ struct Camera::Impl {
     // Full-screen shader data
     xd::shader_program* current_shader;
     xd::sprite_batch full_screen_batch;
-    xd::texture::ptr full_screen_texture;
+    std::shared_ptr<xd::texture> full_screen_texture;
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
@@ -74,7 +73,7 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     int w = game.width();
     int h = game.height();
     if (!full_screen_texture)
-        full_screen_texture = xd::create<xd::texture>(w, h, nullptr,
+        full_screen_texture = std::make_shared<xd::texture>(w, h, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP);
     full_screen_texture->copy_read_buffer(0, 0, w, h);
     full_screen_batch.clear();
@@ -123,8 +122,8 @@ Camera::Camera(Game& game)
 {
     calculate_viewport(game.width(), game.height());
     // Add components
-    add_component(xd::create<Camera_Renderer>(game));
-    add_component(xd::create<Object_Tracker>());
+    add_component(std::make_shared<Camera_Renderer>(game));
+    add_component(std::make_shared<Object_Tracker>());
     setup_opengl();
     update_viewport();
 }
@@ -248,14 +247,13 @@ void Camera::render_shader() {
 }
 
 void Camera::start_shaking(float strength, float speed) {
-    auto shaker_comp = xd::create<Screen_Shaker>(strength, speed);
-    shaker = static_cast<Screen_Shaker*>(shaker_comp.get());
-    add_component(shaker_comp);
+    shaker = std::make_shared<Screen_Shaker>(strength, speed);
+    add_component(shaker);
 }
 
 void Camera::cease_shaking() {
-    shaker = nullptr;
     del_component(shaker);
+    shaker.reset();
     update_viewport();
 }
 

@@ -2,6 +2,7 @@
 #define HPP_MAP_OBJECT
 
 #include <string>
+#include <memory>
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
@@ -290,7 +291,7 @@ private:
     // How object is drawn relative to other objects in layer
     Draw_Order draw_order;
     // Optional sprite representing the object
-    Sprite::ptr sprite;
+    std::shared_ptr<Sprite> sprite;
     // Object speed
     float speed;
     // Update current pose

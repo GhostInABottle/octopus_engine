@@ -1,6 +1,5 @@
 #include "../../../include/xd/lua/scheduler.hpp"
 #include "../../../include/xd/lua/scheduler_task.hpp"
-#include "../../../include/xd/factory.hpp"
 #include <boost/optional.hpp>
 #include <stack>
 
@@ -9,7 +8,7 @@ namespace xd { namespace lua { namespace detail {
     struct scheduler_thread_task
     {
         lua_State *thread;
-        scheduler_task::ptr task;
+        std::shared_ptr<scheduler_task> task;
     };
 
     struct scheduler_task_list
@@ -83,7 +82,7 @@ void xd::lua::scheduler::start(luabind::object func)
     // if the thread was yielded from lua side, and the return value is a callable function
     int type = luabind::type(result);
     if (type == LUA_TFUNCTION || type == LUA_TTABLE || type == LUA_TUSERDATA) {
-        yield(xd::create<detail::callback_task_lua>(result));
+        yield(std::make_shared<detail::callback_task_lua>(result));
     }
     // reset current thread
     m_thread_stack->threads.pop();
@@ -121,7 +120,7 @@ void xd::lua::scheduler::run()
             // if the thread was yielded from lua side, and the return value is a callable function
             int type = luabind::type(result);
             if (type == LUA_TFUNCTION || type == LUA_TTABLE || type == LUA_TUSERDATA) {
-                yield(xd::create<detail::callback_task_lua>(result));
+                yield(std::make_shared<detail::callback_task_lua>(result));
             }
             // reset current thread
             m_thread_stack->threads.pop();
@@ -135,7 +134,7 @@ void xd::lua::scheduler::run()
     }
 }
 
-void xd::lua::scheduler::yield(xd::lua::scheduler_task::ptr task)
+void xd::lua::scheduler::yield(std::shared_ptr<xd::lua::scheduler_task> task)
 {
     detail::scheduler_thread_task thread_task;
     thread_task.thread = m_current_thread;

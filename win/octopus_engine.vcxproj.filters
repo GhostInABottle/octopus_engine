@@ -275,18 +275,6 @@
     <ClInclude Include="..\include\xd\detail\identity.hpp">
       <Filter>Header Files\xd\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\detail\iterate_asset_manager.hpp">
-      <Filter>Header Files\xd\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\detail\iterate_create.hpp">
-      <Filter>Header Files\xd\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\detail\iterate_entity_constructor.hpp">
-      <Filter>Header Files\xd\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\detail\iterate_factory_create.hpp">
-      <Filter>Header Files\xd\detail</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\xd\detail\noop_deleter.hpp">
       <Filter>Header Files\xd\detail</Filter>
     </ClInclude>
@@ -359,9 +347,6 @@
     <ClInclude Include="..\include\xd\graphics\detail\image.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\graphics\detail\iterate_render.hpp">
-      <Filter>Header Files\xd\graphics\detail</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\xd\graphics\detail\sprite_batch.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
@@ -370,9 +355,6 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\graphics\detail\vertex_traits.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\lua\config.hpp">
-      <Filter>Header Files\xd\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\include\xd\lua\exceptions.hpp">
       <Filter>Header Files\xd\lua</Filter>
@@ -391,12 +373,6 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\lua\virtual_machine.hpp">
       <Filter>Header Files\xd\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\lua\detail\iterate_function_call.hpp">
-      <Filter>Header Files\xd\lua\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\lua\detail\iterate_scheduler_yield.hpp">
-      <Filter>Header Files\xd\lua\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\include\xd\lua\detail\scheduler.hpp">
       <Filter>Header Files\xd\lua\detail</Filter>
@@ -617,9 +593,6 @@
     <ClInclude Include="..\include\xd\exception.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\factory.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\xd\glm.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
@@ -633,12 +606,6 @@
       <Filter>Header Files\xd</Filter>
     </ClInclude>
     <ClInclude Include="..\include\xd\types.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\ref_counted.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\xd\config.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
   </ItemGroup>

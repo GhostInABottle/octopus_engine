@@ -1,24 +1,19 @@
 #ifndef H_XD_ASSET_MANAGER
 #define H_XD_ASSET_MANAGER
 
-#include "ref_counted.hpp"
 #include "asset_serializer.hpp"
 #include <boost/any.hpp>
 #include <unordered_map>
 #include <cstddef>
-
-#ifdef BOOST_NO_VARIADIC_TEMPLATES
-#include <boost/preprocessor/iteration/iterate.hpp>
-#endif
+#include <memory>
 
 namespace xd
 {
     class asset_manager
     {
     public:
-#ifndef BOOST_NO_VARIADIC_TEMPLATES
         template <typename T, typename... Args>
-        typename T::ptr load(Args&&... args)
+        typename std::shared_ptr<T> load(Args&&... args)
         {
             // create serializer for asset type and get cache key
             asset_serializer<T> serializer;
@@ -39,13 +34,13 @@ namespace xd
                 loaded_assets.erase(it2);
             }
             // not loaded in either map, create it
-            typename T::ptr resource(new T(std::forward<Args>(args)...));
+            auto resource = std::make_shared<T>(std::forward<Args>(args)...);
             loaded_assets.insert(std::make_pair(cache_key, resource));
             return resource;
         }
 
         template <typename T, typename... Args>
-        typename T::ptr load_persistent(Args&&... args)
+        typename std::shared_ptr<T> load_persistent(Args&&... args)
         {
             // create serializer for asset type and get cache key
             asset_serializer<T> serializer;
@@ -56,18 +51,13 @@ namespace xd
             if (it != persistent_assets.end())
                 return it->second;
             // not loaded in either map, create it
-            typename T::ptr resource(new T(std::forward<Args>(args)...));
+            auto resource = std::make_shared<T>(std::forward<Args>(args)...);
             persistent_assets.insert(std::make_pair(cache_key, resource));
             return resource;
         }
-#else
-        // generate overloads for load, load_persistent and release with file iteration (up to XD_MAX_ARITY parameters)
-        #define BOOST_PP_ITERATION_PARAMS_1 (3, (1, XD_MAX_ARITY, "../include/xd/detail/iterate_asset_manager.hpp"))
-        #include BOOST_PP_ITERATE()
-#endif
 
         template <typename T>
-        void release(typename T::ptr resource)
+        void release(std::shared_ptr<T> resource)
         {
             // get the persistent map
             auto& persistent_assets = get_persistent_asset_map<T>();
@@ -86,9 +76,9 @@ namespace xd
         std::unordered_map<std::size_t, boost::any> m_persistent_asset_type_map;
 
         template <typename T>
-        std::unordered_map<typename asset_serializer<T>::key_type, typename T::weak_ptr>& get_asset_map()
+        std::unordered_map<typename asset_serializer<T>::key_type, std::weak_ptr<T>>& get_asset_map()
         {
-            typedef std::unordered_map<typename asset_serializer<T>::key_type, typename T::weak_ptr> asset_map_type;
+            typedef std::unordered_map<typename asset_serializer<T>::key_type, std::weak_ptr<T>> asset_map_type;
             std::size_t hash = typeid(T).hash_code();
             auto it = m_asset_type_map.find(hash);
             if (it == m_asset_type_map.end())
@@ -97,9 +87,9 @@ namespace xd
         }
 
         template <typename T>
-        std::unordered_map<typename asset_serializer<T>::key_type, typename T::ptr>& get_persistent_asset_map()
+        std::unordered_map<typename asset_serializer<T>::key_type, std::shared_ptr<T>>& get_persistent_asset_map()
         {
-            typedef std::unordered_map<typename asset_serializer<T>::key_type, typename T::ptr> asset_map_type;
+            typedef std::unordered_map<typename asset_serializer<T>::key_type, std::shared_ptr<T>> asset_map_type;
             std::size_t hash = typeid(T).hash_code();
             auto it = m_persistent_asset_type_map.find(hash);
             if (it == m_persistent_asset_type_map.end())

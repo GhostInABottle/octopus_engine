@@ -1,18 +1,15 @@
 #ifndef H_XD_GRAPHICS_VERTEX_BATCH
 #define H_XD_GRAPHICS_VERTEX_BATCH
 
-#include "../ref_counted.hpp"
 #include "vertex_traits.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 
 namespace xd
 {
     template <typename Traits>
-    class vertex_batch : public xd::ref_counted, public boost::noncopyable
+    class vertex_batch : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<vertex_batch> ptr;
 
         vertex_batch(GLenum draw_mode = GL_TRIANGLES, const Traits& traits = Traits())
             : m_draw_mode(draw_mode)
@@ -28,7 +25,7 @@ namespace xd
             , m_count(0)
         {
             init();
-            load(data, count, traits);
+            load(data, count);
         }
 
         ~vertex_batch()
@@ -66,12 +63,12 @@ namespace xd
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
-        void render()
+        void render() const
         {
             render(0, m_count);
         }
 
-        void render(int begin, int count)
+        void render(int begin, int count) const
         {
             // bind the buffer
             glBindBuffer(GL_ARRAY_BUFFER, m_vbo);

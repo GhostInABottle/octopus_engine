@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "xd/config.hpp"
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/sprite_batch.hpp"

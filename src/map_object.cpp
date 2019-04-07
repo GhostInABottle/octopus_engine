@@ -170,7 +170,7 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
             return;
         del_component(sprite);
     }
-    sprite = xd::create<Sprite>(game,
+    sprite = std::make_shared<Sprite>(game,
         Sprite_Data::load(game.get_asset_manager(), filename));
     add_component(sprite);
     set_pose(pose_name);

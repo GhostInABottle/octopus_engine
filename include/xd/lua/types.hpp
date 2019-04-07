@@ -2,7 +2,6 @@
 #define H_XD_LUA_TYPES
 
 #include "../types.hpp"
-#include "config.hpp"
 #include "function.hpp"
 #ifndef LUABIND_CPLUSPLUS_LUA
 extern "C"

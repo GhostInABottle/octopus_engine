@@ -31,7 +31,7 @@ Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) :
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) : Canvas(position) {
     text_renderer = &game.get_text_renderer();
     font = game.get_font();
-    formatter = xd::create<xd::stock_text_formatter>();
+    formatter = std::make_unique<xd::stock_text_formatter>();
     auto shake_decorator = game.get_shake_decorator();
     formatter->register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
         shake_decorator->operator()(decorator, text, args);
@@ -50,7 +50,7 @@ void Canvas::setup_fbo() {
         int width = static_cast<int>(Configurations::get<float>("debug.width"));
         int height = static_cast<int>(Configurations::get<float>("debug.height"));
         framebuffer = std::make_unique<xd::framebuffer>();
-        fbo_texture = xd::create<xd::texture>(width, height, nullptr,
+        fbo_texture = std::make_unique<xd::texture>(width, height, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
     }
 }
@@ -60,7 +60,7 @@ void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
         return;
     type = Canvas::Type::IMAGE;
     this->filename = filename;
-    image_texture = xd::create<xd::texture>(normalize_slashes(filename),
+    image_texture = std::make_unique<xd::texture>(normalize_slashes(filename),
         trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     redraw_needed = true;
 }
@@ -153,7 +153,7 @@ void Canvas::set_text(const std::string& text) {
 }
 
 void Canvas::render_text(const std::string& text, float x, float y) {
-    text_renderer->render_formatted(font, formatter, *style, std::round(x), std::round(y), text);
+    text_renderer->render_formatted(*font, *formatter, *style, std::round(x), std::round(y), text);
 }
 
 void Canvas::set_font(const std::string& font_file) {
@@ -161,13 +161,13 @@ void Canvas::set_font(const std::string& font_file) {
         return;
     if (!file_exists(font_file))
         throw std::runtime_error("Couldn't read font file " + font_file);
-    font = xd::create<xd::font>(font_file);
+    font = std::make_shared<xd::font>(font_file);
     redraw_needed = true;
 }
 
 void Canvas::link_font(const std::string& type, const std::string& font_file) {
     if (file_exists(font_file)) {
-        font->link_font(type, xd::create<xd::font>(font_file));
+        font->link_font(type, std::make_unique<xd::font>(font_file));
     } else {
         LOGGER_W << "Couldn't read '" << type << "' font file " << font_file;
     }

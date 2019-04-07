@@ -1,13 +1,9 @@
 #ifndef H_XD_AUDIO_MUSIC
 #define H_XD_AUDIO_MUSIC
 
-#include "../ref_counted.hpp"
-#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <utility>
-
-#pragma warning(disable: 4275)
 
 namespace xd
 {
@@ -16,10 +12,9 @@ namespace xd
         struct music_handle;
     }
 
-    class XD_API music : public xd::ref_counted, public boost::noncopyable
+    class music : public boost::noncopyable
     {
     public:
-        typedef boost::intrusive_ptr<music> ptr;
 
         music(const std::string& filename, unsigned int flags = 0);
         virtual ~music();
