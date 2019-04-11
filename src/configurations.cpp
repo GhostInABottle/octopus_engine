@@ -2,20 +2,13 @@
 #include "../include/log.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <exception>
-#include <fstream>
 #include <typeinfo>
 
 boost::property_tree::ptree Configurations::pt;
 std::unordered_map<std::string, boost::any> Configurations::defaults;
 
 void Configurations::parse(const std::string& filename) {
-    std::ifstream input(filename.c_str());
-    if (input) {
-        boost::property_tree::ini_parser::read_ini(input, pt);
-    } else {
-        LOGGER_W << "Couldn't open config file " << filename;
-    }
+    boost::property_tree::ini_parser::read_ini(filename, pt);
     defaults["game.title"] = std::string("Untitled");
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;

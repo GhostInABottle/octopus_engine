@@ -3,6 +3,7 @@
 #include "../include/log.hpp"
 #include "../include/game.hpp"
 #include "../include/configurations.hpp"
+#include <iostream>
 #ifdef __APPLE__
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
@@ -34,6 +35,9 @@ int main() {
         Game game;
         game.run();
 
+    } catch (const boost::property_tree::ptree_error& e) {
+        // Can't write to log file without a valid config, write to stdout instead
+        std::cout << "Config parsing exception: " << e.what() << "\n";
     } catch (const rapidxml::parse_error& e) {
         std::string where = e.where<char>();
         LOGGER_E << "RapidXml Exception: \"" << e.what() << "\" at \"" << where.substr(0, 50) << '"';
