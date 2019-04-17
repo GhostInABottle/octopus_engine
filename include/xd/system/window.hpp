@@ -52,17 +52,22 @@ namespace xd
         void unbind_key(const key& key);
         void unbind_key(const std::string& key);
 
-        bool pressed(const key& key, int modifiers = 0) const;
-        bool pressed(const std::string& key, int modifiers = 0) const;
+        bool pressed(const key& key, int joystick_id = 0);
+        bool pressed(const std::string& key, int joystick_id = 0);
 
-        bool triggered(const key& key, int modifiers = 0) const;
-        bool triggered(const std::string& key, int modifiers = 0) const;
-        bool triggered_once(const key& key, int modifiers = 0);
-        bool triggered_once(const std::string& key, int modifiers = 0);
+        bool triggered(const key& key, int joystick_id = 0);
+        bool triggered(const std::string& key, int joystick_id = 0);
+        bool triggered_once(const key& key, int joystick_id = 0);
+        bool triggered_once(const std::string& key, int joystick_id = 0);
 
-        bool modifier(int modifiers) const;
+        float axis_value(const key& key, int joystick_id = 0);
+        float axis_value(const std::string& key, int joystick_id = 0);
 
         bool joystick_present(int id) const;
+        bool joystick_is_gamepad(int id) const;
+        void add_joystick(int id);
+        void remove_joystick(int id);
+        int first_joystick_id() const;
 
         event_link bind_input_event(const std::string& event_name, input_event_callback_t callback,
             const input_filter& filter = input_filter(), event_placement place = EVENT_PREPEND);
@@ -84,6 +89,8 @@ namespace xd
         // window width/height
         int m_width;
         int m_height;
+
+        bool m_gamepad_detection;
 
         // keep track of ticks
         boost::uint32_t m_current_ticks;
@@ -111,18 +118,23 @@ namespace xd
         trigger_keys_t m_triggered_keys;
         trigger_keys_t m_tick_handler_triggered_keys;
 
-        struct {
-            float axes_values[7];
-            unsigned char buttons[18];
-            unsigned char prev_buttons[18];
-        } joystick_state;
+        // joystick/gamepad state
+        struct joystick_state {
+            float axes[6];
+            unsigned char buttons[15];
+            unsigned char prev_buttons[15];
+        };
 
+        std::unordered_map<int, joystick_state> m_joystick_states;
 
         // to keep track whether we're in update or not
         bool m_in_update;
 
         // event busses
         event_bus<input_args> m_input_events;
+
+        // private functions
+        void update_joysticks();
     };
 }
 

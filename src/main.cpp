@@ -8,13 +8,6 @@
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
 #endif
-#ifdef _WIN32
-// Force high performance graphics on NVIDIA GPUs
-#include <windows.h>
-extern "C" {
-    _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-}
-#endif
 
 int main() {
     try {

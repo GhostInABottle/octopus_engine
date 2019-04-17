@@ -69,25 +69,25 @@ public:
         return window->frame_count();
     }
     // Is key currently pressed
-    bool pressed(const xd::key& key, int modifiers = 0) const {
-        return window->pressed(key, modifiers);
+    bool pressed(const xd::key& key) const {
+        return window->pressed(key, get_gamepad_id());
     }
-    bool pressed(const std::string& key, int modifiers = 0) const {
-        return window->pressed(key, modifiers);
-    }
+    bool pressed(const std::string& key) const;
+    // Check if main axis is pressed in a direction
+    bool pressed(Direction direction) const;
     // Was key triggered since last update?
-    bool triggered(const xd::key& key, int modifiers = 0) const {
-        return window->triggered(key, modifiers);
+    bool triggered(const xd::key& key) const {
+        return window->triggered(key, get_gamepad_id());
     }
-    bool triggered(const std::string& key, int modifiers = 0) const {
-        return window->triggered(key, modifiers);
+    bool triggered(const std::string& key) const {
+        return window->triggered(key, get_gamepad_id());
     }
     // Was key triggered? (Un-trigger it if it was)
-    bool triggered_once(const xd::key& key, int modifiers = 0) {
-        return window->triggered_once(key, modifiers);
+    bool triggered_once(const xd::key& key) {
+        return window->triggered_once(key, get_gamepad_id());
     }
-    bool triggered_once(const std::string& key, int modifiers = 0) {
-        return window->triggered_once(key, modifiers);
+    bool triggered_once(const std::string& key) {
+        return window->triggered_once(key, get_gamepad_id());
     }
     // Run a script
     void run_script(const std::string& script);
@@ -144,6 +144,8 @@ public:
     void save(const std::string& filename, Save_File& save_file) const;
     // Load game
     std::unique_ptr<Save_File> load(const std::string& filename);
+    // Get current gamepad ID
+    int get_gamepad_id() const;
     // Process key-mapping string
     void process_keymap();
 private:

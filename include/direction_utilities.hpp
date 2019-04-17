@@ -69,8 +69,16 @@ inline std::string direction_to_string(Direction dir) {
 
 inline Direction string_to_direction(std::string str) {
     std::string dir_str = capitalize(str);
-    return dir_str == "LEFT" ? Direction::LEFT : dir_str == "RIGHT" ?
-        Direction::RIGHT : dir_str == "UP" ? Direction::UP : Direction::DOWN;
+    if (dir_str == "LEFT")
+        return Direction::LEFT;
+    else if (dir_str == "RIGHT")
+        return Direction::RIGHT;
+    else if (dir_str == "UP")
+        return Direction::UP;
+    else if (dir_str == "DOWN")
+        return Direction::DOWN;
+    else
+        return Direction::NONE;
 }
 
 // Get direction for object at pos1 to face pos2

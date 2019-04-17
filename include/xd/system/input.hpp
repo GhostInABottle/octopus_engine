@@ -12,7 +12,7 @@ namespace xd
     {
         INPUT_KEYBOARD,
         INPUT_MOUSE,
-        INPUT_JOYSTICK
+        INPUT_GAMEPAD
     };
 
     struct key
@@ -90,11 +90,11 @@ namespace xd
         return k;
     }
 
-    // utility function to create joystick
-    inline key JOYSTICK(int code)
+    // utility function to create gamepad
+    inline key GAMEPAD(int code)
     {
         key k;
-        k.type = INPUT_JOYSTICK;
+        k.type = INPUT_GAMEPAD;
         k.code = code;
         return k;
     }
@@ -157,24 +157,28 @@ namespace xd
     extern const key MOUSE_7;
     extern const key MOUSE_8;
 
-    // pre-defined joystick keys
-    extern const key JOYSTICK_BUTTON_1;
-    extern const key JOYSTICK_BUTTON_2;
-    extern const key JOYSTICK_BUTTON_3;
-    extern const key JOYSTICK_BUTTON_4;
-    extern const key JOYSTICK_BUTTON_5;
-    extern const key JOYSTICK_BUTTON_6;
-    extern const key JOYSTICK_BUTTON_7;
-    extern const key JOYSTICK_BUTTON_8;
-    extern const key JOYSTICK_BUTTON_9;
-    extern const key JOYSTICK_BUTTON_10;
-    extern const key JOYSTICK_BUTTON_11;
-    extern const key JOYSTICK_BUTTON_12;
-    extern const key JOYSTICK_AXIS_LEFT;
-    extern const key JOYSTICK_AXIS_RIGHT;
-    extern const key JOYSTICK_AXIS_UP;
-    extern const key JOYSTICK_AXIS_DOWN;
-
+    // predefined gamepad/joystick keys
+    extern const key GAMEPAD_BUTTON_A;
+    extern const key GAMEPAD_BUTTON_B;
+    extern const key GAMEPAD_BUTTON_X;
+    extern const key GAMEPAD_BUTTON_Y;
+    extern const key GAMEPAD_BUTTON_LEFT_BUMPER;
+    extern const key GAMEPAD_BUTTON_RIGHT_BUMPER;
+    extern const key GAMEPAD_BUTTON_BACK;
+    extern const key GAMEPAD_BUTTON_START;
+    extern const key GAMEPAD_BUTTON_GUIDE;
+    extern const key GAMEPAD_BUTTON_LEFT_THUMB;
+    extern const key GAMEPAD_BUTTON_RIGHT_THUMB;
+    extern const key GAMEPAD_BUTTON_DPAD_UP;
+    extern const key GAMEPAD_BUTTON_DPAD_RIGHT;
+    extern const key GAMEPAD_BUTTON_DPAD_DOWN;
+    extern const key GAMEPAD_BUTTON_DPAD_LEFT;
+    extern const key GAMEPAD_AXIS_LEFT_X;
+    extern const key GAMEPAD_AXIS_LEFT_Y;
+    extern const key GAMEPAD_AXIS_RIGHT_X;
+    extern const key GAMEPAD_AXIS_RIGHT_Y;
+    extern const key GAMEPAD_AXIS_LEFT_TRIGGER;
+    extern const key GAMEPAD_AXIS_RIGHT_TRIGGER;
 }
 
 // specialize hash<> for xd::key

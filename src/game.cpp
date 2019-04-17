@@ -12,6 +12,7 @@
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
+#include "../include/direction_utilities.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/graphics.hpp"
 #include "../include/xd/asset_manager.hpp"
@@ -40,7 +41,9 @@ struct Game::Impl {
             exit_requested(false),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
             game_width(Configurations::get<float>("debug.width")),
-            game_height(Configurations::get<float>("debug.height")) {}
+            game_height(Configurations::get<float>("debug.height")),
+            gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
+            gamepad_id(0) {}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
     bool show_time;
@@ -75,6 +78,10 @@ struct Game::Impl {
     float game_width;
     // Game height
     float game_height;
+    // Enable joystick/gamepad?
+    bool gamepad_enabled;
+    // Active gamepad id
+    int gamepad_id;
 };
 
 Game::Game(bool editor_mode) :
@@ -82,8 +89,17 @@ Game::Game(bool editor_mode) :
             Configurations::get<std::string>("game.title"),
             Configurations::get<int>("game.screen-width"),
             Configurations::get<int>("game.screen-height"),
-            xd::window_options(Configurations::get<bool>("game.fullscreen"),
-                false, false, false, 8, 0, 0, 2, 0))),
+            xd::window_options(
+                Configurations::get<bool>("game.fullscreen"),
+                false, // allow resize
+                false, // display_cursor
+                Configurations::get<bool>("controls.gamepad-detection"),
+                false, // vsync
+                8, // depth
+                0, // stencil
+                0, // antialiasing
+                2, // GL major version
+                0))), // GL minor version
         magnification(Configurations::get<float>("debug.magnification")),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         pimpl(new Impl(editor_mode)),
@@ -108,7 +124,7 @@ Game::Game(bool editor_mode) :
     if (!file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
-    font = std::make_unique<xd::font>(font_file);
+    font = std::make_shared<xd::font>(font_file);
     if (!bold_font_file.empty()) {
         if (file_exists(bold_font_file)) {
             font->link_font("bold", std::make_shared<xd::font>(bold_font_file));
@@ -303,6 +319,32 @@ void Game::set_magnification(float mag) {
         static_cast<float>(game_height()));
 }
 
+bool Game::pressed(const std::string& key) const {
+    auto dir = string_to_direction(key);
+    return (dir != Direction::NONE && pressed(dir))
+        || window->pressed(key, get_gamepad_id());
+}
+
+bool Game::pressed(Direction direction) const {
+    if (!pimpl->gamepad_enabled) {
+        return false;
+    }
+
+    int id = get_gamepad_id();
+    switch (direction) {
+    case Direction::UP:
+        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_Y, id) <= -0.5f;
+    case Direction::DOWN:
+        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_Y, id) >= 0.5f;
+    case Direction::LEFT:
+        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_X, id) <= -0.5f;
+    case Direction::RIGHT:
+        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_X, id) >= 0.5f;
+    default:
+        return false;
+    }
+}
+
 void Game::run_script(const std::string& script) {
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->run_script(script);
@@ -413,9 +455,19 @@ void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
     map->add_canvas(canvas);
 }
 
+int Game::get_gamepad_id() const {
+    if (!window->joystick_present(pimpl->gamepad_id)) {
+        int preferred_id = Configurations::get<int>("controls.gamepad-number");
+        if (preferred_id = -1 || !window->joystick_present(preferred_id)) {
+            pimpl->gamepad_id = window->first_joystick_id();
+        }
+    }
+    return pimpl->gamepad_id;
+}
+
 void Game::process_keymap() {
-    bool gamepad_enabled = window->joystick_present(0) &&
-        Configurations::get<bool>("controls.gamepad-enabled");
+    int gamepad_id = get_gamepad_id();
+    bool gamepad_enabled = window->joystick_present(gamepad_id) && pimpl->gamepad_enabled;
     std::string map_file = Configurations::get<std::string>("controls.mapping-file");
     std::ifstream input(map_file);
     if (input) {
@@ -436,13 +488,21 @@ void Game::process_keymap() {
             key_names[std::string(1, i)] = xd::KEY(i);
         }
         if (gamepad_enabled) {
-            key_names["GAMEPAD-LEFT"] = xd::JOYSTICK_AXIS_LEFT;
-            key_names["GAMEPAD-RIGHT"] = xd::JOYSTICK_AXIS_RIGHT;
-            key_names["GAMEPAD-UP"] = xd::JOYSTICK_AXIS_UP;
-            key_names["GAMEPAD-DOWN"] = xd::JOYSTICK_AXIS_DOWN;
-            for (int i = xd::JOYSTICK_BUTTON_1.code; i <= xd::JOYSTICK_BUTTON_12.code; ++i) {
-                key_names["GAMEPAD-" + std::to_string(i + 1)] = xd::JOYSTICK(i);
-            }
+            key_names["GAMEPAD-A"] = xd::GAMEPAD_BUTTON_A;
+            key_names["GAMEPAD-B"] = xd::GAMEPAD_BUTTON_B;
+            key_names["GAMEPAD-X"] = xd::GAMEPAD_BUTTON_X;
+            key_names["GAMEPAD-Y"] = xd::GAMEPAD_BUTTON_Y;
+            key_names["GAMEPAD-LB"] = xd::GAMEPAD_BUTTON_LEFT_BUMPER;
+            key_names["GAMEPAD-RB"] = xd::GAMEPAD_BUTTON_RIGHT_BUMPER;
+            key_names["GAMEPAD-BACK"] = xd::GAMEPAD_BUTTON_BACK;
+            key_names["GAMEPAD-START"] = xd::GAMEPAD_BUTTON_START;
+            key_names["GAMEPAD-GUIDE"] = xd::GAMEPAD_BUTTON_GUIDE;
+            key_names["GAMEPAD-LT"] = xd::GAMEPAD_BUTTON_LEFT_THUMB;
+            key_names["GAMEPAD-RT"] = xd::GAMEPAD_BUTTON_RIGHT_THUMB;
+            key_names["GAMEPAD-UP"] = xd::GAMEPAD_BUTTON_DPAD_UP;
+            key_names["GAMEPAD-RIGHT"] = xd::GAMEPAD_BUTTON_DPAD_RIGHT;
+            key_names["GAMEPAD-DOWN"] = xd::GAMEPAD_BUTTON_DPAD_DOWN;
+            key_names["GAMEPAD-LEFT"] = xd::GAMEPAD_BUTTON_DPAD_LEFT;
         }
         // Read keymap file and bind keys based on name
         std::string line;
@@ -493,20 +553,20 @@ void Game::process_keymap() {
         window->bind_key(xd::KEY_J, "a");
         window->bind_key(xd::KEY_X, "b");
         window->bind_key(xd::KEY_K, "b");
-        window->bind_key(xd::KEY_C, "c");
-        window->bind_key(xd::KEY_L, "c");
-        window->bind_key(xd::KEY_V, "d");
-        window->bind_key(xd::KEY_I, "d");
+        window->bind_key(xd::KEY_C, "x");
+        window->bind_key(xd::KEY_L, "x");
+        window->bind_key(xd::KEY_V, "y");
+        window->bind_key(xd::KEY_I, "y");
         if (gamepad_enabled) {
-            window->bind_key(xd::JOYSTICK_AXIS_UP, "up");
-            window->bind_key(xd::JOYSTICK_AXIS_DOWN, "down");
-            window->bind_key(xd::JOYSTICK_AXIS_LEFT, "left");
-            window->bind_key(xd::JOYSTICK_AXIS_RIGHT, "right");
-            window->bind_key(xd::JOYSTICK_BUTTON_1, "a");
-            window->bind_key(xd::JOYSTICK_BUTTON_2, "b");
-            window->bind_key(xd::JOYSTICK_BUTTON_3, "c");
-            window->bind_key(xd::JOYSTICK_BUTTON_4, "d");
-            window->bind_key(xd::JOYSTICK_BUTTON_8, "pause");
+            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
+            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
+            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
+            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
+            window->bind_key(xd::GAMEPAD_BUTTON_A, "a");
+            window->bind_key(xd::GAMEPAD_BUTTON_B, "b");
+            window->bind_key(xd::GAMEPAD_BUTTON_X, "x");
+            window->bind_key(xd::GAMEPAD_BUTTON_Y, "y");
+            window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
         }
     }
 }

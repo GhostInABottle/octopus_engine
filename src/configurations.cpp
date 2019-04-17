@@ -33,6 +33,8 @@ void Configurations::parse(const std::string& filename) {
     defaults["font.line-height"] = 12.0f;
 
     defaults["controls.gamepad-enabled"] = true;
+    defaults["controls.gamepad-detection"] = true;
+    defaults["controls.gamepad-number"] = -1;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");
 

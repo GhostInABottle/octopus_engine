@@ -9,6 +9,7 @@ namespace xd
             : fullscreen(false)
             , allow_resize(false)
             , display_cursor(true)
+            , gamepad_detection(true)
             , vsync(true)
             , depth_bits(8)
             , stencil_bits(0)
@@ -17,11 +18,14 @@ namespace xd
             , minor_version(0)
         {}
 
-        window_options(bool fullscreen, bool allow_resize, bool display_cursor, bool vsync, int depth_bits,
-            int stencil_bits, int antialiasing_level, int major_version, int minor_version)
+        window_options(bool fullscreen, bool allow_resize, bool display_cursor,
+            bool gamepad_detection, bool vsync,
+            int depth_bits, int stencil_bits, int antialiasing_level,
+            int major_version, int minor_version)
             : fullscreen(fullscreen)
             , allow_resize(allow_resize)
             , display_cursor(display_cursor)
+            , gamepad_detection(gamepad_detection)
             , vsync(vsync)
             , depth_bits(depth_bits)
             , stencil_bits(stencil_bits)
@@ -33,6 +37,7 @@ namespace xd
         bool fullscreen;
         bool allow_resize;
         bool display_cursor;
+        bool gamepad_detection;
         bool vsync;
         int depth_bits;
         int stencil_bits;

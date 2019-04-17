@@ -503,37 +503,31 @@ void Scripting_Interface::setup_scripts() {
             ))
             .def("set_size", &Game::set_size)
             .def("exit", &Game::exit)
-            .def("pressed", (bool (Game::*)(const xd::key&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->pressed(key);
                 }
             ))
-            .def("pressed", (bool (Game::*)(const std::string&, int) const) &Game::pressed)
             .def("pressed", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->pressed(key);
                 }
             ))
-            .def("triggered", (bool (Game::*)(const xd::key&, int) const) &Game::triggered)
             .def("triggered", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->triggered(key);
                 }
             ))
-            .def("triggered", (bool (Game::*)(const std::string&, int) const) &Game::triggered)
             .def("triggered", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->triggered(key);
                 }
             ))
-            .def("triggered_once", (bool (Game::*)(const xd::key&, int)) &Game::triggered_once)
             .def("triggered_once", tag_function<bool (Game*, const xd::key&)>(
                 [](Game* game, const xd::key& key) {
                     return game->triggered_once(key);
                 }
             ))
-            .def("triggered_once", (bool (Game::*)(const std::string&, int)) &Game::triggered_once)
             .def("triggered_once", tag_function<bool (Game*, const std::string&)>(
                 [](Game* game, const std::string& key) {
                     return game->triggered_once(key);

@@ -89,44 +89,44 @@ void xd::lua::virtual_machine::exec_file(const std::string& filename)
 
 namespace xd { namespace lua { namespace wrapper {
 
-    bool window_pressed_key1(const window& window, const key& key)
+    bool window_pressed_key1(window& window, const key& key)
     {
         return window.pressed(key);
     }
 
-    bool window_pressed_key2(const window& window, const key& key, int modifiers)
+    bool window_pressed_key2(window& window, const key& key, int joystick_id)
     {
-        return window.pressed(key, modifiers);
+        return window.pressed(key, joystick_id);
     }
 
-    bool window_pressed_virtual1(const window& window, const std::string& key)
+    bool window_pressed_virtual1(window& window, const std::string& key)
     {
         return window.pressed(key);
     }
 
-    bool window_pressed_virtual2(const window& window, const std::string& key, int modifiers)
+    bool window_pressed_virtual2(window& window, const std::string& key, int joystick_id)
     {
-        return window.pressed(key, modifiers);
+        return window.pressed(key, joystick_id);
     }
 
-    bool window_triggered_key1(const window& window, const key& key)
+    bool window_triggered_key1(window& window, const key& key)
     {
         return window.triggered(key);
     }
 
-    bool window_triggered_key2(const window& window, const key& key, int modifiers)
+    bool window_triggered_key2(window& window, const key& key, int joystick_id)
     {
-        return window.triggered(key, modifiers);
+        return window.triggered(key, joystick_id);
     }
 
-    bool window_triggered_virtual1(const window& window, const std::string& key)
+    bool window_triggered_virtual1(window& window, const std::string& key)
     {
         return window.triggered(key);
     }
 
-    bool window_triggered_virtual2(const window& window, const std::string& key, int modifiers)
+    bool window_triggered_virtual2(window& window, const std::string& key, int joystick_id)
     {
-        return window.triggered(key, modifiers);
+        return window.triggered(key, joystick_id);
     }
 
     bool window_triggered_once_key1(window& window, const key& key)
@@ -134,9 +134,9 @@ namespace xd { namespace lua { namespace wrapper {
         return window.triggered_once(key);
     }
 
-    bool window_triggered_once_key2(window& window, const key& key, int modifiers)
+    bool window_triggered_once_key2(window& window, const key& key, int joystick_id)
     {
-        return window.triggered_once(key, modifiers);
+        return window.triggered_once(key, joystick_id);
     }
 
     bool window_triggered_once_virtual1(window& window, const std::string& key)
@@ -144,9 +144,29 @@ namespace xd { namespace lua { namespace wrapper {
         return window.triggered_once(key);
     }
 
-    bool window_triggered_once_virtual2(window& window, const std::string& key, int modifiers)
+    bool window_triggered_once_virtual2(window& window, const std::string& key, int joystick_id)
     {
-        return window.triggered_once(key, modifiers);
+        return window.triggered_once(key, joystick_id);
+    }
+
+    float window_axis_value_key1(window& window, const key& key)
+    {
+        return window.axis_value(key);
+    }
+
+    float window_axis_value_key2(window& window, const key& key, int joystick_id)
+    {
+        return window.axis_value(key, joystick_id);
+    }
+
+    float window_axis_value_virtual1(window& window, const std::string& key)
+    {
+        return window.axis_value(key);
+    }
+
+    float window_axis_value_virtual2(window& window, const std::string& key, int joystick_id)
+    {
+        return window.axis_value(key, joystick_id);
     }
 
     event_link window_bind_input_event1(window& window, std::string event_name, const luabind::object& obj)
@@ -314,7 +334,10 @@ void xd::lua::virtual_machine::load_library(const std::string& module_name)
             .def("triggered_once", &wrapper::window_triggered_once_key2)
             .def("triggered_once", &wrapper::window_triggered_once_virtual1)
             .def("triggered_once", &wrapper::window_triggered_once_virtual2)
-            .def("modifier", &window::modifier)
+            .def("axis_value", &wrapper::window_axis_value_key1)
+            .def("axis_value", &wrapper::window_axis_value_key2)
+            .def("axis_value", &wrapper::window_axis_value_virtual1)
+            .def("axis_value", &wrapper::window_axis_value_virtual2)
             .def("bind_input_event", &wrapper::window_bind_input_event1)
             .def("bind_input_event", &wrapper::window_bind_input_event2)
             .def("bind_input_event", &wrapper::window_bind_input_event3),
