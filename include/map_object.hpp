@@ -39,32 +39,32 @@ public:
     Object_Layer* get_layer() const {
         return layer;
     }
-    void set_layer(Object_Layer* layer) {
-        this->layer = layer;
+    void set_layer(Object_Layer* new_layer) {
+        layer = new_layer;
     }
     int get_id() const {
         return id;
     }
-    void set_id(int id) {
-        this->id = id;
+    void set_id(int new_id) {
+        id = new_id;
     }
     std::string get_name() const {
         return name;
     }
-    void set_name(const std::string& name) {
-        this->name = name;
+    void set_name(const std::string& new_name) {
+        name = new_name;
     }
     std::string get_type() const {
         return type;
     }
-    void set_type(const std::string& type) {
-        this->type = type;
+    void set_type(const std::string& new_type) {
+        type = new_type;
     }
     xd::vec2 get_position() const {
         return position;
     }
-    void set_position(xd::vec2 position) {
-        this->position = position;
+    void set_position(xd::vec2 new_position) {
+        position = new_position;
     }
     float get_x() const {
         return position.x;
@@ -81,14 +81,14 @@ public:
     xd::vec2 get_size() const {
         return size;
     }
-    void set_size(xd::vec2 size) {
-        this->size = size;
+    void set_size(xd::vec2 new_size) {
+        size = new_size;
     }
     xd::vec4 get_color() const {
         return color;
     }
-    void set_color(xd::vec4 color) {
-        this->color = color;
+    void set_color(xd::vec4 new_color) {
+        color = new_color;
     }
     unsigned int get_gid() const {
         return gid;
@@ -96,40 +96,40 @@ public:
     float get_opacity() const {
         return opacity;
     }
-    void set_opacity(float opacity) {
-        this->opacity = opacity;
+    void set_opacity(float new_opacity) {
+        opacity = new_opacity;
     }
     bool is_visible() const {
         return visible;
     }
-    void set_visible(bool visible) {
-        this->visible = visible;
+    void set_visible(bool new_visible) {
+        visible = new_visible;
     }
     bool is_disabled() const {
         return disabled;
     }
-    void set_disabled(bool disabled) {
-        this->disabled = disabled;
+    void set_disabled(bool new_disabled) {
+        disabled = new_disabled;
         if (state == "WALK")
             update_state("FACE");
     }
     bool is_stopped() const {
         return stopped;
     }
-    void set_stopped(bool stopped) {
-        this->stopped = stopped;
+    void set_stopped(bool new_stopped) {
+        stopped = new_stopped;
     }
     bool is_frozen() const {
         return frozen;
     }
-    void set_frozen(bool frozen) {
-        this->frozen = frozen;
+    void set_frozen(bool new_frozen) {
+        frozen = new_frozen;
     }
     bool is_passthrough() const {
         return passthrough;
     }
-    void set_passthrough(bool passthrough) {
-        this->passthrough = passthrough;
+    void set_passthrough(bool new_passthrough) {
+        passthrough = new_passthrough;
     }
     Direction get_direction() const {
         return direction;
@@ -211,15 +211,15 @@ public:
     // Set sprite angle
     void set_angle(int angle);
     // Set pose
-    void set_pose(const std::string& pose_name = "", const std::string& state = "",
-            Direction direction = Direction::NONE) {
-        if (!pose_name.empty())
-            this->pose_name = pose_name;
-        if (!state.empty())
-            this->state = state;
-        if (direction != Direction::NONE)
-            this->direction = direction;
-        Sprite_Holder::set_pose(this->pose_name, this->state, this->direction);
+    void set_pose(const std::string& new_pose_name = "", const std::string& new_state = "",
+            Direction new_direction = Direction::NONE) {
+        if (!new_pose_name.empty())
+            pose_name = new_pose_name;
+        if (!new_state.empty())
+            state = new_state;
+        if (new_direction != Direction::NONE)
+            direction = new_direction;
+        Sprite_Holder::set_pose(pose_name, state, direction);
     }
     // Face another object
     void face(const Map_Object& other);

@@ -31,10 +31,10 @@ public:
     Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class ...Args>
-    Canvas* add_child(const std::string& name, Args&&... args) {
+    Canvas* add_child(const std::string& child_name, Args&&... args) {
         children.emplace_back(new Canvas(std::forward<Args>(args)...));
         auto& child = children.back();
-        child->set_name(name);
+        child->set_name(child_name);
         if (child->get_type() != children_type) {
             children_type = Type::MIXED;
         }
@@ -49,9 +49,9 @@ public:
     // Inherit certain properties from another canvas
     void inherit_properties(const Canvas& parent);
     // Find a child by name
-    Canvas* get_child(const std::string& name) {
+    Canvas* get_child(const std::string& child_name) {
         auto child = std::find_if(children.begin(), children.end(),
-            [&](auto& child) { return child->name == name; });
+            [&](auto& child) { return child->name == child_name; });
         return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by index
@@ -99,22 +99,22 @@ public:
     std::string get_name() const {
         return name;
     }
-    void set_name(const std::string& name) {
-        this->name = name;
+    void set_name(const std::string& new_name) {
+        name = new_name;
     }
     int get_priority() const {
         return priority;
     }
-    void set_priority(int priority) {
-        this->priority = priority;
+    void set_priority(int new_priority) {
+        priority = new_priority;
     }
     xd::vec2 get_position() const {
         return position;
     }
-    void set_position(xd::vec2 position) {
-        if (this->position == position)
+    void set_position(xd::vec2 new_position) {
+        if (position == new_position)
             return;
-        this->position = position;
+        position = new_position;
         redraw_needed = true;
     }
     float get_x() const {
@@ -138,67 +138,67 @@ public:
     xd::vec2 get_origin() const {
         return origin;
     }
-    void set_origin(xd::vec2 origin) {
-        if (this->origin == origin)
+    void set_origin(xd::vec2 new_origin) {
+        if (origin == new_origin)
             return;
-        this->origin = origin;
+        origin = new_origin;
         redraw_needed = true;
     }
     xd::vec2 get_magnification() const {
         return magnification;
     }
-    void set_magnification(xd::vec2 magnification) {
-        if (this->magnification == magnification)
+    void set_magnification(xd::vec2 new_magnification) {
+        if (magnification == new_magnification)
             return;
-        this->magnification = magnification;
+        magnification = new_magnification;
         redraw_needed = true;
     }
     xd::rect get_scissor_box() const {
         return scissor_box;
     }
-    void set_scissor_box(xd::rect scissor_box) {
-        if (this->scissor_box.x == scissor_box.x
-                && this->scissor_box.y == scissor_box.y
-                && this->scissor_box.w == scissor_box.w
-                && this->scissor_box.h == scissor_box.h)
+    void set_scissor_box(xd::rect new_scissor_box) {
+        if (scissor_box.x == new_scissor_box.x
+                && scissor_box.y == new_scissor_box.y
+                && scissor_box.w == new_scissor_box.w
+                && scissor_box.h == new_scissor_box.h)
             return;
-        this->scissor_box = scissor_box;
+        scissor_box = new_scissor_box;
         redraw_needed = true;
     }
     float get_angle() const {
         return angle;
     }
-    void set_angle(float angle) {
-        if (this->angle == angle)
+    void set_angle(float new_angle) {
+        if (angle == new_angle)
             return;
-        this->angle = angle;
+        angle = new_angle;
         redraw_needed = true;
     }
     float get_opacity() const {
         return color.a;
     }
     void set_opacity(float opacity) {
-        if (this->color.a == opacity)
+        if (color.a == opacity)
             return;
-        this->color.a = opacity;
+        color.a = opacity;
         redraw_needed = true;
     }
     xd::vec4 get_color() const {
         return color;
     }
-    void set_color(xd::vec4 color) {
-        if (this->color == color)
+    void set_color(xd::vec4 new_color) {
+        if (color == new_color)
             return;
-        this->color = color;
+        color = new_color;
         redraw_needed = true;
     }
     bool is_visible() const {
         return visible;
     }
-    void set_visible(bool visible) {
-        if (this->visible == visible)
+    void set_visible(bool new_visible) {
+        if (visible == new_visible)
             return;
-        this->visible = visible;
+        visible = new_visible;
         redraw_needed = true;
     }
     std::string get_filename() const {
@@ -237,10 +237,10 @@ public:
     xd::vec4 get_text_color() const {
         return style->color();
     }
-    void set_text_color(xd::vec4 color) {
-        if (style->color() == color)
+    void set_text_color(xd::vec4 text_color) {
+        if (style->color() == text_color)
             return;
-        style->color() = color;
+        style->color() = text_color;
         redraw_needed = true;
     }
     float get_line_height() const {
@@ -304,12 +304,12 @@ public:
             return xd::vec4();
         return style->shadow().color;
     }
-    void set_text_shadow_color(xd::vec4 color) {
+    void set_text_shadow_color(xd::vec4 shadow_color) {
         if (!style->has_shadow())
             style->shadow(1.0, 1.0, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        if (style->shadow().color == color)
+        if (style->shadow().color == shadow_color)
             return;
-        style->shadow().color = color;
+        style->shadow().color = shadow_color;
         redraw_needed = true;
     }
     bool has_shadow() const {
@@ -324,10 +324,10 @@ public:
             return std::string();
         return style->type();
     }
-    void set_text_type(const std::string& type) {
-        if (style->has_type() && style->type() == type)
+    void set_text_type(const std::string& text_type) {
+        if (style->has_type() && style->type() == text_type)
             return;
-        style->type(type);
+        style->type(text_type);
         redraw_needed = true;
     }
     bool has_text_type() const {

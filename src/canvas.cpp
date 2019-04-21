@@ -49,37 +49,37 @@ void Canvas::setup_fbo() {
             && xd::framebuffer::extension_supported()) {
         int width = static_cast<int>(Configurations::get<float>("debug.width"));
         int height = static_cast<int>(Configurations::get<float>("debug.height"));
-        framebuffer = std::make_unique<xd::framebuffer>();
-        fbo_texture = std::make_unique<xd::texture>(width, height, nullptr,
+        framebuffer = std::make_shared<xd::framebuffer>();
+        fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
     }
 }
 
-void Canvas::set_image(const std::string& filename, xd::vec4 trans) {
-    if (this->filename == filename)
+void Canvas::set_image(const std::string& image_filename, xd::vec4 trans) {
+    if (filename == image_filename)
         return;
     type = Canvas::Type::IMAGE;
-    this->filename = filename;
-    image_texture = std::make_unique<xd::texture>(normalize_slashes(filename),
+    filename = image_filename;
+    image_texture = std::make_shared<xd::texture>(normalize_slashes(image_filename),
         trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     redraw_needed = true;
 }
 
-void Canvas::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
-    if (this->filename == filename)
+void Canvas::set_sprite(Game& game, const std::string& sprite_filename, const std::string& pose_name) {
+    if (filename == sprite_filename)
         return;
     type = Canvas::Type::SPRITE;
-    this->filename = filename;
+    filename = sprite_filename;
     sprite = std::make_unique<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), filename));
+        Sprite_Data::load(game.get_asset_manager(), sprite_filename));
     set_pose(pose_name, "", Direction::NONE);
     redraw_needed = true;
 }
 
-void Canvas::remove_child(const std::string& name) {
+void Canvas::remove_child(const std::string& child_name) {
     children.erase(
         std::remove_if(children.begin(), children.end(),
-            [&name](std::unique_ptr<Canvas>& c) { return c->get_name() == name; }
+            [&child_name](std::unique_ptr<Canvas>& c) { return c->get_name() == child_name; }
         ), children.end());
     // Update children type if needed
     if (!children.empty() && children_type == Type::MIXED) {
@@ -119,14 +119,14 @@ void Canvas::inherit_properties(const Canvas& parent) {
     }
 }
 
-void Canvas::set_text(const std::string& text) {
-    if (this->text == text && !this->text.empty())
+void Canvas::set_text(const std::string& new_text) {
+    if (text == new_text && !text.empty())
         return;
-    this->text = text;
+    text = new_text;
     redraw_needed = true;
     // Split tags across multiple lines
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
-    text_lines = split(text, "\n", false);
+    text_lines = split(new_text, "\n", false);
     if (text_lines.size() > 1 || permissive_tag_parsing) {
         std::string open_tags;
         for (auto& line : text_lines) {
@@ -152,8 +152,9 @@ void Canvas::set_text(const std::string& text) {
     }
 }
 
-void Canvas::render_text(const std::string& text, float x, float y) {
-    text_renderer->render_formatted(*font, *formatter, *style, std::round(x), std::round(y), text);
+void Canvas::render_text(const std::string& text_to_render, float x, float y) {
+    text_renderer->render_formatted(*font, *formatter, *style,
+        std::round(x), std::round(y), text_to_render);
 }
 
 void Canvas::set_font(const std::string& font_file) {
@@ -165,11 +166,11 @@ void Canvas::set_font(const std::string& font_file) {
     redraw_needed = true;
 }
 
-void Canvas::link_font(const std::string& type, const std::string& font_file) {
+void Canvas::link_font(const std::string& font_type, const std::string& font_file) {
     if (file_exists(font_file)) {
-        font->link_font(type, std::make_unique<xd::font>(font_file));
+        font->link_font(font_type, std::make_shared<xd::font>(font_file));
     } else {
-        LOGGER_W << "Couldn't read '" << type << "' font file " << font_file;
+        LOGGER_W << "Couldn't read '" << font_type << "' font file " << font_file;
     }
 }
 

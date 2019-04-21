@@ -55,15 +55,15 @@ namespace xd
     struct asset_serializer<xd::texture>
     {
         typedef std::string key_type;
-        key_type operator()(const std::string& filename, xd::vec4 ck,
-            GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
-            GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR) const
+        key_type operator()(const std::string& filename, xd::vec4,
+            GLint = GL_REPEAT, GLint = GL_REPEAT,
+            GLint = GL_LINEAR, GLint = GL_LINEAR) const
         {
             return filename;
         }
         key_type operator()(const xd::image& image,
-            GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
-            GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR) const
+            GLint = GL_REPEAT, GLint = GL_REPEAT,
+            GLint = GL_LINEAR, GLint = GL_LINEAR) const
         {
             return image.filename();
         }

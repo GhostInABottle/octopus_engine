@@ -149,8 +149,8 @@ public:
     std::string get_bg_music_filename() const {
         return background_music;
     }
-    void set_bg_music_filename(const std::string& filename) {
-        background_music = filename;
+    void set_bg_music_filename(const std::string& music_filename) {
+        background_music = music_filename;
     }
     std::string get_startup_scripts() const {
         if (properties.find("scripts") != properties.end()) {

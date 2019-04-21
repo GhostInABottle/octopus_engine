@@ -169,7 +169,7 @@ struct Sprite::Impl {
             matched_pose = tag_map[tag_string];
         } else {
             // Map of pose IDs to their tag match count
-            std::unordered_map<int, int> matches;
+            std::unordered_map<int, unsigned int> matches;
             // Loop over tags incrementing poses that match
             for (auto tag = tags.begin(); tag != tags.end(); ++tag) {
                 for (unsigned int i = 0; i < data->poses.size(); ++i) {
@@ -244,7 +244,7 @@ void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
         frame.magnification, color, get_pose().origin);
 }
 
-void Sprite::update(Map_Object& object) {
+void Sprite::update(Map_Object&) {
    update();
 }
 

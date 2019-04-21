@@ -60,12 +60,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     for (auto pose_node = node.first_node("Pose");
             pose_node; pose_node = pose_node->next_sibling("Pose")) {
         Pose pose;
-        if (auto node = pose_node->first_node("Bounding-Box")) {
+        if (auto bb_node = pose_node->first_node("Bounding-Box")) {
             xd::rect rect;
-            rect.x = lexical_cast<float>(node->first_attribute("X")->value());
-            rect.y = lexical_cast<float>(node->first_attribute("Y")->value());
-            rect.w = lexical_cast<float>(node->first_attribute("Width")->value());
-            rect.h = lexical_cast<float>(node->first_attribute("Height")->value());
+            rect.x = lexical_cast<float>(bb_node->first_attribute("X")->value());
+            rect.y = lexical_cast<float>(bb_node->first_attribute("Y")->value());
+            rect.w = lexical_cast<float>(bb_node->first_attribute("Width")->value());
+            rect.h = lexical_cast<float>(bb_node->first_attribute("Height")->value());
             if (rect.x > 0) pose.bounding_box.x = rect.x;
             if (rect.y > 0) pose.bounding_box.y = rect.y;
             if (rect.w > 0) pose.bounding_box.w = rect.w;

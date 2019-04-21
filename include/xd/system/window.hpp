@@ -91,6 +91,8 @@ namespace xd
         int m_height;
 
         bool m_gamepad_detection;
+        bool m_axis_as_dpad;
+        float m_axis_sensitivity;
 
         // keep track of ticks
         boost::uint32_t m_current_ticks;

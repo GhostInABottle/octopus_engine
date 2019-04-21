@@ -5,7 +5,7 @@ Collision_Record::Collision_Record(Collision_Types type,
         type(type), this_object(this_object), other_object(other_object),
         edge_direction(Direction::NONE)  {}
 
-void Collision_Record::set(Collision_Types type, Map_Object* other_object) {
-    this->type = type;
-    this->other_object = other_object;
+void Collision_Record::set(Collision_Types new_type, Map_Object* new_other_object) {
+    type = new_type;
+    other_object = new_other_object;
 }

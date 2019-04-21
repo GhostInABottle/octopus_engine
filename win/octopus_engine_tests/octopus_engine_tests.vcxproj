@@ -54,6 +54,7 @@
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -71,6 +72,7 @@
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

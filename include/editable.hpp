@@ -9,8 +9,8 @@ class Property_Mapper;
 // e.g. Map, Layer or Map_Object
 class Editable {
 public:
-    void set_property_mapper(std::unique_ptr<Property_Mapper> mapper) {
-        this->mapper = std::move(mapper);
+    void set_property_mapper(std::unique_ptr<Property_Mapper> property_mapper) {
+        mapper = std::move(property_mapper);
     }
     Property_Mapper* get_property_mapper() {
         return mapper.get();

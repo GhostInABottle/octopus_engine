@@ -7,11 +7,11 @@ public:
     // Called while the command isn't completed
     virtual void execute() = 0;
     // Version with specific time
-    virtual void execute(int ticks) { execute(); }
+    virtual void execute(int) { execute(); }
     // Is the command completed?
     virtual bool is_complete() const = 0;
     // Would the command be complete by the given time?
-    virtual bool is_complete(int ticks) const { return is_complete(); }
+    virtual bool is_complete(int) const { return is_complete(); }
     // Force the command to complete
     virtual void stop() { stopped = true; }
     virtual ~Command() = 0;

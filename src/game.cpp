@@ -43,7 +43,7 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
-            gamepad_id(0) {}
+            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {}
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
     bool show_time;
@@ -93,8 +93,10 @@ Game::Game(bool editor_mode) :
                 Configurations::get<bool>("game.fullscreen"),
                 false, // allow resize
                 false, // display_cursor
-                Configurations::get<bool>("controls.gamepad-detection"),
                 false, // vsync
+                Configurations::get<bool>("controls.gamepad-detection"),
+                Configurations::get<bool>("controls.axis-as-dpad"),
+                Configurations::get<float>("controls.axis-sensitivity"),
                 8, // depth
                 0, // stencil
                 0, // antialiasing
@@ -214,6 +216,7 @@ void Game::run() {
 
 void Game::frame_update() {
     xd::audio::update();
+
     // Pause or resume game if needed
     bool triggered_pause = triggered("pause");
     if (pimpl->paused) {
@@ -317,32 +320,6 @@ void Game::set_magnification(float mag) {
     text_renderer.reset_projection(
         static_cast<float>(game_width()),
         static_cast<float>(game_height()));
-}
-
-bool Game::pressed(const std::string& key) const {
-    auto dir = string_to_direction(key);
-    return (dir != Direction::NONE && pressed(dir))
-        || window->pressed(key, get_gamepad_id());
-}
-
-bool Game::pressed(Direction direction) const {
-    if (!pimpl->gamepad_enabled) {
-        return false;
-    }
-
-    int id = get_gamepad_id();
-    switch (direction) {
-    case Direction::UP:
-        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_Y, id) <= -0.5f;
-    case Direction::DOWN:
-        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_Y, id) >= 0.5f;
-    case Direction::LEFT:
-        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_X, id) <= -0.5f;
-    case Direction::RIGHT:
-        return window->axis_value(xd::GAMEPAD_AXIS_LEFT_X, id) >= 0.5f;
-    default:
-        return false;
-    }
 }
 
 void Game::run_script(const std::string& script) {
@@ -456,9 +433,11 @@ void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
 }
 
 int Game::get_gamepad_id() const {
-    if (!window->joystick_present(pimpl->gamepad_id)) {
+    if (pimpl->gamepad_id == -1 || !window->joystick_present(pimpl->gamepad_id)) {
         int preferred_id = Configurations::get<int>("controls.gamepad-number");
-        if (preferred_id = -1 || !window->joystick_present(preferred_id)) {
+        if (pimpl->gamepad_id != preferred_id && preferred_id != -1 && window->joystick_present(preferred_id)) {
+            pimpl->gamepad_id = preferred_id;
+        } else {
             pimpl->gamepad_id = window->first_joystick_id();
         }
     }

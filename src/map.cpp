@@ -15,11 +15,11 @@
 #include "../include/direction_utilities.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/rapidxml_print.hpp"
-#include <vector>
-#include <unordered_set>
-#include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
 #include "../include/xd/audio.hpp"
+#include <boost/lexical_cast.hpp>
+#include <vector>
+#include <unordered_set>
 #include <fstream>
 #include <algorithm>
 
@@ -291,17 +291,17 @@ Layer* Map::get_layer(const std::string& name) {
         return nullptr;
 }
 
-void Map::add_layer(Layer_Types type) {
-    std::shared_ptr<Layer> layer;
-    switch (type) {
+void Map::add_layer(Layer_Types layer_type) {
+    std::shared_ptr<Layer> new_layer;
+    switch (layer_type) {
     case Layer_Types::OBJECT:
-        layer = std::make_shared<Object_Layer>();
+        new_layer = std::make_shared<Object_Layer>();
         break;
     case Layer_Types::IMAGE:
-        layer = std::make_shared<Image_Layer>();
+        new_layer = std::make_shared<Image_Layer>();
         break;
     case Layer_Types::TILE:
-        layer = std::make_shared<Tile_Layer>();
+        new_layer = std::make_shared<Tile_Layer>();
         break;
     default:
         return;
@@ -310,10 +310,10 @@ void Map::add_layer(Layer_Types type) {
     for (auto& layer : layers) {
         names.insert(layer->name);
     }
-    layer->name = detail::generate_unique_name(names);
-    layers.push_back(layer);
-    if (type == Layer_Types::OBJECT)
-        object_layers.push_back(static_cast<Object_Layer*>(layer.get()));
+    new_layer->name = detail::generate_unique_name(names);
+    layers.push_back(new_layer);
+    if (layer_type == Layer_Types::OBJECT)
+        object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));
 }
 
 void Map::delete_layer(const std::string& name) {
@@ -384,7 +384,7 @@ void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
     needs_redraw = true;
 }
 
-void Map::save(std::string filename) {
+void Map::save(std::string save_filename) {
     rapidxml::xml_document<> doc;
     auto decl_node = xml_node(doc, "", "", rapidxml::node_declaration);
     decl_node->append_attribute(xml_attribute(doc, "version", "1.0"));
@@ -393,7 +393,7 @@ void Map::save(std::string filename) {
     auto map_node = save(doc);
     doc.append_node(map_node);
     std::ofstream out;
-    out.open(filename.c_str(), std::ios_base::out | std::ios_base::trunc);
+    out.open(save_filename.c_str(), std::ios_base::out | std::ios_base::trunc);
     out << doc;
 }
 

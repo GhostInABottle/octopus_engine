@@ -72,9 +72,9 @@ public:
     bool pressed(const xd::key& key) const {
         return window->pressed(key, get_gamepad_id());
     }
-    bool pressed(const std::string& key) const;
-    // Check if main axis is pressed in a direction
-    bool pressed(Direction direction) const;
+    bool pressed(const std::string& key) const {
+        return window->pressed(key, get_gamepad_id());
+    }
     // Was key triggered since last update?
     bool triggered(const xd::key& key) const {
         return window->triggered(key, get_gamepad_id());

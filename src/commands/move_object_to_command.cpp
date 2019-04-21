@@ -115,7 +115,7 @@ struct Move_Object_To_Command::Impl {
         }
     }
     // Is movement complete
-    bool is_complete(bool stopped) const {
+    bool is_complete(bool) const {
         return complete;
     }
 };

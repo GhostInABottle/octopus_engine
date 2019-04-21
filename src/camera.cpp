@@ -190,15 +190,15 @@ void Camera::center_at(xd::vec2 pos) {
     set_position(pos - xd::vec2(game.game_width() / 2, game.game_height() / 2));
 }
 
-void Camera::center_at(const Map_Object& object) {
-    xd::vec2 position = object.get_position();
-    auto sprite = object.get_sprite();
+void Camera::center_at(const Map_Object& target) {
+    xd::vec2 target_position = target.get_position();
+    auto sprite = target.get_sprite();
     float width = sprite ? sprite->get_size().x : 0.0f;
     float height = sprite ? sprite->get_size().y : 0.0f;
-    position.x += width / 2;
-    position.y += height / 2;
+    target_position.x += width / 2;
+    target_position.y += height / 2;
 
-    center_at(position);
+    center_at(target_position);
 }
 
 void Camera::set_position(xd::vec2 pos) {
@@ -298,7 +298,7 @@ void Object_Tracker::update(Camera& camera) {
     camera.center_at(*obj);
 }
 
-void Screen_Shaker::update(Camera& camera) {
+void Screen_Shaker::update(Camera&) {
     offset += (strength * speed * direction) / 10.0f;
     if (offset > strength * 2)
         direction = -1;

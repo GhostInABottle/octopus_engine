@@ -15,14 +15,14 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         layer(nullptr),
         id(-1),
         color(1.0f),
-        gid(-1),
+        gid(0),
         opacity(1.0f),
         visible(true),
         disabled(false),
         stopped(false),
         frozen(false),
         passthrough(false),
-        speed(1),
+        speed(1.0f),
         name(name),
         position(pos),
         state("FACE"),
@@ -160,7 +160,7 @@ bool Map_Object::is_outlined() const {
         !trigger_script.source.empty();
 }
 
-void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& pose_name) {
+void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
     if (!file_exists(filename)) {
         LOGGER_W << "Tried to set sprite for map object " << name <<
                     " to nonexistent file " << filename;
@@ -174,7 +174,7 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
     sprite = std::make_shared<Sprite>(game,
         Sprite_Data::load(game.get_asset_manager(), filename));
     add_component(sprite);
-    set_pose(pose_name);
+    set_pose(new_pose_name);
 }
 
 int Map_Object::get_angle() const {
@@ -189,10 +189,10 @@ void Map_Object::set_angle(int angle) {
         get_sprite()->get_frame().angle = angle;
 }
 
-void Map_Object::set_speed(float speed) {
-    this->speed = speed;
+void Map_Object::set_speed(float new_speed) {
+    speed = new_speed;
     if (sprite)
-        sprite->set_speed(speed);
+        sprite->set_speed(new_speed);
 }
 
 void Map_Object::face(const Map_Object& other) {
