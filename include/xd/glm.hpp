@@ -1,6 +1,8 @@
 #ifndef H_XD_GLM
 #define H_XD_GLM
 
+#define GLM_FORCE_CTOR_INIT
+
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/type_ptr.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
