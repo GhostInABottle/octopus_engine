@@ -25,7 +25,8 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
     const std::vector<std::string>& choices, const std::string& text,
     long duration, bool center, Text_Position_Type pos_type) :
         game(game), position(position), choices(choices), text(text),
-        duration(duration), start_time(game.ticks()), complete(false) {
+        duration(duration), start_time(game.ticks()),
+        complete(false), text_complete(false) {
     selected_choice = 0;
     current_choice = 0;
     auto full = full_text();
@@ -89,7 +90,7 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
         Configurations::get<int>("debug.text-canvas-priority"));
     canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
     canvas_updater->set_new_opacity(1.0f);
-    canvas_updater->set_duration(Configurations::get<int>("game.text-fade-duration"));
+    canvas_updater->set_duration(Configurations::get<int>("game.text-fade-in-duration"));
     if (duration == -1) {
         was_disabled = game.get_player()->is_disabled();
         game.get_player()->set_disabled(true);
@@ -103,7 +104,7 @@ void Show_Text_Command::execute() {
 }
 
 void Show_Text_Command::execute(int ticks) {
-    if (is_complete()) {
+    if (complete) {
         return;
     }
 
@@ -112,28 +113,33 @@ void Show_Text_Command::execute(int ticks) {
         return;
     }
 
-    if (duration > -1) {
-        complete = ticks > start_time + duration;
-    } else {
-        static std::string action_button =
-            Configurations::get<std::string>("controls.action-button");
-        complete = game.triggered_once(action_button);
-        if (complete) {
-            selected_choice = current_choice;
-        } else if (!choices.empty()) {
-            update_choice();
-        }
-    }
-
-    if (complete) {
-        canvas_updater->reset();
-        canvas_updater->set_new_opacity(0.0f);
+    if (text_complete || stopped) {
         if (canvas->is_visible()) {
             canvas->set_visible(false);
         }
         if (duration == -1) {
             game.get_player()->set_disabled(was_disabled);
         }
+        complete = true;
+        return;
+    }
+
+    if (duration > -1) {
+        text_complete = ticks > start_time + duration;
+    } else {
+        static std::string action_button =
+            Configurations::get<std::string>("controls.action-button");
+        text_complete = game.triggered_once(action_button);
+        if (!text_complete && !choices.empty()) {
+            update_choice();
+        }
+    }
+
+    if (text_complete) {
+        selected_choice = current_choice;
+        canvas_updater->reset();
+        canvas_updater->set_duration(Configurations::get<int>("game.text-fade-out-duration"));
+        canvas_updater->set_new_opacity(0.0f);
     }
 }
 
@@ -180,10 +186,6 @@ void Show_Text_Command::update_choice() {
 
 xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
     return object->get_position() + xd::vec2(16, 0);
-}
-
-bool Show_Text_Command::is_complete() const {
-    return canvas_updater->is_complete() && (stopped || complete);
 }
 
 std::string Show_Text_Command::full_text() const {

@@ -19,11 +19,14 @@ namespace xd
     {
         input_type type;
         int code;
+        int device_id;
     };
 
     inline bool operator==(const key& lhs, const key& rhs)
     {
-        return (lhs.type == rhs.type && lhs.code == rhs.code);
+        return (lhs.type == rhs.type
+            && lhs.code == rhs.code
+            && lhs.device_id == rhs.device_id);
     }
 
     inline bool operator!=(const key& lhs, const key& rhs)
@@ -36,6 +39,7 @@ namespace xd
         std::size_t seed = 0;
         boost::hash_combine(seed, k.type);
         boost::hash_combine(seed, k.code);
+        boost::hash_combine(seed, k.device_id);
         return seed;
     }
 
@@ -78,6 +82,7 @@ namespace xd
         key k;
         k.type = INPUT_KEYBOARD;
         k.code = code;
+        k.device_id = -1;
         return k;
     }
 
@@ -87,15 +92,17 @@ namespace xd
         key k;
         k.type = INPUT_MOUSE;
         k.code = code;
+        k.device_id = -1;
         return k;
     }
 
     // utility function to create gamepad
-    inline key GAMEPAD(int code)
+    inline key GAMEPAD(int code, int joystick_id = -1)
     {
         key k;
         k.type = INPUT_GAMEPAD;
         k.code = code;
+        k.device_id = joystick_id;
         return k;
     }
 
@@ -189,10 +196,7 @@ namespace std
     {
         size_t operator()(const xd::key& k) const
         {
-            std::size_t seed = 0;
-            boost::hash_combine(seed, k.type);
-            boost::hash_combine(seed, k.code);
-            return seed;
+            return xd::hash_value(k);
         }
     };
 }

@@ -42,7 +42,7 @@ public:
         | Text_Position_Type::EXACT_Y | Text_Position_Type::CAMERA_RELATIVE);
     void execute() override;
     void execute(int ticks) override;
-    bool is_complete() const override;
+    bool is_complete() const override { return complete;  }
     int choice_index() const { return selected_choice; }
     std::string full_text() const;
     void set_start_time(long start) { this->start_time = start;  }
@@ -56,6 +56,7 @@ private:
     std::string text;
     std::vector<std::string> choices;
     bool complete;
+    bool text_complete;
     bool was_disabled;
     unsigned int  selected_choice;
     unsigned int current_choice;

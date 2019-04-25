@@ -22,7 +22,8 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.pause-fragment-shader"] = std::string();
     defaults["game.pause-unfocused"] = true;
     defaults["game.save-folder"] = std::string();
-    defaults["game.text-fade-duration"] = 250;
+    defaults["game.text-fade-in-duration"] = 250;
+    defaults["game.text-fade-out-duration"] = 250;
     defaults["game.choice-press-delay"] = 250;
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
 

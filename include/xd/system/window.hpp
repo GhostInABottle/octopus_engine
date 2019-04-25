@@ -82,7 +82,7 @@ namespace xd
         }
 
         // input event handler, for internal use
-        void on_input(input_type type, int key, int action);
+        void on_input(input_type type, int key, int action, int device_id = 0);
 
     private:
         GLFWwindow* m_window;

@@ -124,23 +124,28 @@ void xd::window::remove_joystick(int id) {
     }
 }
 
-void xd::window::on_input(input_type type, int key, int action)
+void xd::window::on_input(input_type type, int key, int action, int device_id)
 {
-    // construct event arguments
     input_args args;
-    if (type == INPUT_KEYBOARD)
-        args.physical_key = KEY(key);
-    else if (type == INPUT_GAMEPAD)
-        args.physical_key = GAMEPAD(key);
-    else
-        args.physical_key = MOUSE(key);
-    args.modifiers = 0;
 
     // find associated virtual key
     xd::window::key_table_t::iterator i = m_key_to_virtual.find(args.physical_key);
     if (i != m_key_to_virtual.end()) {
         args.virtual_key = i->second;
     }
+
+    switch (type) {
+    case INPUT_KEYBOARD:
+        args.physical_key = KEY(key);
+        break;
+    case INPUT_GAMEPAD:
+        args.physical_key = GAMEPAD(key, device_id);
+        break;
+    case INPUT_MOUSE:
+        args.physical_key = MOUSE(key);
+        break;
+    }
+    args.modifiers = 0;
 
     // add to triggered keys if keydown event and launch the event
     if (action == GLFW_PRESS) {
@@ -254,9 +259,9 @@ void xd::window::update_joysticks()
         }
 
         for (int button = 0; button < button_count; button++) {
-            if (joystick_state.buttons[button] != joystick_state.prev_buttons[button]) {
-                on_input(INPUT_GAMEPAD, button, joystick_state.buttons[button]);
-                joystick_state.prev_buttons[button] = joystick_state.buttons[button];
+            if (buttons[button] != joystick_state.prev_buttons[button]) {
+                on_input(INPUT_GAMEPAD, button, buttons[button], joystick_id);
+                joystick_state.prev_buttons[button] = buttons[button];
             }
         }
     }
@@ -419,10 +424,14 @@ bool xd::window::pressed(const std::string& key, int joystick_id)
 
 bool xd::window::triggered(const xd::key& key, int joystick_id)
 {
+    auto key_copy = key;
+    if (key_copy.type == INPUT_GAMEPAD) {
+        key_copy.device_id = joystick_id;
+    }
     if (m_in_update)
-        return m_tick_handler_triggered_keys.find(key) != m_tick_handler_triggered_keys.end();
+        return m_tick_handler_triggered_keys.find(key_copy) != m_tick_handler_triggered_keys.end();
     else
-        return m_triggered_keys.find(key) != m_triggered_keys.end();
+        return m_triggered_keys.find(key_copy) != m_triggered_keys.end();
 }
 
 bool xd::window::triggered(const std::string& key, int joystick_id)
@@ -441,11 +450,15 @@ bool xd::window::triggered(const std::string& key, int joystick_id)
 
 bool xd::window::triggered_once(const xd::key& key, int joystick_id)
 {
+    auto key_copy = key;
+    if (key_copy.type == INPUT_GAMEPAD) {
+        key_copy.device_id = joystick_id;
+    }
     if (triggered(key, joystick_id)) {
         if (m_in_update)
-            m_tick_handler_triggered_keys.erase(key);
+            m_tick_handler_triggered_keys.erase(key_copy);
         else
-            m_triggered_keys.erase(key);
+            m_triggered_keys.erase(key_copy);
         return true;
     }
     return false;
