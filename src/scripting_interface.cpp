@@ -478,6 +478,7 @@ void Scripting_Interface::setup_scripts() {
                     )
                 );
             }), adopt(result))
+            .def("face", (void (Map_Object::*)(xd::vec2)) &Map_Object::face)
             .def("face", (void (Map_Object::*)(float, float)) &Map_Object::face)
             .def("face", (void (Map_Object::*)(const Map_Object&)) &Map_Object::face)
             .def("face", tag_function<void (Map_Object*, int)>([&](Map_Object* obj, int dir) {

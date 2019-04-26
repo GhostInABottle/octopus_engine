@@ -225,6 +225,7 @@ public:
     void face(const Map_Object& other);
     // Face a certain spot
     void face(float x, float y);
+    void face(xd::vec2 other_position);
     // Face a certain direction
     void face(Direction dir);
     // Run the object's activation script

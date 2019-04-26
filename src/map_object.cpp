@@ -195,12 +195,16 @@ void Map_Object::set_speed(float new_speed) {
         sprite->set_speed(new_speed);
 }
 
-void Map_Object::face(const Map_Object& other) {
-    face(other.position.x, other.position.y);
+void Map_Object::face(float x, float y) {
+    face(xd::vec2(x, y));
 }
 
-void Map_Object::face(float x, float y) {
-    direction = facing_direction(position, xd::vec2(x, y));
+void Map_Object::face(const Map_Object& other) {
+    face(other.get_real_position());
+}
+
+void Map_Object::face(xd::vec2 other_position) {
+    direction = facing_direction(get_real_position(), other_position);
     update_pose();
 }
 
