@@ -101,7 +101,7 @@ public:
     // Get the shared Lua virtual machine
     xd::lua::virtual_machine* get_lua_vm();
     // Play some music
-    std::shared_ptr<xd::music> load_music(const std::string& filename);
+    void load_music(const std::string& filename);
     // Get the music currently playing
     std::shared_ptr<xd::music> playing_music() { return music; }
     // Load map file and set as current map at the end of the frame

@@ -31,6 +31,7 @@ struct Game::Impl {
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
+            next_direction(Direction::DOWN),
             pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
             paused(false),
             focus_pause(false),
@@ -107,6 +108,7 @@ Game::Game(bool editor_mode) :
         pimpl(new Impl(editor_mode)),
         current_scripting_interface(nullptr),
         text_renderer(0, 0),
+        editor_ticks(0),
         editor_size(1, 1) {
     xd::audio::init();
     clock.reset(new Clock(*this));
@@ -331,11 +333,10 @@ xd::lua::virtual_machine* Game::get_lua_vm() {
     return &pimpl->vm;
 }
 
-std::shared_ptr<xd::music> Game::load_music(const std::string& filename) {
+void Game::load_music(const std::string& filename) {
     if (music)
         music->stop();
     music.reset(new xd::music(filename));
-    return music;
 }
 
 void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {

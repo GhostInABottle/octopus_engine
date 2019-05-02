@@ -569,13 +569,14 @@ void Scripting_Interface::setup_scripts() {
             ))
             .def("load_music", tag_function<xd::music* (Game*, const std::string&)>(
                 [&](Game* game, const std::string& filename) {
-                    return game->load_music(filename).get();
+                    game->load_music(filename);
+                    return game->playing_music().get();
                 }
             ))
             .def("play_music", tag_function<void (Game*, const std::string&)>(
                 [&](Game* game, const std::string& filename) {
-                    auto music = game->load_music(filename);
-                    music->play();
+                    game->load_music(filename);
+                    game->playing_music()->play();
                 }
             )),
         // Game map

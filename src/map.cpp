@@ -17,6 +17,7 @@
 #include "../include/rapidxml_print.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/audio.hpp"
+#include "../include/configurations.hpp"
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <unordered_set>
@@ -60,6 +61,10 @@ void Map::run_script(const std::string& script) {
 
 void Map::run_startup_scripts() {
     scripting_interface->set_globals();
+    auto map_loaded_script = Configurations::get<std::string>("game.map-loaded-script");
+    if (!map_loaded_script.empty()) {
+        run_script(read_file(map_loaded_script));
+    }
     for (auto& script : start_scripts) {
         run_script(script);
     }

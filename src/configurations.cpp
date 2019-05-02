@@ -13,7 +13,6 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;
     defaults["game.fullscreen"] = false;
-    defaults["game.npcs-file"] = std::string();
     // Scaling modes: aspect, window, stretch
     defaults["game.scale-mode"] = std::string("window");
     defaults["game.vertex-shader"] = std::string();
@@ -26,6 +25,7 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.text-fade-out-duration"] = 250;
     defaults["game.choice-press-delay"] = 250;
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
+    defaults["game.map-loaded-script"] = std::string();
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();

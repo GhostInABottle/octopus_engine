@@ -1,0 +1,1 @@
+print('Loaded map: ' .. current_map.filename)
