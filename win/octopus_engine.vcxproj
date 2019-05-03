@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\tmx_properties.cpp" />
     <ClCompile Include="..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\src\xd\audio\music.cpp" />
     <ClCompile Include="..\src\xd\audio\sound.cpp" />
@@ -231,7 +232,7 @@
     <ClInclude Include="..\include\commands\wait_command.hpp" />
     <ClInclude Include="..\include\commands\zoom_command.hpp" />
     <ClInclude Include="..\include\command_result.hpp" />
-    <ClInclude Include="..\include\common.hpp" />
+    <ClInclude Include="..\include\tmx_properties.hpp" />
     <ClInclude Include="..\include\configurations.hpp" />
     <ClInclude Include="..\include\direction.hpp" />
     <ClInclude Include="..\include\direction_utilities.hpp" />

@@ -410,7 +410,7 @@ rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
     node->append_attribute(xml_attribute(doc, "height", std::to_string(height)));
     node->append_attribute(xml_attribute(doc, "tilewidth", std::to_string(tile_width)));
     node->append_attribute(xml_attribute(doc, "tileheight", std::to_string(tile_height)));
-    save_properties(properties, doc, *node);
+    properties.save(doc, *node);
     // Tilesets
     for (auto& tileset : tilesets) {
         auto tileset_node = tileset.save(doc);
@@ -449,14 +449,14 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     map_ptr->tile_height = lexical_cast<int>(node.first_attribute("tileheight")->value());
 
     // Map properties
-    read_properties(map_ptr->properties, node);
+    map_ptr->properties.read(node);
 
     // Background music
-    if (map_ptr->properties.find("music") != map_ptr->properties.end())
+    if (map_ptr->properties.has_property("music"))
         map_ptr->background_music = map_ptr->properties["music"];
 
     // Startup scripts
-    if (map_ptr->properties.find("scripts") != map_ptr->properties.end()) {
+    if (map_ptr->properties.has_property("scripts")) {
         auto filenames = split(map_ptr->properties["scripts"], ",");
         for (auto& filename : filenames) {
             map_ptr->start_scripts.push_back(read_file(trim(filename)));

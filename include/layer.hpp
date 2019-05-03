@@ -4,7 +4,7 @@
 #include<memory>
 #include <string>
 #include "xd/graphics/types.hpp"
-#include "common.hpp"
+#include "tmx_properties.hpp"
 #include "editable.hpp"
 #include "rapidxml.hpp"
 
@@ -23,7 +23,7 @@ struct Layer : public Editable {
     // Is the layer visible?
     bool visible;
     // Layer properties
-    Properties properties;
+    Tmx_Properties properties;
     // Layer rendering component
     std::unique_ptr<Layer_Renderer> renderer;
     // Layer logic component
@@ -42,6 +42,13 @@ struct Layer : public Editable {
             const std::string& node_name);
     // Load layer data from XML node
     void load(rapidxml::xml_node<>& node);
+    // Get and set a property
+    void set_property(const std::string& name, const std::string& value) {
+        properties[name] = value;
+    }
+    std::string get_property(const std::string& name) const {
+        return properties[name];
+    }
     virtual ~Layer() = 0;
 
 };

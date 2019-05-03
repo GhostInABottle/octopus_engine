@@ -7,7 +7,7 @@
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
 #include "rapidxml.hpp"
-#include "common.hpp"
+#include "tmx_properties.hpp"
 #include "direction.hpp"
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
@@ -53,6 +53,12 @@ public:
     }
     void set_name(const std::string& new_name) {
         name = new_name;
+    }
+    void set_property(const std::string& name, const std::string& value) {
+        properties[name] = value;
+    }
+    std::string get_property(const std::string& name) const {
+        return properties[name];
     }
     std::string get_type() const {
         return type;
@@ -288,7 +294,7 @@ private:
     // Last object activated by player
     Map_Object* triggered_object;
     // Object properties
-    Properties properties;
+    Tmx_Properties properties;
     // How object is drawn relative to other objects in layer
     Draw_Order draw_order;
     // Optional sprite representing the object

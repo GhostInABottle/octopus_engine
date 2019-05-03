@@ -267,6 +267,9 @@
     <ClCompile Include="..\src\Editable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tmx_properties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -402,9 +405,6 @@
       <Filter>Header Files\xd\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\include\utility.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\tileset.hpp">
@@ -607,6 +607,9 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\types.hpp">
       <Filter>Header Files\xd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\tmx_properties.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

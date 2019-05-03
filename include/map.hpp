@@ -10,7 +10,7 @@
 #include "xd/graphics/sprite_batch.hpp"
 #include "xd/types.hpp"
 #include "rapidxml.hpp"
-#include "common.hpp"
+#include "tmx_properties.hpp"
 #include "direction.hpp"
 #include "tileset.hpp"
 #include "collision_record.hpp"
@@ -42,8 +42,8 @@ public:
     ~Map();
     // Get map name
     std::string get_name() const {
-        if (properties.find("name") != properties.end())
-            return properties.at("name");
+        if (properties.has_property("name"))
+            return properties["name"];
         else
             return "unnamed map";
     }
@@ -119,6 +119,12 @@ public:
     Game& get_game() {
         return game;
     }
+    void set_property(const std::string& name, const std::string& value) {
+        properties[name] = value;
+    }
+    std::string get_property(const std::string& name) const {
+        return properties[name];
+    }
     int get_width() const {
         return width;
     }
@@ -153,14 +159,10 @@ public:
         background_music = music_filename;
     }
     std::string get_startup_scripts() const {
-        if (properties.find("scripts") != properties.end()) {
-            return properties.at("scripts");
-        } else {
-            return "";
-        }
+        return get_property("scripts");
     }
     void set_startup_scripts(const std::string& scripts) {
-        properties["scripts"] = scripts;
+        set_property("scripts", scripts);
     }
     void set_objects_moved(bool moved) {
         objects_moved = moved;
@@ -184,7 +186,7 @@ private:
     // Counter to set IDs of new objects
     int next_object_id;
     // Map properties
-    Properties properties;
+    Tmx_Properties properties;
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Hash table of object IDs to objects

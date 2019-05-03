@@ -428,6 +428,8 @@ void Scripting_Interface::setup_scripts() {
                         return xd::vec2(1.0f, 1.0f);
                 }
             ))
+            .def("get_property", &Map_Object::get_property)
+            .def("set_property", &Map_Object::set_property)
             .def("move_to", tag_function<Command_Result* (Map_Object*, float, float)>(
                 [&](Map_Object* obj, float x, float y) {
                     auto si = game->get_current_scripting_interface();
@@ -587,6 +589,8 @@ void Scripting_Interface::setup_scripts() {
             .property("tile_height", &Map::get_tile_height)
             .property("filename", &Map::get_filename)
             .property("name", &Map::get_name)
+            .def("get_property", &Map::get_property)
+            .def("set_property", &Map::set_property)
             .def("object_count", &Map::object_count)
             .def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
             .def("get_object", (Map_Object* (Map::*)(const std::string&)) &Map::get_object)
@@ -715,6 +719,8 @@ void Scripting_Interface::setup_scripts() {
             .def_readonly("name", &Layer::name)
             .def_readwrite("visible", &Layer::visible)
             .def_readwrite("opacity", &Layer::opacity)
+            .def("get_property", &Layer::get_property)
+            .def("set_property", &Layer::set_property)
             .def("update_opacity", tag_function<Command_Result* (Layer*, float, long)>(
                     [&](Layer* layer, float opacity, long duration) {
                         auto si = game->get_current_scripting_interface();

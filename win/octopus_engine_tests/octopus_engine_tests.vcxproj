@@ -139,6 +139,7 @@
     <ClCompile Include="..\..\src\tileset.cpp" />
     <ClCompile Include="..\..\src\tile_layer.cpp" />
     <ClCompile Include="..\..\src\tile_layer_renderer.cpp" />
+    <ClCompile Include="..\..\src\tmx_properties.cpp" />
     <ClCompile Include="..\..\src\utility.cpp" />
     <ClCompile Include="..\..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\..\src\xd\audio\music.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="..\..\include\tileset.hpp" />
     <ClInclude Include="..\..\include\tile_layer.hpp" />
     <ClInclude Include="..\..\include\tile_layer_renderer.hpp" />
+    <ClInclude Include="..\..\include\tmx_properties.hpp" />
     <ClInclude Include="..\..\include\utility.hpp" />
     <ClInclude Include="..\..\include\xd\asset_manager.hpp" />
     <ClInclude Include="..\..\include\xd\asset_serializer.hpp" />

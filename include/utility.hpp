@@ -7,17 +7,11 @@
 #include "xd/glm.hpp"
 #include "xd/graphics.hpp"
 #include "rapidxml.hpp"
-#include "common.hpp"
 
 // Check if a file exists
 bool file_exists(const std::string& filename);
 // Read file content into a string
 std::string read_file(const std::string& filename);
-// Read the properties of a TMX node
-void read_properties(Properties& properties, rapidxml::xml_node<>& parent_node);
-// Save properties into a node
-void save_properties(const Properties& properties,
-        rapidxml::xml_document<>& doc, rapidxml::xml_node<>& node);
 // Allocate an XML node
 rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
         const std::string& name, const std::string& value = "",

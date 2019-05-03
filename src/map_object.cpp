@@ -241,7 +241,7 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
         node->append_attribute(xml_attribute(doc, "gid", std::to_string(get_gid())));
     if (!is_visible())
         node->append_attribute(xml_attribute(doc, "visible", "0"));
-    save_properties(properties, doc, *node);
+    properties.save(doc, *node);
     return node;
 }
 
@@ -271,20 +271,20 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (auto visible_node = node.first_attribute("visible"))
         object_ptr->visible = lexical_cast<bool>(visible_node->value());
 
-    Properties& properties = object_ptr->properties;
-    read_properties(properties, node);
+    auto& properties = object_ptr->properties;
+    properties.read(node);
 
-    if (properties.find("sprite") != properties.end())
+    if (properties.has_property("sprite"))
         object_ptr->set_sprite(game, properties["sprite"]);
-    if (properties.find("direction") != properties.end())
+    if (properties.has_property("direction"))
         object_ptr->direction = string_to_direction(properties["direction"]);
-    if (properties.find("pose") != properties.end())
+    if (properties.has_property("pose"))
         object_ptr->pose_name = properties["pose"];
-    if (properties.find("state") != properties.end())
+    if (properties.has_property("state"))
         object_ptr->state = properties["state"];
-    if (properties.find("speed") != properties.end())
+    if (properties.has_property("speed"))
         object_ptr->set_speed(lexical_cast<float>(properties["speed"]));
-    if (properties.find("opacity") != properties.end())
+    if (properties.has_property("opacity"))
         object_ptr->opacity = lexical_cast<float>(properties["opacity"]);
 
     auto set_script = [&properties](Map_Object* obj, const std::string& type) {
@@ -299,18 +299,18 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         script->is_global = type.find("global") != std::string::npos;
     };
     // Trigger script
-    if (properties.find("script") != properties.end())
+    if (properties.has_property("script"))
         set_script(object_ptr.get(), "script");
-    else if (properties.find("map-script") != properties.end())
+    else if (properties.has_property("map-script"))
         set_script(object_ptr.get(), "map-script");
-    else if (properties.find("global-script") != properties.end())
+    else if (properties.has_property("global-script"))
         set_script(object_ptr.get(), "global-script");
     // Exit script
-    if (properties.find("exit-script") != properties.end())
+    if (properties.has_property("exit-script"))
         set_script(object_ptr.get(), "exit-script");
-    else if (properties.find("map-exit-script") != properties.end())
+    else if (properties.has_property("map-exit-script"))
         set_script(object_ptr.get(), "map-exit-script");
-    else if (properties.find("global-exit-script") != properties.end())
+    else if (properties.has_property("global-exit-script"))
         set_script(object_ptr.get(), "global-exit-script");
 
     object_ptr->update_pose();

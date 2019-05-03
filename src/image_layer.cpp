@@ -52,18 +52,18 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     layer_ptr->Layer::load(node);
 
     // Layer properties
-    Properties& properties = layer_ptr->properties;
+    auto& properties = layer_ptr->properties;
     std::string sprite;
-    if (properties.find("xspeed") != properties.end())
+    if (properties.has_property("xspeed"))
         layer_ptr->velocity.x = lexical_cast<float>(properties["xspeed"]);
-    if (properties.find("yspeed") != properties.end())
+    if (properties.has_property("yspeed"))
         layer_ptr->velocity.y = lexical_cast<float>(properties["yspeed"]);
-    if (properties.find("fixed") != properties.end())
+    if (properties.has_property("fixed"))
         layer_ptr->fixed = lexical_cast<bool>(properties["fixed"]);
-    if (properties.find("sprite") != properties.end())
+    if (properties.has_property("sprite"))
         sprite = properties["sprite"];
     std::string pose;
-    if (properties.find("pose") != properties.end())
+    if (properties.has_property("pose"))
         pose = properties["pose"];
 
     // Image

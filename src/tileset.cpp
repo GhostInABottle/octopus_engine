@@ -13,7 +13,7 @@ rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
     if (!filename.empty())
         node->append_attribute(xml_attribute(doc, "source", filename));
     // Tileset properties
-    save_properties(properties, doc, *node);
+    properties.save(doc, *node);
     // Image
     if (!image_source.empty()) {
         auto image_node = xml_node(doc, "image");
@@ -28,7 +28,7 @@ rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
     for (auto& tile : tiles) {
         auto tile_node = xml_node(doc, "tile");
         tile_node->append_attribute(xml_attribute(doc, "id", std::to_string(tile.id)));
-        save_properties(tile.properties, doc, *tile_node);
+        tile.properties.save(doc, *tile_node);
         node->append_node(tile_node);
     }
     return node;
@@ -60,7 +60,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
     tileset_ptr->tile_height = lexical_cast<int>(
         node.first_attribute("tileheight")->value());
     // Tileset properties
-    read_properties(tileset_ptr->properties, node);
+    tileset_ptr->properties.read(node);
     // Image
     if (auto image_node = node.first_node("image")) {
         tileset_ptr->image_source = image_node->first_attribute("source")->value();
@@ -78,7 +78,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
             tile_node; tile_node = tile_node->next_sibling("tile")) {
         Tile tile;
         tile.id = lexical_cast<int>(tile_node->first_attribute("id")->value());
-        read_properties(tile.properties, *tile_node);
+        tile.properties.read(*tile_node);
         tileset_ptr->tiles.push_back(tile);
     }
     return tileset_ptr;

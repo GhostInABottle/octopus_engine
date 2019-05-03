@@ -7,12 +7,12 @@
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/types.hpp"
 #include "rapidxml.hpp"
-#include "common.hpp"
+#include "tmx_properties.hpp"
 
 struct Tileset {
     struct Tile {
         int id;
-        Properties properties;
+        Tmx_Properties properties;
     };
     // GID of first tile
     int first_id;
@@ -25,7 +25,7 @@ struct Tileset {
     // Height of each tile pixels
     int tile_height;
     // Tileset properties
-    Properties properties;
+    Tmx_Properties properties;
     // Image source file
     std::string image_source;
     // Image transparent color
@@ -38,6 +38,12 @@ struct Tileset {
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Tileset> load(const std::string& filename);
     static std::unique_ptr<Tileset> load(rapidxml::xml_node<>& node);
+    std::string set_property(const std::string& name, const std::string& value) {
+        properties[name] = value;
+    }
+    std::string get_property(const std::string& name) const {
+        return properties[name];
+    }
     xd::rect tile_source_rect(int tile_index) const;
 };
 

@@ -28,7 +28,7 @@ rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
         node->append_attribute(xml_attribute(doc, "opacity", std::to_string(opacity)));
     if (!visible)
         node->append_attribute(xml_attribute(doc, "visible", "0"));
-    save_properties(properties, doc, *node);
+    properties.save(doc, *node);
     return node;
 }
 
@@ -43,13 +43,14 @@ void Layer::load(rapidxml::xml_node<>& node) {
         opacity = lexical_cast<float>(opacity_node->value());
     if (auto visible_node = node.first_attribute("visible"))
         visible = lexical_cast<bool>(visible_node->value());
-    read_properties(properties, node);
-    auto vert_iter = properties.find("vertex-shader");
-    auto frag_iter = properties.find("fragment-shader");
-    if (vert_iter != properties.end() && frag_iter != properties.end()) {
-        vertex_shader = vert_iter->second;
-        fragment_shader = frag_iter->second;
-    } else if (vert_iter != properties.end() || frag_iter != properties.end()) {
+    properties.read(node);
+
+    auto has_vert = properties.has_property("vertex-shader");
+    auto has_frag = properties.has_property("fragment-shader");
+    if (has_vert && has_frag) {
+        vertex_shader = properties["vertex-shader"];
+        fragment_shader = properties["fragment-shader"];
+    } else if (has_vert || has_frag) {
         LOGGER_W << "Must define both shader types for layer " << name;
     }
 }

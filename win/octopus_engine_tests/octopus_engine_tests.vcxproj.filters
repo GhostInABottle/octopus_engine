@@ -291,6 +291,9 @@
     <ClCompile Include="..\..\src\xd\system\window.cpp">
       <Filter>Source Files\xd\system</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\tmx_properties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\utility.hpp">
@@ -619,6 +622,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\xd\system\window_options.hpp">
       <Filter>Header Files\xd\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tmx_properties.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
