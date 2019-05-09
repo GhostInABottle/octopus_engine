@@ -44,7 +44,29 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
-            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {}
+            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {
+        // Load choice sound effects
+        auto select_sound_file = Configurations::get<std::string>("game.choice-select-sfx");
+        if (!select_sound_file.empty()) {
+            select_sound = std::make_unique<xd::sound>(select_sound_file);
+        }
+        auto confirm_sound_file = Configurations::get<std::string>("game.choice-confirm-sfx");
+        if (!confirm_sound_file.empty()) {
+            confirm_sound = std::make_unique<xd::sound>(confirm_sound_file);
+        }
+    }
+
+    void play_sound(bool is_confirm) {
+        auto& sound = is_confirm ? confirm_sound : select_sound;
+
+        if (!sound) return;
+        if (sound->stopped()) {
+            auto filename = sound->get_filename();
+            sound = std::make_unique<xd::sound>(filename);
+        }
+        sound->play();
+    }
+
     std::unique_ptr<Scripting_Interface> scripting_interface;
     bool show_fps;
     bool show_time;
@@ -83,6 +105,10 @@ struct Game::Impl {
     bool gamepad_enabled;
     // Active gamepad id
     int gamepad_id;
+    // Choice navigation sound effect
+    std::unique_ptr<xd::sound> select_sound;
+    // Choice confirmation sound effect
+    std::unique_ptr<xd::sound> confirm_sound;
 };
 
 Game::Game(bool editor_mode) :
@@ -549,4 +575,12 @@ void Game::process_keymap() {
             window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
         }
     }
+}
+
+void Game::play_select_sound() const {
+    pimpl->play_sound(false);
+}
+
+void Game::play_confirm_sound() const {
+    pimpl->play_sound(true);
 }

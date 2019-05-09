@@ -26,6 +26,8 @@ void Configurations::parse(const std::string& filename) {
     defaults["game.choice-press-delay"] = 250;
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
     defaults["game.map-loaded-script"] = std::string();
+    defaults["game.choice-select-sfx"] = std::string();
+    defaults["game.choice-confirm-sfx"] = std::string();
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();

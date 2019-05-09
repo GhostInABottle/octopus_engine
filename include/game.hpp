@@ -148,6 +148,10 @@ public:
     int get_gamepad_id() const;
     // Process key-mapping string
     void process_keymap();
+    // Play choice select sound effect
+    void play_select_sound() const;
+    // Play choice confirmation sound effect
+    void play_confirm_sound() const;
 private:
     std::unique_ptr<xd::window> window;
     float magnification;

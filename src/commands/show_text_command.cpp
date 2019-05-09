@@ -26,9 +26,12 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
     long duration, bool center, Text_Position_Type pos_type) :
         game(game), position(position), choices(choices), text(text),
         duration(duration), start_time(game.ticks()),
-        complete(false), text_complete(false) {
+        complete(false), text_complete(false), press_start(0),
+        pressed_direction(Direction::NONE), was_disabled(false) {
+
     selected_choice = 0;
     current_choice = 0;
+
     auto full = full_text();
     // Estimate text size by stripping out tags
     auto clean_text = full;
@@ -42,12 +45,14 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
     auto text_lines = split(clean_text, "\n");
     if (text_lines.empty())
         text_lines.push_back("");
+
     // Find longest line to center the text at the right position
     auto longest_line = text_lines[0];
     for (auto& line : text_lines) {
         if (line.size() > longest_line.size())
             longest_line = line;
     }
+
     // Set text position based on size estimation
     auto& font_style = game.get_font_style();
     float char_height = font_style.line_height();
@@ -85,6 +90,7 @@ Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
     canvas = std::make_shared<Canvas>(game, pos, full, camera_relative);
     canvas->set_opacity(0.0f);
     game.add_canvas(canvas);
+
     // Show text above other images
     canvas->set_priority(canvas->get_priority() +
         Configurations::get<int>("debug.text-canvas-priority"));
@@ -130,8 +136,12 @@ void Show_Text_Command::execute(int ticks) {
         static std::string action_button =
             Configurations::get<std::string>("controls.action-button");
         text_complete = game.triggered_once(action_button);
-        if (!text_complete && !choices.empty()) {
-            update_choice();
+        if (!choices.empty()) {
+            if (text_complete) {
+                game.play_confirm_sound();
+            } else {
+                update_choice();
+            }
         }
     }
 
@@ -180,8 +190,10 @@ void Show_Text_Command::update_choice() {
         current_choice = (current_choice + 1) % choices.size();
     if (dir == Direction::UP)
         current_choice = (current_choice + choices.size() - 1) % choices.size();
-    if (old_choice != current_choice)
+    if (old_choice != current_choice) {
+        game.play_select_sound();
         canvas->set_text(full_text());
+    }
 }
 
 xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
