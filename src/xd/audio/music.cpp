@@ -1,6 +1,7 @@
 #include "../../../include/xd/audio/music.hpp"
 #include "../../../include/xd/audio/exceptions.hpp"
 #include "../../../include/xd/audio/sound.hpp"
+#include "../../../include/xd/audio/audio.hpp"
 #include <FMOD/fmod.hpp>
 #include <memory>
 
@@ -8,23 +9,20 @@ namespace xd { namespace detail {
     struct music_handle
     {
         xd::sound sound;
-        music_handle(const std::string& filename, unsigned int flags)
-            : sound(filename, flags) {}
+        music_handle(audio& audio, const std::string& filename, unsigned int flags)
+            : sound(audio, filename, flags) {}
     };
 } }
 
-xd::music::music(const std::string& filename, unsigned int flags)
+xd::music::music(audio& audio, const std::string& filename, unsigned int flags)
 {
     // load music from file
     flags = flags ? flags : FMOD_CREATESTREAM | FMOD_LOOP_NORMAL | FMOD_2D;
-    auto handle = std::unique_ptr<detail::music_handle>(new detail::music_handle(filename, flags));
-    // all ok, release the memory to the real handle
-    m_handle = handle.release();
+    m_handle = std::make_unique<detail::music_handle>(audio, filename, flags);
 }
 
 xd::music::~music()
 {
-    delete m_handle;
 }
 
 void xd::music::play()

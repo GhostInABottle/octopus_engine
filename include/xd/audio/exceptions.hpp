@@ -1,5 +1,5 @@
-#ifndef H_XD_GRAPHICS_EXCEPTIONS
-#define H_XD_GRAPHICS_EXCEPTIONS
+#ifndef H_XD_AUDIO_EXCEPTIONS
+#define H_XD_AUDIO_EXCEPTIONS
 
 #include "../exception.hpp"
 #include <string>

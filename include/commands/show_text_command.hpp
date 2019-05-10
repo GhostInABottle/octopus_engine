@@ -5,8 +5,6 @@
 #include <memory>
 #include "../xd/graphics/types.hpp"
 #include "../command.hpp"
-#include "../direction.hpp"
-#include "update_canvas_command.hpp"
 
 class Game;
 class Map_Object;
@@ -42,28 +40,14 @@ public:
         | Text_Position_Type::EXACT_Y | Text_Position_Type::CAMERA_RELATIVE);
     void execute() override;
     void execute(int ticks) override;
-    bool is_complete() const override { return complete;  }
-    int choice_index() const { return selected_choice; }
-    std::string full_text() const;
-    void set_start_time(long start) { this->start_time = start;  }
+    bool is_complete() const override;
+    int choice_index();
+    void set_start_time(long start);
     static xd::vec2 text_position(Map_Object* object);
 private:
-    void update_choice();
-    Game& game;
-    xd::vec2 position;
-    std::shared_ptr<Canvas> canvas;
-    std::unique_ptr<Update_Canvas_Command> canvas_updater;
-    std::string text;
-    std::vector<std::string> choices;
-    bool complete;
-    bool text_complete;
-    bool was_disabled;
-    unsigned int  selected_choice;
-    unsigned int current_choice;
-    long start_time;
-    long duration;
-    Direction pressed_direction;
-    long press_start;
+    struct Impl;
+    friend struct Impl;
+    std::unique_ptr<Impl> pimpl;
 };
 
 #endif

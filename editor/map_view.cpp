@@ -142,7 +142,7 @@ void Map_View::initializeGL() {
             throw xd::window_creation_failed();
         }
         Configurations::parse("config.ini");
-        game.reset(new Game(true));
+        game.reset(new Game(nullptr, true));
         new_map();
         tick_timer = new QElapsedTimer();
         tick_timer->start();

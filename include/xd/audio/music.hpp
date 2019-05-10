@@ -4,6 +4,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <utility>
+#include <memory>
 
 namespace xd
 {
@@ -11,12 +12,13 @@ namespace xd
     {
         struct music_handle;
     }
+    class audio;
 
     class music : public boost::noncopyable
     {
     public:
 
-        music(const std::string& filename, unsigned int flags = 0);
+        music(audio& audio, const std::string& filename, unsigned int flags = 0);
         virtual ~music();
 
         void play();
@@ -42,7 +44,7 @@ namespace xd
         std::string get_filename() const;
 
     private:
-        detail::music_handle *m_handle;
+        std::unique_ptr<detail::music_handle> m_handle;
     };
 }
 

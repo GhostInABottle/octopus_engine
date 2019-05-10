@@ -749,7 +749,7 @@ void Scripting_Interface::setup_scripts() {
             .def("set_loop_points", &xd::sound::set_loop_points),
         def("Sound", tag_function<xd::sound* (const std::string&)>(
             [&](const std::string& filename) {
-                return new xd::sound(filename);
+                return new xd::sound(*game->get_audio(), filename);
             }
         ), adopt(result)),
         // Background music

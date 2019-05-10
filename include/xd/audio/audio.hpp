@@ -2,6 +2,7 @@
 #define H_XD_AUDIO_AUDIO
 
 #include <boost/noncopyable.hpp>
+#include <memory>
 
 namespace xd
 {
@@ -13,15 +14,15 @@ namespace xd
     class audio : public boost::noncopyable
     {
     public:
-        static void init();
-        static void update();
-        static void shutdown();
-        static detail::audio_handle *get_handle() {
-            return m_audio_handle;
+        audio();
+        ~audio();
+        void update();
+        detail::audio_handle* get_handle() {
+            return m_audio_handle.get();
         }
 
     private:
-        static detail::audio_handle *m_audio_handle;
+        std::unique_ptr<detail::audio_handle> m_audio_handle;
     };
 }
 

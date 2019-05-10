@@ -21,6 +21,7 @@ class Shake_Decorator;
 namespace xd {
     class asset_manager;
     class music;
+    class audio;
     namespace lua {
         class virtual_machine;
     }
@@ -28,8 +29,10 @@ namespace xd {
 
 class Game {
 public:
-    explicit Game(bool editor_mode = false);
+    explicit Game(xd::audio* audio, bool editor_mode = false);
     ~Game();
+    // Get audio system pointer
+    xd::audio* get_audio() const;
     // Main game loop
     void run();
     // Logic update
@@ -148,10 +151,6 @@ public:
     int get_gamepad_id() const;
     // Process key-mapping string
     void process_keymap();
-    // Play choice select sound effect
-    void play_select_sound() const;
-    // Play choice confirmation sound effect
-    void play_confirm_sound() const;
 private:
     std::unique_ptr<xd::window> window;
     float magnification;

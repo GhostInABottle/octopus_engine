@@ -52,11 +52,17 @@ struct Sprite::Impl {
     std::vector<std::shared_ptr<xd::sound>> playing_sounds;
 
     Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
-        game(game), data(std::move(data))
+        game(game),
+        data(std::move(data)),
+        frame_index(0),
+        old_time(game.ticks()),
+        frame_count(0),
+        tweening(false),
+        finished(false),
+        last_sound_frame(-1),
+        speed(1.0f)
     {
         pose = &this->data->poses[0];
-        frame_count = 0;
-        speed = 1.0f;
     }
 
     void update() {
@@ -84,8 +90,9 @@ struct Sprite::Impl {
             return;
         }
 
-        if (!current_frame->sound_file.empty() && last_sound_frame != frame_index) {
-            auto sound = std::make_shared<xd::sound>(current_frame->sound_file);
+        auto audio = game.get_audio();
+        if (audio && !current_frame->sound_file.empty() && last_sound_frame != frame_index) {
+            auto sound = std::make_shared<xd::sound>(*audio, current_frame->sound_file);
             sound->play();
             playing_sounds.push_back(sound);
             last_sound_frame = frame_index;

@@ -4,6 +4,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <utility>
+#include <memory>
 
 namespace xd
 {
@@ -17,7 +18,7 @@ namespace xd
     {
     public:
 
-        sound(const std::string& filename, unsigned int flags = 0);
+        sound(audio& audio, const std::string& filename, unsigned int flags = 0);
         virtual ~sound();
 
         void play();
@@ -43,7 +44,7 @@ namespace xd
         std::string get_filename() const;
 
     private:
-        detail::sound_handle *m_handle;
+        std::unique_ptr<detail::sound_handle> m_handle;
     };
 }
 

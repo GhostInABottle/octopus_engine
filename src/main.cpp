@@ -3,6 +3,7 @@
 #include "../include/log.hpp"
 #include "../include/game.hpp"
 #include "../include/configurations.hpp"
+#include "../include/xd/audio.hpp"
 #include <iostream>
 #ifdef __APPLE__
 #include <unistd.h>
@@ -25,7 +26,9 @@ int main() {
 #endif
         Configurations::parse("config.ini");
         LOGGER_I << "Reticulating Splines";
-        Game game;
+
+        xd::audio audio;
+        Game game(&audio);
         game.run();
 
     } catch (const boost::property_tree::ptree_error& e) {

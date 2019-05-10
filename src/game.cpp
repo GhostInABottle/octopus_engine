@@ -27,7 +27,8 @@
 #include <stdexcept>
 
 struct Game::Impl {
-    explicit Impl(bool editor_mode) :
+    explicit Impl(xd::audio* audio, bool editor_mode) :
+            audio(audio),
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
@@ -44,34 +45,17 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
-            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {
-        // Load choice sound effects
-        auto select_sound_file = Configurations::get<std::string>("game.choice-select-sfx");
-        if (!select_sound_file.empty()) {
-            select_sound = std::make_unique<xd::sound>(select_sound_file);
-        }
-        auto confirm_sound_file = Configurations::get<std::string>("game.choice-confirm-sfx");
-        if (!confirm_sound_file.empty()) {
-            confirm_sound = std::make_unique<xd::sound>(confirm_sound_file);
-        }
-    }
+            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {}
 
-    void play_sound(bool is_confirm) {
-        auto& sound = is_confirm ? confirm_sound : select_sound;
-
-        if (!sound) return;
-        if (sound->stopped()) {
-            auto filename = sound->get_filename();
-            sound = std::make_unique<xd::sound>(filename);
-        }
-        sound->play();
-    }
-
-    std::unique_ptr<Scripting_Interface> scripting_interface;
-    bool show_fps;
-    bool show_time;
+    // Audio system
+    xd::audio* audio;
     // Was game started in editor mode?
     bool editor_mode;
+    std::unique_ptr<Scripting_Interface> scripting_interface;
+    // Show frames per second?
+    bool show_fps;
+    // Show current game-time in seconds?
+    bool show_time;
     // Information for teleporting to another map
     xd::vec2 next_position;
     Direction next_direction;
@@ -105,13 +89,10 @@ struct Game::Impl {
     bool gamepad_enabled;
     // Active gamepad id
     int gamepad_id;
-    // Choice navigation sound effect
-    std::unique_ptr<xd::sound> select_sound;
-    // Choice confirmation sound effect
-    std::unique_ptr<xd::sound> confirm_sound;
 };
 
-Game::Game(bool editor_mode) :
+Game::Game(xd::audio* audio, bool editor_mode) :
+        pimpl(new Impl(audio, editor_mode)),
         window(editor_mode ? nullptr : new xd::window(
             Configurations::get<std::string>("game.title"),
             Configurations::get<int>("game.screen-width"),
@@ -131,12 +112,10 @@ Game::Game(bool editor_mode) :
                 0))), // GL minor version
         magnification(Configurations::get<float>("debug.magnification")),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
-        pimpl(new Impl(editor_mode)),
         current_scripting_interface(nullptr),
         text_renderer(0, 0),
         editor_ticks(0),
         editor_size(1, 1) {
-    xd::audio::init();
     clock.reset(new Clock(*this));
     camera.reset(new Camera(*this));
     shake_decorator.reset(new Shake_Decorator(*this));
@@ -193,7 +172,7 @@ Game::Game(bool editor_mode) :
     // Add player to the map
     map->add_object(player);
     // Play background music
-    if (!map->get_bg_music_filename().empty()) {
+    if (pimpl->audio && !map->get_bg_music_filename().empty()) {
         load_music(map->get_bg_music_filename());
         music->set_looping(true);
         music->play();
@@ -230,7 +209,10 @@ Game::Game(bool editor_mode) :
 }
 
 Game::~Game() {
-    xd::audio::shutdown();
+}
+
+xd::audio* Game::get_audio() const {
+    return pimpl->audio;
 }
 
 void Game::run() {
@@ -243,7 +225,8 @@ void Game::run() {
 }
 
 void Game::frame_update() {
-    xd::audio::update();
+    if (pimpl->audio)
+        pimpl->audio->update();
 
     // Pause or resume game if needed
     bool triggered_pause = triggered("pause");
@@ -360,9 +343,10 @@ xd::lua::virtual_machine* Game::get_lua_vm() {
 }
 
 void Game::load_music(const std::string& filename) {
+    if (!pimpl->audio) return;
     if (music)
         music->stop();
-    music.reset(new xd::music(filename));
+    music.reset(new xd::music(*pimpl->audio, filename));
 }
 
 void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {
@@ -575,12 +559,4 @@ void Game::process_keymap() {
             window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
         }
     }
-}
-
-void Game::play_select_sound() const {
-    pimpl->play_sound(false);
-}
-
-void Game::play_confirm_sound() const {
-    pimpl->play_sound(true);
 }
