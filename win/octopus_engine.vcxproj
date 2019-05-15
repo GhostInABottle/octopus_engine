@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\commands\text_options.cpp" />
     <ClCompile Include="..\src\tmx_properties.cpp" />
     <ClCompile Include="..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\src\xd\audio\music.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="..\src\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\commands\text_options.hpp" />
     <ClInclude Include="..\include\xd\asset_manager.hpp" />
     <ClInclude Include="..\include\xd\asset_serializer.hpp" />
     <ClInclude Include="..\include\xd\audio.hpp" />

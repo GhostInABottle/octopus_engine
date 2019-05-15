@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\src\commands\shake_screen_command.cpp" />
     <ClCompile Include="..\..\src\commands\show_pose_command.cpp" />
     <ClCompile Include="..\..\src\commands\show_text_command.cpp" />
+    <ClCompile Include="..\..\src\commands\text_options.cpp" />
     <ClCompile Include="..\..\src\commands\tint_screen_command.cpp" />
     <ClCompile Include="..\..\src\commands\update_canvas_command.cpp" />
     <ClCompile Include="..\..\src\commands\update_layer_command.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\..\include\commands\shake_screen_command.hpp" />
     <ClInclude Include="..\..\include\commands\show_pose_command.hpp" />
     <ClInclude Include="..\..\include\commands\show_text_command.hpp" />
+    <ClInclude Include="..\..\include\commands\text_options.hpp" />
     <ClInclude Include="..\..\include\commands\tint_screen_command.hpp" />
     <ClInclude Include="..\..\include\commands\update_canvas_command.hpp" />
     <ClInclude Include="..\..\include\commands\update_layer_command.hpp" />

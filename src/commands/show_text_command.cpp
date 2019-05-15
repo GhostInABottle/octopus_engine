@@ -4,15 +4,15 @@
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/canvas.hpp"
-#include "../../include/direction.hpp"
 #include "../../include/map_object.hpp"
+#include "../../include/direction.hpp"
 #include "../../include/utility.hpp"
 #include "../../include/configurations.hpp"
 
 struct Show_Text_Command::Impl {
     explicit Impl(Game& game, xd::vec2 position,
         const std::vector<std::string>& choices, const std::string& text,
-        long duration, bool center, Text_Position_Type pos_type) :
+        long duration, bool center, bool show_dashes, Text_Position_Type pos_type) :
             game(game),
             position(position),
             text(text),
@@ -24,6 +24,7 @@ struct Show_Text_Command::Impl {
             current_choice(0),
             start_time(game.ticks()),
             duration(duration),
+            show_dashes(show_dashes),
             pressed_direction(Direction::NONE),
             press_start(0) {
 
@@ -138,10 +139,16 @@ struct Show_Text_Command::Impl {
                 else
                     result += "{color=green}";
             }
+
             // Add padding before choices if header text was specified
             if (!text.empty())
                 result += "  ";
-            result += "- " + choice_text;
+
+            if (show_dashes)
+                result += "- ";
+
+            result += choice_text;
+
             if (i == current_choice && !replaced_color)
                 result += "{/color}";
         }
@@ -252,6 +259,7 @@ struct Show_Text_Command::Impl {
     unsigned int current_choice;
     long start_time;
     long duration;
+    bool show_dashes;
     Direction pressed_direction;
     long press_start;
     // Choice navigation sound effect
@@ -260,26 +268,15 @@ struct Show_Text_Command::Impl {
     std::unique_ptr<xd::sound> confirm_sound;
 };
 
-
-Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
-    const std::string& text, long duration) :
-    Show_Text_Command(game, text_position(object), std::vector<std::string>{},
-        text, duration, false,
-        Text_Position_Type::CENTERED_X
-        | Text_Position_Type::BOTTOM_Y
-        | Text_Position_Type::CAMERA_RELATIVE) {}
-
-Show_Text_Command::Show_Text_Command(Game& game, Map_Object* object,
-    const std::vector<std::string>& choices, const std::string& text) :
-    Show_Text_Command(game, text_position(object), choices, text, -1, false,
-        Text_Position_Type::CENTERED_X
-        | Text_Position_Type::BOTTOM_Y
-        | Text_Position_Type::CAMERA_RELATIVE) {}
-
-Show_Text_Command::Show_Text_Command(Game& game, xd::vec2 position,
-    const std::vector<std::string>& choices, const std::string& text,
-    long duration, bool center, Text_Position_Type pos_type) :
-    pimpl(new Impl(game, position, choices, text, duration, center, pos_type)) {}
+Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :
+    pimpl(new Impl(game,
+        options.position,
+        options.choices,
+        options.text,
+        options.duration,
+        options.centered,
+        options.show_dashes,
+        options.position_type)) {}
 
 void Show_Text_Command::execute() {
     execute(pimpl->game.ticks());
@@ -287,10 +284,6 @@ void Show_Text_Command::execute() {
 
 void Show_Text_Command::execute(int ticks) {
     pimpl->execute(ticks, stopped);
-}
-
-xd::vec2 Show_Text_Command::text_position(Map_Object* object) {
-    return object->get_position() + xd::vec2(16, 0);
 }
 
 bool Show_Text_Command::is_complete() const {

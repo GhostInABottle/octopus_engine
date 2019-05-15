@@ -34,6 +34,7 @@ SOURCES += main.cpp\
     ../src/commands/shake_screen_command.cpp \
     ../src/commands/show_pose_command.cpp \
     ../src/commands/show_text_command.cpp \
+    ../src/commands/text_options.cpp \
     ../src/commands/tint_screen_command.cpp \
     ../src/commands/update_canvas_command.cpp \
     ../src/commands/update_layer_command.cpp \
@@ -122,6 +123,7 @@ HEADERS  += main_window.hpp \
     ../include/commands/shake_screen_command.hpp \
     ../include/commands/show_pose_command.hpp \
     ../include/commands/show_text_command.hpp \
+    ../include/commands/text_options.hpp \
     ../include/commands/tint_screen_command.hpp \
     ../include/commands/update_canvas_command.hpp \
     ../include/commands/update_layer_command.hpp \

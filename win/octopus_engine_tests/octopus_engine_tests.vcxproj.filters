@@ -294,6 +294,9 @@
     <ClCompile Include="..\..\src\tmx_properties.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\commands\text_options.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\utility.hpp">
@@ -625,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\tmx_properties.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\text_options.hpp">
+      <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

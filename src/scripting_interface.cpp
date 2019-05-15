@@ -79,6 +79,13 @@ void Scripting_Interface::set_globals() {
     vm.globals()["DRAW_BELOW"] = 0;
     vm.globals()["DRAW_NORMAL"] = 1;
     vm.globals()["DRAW_ABOVE"] = 2;
+    // Text position types
+    vm.globals()["TEXT_POSITION_NONE"] = static_cast<int>(Text_Position_Type::NONE);
+    vm.globals()["TEXT_POSITION_EXACT_X"] = static_cast<int>(Text_Position_Type::EXACT_X);
+    vm.globals()["TEXT_POSITION_CENTERED_X"] = static_cast<int>(Text_Position_Type::CENTERED_X);
+    vm.globals()["TEXT_POSITION_EXACT_Y"] = static_cast<int>(Text_Position_Type::EXACT_Y);
+    vm.globals()["TEXT_POSITION_BOTTOM_Y"] = static_cast<int>(Text_Position_Type::BOTTOM_Y);
+    vm.globals()["TEXT_POSITION_CAMERA"] = static_cast<int>(Text_Position_Type::CAMERA_RELATIVE);
 }
 
 Command_Result* Scripting_Interface::register_command(std::shared_ptr<Command> command) {
@@ -194,14 +201,13 @@ void Scripting_Interface::setup_scripts() {
         // A command for showing text (used in NPC scheduling)
         def("Text_Command", tag_function<Command_Result* (Map_Object*, const std::string&, long, long)>(
             [&](Map_Object* object, const std::string& text, long duration, long start_time) {
-                auto command = std::make_shared<Show_Text_Command>(
-                    *game,
-                    Show_Text_Command::text_position(object),
-                    std::vector<std::string>{},
-                    text,
-                    duration,
-                    false,
-                    Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y);
+                Text_Options options(object);
+                options.set_text(text)
+                    .set_duration(duration)
+                    .set_position_type(Text_Position_Type::CENTERED_X | Text_Position_Type::BOTTOM_Y);
+
+                auto command = std::make_shared<Show_Text_Command>(*game, options);
+
                 if (start_time >= 0) {
                     command->set_start_time(start_time);
                 }
@@ -980,12 +986,55 @@ void Scripting_Interface::setup_scripts() {
                 return canvas;
             }
         )),
+        // Options for displaying text
+        class_<Text_Options>("Text_Options")
+            .def(constructor<>())
+            .def(constructor<Map_Object*>())
+            .def(constructor<xd::vec2>())
+            .def_readonly("text", &Text_Options::text)
+            .def_readonly("choices", &Text_Options::choices)
+            .def_readonly("object", &Text_Options::object)
+            .def_readonly("position", &Text_Options::position)
+            .def_readonly("position_type", &Text_Options::position_type)
+            .def_readonly("duration", &Text_Options::duration)
+            .def_readonly("centered", &Text_Options::centered)
+            .def_readonly("show_dashes", &Text_Options::show_dashes)
+            .def_readonly("translated", &Text_Options::translated)
+            .def("set_text", &Text_Options::set_text)
+            .def("set_choices", tag_function<Text_Options& (Text_Options*, const object&)>(
+                [&](Text_Options* options, const object& table) -> Text_Options& {
+                    std::vector<std::string> choices;
+                    if (type(table) == LUA_TTABLE) {
+                        for (iterator i(table), end; i != end; ++i) {
+                            choices.push_back(object_cast<std::string>(*i));
+                        }
+                    }
+                    return options->set_choices(choices);
+                }
+            ))
+            .def("set_object", &Text_Options::set_object)
+            .def("set_position", &Text_Options::set_position)
+            .def("set_position_type", tag_function<Text_Options& (Text_Options*, int)>(
+                [&](Text_Options* options, int type) -> Text_Options& {
+                    return options->set_position_type(static_cast<Text_Position_Type>(type));
+                }
+            ))
+            .def("set_duration", &Text_Options::set_duration)
+            .def("set_centered", &Text_Options::set_centered)
+            .def("set_show_dashes", &Text_Options::set_show_dashes)
+            .def("set_translated", &Text_Options::set_translated),
         // Show some text
+        def("text", tag_function<Command_Result* (const Text_Options&)>(
+                [&](const Text_Options& options) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_command(std::make_shared<Show_Text_Command>(*game, options));
+                }
+        ), adopt(result)),
         def("text", tag_function<Command_Result* (Map_Object&, const std::string&)>(
                 [&](Map_Object& obj, const std::string& text) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, &obj, text
+                        *game, Text_Options{&obj}.set_text(text)
                     ));
                 }
         ), adopt(result)),
@@ -993,7 +1042,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](xd::vec2& position, const std::string& text) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, position, std::vector<std::string>{}, text
+                        *game, Text_Options{position}.set_text(text)
                     ));
                 }
         ), adopt(result)),
@@ -1001,7 +1050,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](float y, const std::string& text) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, -1, true
+                        *game, Text_Options{xd::vec2{0.0f, y}}.set_text(text).set_centered(true)
                     ));
                 }
         ), adopt(result)),
@@ -1010,7 +1059,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](Map_Object& obj, const std::string& text, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, &obj, text, duration
+                        *game, Text_Options{&obj}.set_text(text).set_duration(duration)
                     ));
                 }
         ), adopt(result)),
@@ -1018,7 +1067,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](xd::vec2& position, const std::string& text, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, position, std::vector<std::string>{}, text, duration
+                        *game, Text_Options{position}.set_text(text).set_duration(duration)
                     ));
                 }
         ), adopt(result)),
@@ -1026,7 +1075,7 @@ void Scripting_Interface::setup_scripts() {
                 [&](float y, const std::string& text, long duration) {
                     auto si = game->get_current_scripting_interface();
                     return si->register_command(std::make_shared<Show_Text_Command>(
-                        *game, xd::vec2{0.0f, y}, std::vector<std::string>{}, text, duration, true
+                        *game, Text_Options{ xd::vec2{0.0f, y} }.set_text(text).set_duration(duration).set_centered(true)
                     ));
                 }
         ), adopt(result)),
@@ -1037,6 +1086,12 @@ void Scripting_Interface::setup_scripts() {
             .property("selected", tag_function<int (Choice_Result*)>(
                 [](Choice_Result* cr) { return cr->choice_index() + 1; })),
         // Show some text followed by a list of choices
+        def("choices", tag_function<Choice_Result* (const Text_Options&)>(
+                [&](const Text_Options& options) {
+                    auto si = game->get_current_scripting_interface();
+                    return si->register_choice_command(std::make_shared<Show_Text_Command>(*game, options));
+                }
+        ), adopt(result)),
         def("choices",
             tag_function<Choice_Result* (Map_Object&, const std::string&, const object&)>(
                 [&](Map_Object& obj, const std::string& text, const object& table) {
@@ -1047,7 +1102,7 @@ void Scripting_Interface::setup_scripts() {
                         }
                     }
                     auto command = std::make_shared<Show_Text_Command>(
-                        *game, &obj, choices, text);
+                        *game, Text_Options{&obj}.set_choices(choices).set_text(text));
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);
                 }
@@ -1062,7 +1117,7 @@ void Scripting_Interface::setup_scripts() {
                         }
                     }
                     auto command = std::make_shared<Show_Text_Command>(
-                        *game, position, choices, text);
+                        *game, Text_Options{position}.set_choices(choices).set_text(text));
                     auto si = game->get_current_scripting_interface();
                     return si->register_choice_command(command);
                 }
