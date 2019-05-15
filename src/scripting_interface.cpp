@@ -79,7 +79,7 @@ void Scripting_Interface::set_globals() {
     vm.globals()["DRAW_BELOW"] = 0;
     vm.globals()["DRAW_NORMAL"] = 1;
     vm.globals()["DRAW_ABOVE"] = 2;
-    // Text position types
+    // Text positioning
     vm.globals()["TEXT_POSITION_NONE"] = static_cast<int>(Text_Position_Type::NONE);
     vm.globals()["TEXT_POSITION_EXACT_X"] = static_cast<int>(Text_Position_Type::EXACT_X);
     vm.globals()["TEXT_POSITION_CENTERED_X"] = static_cast<int>(Text_Position_Type::CENTERED_X);
@@ -199,6 +199,16 @@ void Scripting_Interface::setup_scripts() {
             }
         ), adopt(result)),
         // A command for showing text (used in NPC scheduling)
+        def("Text_Command", tag_function<Command_Result* (Text_Options, long)>(
+            [&](Text_Options options, long start_time) {
+                auto command = std::make_shared<Show_Text_Command>(*game, options);
+
+                if (start_time >= 0) {
+                    command->set_start_time(start_time);
+                }
+                return new Command_Result(command);
+            }
+        ), adopt(result)),
         def("Text_Command", tag_function<Command_Result* (Map_Object*, const std::string&, long, long)>(
             [&](Map_Object* object, const std::string& text, long duration, long start_time) {
                 Text_Options options(object);
@@ -999,6 +1009,7 @@ void Scripting_Interface::setup_scripts() {
             .def_readonly("duration", &Text_Options::duration)
             .def_readonly("centered", &Text_Options::centered)
             .def_readonly("show_dashes", &Text_Options::show_dashes)
+            .def_readonly("choice_indent", &Text_Options::choice_indent)
             .def_readonly("translated", &Text_Options::translated)
             .def("set_text", &Text_Options::set_text)
             .def("set_choices", tag_function<Text_Options& (Text_Options*, const object&)>(
@@ -1022,7 +1033,8 @@ void Scripting_Interface::setup_scripts() {
             .def("set_duration", &Text_Options::set_duration)
             .def("set_centered", &Text_Options::set_centered)
             .def("set_show_dashes", &Text_Options::set_show_dashes)
-            .def("set_translated", &Text_Options::set_translated),
+            .def("set_translated", &Text_Options::set_translated)
+            .def("set_choice_indent", &Text_Options::set_choice_indent),
         // Show some text
         def("text", tag_function<Command_Result* (const Text_Options&)>(
                 [&](const Text_Options& options) {

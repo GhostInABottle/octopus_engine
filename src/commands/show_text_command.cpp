@@ -8,23 +8,18 @@
 #include "../../include/direction.hpp"
 #include "../../include/utility.hpp"
 #include "../../include/configurations.hpp"
+#include <utility>
 
 struct Show_Text_Command::Impl {
-    explicit Impl(Game& game, xd::vec2 position,
-        const std::vector<std::string>& choices, const std::string& text,
-        long duration, bool center, bool show_dashes, Text_Position_Type pos_type) :
+    explicit Impl(Game& game, Text_Options options) :
             game(game),
-            position(position),
-            text(text),
-            choices(choices),
+            options(std::move(options)),
             complete(false),
             text_complete(false),
             was_disabled(false),
             selected_choice(0),
             current_choice(0),
             start_time(game.ticks()),
-            duration(duration),
-            show_dashes(show_dashes),
             pressed_direction(Direction::NONE),
             press_start(0) {
 
@@ -65,20 +60,20 @@ struct Show_Text_Command::Impl {
         float char_height = font_style.line_height();
         float text_width = game.get_font()->get_width(longest_line, font_style);
         float text_height = char_height * text_lines.size();
-        auto pos = position;
+        auto pos = options.position;
         bool camera_relative =
-            (pos_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
+            (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
         if (camera_relative) {
             pos -= game.get_camera()->get_position();
         }
 
-        if ((pos_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
+        if ((options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
             pos.y -= text_height;
         }
-        if (center) {
+        if (options.centered) {
             pos.x = game.game_width() / 2 - text_width / 2;
         }
-        else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+        else if ((options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
             pos.x -= text_width / 2;
         }
 
@@ -105,7 +100,7 @@ struct Show_Text_Command::Impl {
         canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
         canvas_updater->set_new_opacity(1.0f);
         canvas_updater->set_duration(Configurations::get<int>("game.text-fade-in-duration"));
-        if (duration == -1) {
+        if (options.duration == -1) {
             was_disabled = game.get_player()->is_disabled();
             game.get_player()->set_disabled(true);
         }
@@ -119,19 +114,19 @@ struct Show_Text_Command::Impl {
     }
 
     std::string full_text() const {
-        std::string result = text;
+        std::string result = options.text;
         std::string color_prefix = "{color=";
-        for (unsigned int i = 0; i < choices.size(); ++i) {
+        for (unsigned int i = 0; i < options.choices.size(); ++i) {
             if (!result.empty())
                 result += "\n";
-            std::string choice_text = choices[i];
+            std::string choice_text = options.choices[i];
             bool replaced_color = false;
             // Add color for selected choice
             if (i == current_choice) {
-                auto start = choices[i].find(color_prefix);
+                auto start = options.choices[i].find(color_prefix);
                 // Strip existing outermost color, we want green to take precedence
                 if (start == 0) {
-                    auto end = choices[i].find("}");
+                    auto end = options.choices[i].find("}");
                     choice_text.replace(color_prefix.length(),
                         end - color_prefix.length(), "green");
                     replaced_color = true;
@@ -141,10 +136,10 @@ struct Show_Text_Command::Impl {
             }
 
             // Add padding before choices if header text was specified
-            if (!text.empty())
-                result += "  ";
+            if (!options.text.empty() && options.choice_indent > 0)
+                result += std::string(options.choice_indent, ' ');
 
-            if (show_dashes)
+            if (options.show_dashes)
                 result += "- ";
 
             result += choice_text;
@@ -190,10 +185,11 @@ struct Show_Text_Command::Impl {
         if (game.triggered("up"))
             dir = Direction::UP;
 
+        auto choice_count = options.choices.size();
         if (dir == Direction::DOWN)
-            current_choice = (current_choice + 1) % choices.size();
+            current_choice = (current_choice + 1) % choice_count;
         if (dir == Direction::UP)
-            current_choice = (current_choice + choices.size() - 1) % choices.size();
+            current_choice = (current_choice + choice_count - 1) % choice_count;
         if (old_choice != current_choice) {
             play_sound(false);
             canvas->set_text(full_text());
@@ -214,21 +210,21 @@ struct Show_Text_Command::Impl {
             if (canvas->is_visible()) {
                 canvas->set_visible(false);
             }
-            if (duration == -1) {
+            if (options.duration == -1) {
                 game.get_player()->set_disabled(was_disabled);
             }
             complete = true;
             return;
         }
 
-        if (duration > -1) {
-            text_complete = ticks > start_time + duration;
+        if (options.duration > -1) {
+            text_complete = ticks > start_time + options.duration;
         }
         else {
             static std::string action_button =
                 Configurations::get<std::string>("controls.action-button");
             text_complete = game.triggered_once(action_button);
-            if (!choices.empty()) {
+            if (!options.choices.empty()) {
                 if (text_complete) {
                     play_sound(true);
                 }
@@ -247,19 +243,15 @@ struct Show_Text_Command::Impl {
     }
 
     Game& game;
-    xd::vec2 position;
+    Text_Options options;
     std::shared_ptr<Canvas> canvas;
     std::unique_ptr<Update_Canvas_Command> canvas_updater;
-    std::string text;
-    std::vector<std::string> choices;
     bool complete;
     bool text_complete;
     bool was_disabled;
     unsigned int  selected_choice;
     unsigned int current_choice;
     long start_time;
-    long duration;
-    bool show_dashes;
     Direction pressed_direction;
     long press_start;
     // Choice navigation sound effect
@@ -269,14 +261,7 @@ struct Show_Text_Command::Impl {
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :
-    pimpl(new Impl(game,
-        options.position,
-        options.choices,
-        options.text,
-        options.duration,
-        options.centered,
-        options.show_dashes,
-        options.position_type)) {}
+    pimpl(new Impl(game, std::move(options))) {}
 
 void Show_Text_Command::execute() {
     execute(pimpl->game.ticks());

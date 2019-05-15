@@ -35,14 +35,17 @@ struct Text_Options
     bool centered;
     bool show_dashes;
     bool translated;
+    unsigned int choice_indent;
 
     Text_Options() :
         object(nullptr),
+        position(0.0f, 0.0f),
         position_type(Text_Position_Type::NONE),
         duration(-1),
         centered(false),
         show_dashes(true),
-        translated(false) {}
+        translated(false),
+        choice_indent(2) {}
 
 
     Text_Options(Map_Object* object) : Text_Options() {
@@ -92,9 +95,14 @@ struct Text_Options
         this->show_dashes = show_dashes;
         return *this;
     }
-    
+
     Text_Options& set_translated(bool translated) {
         this->translated = translated;
+        return *this;
+    }
+
+    Text_Options& set_choice_indent(unsigned int choice_indent) {
+        this->choice_indent = choice_indent;
         return *this;
     }
 };
