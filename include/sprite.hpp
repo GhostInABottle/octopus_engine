@@ -43,6 +43,8 @@ public:
     bool is_stopped() const;
     // Stop updating the sprite
     void stop();
+    // Did we reach the last frame?
+    bool is_completed() const;
     // Gets animation speed modifier;
     float get_speed() const;
     // Sets animation speed modifier

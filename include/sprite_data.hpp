@@ -44,6 +44,8 @@ struct Pose {
     int duration;
     // Number of times pose is repeated (-1 = forever).
     int repeats;
+    // Should never-ending pose frames complete before marking as finished?
+    bool require_completion;
     // Transform origin point
     xd::vec2 origin;
     // Pose image
@@ -55,7 +57,7 @@ struct Pose {
     // List of frames
     std::vector<Frame> frames;
 
-    Pose() : duration(100), repeats(-1) {}
+    Pose() : duration(100), repeats(-1), require_completion(false) {}
 };
 
 struct Sprite_Data {

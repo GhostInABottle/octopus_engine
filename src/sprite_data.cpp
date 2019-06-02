@@ -77,6 +77,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
         if (auto attr = pose_node->first_attribute("Repeats"))
             pose.repeats = lexical_cast<int>(attr->value());
 
+        if (auto attr = pose_node->first_attribute("Require-Completion"))
+            pose.require_completion = attr->value() == std::string("true");
+
         if (auto attr = pose_node->first_attribute("X-Origin"))
             pose.origin.x = lexical_cast<float>(attr->value());
         if (auto attr = pose_node->first_attribute("Y-Origin"))

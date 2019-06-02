@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     char text[] =
         "<?xml version=\"1.0\"?> \
         <Sprite Image=\"../data/player.png\"> \
-          <Pose Name=\"Cool Pose\" Repeats=\"3\"> \
+          <Pose Name=\"Cool Pose\" Repeats=\"3\" Require-Completion=\"true\" > \
             <Bounding-Box X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
             <Frame Duration=\"200\" X-Mag=\"2.5\" Y-Mag=\"4.0\" Angle=\"10\" Opacity=\"0.5\" Tween=\"true\"> \
               <Rectangle X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     Pose& main_pose = sprite_data->poses[0];
     BOOST_CHECK_EQUAL(main_pose.duration, 100);
     BOOST_CHECK_EQUAL(main_pose.repeats, 3);
+    BOOST_CHECK_EQUAL(main_pose.require_completion, true);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.x, 1);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.y, 2);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.w, 3);

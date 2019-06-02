@@ -56,6 +56,7 @@ struct Sprite::Impl {
         data(std::move(data)),
         frame_index(0),
         old_time(game.ticks()),
+        repeat_count(0),
         frame_count(0),
         tweening(false),
         finished(false),
@@ -77,10 +78,7 @@ struct Sprite::Impl {
             return;
 
         Frame* current_frame = &pose->frames[frame_index];
-        int frame_time = current_frame->duration == -1 ?
-                            pose->duration : current_frame->duration;
-
-        frame_time = static_cast<int>(frame_time * speed);
+        int frame_time = get_frame_time(*current_frame);
 
         // If the number of repeats is reached then animation is finished
         if (finished_repeating()) {
@@ -151,12 +149,23 @@ struct Sprite::Impl {
         tweening = false;
     }
 
+    int get_frame_time(const Frame& frame) const {
+        int frame_time = frame.duration == -1 ? pose->duration : frame.duration;
+        return static_cast<int>(frame_time * speed);
+    }
+
     std::string get_filename() const {
         return data->filename;
     }
 
     bool finished_repeating() const {
         return pose->repeats != -1 && repeat_count >= pose->repeats;
+    }
+
+    bool is_completed() const {
+        return frame_count > 0
+            && frame_index == frame_count - 1
+            && game.ticks() - old_time >= get_frame_time(pose->frames[frame_index]);
     }
 
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
@@ -304,6 +313,10 @@ bool Sprite::is_stopped() const {
 
 void Sprite::stop() {
     pimpl->finished = true;
+}
+
+bool Sprite::is_completed() const {
+    return pimpl->is_completed();
 }
 
 float Sprite::get_speed() const {
