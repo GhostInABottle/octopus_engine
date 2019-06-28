@@ -463,6 +463,20 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         }
     }
 
+    // Player position
+    if (map_ptr->properties.has_property("player-position-x")) {
+        map_ptr->starting_position.x = lexical_cast<float>(map_ptr->properties["player-position-x"]);
+    }
+    else {
+        map_ptr->starting_position.x = static_cast<float>(map_ptr->get_pixel_width() / 2);
+    }
+    if (map_ptr->properties.has_property("player-position-y")) {
+        map_ptr->starting_position.y = lexical_cast<float>(map_ptr->properties["player-position-y"]);
+    }
+    else {
+        map_ptr->starting_position.y = static_cast<float>(map_ptr->get_pixel_height() / 2);
+    }
+
     // Tilesets
     for (auto tileset_node = node.first_node("tileset");
             tileset_node; tileset_node = tileset_node->next_sibling("tileset")) {

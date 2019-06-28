@@ -146,6 +146,9 @@ public:
     std::string get_filename() const {
         return filename;
     }
+    xd::vec2 get_starting_position() const {
+        return starting_position;
+    }
     const Tileset& get_tileset(int index) const {
         return tilesets[index];
     }
@@ -185,6 +188,8 @@ private:
     std::string filename;
     // Counter to set IDs of new objects
     int next_object_id;
+    // Starting position for player
+    xd::vec2 starting_position;
     // Map properties
     Tmx_Properties properties;
     // Scripting interface for map scripts

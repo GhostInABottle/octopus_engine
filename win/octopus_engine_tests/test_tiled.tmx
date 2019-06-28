@@ -3,6 +3,7 @@
  <properties>
   <property name="music" value="../data/music.ogg"/>
   <property name="name" value="testmap"/>
+  <property name="player-position-x" value="5"/>
  </properties>
  <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8">
   <properties>

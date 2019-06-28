@@ -155,15 +155,19 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     if (editor_mode)
         return;
     map = Map::load(*this, Configurations::get<std::string>("startup.map"));
+    auto start_pos = map->get_starting_position();
+    if (Configurations::contains<float>("startup.player-position-x")) {
+        start_pos.x = Configurations::get<float>("startup.player-position-x");
+    }
+    if (Configurations::contains<float>("startup.player-position-y")) {
+        start_pos.y = Configurations::get<float>("startup.player-position-y");
+    }
     // Create player object
     auto player_ptr = new Map_Object(
         *this,
         "player",
         Configurations::get<std::string>("startup.player-sprite"),
-        xd::vec2(
-            Configurations::get<float>("startup.player-position-x"),
-            Configurations::get<float>("startup.player-position-y")
-        )
+        start_pos
     );
     player.reset(player_ptr);
     // Create input controller for player
@@ -414,7 +418,14 @@ void Game::load_map(const std::string& filename) {
     if (!pimpl->editor_mode) {
         // Add player to the map
         player->set_id(-1);
-        player->set_position(pimpl->next_position);
+        auto start_pos = map->get_starting_position();
+        if (pimpl->next_position.x >= 0.0f) {
+            start_pos.x = pimpl->next_position.x;
+        }
+        if (pimpl->next_position.y >= 0.0f) {
+            start_pos.y = pimpl->next_position.y;
+        }
+        player->set_position(start_pos);
         player->face(pimpl->next_direction);
         map->add_object(player);
         camera->set_object(player.get());

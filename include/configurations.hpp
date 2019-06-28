@@ -2,6 +2,7 @@
 #define HPP_CONFIGURATIONS
 
 #include <boost/property_tree/ptree.hpp>
+#include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <unordered_map>
 
@@ -17,6 +18,11 @@ public:
             return pt.get<T>(name, boost::any_cast<T>(defaults[name]));
         else
             return pt.get<T>(name);
+    }
+    // Check if an option exists
+    template<typename T>
+    static bool contains(const std::string& name) {
+        return static_cast<bool>(pt.get_optional<T>(name));
     }
     // Get the option with given name as a string
     static std::string get_string(const std::string& name);

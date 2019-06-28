@@ -10,6 +10,8 @@ namespace detail {
         BOOST_CHECK_EQUAL(map.get_height(), 40);
         BOOST_CHECK_EQUAL(map.get_tile_width(), 8);
         BOOST_CHECK_EQUAL(map.get_tile_height(), 8);
+        BOOST_CHECK_EQUAL(map.get_starting_position().x, 5);
+        BOOST_CHECK_EQUAL(map.get_starting_position().y, 160);
         auto& tileset = map.get_tileset(0);
         BOOST_CHECK_EQUAL(tileset.first_id, 1);
         BOOST_CHECK_EQUAL(tileset.name, "test sheet");
@@ -28,6 +30,7 @@ BOOST_AUTO_TEST_CASE(map_load) {
         <map version=\"1.0\" orientation=\"orthogonal\" width=\"50\" height=\"40\" tilewidth=\"8\" tileheight=\"8\"> \
             <properties> \
                 <property name=\"name\" value=\"testmap\"/> \
+                <property name=\"player-position-x\" value=\"5\"/> \
             </properties> \
             <tileset firstgid=\"1\" name=\"test sheet\" tilewidth=\"8\" tileheight=\"8\"> \
                 <properties> \
