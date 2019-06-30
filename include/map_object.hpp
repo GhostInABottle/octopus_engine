@@ -119,8 +119,8 @@ public:
     }
     void set_disabled(bool new_disabled) {
         disabled = new_disabled;
-        if (state == "WALK")
-            update_state("FACE");
+        if (state == walk_state)
+            update_state(face_state);
     }
     bool is_stopped() const {
         return stopped;
@@ -151,6 +151,18 @@ public:
     }
     std::string get_state() const {
         return state;
+    }
+    std::string get_face_state() const {
+        return face_state;
+    }
+    void set_face_state(const std::string& name) {
+        face_state = name;
+    }
+    std::string get_walk_state() const {
+        return walk_state;
+    }
+    void set_walk_state(const std::string& name) {
+        walk_state = name;
     }
     std::string get_trigger_script_source() const {
         return trigger_script.source;
@@ -286,6 +298,10 @@ private:
     std::string pose_name;
     // Current pose state
     std::string state;
+    // Name of facing state
+    std::string face_state;
+    // Name of walking state
+    std::string walk_state;
     // Script executed when object is triggered
     Script trigger_script;
     // Script executed when exiting an area

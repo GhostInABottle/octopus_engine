@@ -30,8 +30,8 @@ void Player_Controller::update(Map_Object& object) {
     bool action_pressed = game.triggered(action_button);
     bool moved = direction != Direction::NONE;
     if (!moved && !action_pressed) {
-        if (object.get_state() == "WALK")
-            object.update_state("FACE");
+        if (object.get_state() == object.get_walk_state())
+            object.update_state(object.get_face_state());
         return;
     }
     auto collision = object.move(direction, object.get_speed());

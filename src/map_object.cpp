@@ -27,6 +27,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         position(pos),
         state("FACE"),
         direction(dir),
+        face_state("FACE"),
+        walk_state("WALK"),
         collision_object(nullptr),
         collision_area(nullptr),
         triggered_object(nullptr),
@@ -51,7 +53,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     bool movement = change.x || change.y;
 
     if (!movement) {
-        update_state("FACE");
+        update_state(face_state);
         // If there was no movement there's no need to check tile collision,
         // but maybe we want to check object collision to trigger scripts
         if (check_type & Collision_Check_Types::OBJECT) {
@@ -109,7 +111,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         } else {
             if (movement && change_facing)
                 direction = move_dir;
-            update_state("FACE");
+            update_state(face_state);
             return collision;
         }
     }
@@ -132,12 +134,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
                 }
                 else {
                     direction = move_dir;
-                    update_state("FACE");
+                    update_state(face_state);
                     return collision;
                 }
             }
         }
-        update_state("WALK");
+        update_state(walk_state);
         map->set_objects_moved(true);
         return collision;
     }
@@ -286,6 +288,10 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_speed(lexical_cast<float>(properties["speed"]));
     if (properties.has_property("opacity"))
         object_ptr->opacity = lexical_cast<float>(properties["opacity"]);
+    if (properties.has_property("face-state"))
+        object_ptr->face_state = properties["face-state"];
+    if (properties.has_property("walk-state"))
+        object_ptr->walk_state = properties["walk-state"];
 
     auto set_script = [&properties](Map_Object* obj, const std::string& type) {
         auto source = properties[type];

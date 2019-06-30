@@ -8,6 +8,7 @@
 #include "../../include/map_object.hpp"
 #include "../../include/object_layer.hpp"
 #include "../../include/tests/game_fixture.hpp"
+#include "../..//include/direction_utilities.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)
 
@@ -70,6 +71,13 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
             <object id =\"5\"name=\"cool\" type=\"dragon\" x=\"168\" y=\"208\"> \
                 <properties> \
                     <property name=\"elf\" value=\"qui\"/> \
+                    <property name=\"direction\" value=\"right\"/> \
+                    <property name=\"pose\" value=\"mypose\"/> \
+                    <property name=\"state\" value=\"mystate\"/> \
+                    <property name=\"speed\" value=\"3.5\"/> \
+                    <property name=\"opacity\" value=\"0.4\"/> \
+                    <property name=\"face-state\" value=\"facing\"/> \
+                    <property name=\"walk-state\" value=\"walking\"/> \
                 </properties> \
             </object> \
             <object name=\"collision\" x=\"146\" y=\"0\" width=\"8\" height=\"16\"/> \
@@ -96,6 +104,14 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     BOOST_CHECK_CLOSE(obj1.get_position().y, 208.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_size()[0], 0.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_size()[1], 0.0f, 0.1f);
+    BOOST_CHECK_EQUAL(obj1.get_property("elf"), "qui");
+    BOOST_CHECK_EQUAL(obj1.get_direction(), Direction::RIGHT);
+    BOOST_CHECK_EQUAL(obj1.get_pose_name(), "mypose");
+    BOOST_CHECK_EQUAL(obj1.get_state(), "mystate");
+    BOOST_CHECK_CLOSE(obj1.get_speed(), 3.5f, 0.1f);
+    BOOST_CHECK_CLOSE(obj1.get_opacity(), 0.4f, 0.1f);
+    BOOST_CHECK_EQUAL(obj1.get_face_state(), "facing");
+    BOOST_CHECK_EQUAL(obj1.get_walk_state(), "walking");
     BOOST_CHECK_EQUAL(obj2.get_id(), 6);
     BOOST_CHECK_EQUAL(obj2.get_name(), "collision");
     BOOST_CHECK_CLOSE(obj2.get_size()[0], 8.0f, 0.1f);

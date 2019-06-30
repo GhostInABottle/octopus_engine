@@ -1,6 +1,7 @@
 #ifndef HPP_DIRECTION_UTILITIES
 #define HPP_DIRECTION_UTILITIES
 
+#include <iostream>
 #include "direction.hpp"
 #include "utility.hpp"
 
@@ -124,4 +125,10 @@ inline bool is_diagonal(Direction dir) {
     Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
     return (dir & dir_minus_1) != Direction::NONE;
 }
+
+inline std::ostream& operator<<(std::ostream& out, Direction dir)
+{
+    return out << direction_to_string(dir);
+}
+
 #endif

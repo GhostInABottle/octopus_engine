@@ -15,10 +15,10 @@
 #include "../include/direction_utilities.hpp"
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
+#include "../include/xd/audio.hpp"
 #include <luabind/adopt_policy.hpp>
 #include <luabind/tag_function.hpp>
 #include <luabind/std_shared_ptr_converter.hpp>
-#include "../include/xd/audio.hpp"
 
 Game* Scripting_Interface::game = nullptr;
 
@@ -412,6 +412,8 @@ void Scripting_Interface::setup_scripts() {
             .property("passthrough", &Map_Object::is_passthrough, &Map_Object::set_passthrough)
             .property("pose_name", &Map_Object::get_pose_name)
             .property("state", &Map_Object::get_state, &Map_Object::update_state)
+            .property("walk_state", &Map_Object::get_walk_state, &Map_Object::set_walk_state)
+            .property("face_state", &Map_Object::get_face_state, &Map_Object::set_face_state)
             .property("visible", &Map_Object::is_visible, &Map_Object::set_visible)
             .property("script", &Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source)
             .property("triggered_object", &Map_Object::get_triggered_object, &Map_Object::set_triggered_object)
