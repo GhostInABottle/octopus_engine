@@ -87,6 +87,8 @@ elseif c.selected == 2 then
     -- Canvas
     text(o, "Showing a canvas"):wait()
     local canvas = Canvas("data/player.png", 100, 100, "#FF00FF")
+    canvas.has_image_outline = true
+    canvas.image_outline_color = Color('blue')
     canvas.magnification = Vec2(0, 0)
     canvas:show()
     text(o, "Updating it"):wait()

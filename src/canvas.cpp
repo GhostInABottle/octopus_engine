@@ -12,9 +12,12 @@
 #include "../include/log.hpp"
 
 Canvas::Canvas(xd::vec2 position) :
-    priority(0), position(position), origin(0.5f, 0.5f), magnification(1.0f, 1.0f),
-    angle(0.0f), color(1.0f), visible(false), redraw_needed(true),
-    permissive_tag_parsing(false) {}
+    priority(0), type(Canvas::Type::IMAGE), position(position), origin(0.5f, 0.5f),
+    magnification(1.0f, 1.0f), angle(0.0f), color(1.0f), visible(false),
+    text_renderer(nullptr), camera_relative(false), redraw_needed(true),
+    last_drawn_time(0),  children_type(Canvas::Type::IMAGE),
+    permissive_tag_parsing(false), use_outline_shader(false),
+    outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))) {}
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(position) {
     camera_relative = false;
@@ -108,7 +111,7 @@ void Canvas::inherit_properties(const Canvas& parent) {
         set_font_size(parent.get_font_size());
         if (parent.has_text_type())
             set_text_type(parent.get_text_type());
-        if (parent.has_outline()) {
+        if (parent.has_text_outline()) {
             set_text_outline_color(parent.get_text_outline_color());
             set_text_outline_width(parent.get_text_outline_width());
         }
@@ -152,7 +155,7 @@ void Canvas::set_text(const std::string& new_text) {
     }
 }
 
-void Canvas::render_text(const std::string& text_to_render, float x, float y) {
+void Canvas::render_text(const std::string& text_to_render, float x, float y) const {
     text_renderer->render_formatted(*font, *formatter, *style,
         std::round(x), std::round(y), text_to_render);
 }

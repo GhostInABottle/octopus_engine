@@ -76,7 +76,7 @@ public:
     // Get the current canvas text
     std::string get_text() const { return text; }
     // Render canvas text
-    void render_text(const std::string& text , float x, float y);
+    void render_text(const std::string& text , float x, float y) const;
     // Set the font
     void set_font(const std::string& font_file);
     // Set bold and italic fonts
@@ -278,7 +278,7 @@ public:
         style->outline().color = color;
         redraw_needed = true;
     }
-    bool has_outline() const {
+    bool has_text_outline() const {
         return style->has_outline();
     }
     void reset_text_outline() {
@@ -349,6 +349,18 @@ public:
     void set_permissive_tag_parsing(bool value) {
         permissive_tag_parsing = value;
     }
+    xd::vec4 get_image_outline_color() const {
+        return outline_color;
+    }
+    void set_image_outline_color(xd::vec4 color) {
+        outline_color = color;
+    }
+    bool has_image_outline() const {
+        return use_outline_shader;
+    }
+    void set_image_outline(bool value) {
+        use_outline_shader = value;
+    }
     bool should_redraw(int time) const;
     void mark_as_drawn(int time);
 private:
@@ -409,6 +421,10 @@ private:
     Text_Parser parser;
     // Ignore missing tags
     bool permissive_tag_parsing;
+    // Apply outline to drawn images?
+    bool use_outline_shader;
+    // Color of image outline
+    xd::vec4 outline_color;
 };
 
 #endif

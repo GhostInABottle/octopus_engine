@@ -16,12 +16,13 @@ public:
     Canvas_Renderer(Game& game, Camera& camera);
     void render(Map& map);
 private:
-    void setup_framebuffer(Canvas* canvas);
-    void render_framebuffer(Canvas* canvas);
-    void render_canvas(Canvas* canvas, Canvas* parent = nullptr);
-    void render_text(Canvas* canvas, Canvas* parent = nullptr);
-    void render_image(Canvas* canvas, Canvas* parent = nullptr);
-    bool should_redraw(Canvas* canvas);
+    void setup_framebuffer(const Canvas& canvas);
+    void render_framebuffer(const Canvas& canvas, const Canvas& root);
+    void render_canvas(Canvas& canvas, Canvas* parent = nullptr, Canvas* root = nullptr);
+    void render_text(Canvas& canvas, Canvas* parent = nullptr);
+    void render_image(Canvas& canvas, Canvas* parent = nullptr);
+    bool should_redraw(const Canvas& canvas);
+    void draw(const xd::mat4 mvp, const Canvas& root);
     Game& game;
     Camera& camera;
     std::string last_drawn_text;
