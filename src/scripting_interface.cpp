@@ -1015,6 +1015,7 @@ void Scripting_Interface::setup_scripts() {
             .def_readonly("show_dashes", &Text_Options::show_dashes)
             .def_readonly("choice_indent", &Text_Options::choice_indent)
             .def_readonly("translated", &Text_Options::translated)
+            .def_readonly("canvas_priority", &Text_Options::canvas_priority)
             .def("set_text", &Text_Options::set_text)
             .def("set_choices", tag_function<Text_Options& (Text_Options*, const object&)>(
                 [&](Text_Options* options, const object& table) -> Text_Options& {
@@ -1038,7 +1039,8 @@ void Scripting_Interface::setup_scripts() {
             .def("set_centered", &Text_Options::set_centered)
             .def("set_show_dashes", &Text_Options::set_show_dashes)
             .def("set_translated", &Text_Options::set_translated)
-            .def("set_choice_indent", &Text_Options::set_choice_indent),
+            .def("set_choice_indent", &Text_Options::set_choice_indent)
+            .def("set_canvas_priority", &Text_Options::set_canvas_priority),
         // Show some text
         def("text", tag_function<Command_Result* (const Text_Options&)>(
                 [&](const Text_Options& options) {

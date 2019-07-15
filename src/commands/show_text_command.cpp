@@ -95,8 +95,11 @@ struct Show_Text_Command::Impl {
         game.add_canvas(canvas);
 
         // Show text above other images
-        canvas->set_priority(canvas->get_priority() +
-            Configurations::get<int>("debug.text-canvas-priority"));
+        int priority = canvas->get_priority();
+        priority += options.canvas_priority == -1 ?
+            Configurations::get<int>("debug.text-canvas-priority") :
+            options.canvas_priority;
+        canvas->set_priority(priority);
         canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
         canvas_updater->set_new_opacity(1.0f);
         canvas_updater->set_duration(Configurations::get<int>("game.text-fade-in-duration"));

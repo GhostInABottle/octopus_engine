@@ -36,6 +36,7 @@ struct Text_Options
     bool show_dashes;
     bool translated;
     unsigned int choice_indent;
+    int canvas_priority;
 
     Text_Options() :
         object(nullptr),
@@ -45,7 +46,8 @@ struct Text_Options
         centered(false),
         show_dashes(true),
         translated(false),
-        choice_indent(2) {}
+        choice_indent(2),
+        canvas_priority(-1) {}
 
 
     Text_Options(Map_Object* object) : Text_Options() {
@@ -103,6 +105,11 @@ struct Text_Options
 
     Text_Options& set_choice_indent(unsigned int choice_indent) {
         this->choice_indent = choice_indent;
+        return *this;
+    }
+
+    Text_Options& set_canvas_priority(int priority) {
+        this->canvas_priority = priority;
         return *this;
     }
 };
