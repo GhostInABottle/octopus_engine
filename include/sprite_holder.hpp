@@ -15,6 +15,7 @@ struct Sprite_Holder {
     // Set sprite
     virtual void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") = 0;
     virtual Sprite* get_sprite() = 0;
+    std::string get_pose_tag(const std::string& tag);
 };
 
 #endif

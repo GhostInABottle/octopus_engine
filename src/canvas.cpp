@@ -10,6 +10,7 @@
 #include "../include/shake_decorator.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
+#include "../include/direction_utilities.hpp"
 
 Canvas::Canvas(xd::vec2 position) :
     priority(0), type(Canvas::Type::IMAGE), position(position), origin(0.5f, 0.5f),
@@ -77,6 +78,12 @@ void Canvas::set_sprite(Game& game, const std::string& sprite_filename, const st
         Sprite_Data::load(game.get_asset_manager(), sprite_filename));
     set_pose(pose_name, "", Direction::NONE);
     redraw_needed = true;
+}
+
+Direction Canvas::get_pose_direction()
+{
+    auto dir_string = get_pose_tag("DIRECTION");
+    return dir_string.empty() ? Direction::NONE : string_to_direction(dir_string);
 }
 
 void Canvas::remove_child(const std::string& child_name) {

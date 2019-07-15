@@ -71,6 +71,16 @@ public:
     void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
+    // Get pose name
+    std::string get_pose_name() {
+        return get_pose_tag("NAME");
+    }
+    // Get pose state
+    std::string get_pose_state() {
+        return get_pose_tag("STATE");
+    }
+    // Get pose direction
+    Direction get_pose_direction();
     // Update the text for a text canvas
     void set_text(const std::string& text);
     // Get the current canvas text
