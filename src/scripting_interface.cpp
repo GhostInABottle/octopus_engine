@@ -16,6 +16,7 @@
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
 #include "../include/xd/audio.hpp"
+#include "../include/vendor/lutf8lib.hpp"
 #include <luabind/adopt_policy.hpp>
 #include <luabind/tag_function.hpp>
 #include <luabind/std_shared_ptr_converter.hpp>
@@ -107,6 +108,7 @@ void Scripting_Interface::setup_scripts() {
     auto& vm = *game->get_lua_vm();
     vm.load_library();
     luaL_openlibs(vm.lua_state());
+    luaopen_utf8(vm.lua_state());
     if (Configurations::get<bool>("debug.seed-lua-rng")) {
         vm.exec("math.randomseed(os.time())");
     }

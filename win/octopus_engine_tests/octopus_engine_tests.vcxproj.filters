@@ -64,6 +64,12 @@
     <Filter Include="Source Files\xd\system">
       <UniqueIdentifier>{435a131a-a013-404d-8260-7ae7761fe610}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\vendor">
+      <UniqueIdentifier>{ea9c2ff4-99a2-4ce5-bcc8-2fbe56e316a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor">
+      <UniqueIdentifier>{340d0e80-8fe9-40a4-8c8e-247e1dccd746}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -296,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\commands\text_options.cpp">
       <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\lutf8lib.cpp">
+      <Filter>Source Files\vendor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -631,6 +640,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\commands\text_options.hpp">
       <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vendor\unidata.h">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vendor\lutf8lib.hpp">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

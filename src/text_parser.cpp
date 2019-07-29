@@ -4,6 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 #include "../include/log.hpp"
+#include "../include/xd/vendor/utf8.h"
 
 std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) const
 {
@@ -34,7 +35,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
         if (*start == '{') {
             Token tag_token;
             tag_token.unmatched = false;
-            tag_token.start_index = start - text.begin();
+            tag_token.start_index = utf8::distance(text.begin(), start);
             start++;
             if (validate_condition(start == end, "open brace at the end"))
                 break;
@@ -69,7 +70,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                             break;
                         }
                     } else if (*start == '}') {
-                        tag_token.end_index = start - text.begin();
+                        tag_token.end_index = utf8::distance(text.begin(), start);
                         if (tag_token.tag.empty()) {
                             if (validate_condition(tag_name.empty(), "empty tag")) {
                                 error = true;
@@ -118,7 +119,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
         if (start != end) {
             Token text_token;
             text_token.unmatched = false;
-            text_token.start_index = start - text.begin();
+            text_token.start_index = utf8::distance(text.begin(), start);
             text_token.type = "text";
             std::string parsed_text;
             while (start != end)
@@ -134,7 +135,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
 
             if (!parsed_text.empty()) {
                 text_token.value = parsed_text;
-                text_token.end_index = parsed_text.empty() ? text_token.start_index : start - text.begin() - 1;
+                text_token.end_index = parsed_text.empty() ? text_token.start_index : utf8::distance(text.begin(), start) - 1;
                 tokens.push_back(text_token);
             }
         }

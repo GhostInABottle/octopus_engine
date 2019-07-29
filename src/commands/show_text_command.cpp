@@ -126,16 +126,14 @@ struct Show_Text_Command::Impl {
             bool replaced_color = false;
             // Add color for selected choice
             if (i == current_choice) {
-                auto start = options.choices[i].find(color_prefix);
+                auto start = choice_text.find(color_prefix);
                 // Strip existing outermost color, we want green to take precedence
                 if (start == 0) {
-                    auto end = options.choices[i].find("}");
-                    choice_text.replace(color_prefix.length(),
-                        end - color_prefix.length(), "green");
+                    auto end = choice_text.find("}");
+                    choice_text.replace(0, end + 1, "");
                     replaced_color = true;
                 }
-                else
-                    result += "{color=green}";
+                result += "{color=green}";
             }
 
             // Add padding before choices if header text was specified

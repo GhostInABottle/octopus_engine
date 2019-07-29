@@ -142,6 +142,7 @@
     <ClCompile Include="..\..\src\tile_layer_renderer.cpp" />
     <ClCompile Include="..\..\src\tmx_properties.cpp" />
     <ClCompile Include="..\..\src\utility.cpp" />
+    <ClCompile Include="..\..\src\vendor\lutf8lib.cpp" />
     <ClCompile Include="..\..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\..\src\xd\audio\music.cpp" />
     <ClCompile Include="..\..\src\xd\audio\sound.cpp" />
@@ -218,6 +219,8 @@
     <ClInclude Include="..\..\include\tile_layer_renderer.hpp" />
     <ClInclude Include="..\..\include\tmx_properties.hpp" />
     <ClInclude Include="..\..\include\utility.hpp" />
+    <ClInclude Include="..\..\include\vendor\lutf8lib.hpp" />
+    <ClInclude Include="..\..\include\vendor\unidata.h" />
     <ClInclude Include="..\..\include\xd\asset_manager.hpp" />
     <ClInclude Include="..\..\include\xd\asset_serializer.hpp" />
     <ClInclude Include="..\..\include\xd\audio.hpp" />

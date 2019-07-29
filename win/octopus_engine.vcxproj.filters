@@ -61,6 +61,12 @@
     <Filter Include="Source Files\xd\system">
       <UniqueIdentifier>{1d48d528-a4bb-490e-8d28-6ffbbf3579f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\vendor">
+      <UniqueIdentifier>{81b254ac-0a10-453e-85f6-cde81791ec87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor">
+      <UniqueIdentifier>{df649214-daf6-4421-a47e-028d8d4d801d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -272,6 +278,9 @@
     </ClCompile>
     <ClCompile Include="..\src\commands\text_options.cpp">
       <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vendor\lutf8lib.cpp">
+      <Filter>Source Files\vendor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -616,6 +625,12 @@
     </ClInclude>
     <ClInclude Include="..\include\commands\text_options.hpp">
       <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\unidata.h">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\lutf8lib.hpp">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

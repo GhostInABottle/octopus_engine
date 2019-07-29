@@ -95,6 +95,18 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag) {
     detail::validate_tokens(parser, "{b}hello{/b}", tokens);
 }
 
+
+BOOST_AUTO_TEST_CASE(text_parser_parses_unicode_text) {
+    Text_Parser parser;
+
+    std::vector<Token> tokens;
+    tokens.push_back(detail::build_token("opening_tag", "b", "", false, 0, 2));
+    tokens.push_back(detail::build_token("text", "", "مرحبا", false, 3, 7));
+    tokens.push_back(detail::build_token("closing_tag", "b", "", false, 8, 11));
+
+    detail::validate_tokens(parser, "{b}مرحبا{/b}", tokens);
+}
+
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_value) {
     Text_Parser parser;
 
