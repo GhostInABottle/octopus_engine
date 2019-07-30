@@ -102,7 +102,10 @@ struct Show_Text_Command::Impl {
         canvas->set_priority(priority);
         canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
         canvas_updater->set_new_opacity(1.0f);
-        canvas_updater->set_duration(Configurations::get<int>("game.text-fade-in-duration"));
+        int duration = options.fade_in_duration == -1 ?
+            Configurations::get<int>("game.text-fade-in-duration") :
+            options.fade_in_duration;
+        canvas_updater->set_duration(duration);
         if (options.duration == -1) {
             was_disabled = game.get_player()->is_disabled();
             game.get_player()->set_disabled(true);
@@ -238,7 +241,10 @@ struct Show_Text_Command::Impl {
         if (text_complete) {
             selected_choice = current_choice;
             canvas_updater->reset();
-            canvas_updater->set_duration(Configurations::get<int>("game.text-fade-out-duration"));
+            int duration = options.fade_out_duration == -1 ?
+                Configurations::get<int>("game.text-fade-out-duration") :
+                options.fade_out_duration;
+            canvas_updater->set_duration(duration);
             canvas_updater->set_new_opacity(0.0f);
         }
     }

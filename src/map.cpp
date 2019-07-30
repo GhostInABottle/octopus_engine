@@ -39,6 +39,10 @@ namespace detail {
 
 Map::Map(Game& game) :
         game(game),
+        height(1),
+        width(1),
+        tile_width(1),
+        tile_height(1),
         next_object_id(1),
         scripting_interface(new Scripting_Interface(game)),
         collision_tileset(nullptr),

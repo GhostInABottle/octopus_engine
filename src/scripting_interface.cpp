@@ -563,6 +563,16 @@ void Scripting_Interface::setup_scripts() {
             .def("resume_time", tag_function<void (Game*)>([](Game* game) {
                 game->get_clock()->resume_time();
             }))
+            .def("load_map", tag_function<void (Game*, const std::string&)>(
+                [](Game* game, const std::string& filename) {
+                    game->set_next_map(filename, Direction::NONE);
+                }
+            ))
+            .def("load_map", tag_function<void (Game*, const std::string&, int)>(
+                [](Game* game, const std::string& filename, int dir) {
+                    game->set_next_map(filename, static_cast<Direction>(dir));
+                }
+            ))
             .def("load_map", tag_function<void (Game*, const std::string&, float, float, int)>(
                 [](Game* game, const std::string& filename, float x, float y, int dir) {
                     game->set_next_map(filename, x, y, static_cast<Direction>(dir));
@@ -1021,6 +1031,8 @@ void Scripting_Interface::setup_scripts() {
             .def_readonly("choice_indent", &Text_Options::choice_indent)
             .def_readonly("translated", &Text_Options::translated)
             .def_readonly("canvas_priority", &Text_Options::canvas_priority)
+            .def_readonly("fade_in_duration", &Text_Options::fade_in_duration)
+            .def_readonly("fade_out_duration", &Text_Options::fade_out_duration)
             .def("set_text", &Text_Options::set_text)
             .def("set_choices", tag_function<Text_Options& (Text_Options*, const object&)>(
                 [&](Text_Options* options, const object& table) -> Text_Options& {
@@ -1045,7 +1057,9 @@ void Scripting_Interface::setup_scripts() {
             .def("set_show_dashes", &Text_Options::set_show_dashes)
             .def("set_translated", &Text_Options::set_translated)
             .def("set_choice_indent", &Text_Options::set_choice_indent)
-            .def("set_canvas_priority", &Text_Options::set_canvas_priority),
+            .def("set_canvas_priority", &Text_Options::set_canvas_priority)
+            .def("set_fade_in_duration", &Text_Options::set_fade_in_duration)
+            .def("set_fade_out_duration", &Text_Options::set_fade_out_duration),
         // Show some text
         def("text", tag_function<Command_Result* (const Text_Options&)>(
                 [&](const Text_Options& options) {

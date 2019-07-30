@@ -25,6 +25,7 @@
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
+#include <optional>
 
 struct Game::Impl {
     explicit Impl(xd::audio* audio, bool editor_mode) :
@@ -57,7 +58,7 @@ struct Game::Impl {
     // Show current game-time in seconds?
     bool show_time;
     // Information for teleporting to another map
-    xd::vec2 next_position;
+    std::optional<xd::vec2> next_position;
     Direction next_direction;
     std::string next_map;
     // Is the game paused?
@@ -353,11 +354,15 @@ void Game::load_music(const std::string& filename) {
     music.reset(new xd::music(*pimpl->audio, filename));
 }
 
-void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {
+void Game::set_next_map(const std::string& filename, Direction dir) {
     pimpl->next_map = filename;
-    pimpl->next_position.x = x;
-    pimpl->next_position.y = y - player->get_bounding_box().y;
-    pimpl->next_direction = dir;
+    pimpl->next_direction = dir == Direction::NONE ? player->get_direction() : dir;
+    pimpl->next_position = std::nullopt;
+}
+
+void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {
+    set_next_map(filename, dir);
+    pimpl->next_position = xd::vec2{ x, y };
 }
 
 xd::asset_manager& Game::get_asset_manager() {
@@ -418,13 +423,10 @@ void Game::load_map(const std::string& filename) {
     if (!pimpl->editor_mode) {
         // Add player to the map
         player->set_id(-1);
-        auto start_pos = map->get_starting_position();
-        if (pimpl->next_position.x >= 0.0f) {
-            start_pos.x = pimpl->next_position.x;
-        }
-        if (pimpl->next_position.y >= 0.0f) {
-            start_pos.y = pimpl->next_position.y;
-        }
+        auto start_pos = pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position();
+        auto bounding_box = player->get_bounding_box();
+        start_pos.x -= bounding_box.x;
+        start_pos.y -= bounding_box.y;
         player->set_position(start_pos);
         player->face(pimpl->next_direction);
         map->add_object(player);

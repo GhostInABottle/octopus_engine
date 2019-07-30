@@ -60,7 +60,7 @@
   </object>
   <object id="4" name="exit" type="area" x="0" y="200" width="8" height="48">
    <properties>
-    <property name="global-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled2.tmx', -1, -1, RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
+    <property name="global-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled2.tmx', RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
    </properties>
   </object>
  </objectgroup>

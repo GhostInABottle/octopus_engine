@@ -21,14 +21,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,9 +52,10 @@
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;LUABIND_CPLUSPLUS_LUA;_HAS_AUTO_PTR_ETC=1;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -70,9 +71,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalOptions>/D_VARIADIC_MAX=10  /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>WIN32;XD_STATIC;SFML_STATIC;LUABIND_CPLUSPLUS_LUA;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;LUABIND_CPLUSPLUS_LUA;_HAS_AUTO_PTR_ETC=1;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

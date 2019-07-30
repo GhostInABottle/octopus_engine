@@ -108,6 +108,7 @@ public:
     // Get the music currently playing
     std::shared_ptr<xd::music> playing_music() { return music; }
     // Load map file and set as current map at the end of the frame
+    void set_next_map(const std::string& filename, Direction dir);
     void set_next_map(const std::string& filename, float x, float y, Direction dir);
     // Load the map right away
     void load_map(const std::string& filename);

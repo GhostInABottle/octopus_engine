@@ -36,7 +36,9 @@ Map_Object::Map_Object(Game& game, const std::string& name,
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
-    position.y -= get_bounding_box().y;
+    auto bounding_box = get_bounding_box();
+    position.x -= bounding_box.x;
+    position.y -= bounding_box.y;
 }
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
