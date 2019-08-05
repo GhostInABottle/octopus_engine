@@ -59,25 +59,28 @@ struct Show_Text_Command::Impl {
         auto& font_style = game.get_font_style();
         float char_height = font_style.line_height();
         float text_width = game.get_font()->get_width(longest_line, font_style);
-        float text_height = char_height * text_lines.size();
+        float text_height = char_height * (text_lines.size() - 1);
         auto pos = options.position;
-        bool camera_relative =
-            (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
-        if (camera_relative) {
+        bool camera_relative = (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
+        bool always_visible = (options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
+
+        if (!camera_relative && always_visible) {
             pos -= game.get_camera()->get_position();
         }
 
         if ((options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
             pos.y -= text_height;
+        } else {
+            pos.y += char_height;
         }
+
         if (options.centered) {
             pos.x = game.game_width() / 2 - text_width / 2;
-        }
-        else if ((options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+        } else if ((options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
             pos.x -= text_width / 2;
         }
 
-        if (camera_relative) {
+        if (always_visible) {
             // Make sure text fits on the screen
             if (pos.x + text_width > game.game_width() - 10)
                 pos.x = static_cast<float>(game.game_width() - text_width - 10);
@@ -90,7 +93,7 @@ struct Show_Text_Command::Impl {
         }
 
         // Create the text canvas and show it
-        canvas = std::make_shared<Canvas>(game, pos, full, camera_relative);
+        canvas = std::make_shared<Canvas>(game, pos, full, camera_relative || always_visible);
         canvas->set_opacity(0.0f);
         game.add_canvas(canvas);
 

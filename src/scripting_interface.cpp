@@ -87,6 +87,7 @@ void Scripting_Interface::set_globals() {
     vm.globals()["TEXT_POSITION_EXACT_Y"] = static_cast<int>(Text_Position_Type::EXACT_Y);
     vm.globals()["TEXT_POSITION_BOTTOM_Y"] = static_cast<int>(Text_Position_Type::BOTTOM_Y);
     vm.globals()["TEXT_POSITION_CAMERA"] = static_cast<int>(Text_Position_Type::CAMERA_RELATIVE);
+    vm.globals()["TEXT_POSITION_ALWAYS_VISIBLE"] = static_cast<int>(Text_Position_Type::ALWAYS_VISIBLE);
 }
 
 Command_Result* Scripting_Interface::register_command(std::shared_ptr<Command> command) {

@@ -85,7 +85,7 @@ public:
         position.y = y;
     }
     xd::vec2 get_text_position() const {
-        return get_position() + xd::vec2(16, 0);
+        return get_position() + xd::vec2(16, -6);
     }
     xd::vec2 get_size() const {
         return size;

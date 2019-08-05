@@ -419,7 +419,7 @@ private:
     std::unique_ptr<xd::font_style> style;
     // Text formatter
     std::unique_ptr<xd::text_formatter> formatter;
-    // Render relative to camera? (by default: false for text, true otherwise)
+    // Render relative to camera? (by default: true for text, false otherwise)
     bool camera_relative;
     // List of child canvases that are rendered with this one
     std::vector<std::unique_ptr<Canvas>> children;

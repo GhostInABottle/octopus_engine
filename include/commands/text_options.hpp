@@ -7,11 +7,18 @@
 
 enum class Text_Position_Type {
     NONE = 0,
+    // Interpret position literally, X refers to left of text
     EXACT_X = 1,
+    // The text is centered around the X coordinate
     CENTERED_X = 2,
+    // Interpret position literally, Y refers to the top of text
     EXACT_Y = 4,
+    // Text sits above the Y coordinate instead of under it
     BOTTOM_Y = 8,
-    CAMERA_RELATIVE = 16
+    // The supplied coordinates are relative to the camera instead of the map
+    CAMERA_RELATIVE = 16,
+    // The text should always be visible, makes map coordinates camera relative
+    ALWAYS_VISIBLE = 32
 };
 
 inline Text_Position_Type operator|(Text_Position_Type a, Text_Position_Type b) {
@@ -78,7 +85,8 @@ struct Text_Options
         this->position = position;
         set_position_type(Text_Position_Type::EXACT_X
             | Text_Position_Type::EXACT_Y
-            | Text_Position_Type::CAMERA_RELATIVE);
+            | Text_Position_Type::CAMERA_RELATIVE
+            | Text_Position_Type::ALWAYS_VISIBLE);
         return *this;
     }
 
