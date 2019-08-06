@@ -52,8 +52,10 @@ public:
     int height() const {
         return window ? window->framebuffer_height() : editor_size.y;
     }
-    // Manually set window size (for editor)
+    // Manually set window resolution
     void set_size(int width, int height);
+    // Returns list of supported resolutions
+    std::vector<xd::vec2> get_sizes() const;
     // Game dimensions
     float game_width(bool magnified = true) const;
     float game_height(bool magnified = true) const;

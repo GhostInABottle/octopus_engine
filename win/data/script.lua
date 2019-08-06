@@ -132,6 +132,10 @@ elseif c.selected == 4 then
     camera:zoom(2, 3000):wait()
     text(o, "...and out"):wait()
     camera:zoom(old_mag, 3000):wait()
+    print('List of supported sizes: ')
+    for i, size in ipairs(game.sizes) do
+        print(i .. ' - ' .. size.x .. ' x ' .. size.y)
+    end
     local w = game.width
     local h = game.height
     text(o, "Changing screen size to 800, 800"):wait()

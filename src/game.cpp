@@ -321,6 +321,10 @@ void Game::set_size(int width, int height) {
     camera->update_viewport();
 }
 
+std::vector<xd::vec2> Game::get_sizes() const {
+    return window ? window->get_sizes() : std::vector<xd::vec2>{};
+}
+
 float Game::game_width(bool magnified) const {
     return magnified ? pimpl->game_width / magnification : pimpl->game_width;
 }

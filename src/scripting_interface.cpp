@@ -512,8 +512,18 @@ void Scripting_Interface::setup_scripts() {
         class_<Game>("Game")
             .property("width", &Game::width)
             .property("height", &Game::height)
-            .property("game_width", tag_function<float (Game*)>([](Game* game) { return game->game_width(); }))
-            .property("game_height", tag_function<float (Game*)>([](Game* game) { return game->game_height(); }))
+            .property("game_width", tag_function<float (Game&)>([](Game& game) { return game.game_width(); }))
+            .property("game_height", tag_function<float (Game&)>([](Game& game) { return game.game_height(); }))
+            .property("sizes", tag_function<luabind::object (Game&)>(
+                [&](Game& game) {
+                    auto objects = luabind::newtable(vm.lua_state());
+                    auto sizes = game.get_sizes();
+                    for (auto i = 0u; i < sizes.size(); ++i) {
+                        objects[i + 1] = sizes[i];
+                    }
+                    return objects;
+                }
+            ))
             .property("magnification", &Game::get_magnification, &Game::set_magnification)
             .property("ticks", &Game::ticks)
             .property("fps", &Game::fps)

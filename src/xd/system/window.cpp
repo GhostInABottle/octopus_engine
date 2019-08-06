@@ -314,9 +314,24 @@ int xd::window::framebuffer_height() const
     return height;
 }
 
-void xd::window::set_size(int width, int height)
+void xd::window::set_size(int width, int height) const
 {
     glfwSetWindowSize(m_window, width, height);
+}
+
+std::vector<xd::vec2> xd::window::get_sizes() const
+{
+    std::vector<xd::vec2> sizes;
+
+    int count;
+    const auto modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
+    if (modes) {
+        for (int i = 0; i < count; ++i) {
+            sizes.emplace_back(modes[i].width, modes[i].height);
+        }
+    }
+
+    return sizes;
 }
 
 int xd::window::ticks() const

@@ -4,6 +4,7 @@
 #include "window_options.hpp"
 #include "input.hpp"
 #include "../graphics/transform_geometry.hpp"
+#include "..//graphics/types.hpp"
 #include "../event_bus.hpp"
 #include <boost/noncopyable.hpp>
 #include <boost/cstdint.hpp>
@@ -11,6 +12,7 @@
 #include <unordered_set>
 #include <functional>
 #include <string>
+#include <vector>
 
 struct GLFWwindow;
 
@@ -37,7 +39,8 @@ namespace xd
         int height() const;
         int framebuffer_width() const;
         int framebuffer_height() const;
-        void set_size(int width, int height);
+        void set_size(int width, int height) const;
+        std::vector<xd::vec2> get_sizes() const;
 
         // ticks stuff
         int ticks() const;
