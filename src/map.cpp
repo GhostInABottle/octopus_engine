@@ -28,7 +28,7 @@ namespace detail {
     std::string generate_unique_name(std::unordered_set<std::string> names,
             std::string base_name = "UNTITLED") {
         int i = 1;
-        base_name = capitalize(base_name);
+        capitalize(base_name);
         std::string name = base_name;
         while (names.find(name) != names.end()) {
             name = base_name + std::to_string(i++);
@@ -222,7 +222,8 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
     if (name.empty()) {
         name+= "UNTITLED" + std::to_string(id);
     }
-    auto mapping = std::unordered_multimap<std::string, int>::value_type(capitalize(name), id);
+    capitalize(name);
+    auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
     object_name_to_id.insert(mapping);
     objects[id] = object;
     object->set_name(name);
@@ -237,10 +238,10 @@ Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
     return object_ptr;
 }
 
-Map_Object* Map::get_object(const std::string& name) {
-    auto cap_name = capitalize(name);
-    if (object_name_to_id.find(cap_name) != object_name_to_id.end()) {
-        int id = object_name_to_id.find(cap_name)->second;
+Map_Object* Map::get_object(std::string name) {
+    capitalize(name);
+    if (object_name_to_id.find(name) != object_name_to_id.end()) {
+        int id = object_name_to_id.find(name)->second;
         return get_object(id);
     }
     return nullptr;
@@ -273,7 +274,9 @@ void Map::delete_object(Map_Object* object) {
 }
 
 void Map::erase_object_references(Map_Object* object) {
-    object_name_to_id.erase(capitalize(object->get_name()));
+    auto name = object->get_name();
+    capitalize(name);
+    object_name_to_id.erase(name);
     objects.erase(object->get_id());
 }
 
@@ -288,11 +291,13 @@ Layer* Map::get_layer(int id) {
         return nullptr;
 }
 
-Layer* Map::get_layer(const std::string& name) {
-    auto cap_name = capitalize(name);
+Layer* Map::get_layer(std::string name) {
+    capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
-        [&cap_name](std::shared_ptr<Layer> layer) {
-            return capitalize(layer->name) == cap_name;
+        [&name](std::shared_ptr<Layer> layer) {
+            auto layer_name = layer->name;
+            capitalize(layer_name);
+            return layer_name == name;
     });
     if (layer != layers.end())
         return layer->get();
@@ -325,12 +330,14 @@ void Map::add_layer(Layer_Types layer_type) {
         object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));
 }
 
-void Map::delete_layer(const std::string& name) {
-    auto cap_name = capitalize(name);
+void Map::delete_layer(std::string name) {
+    capitalize(name);
     // Delete any matching object layer and its object
     for (auto layer = object_layers.begin(); layer != object_layers.end();)
     {
-        if (capitalize((*layer)->name) != cap_name)
+        auto layer_name = (*layer)->name;
+        capitalize(layer_name);
+        if (layer_name != name)
         {
             layer++;
         } else {
@@ -343,12 +350,19 @@ void Map::delete_layer(const std::string& name) {
         }
     }
     // Clear the collision object if necessary
-    if (collision_layer && capitalize(collision_layer->name) == cap_name)
-        collision_layer = nullptr;
+    if (collision_layer) {
+        auto collision_layer_name = collision_layer->name;
+        capitalize(collision_layer_name);
+        if (collision_layer_name == name) {
+            collision_layer = nullptr;
+        }
+    }
     // Delete matching layers
     layers.erase(std::remove_if(layers.begin(), layers.end(),
-        [&cap_name](std::shared_ptr<Layer> layer) {
-              return capitalize(layer->name) == cap_name;
+        [&name](std::shared_ptr<Layer> layer) {
+            auto layer_name = layer->name;
+            capitalize(layer_name);
+            return layer_name == name;
         }
     ), layers.end());
 }
@@ -436,7 +450,8 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
     if (!map_node)
         throw tmx_exception("Invalid TMX file. Missing map node");
     auto map = load(game, *map_node);
-    map->filename = normalize_slashes(filename);
+    map->filename = filename;
+    normalize_slashes(map->filename);
     return map;
 }
 
@@ -462,8 +477,9 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     // Startup scripts
     if (map_ptr->properties.has_property("scripts")) {
         auto filenames = split(map_ptr->properties["scripts"], ",");
-        for (auto& filename : filenames) {
-            map_ptr->start_scripts.push_back(read_file(trim(filename)));
+        for (auto filename : filenames) {
+            trim(filename);
+            map_ptr->start_scripts.push_back(read_file(filename));
         }
     }
 

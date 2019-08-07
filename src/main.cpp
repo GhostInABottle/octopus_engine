@@ -24,16 +24,16 @@ int main() {
             throw std::runtime_error("Unable to get OSX resources folder");
         }
 #endif
-        Configurations::parse("config.ini");
-        LOGGER_I << "Reticulating Splines";
+        auto warnings = Configurations::parse("config.ini");
+        for (auto& warning : warnings) {
+            LOGGER_W << warning;
+        }
 
         xd::audio audio;
+        LOGGER_I << "Reticulating Splines";
         Game game(&audio);
         game.run();
 
-    } catch (const boost::property_tree::ptree_error& e) {
-        // Can't write to log file without a valid config, write to stdout instead
-        std::cout << "Config parsing exception: " << e.what() << "\n";
     } catch (const rapidxml::parse_error& e) {
         std::string where = e.where<char>();
         LOGGER_E << "RapidXml Exception: \"" << e.what() << "\" at \"" << where.substr(0, 50) << '"';

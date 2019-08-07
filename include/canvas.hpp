@@ -68,7 +68,7 @@ public:
     // Setup FBO texture
     void setup_fbo();
     // Update the image
-    void set_image(const std::string& filename, xd::vec4 trans = xd::vec4(0));
+    void set_image(std::string filename, xd::vec4 trans = xd::vec4(0));
     // Update the sprite
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     // Get pose name

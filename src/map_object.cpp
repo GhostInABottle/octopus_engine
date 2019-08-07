@@ -171,7 +171,9 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
         return;
     }
     if (sprite) {
-        if (sprite->get_filename() == normalize_slashes(filename))
+        auto normalized_filename = filename;
+        normalize_slashes(normalized_filename);
+        if (sprite->get_filename() == normalized_filename)
             return;
         del_component(sprite);
     }

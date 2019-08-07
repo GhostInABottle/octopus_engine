@@ -634,7 +634,7 @@ void Scripting_Interface::setup_scripts() {
             .def("set_property", &Map::set_property)
             .def("object_count", &Map::object_count)
             .def("get_object", (Map_Object* (Map::*)(int)) &Map::get_object)
-            .def("get_object", (Map_Object* (Map::*)(const std::string&)) &Map::get_object)
+            .def("get_object", (Map_Object* (Map::*)(std::string)) &Map::get_object)
             .def("add_new_object", &Map::add_new_object)
             .def("add_object", tag_function<Map_Object* (Map*, Map_Object*, int)>(
                 [](Map* map, Map_Object* object, int layer_index) {
@@ -644,7 +644,7 @@ void Scripting_Interface::setup_scripts() {
             .def("delete_object", (void (Map::*)(Map_Object*)) &Map::delete_object)
             .def("layer_count", &Map::layer_count)
             .def("get_layer", (Layer* (Map::*)(int)) &Map::get_layer)
-            .def("get_layer", (Layer* (Map::*)(const std::string&)) &Map::get_layer)
+            .def("get_layer", (Layer* (Map::*)(std::string)) &Map::get_layer)
             .def("get_objects", tag_function<luabind::object (Map*)>([&](Map* map) -> luabind::object {
                 luabind::object objects = luabind::newtable(vm.lua_state());
                 int i = 1;

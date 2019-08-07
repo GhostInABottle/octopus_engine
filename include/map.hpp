@@ -74,7 +74,7 @@ public:
     Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
-    Map_Object* get_object(const std::string& name);
+    Map_Object* get_object(std::string name);
     // Get object by ID
     Map_Object* get_object(int id);
     // Get all objects
@@ -90,11 +90,11 @@ public:
     // Get layer by index (starting from 1, lua convention)
     Layer* get_layer(int id);
     // Get layer by name
-    Layer* get_layer(const std::string& name);
+    Layer* get_layer(std::string name);
     // Add a new layer
     void add_layer(Layer_Types type);
     // Delete layer with given name
-    void delete_layer(const std::string& name);
+    void delete_layer(std::string name);
     // Add a canvas to the map
     void add_canvas(std::shared_ptr<Canvas> canvas);
     // Erase canvases that match a predicate function

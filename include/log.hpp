@@ -25,6 +25,7 @@ public:
             std::string file_name = Configurations::get<std::string>("logging.filename");
             log_file.open(file_name.c_str(), std::ios_base::app);
             std::string config_level = Configurations::get<std::string>("logging.level");
+            capitalize(config_level);
             reporting_level = log_level_from_string(config_level);
         }
     }
@@ -66,14 +67,13 @@ public:
     }
     // Convert a string into an error level enum value
     static Log_Level log_level_from_string(const std::string& level) {
-        std::string cap_level = capitalize(level);
-        if (cap_level == "ERROR")
+        if (level == "ERROR")
             return Log_Level::error;
-        else if ( cap_level == "WARNING")
+        else if (level == "WARNING")
             return Log_Level::warning;
-        else if ( cap_level == "INFO")
+        else if (level == "INFO")
             return Log_Level::info;
-        else if ( cap_level == "DEBUG")
+        else if (level == "DEBUG")
             return Log_Level::debug;
         return Log_Level::info;
     }

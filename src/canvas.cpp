@@ -59,12 +59,13 @@ void Canvas::setup_fbo() {
     }
 }
 
-void Canvas::set_image(const std::string& image_filename, xd::vec4 trans) {
+void Canvas::set_image(std::string image_filename, xd::vec4 trans) {
+    normalize_slashes(image_filename);
     if (filename == image_filename)
         return;
     type = Canvas::Type::IMAGE;
     filename = image_filename;
-    image_texture = std::make_shared<xd::texture>(normalize_slashes(image_filename),
+    image_texture = std::make_shared<xd::texture>(image_filename,
         trans, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     redraw_needed = true;
 }

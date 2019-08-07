@@ -174,8 +174,10 @@ struct Sprite::Impl {
         // Update current pose tags
         std::string tag_string;
         for (auto new_tag = new_tags.begin(); new_tag != new_tags.end(); ++new_tag) {
-            std::string key = capitalize(new_tag->first);
-            std::string value = capitalize(new_tag->second);
+            std::string key = new_tag->first;
+            std::string value = new_tag->second;
+            capitalize(key);
+            capitalize(value);
             this->tags[key] = value;
             tag_string += key + ":" + value + " ";
         }

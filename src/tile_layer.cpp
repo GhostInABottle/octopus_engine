@@ -62,7 +62,8 @@ std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& came
     if (!comp_node || comp_node->value() != std::string("zlib"))
         throw tmx_exception("Invalid layer data compression, expected zlib");
     // Get raw base 64 encoded and compressed layer data
-    std::string raw_data = trim(data_node->value());
+    std::string raw_data = data_node->value();
+    trim(raw_data);
     // Decode layer data
     std::string decoded_data = base64_decode(raw_data);
     // Decompress layer data

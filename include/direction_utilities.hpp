@@ -69,14 +69,14 @@ inline std::string direction_to_string(Direction dir) {
 }
 
 inline Direction string_to_direction(std::string str) {
-    std::string dir_str = capitalize(str);
-    if (dir_str == "LEFT")
+    capitalize(str);
+    if (str == "LEFT")
         return Direction::LEFT;
-    else if (dir_str == "RIGHT")
+    else if (str == "RIGHT")
         return Direction::RIGHT;
-    else if (dir_str == "UP")
+    else if (str == "UP")
         return Direction::UP;
-    else if (dir_str == "DOWN")
+    else if (str == "DOWN")
         return Direction::DOWN;
     else
         return Direction::NONE;

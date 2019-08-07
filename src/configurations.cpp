@@ -1,14 +1,13 @@
 #include "../include/configurations.hpp"
-#include "../include/log.hpp"
+#include "../include/utility.hpp"
 #include <boost/lexical_cast.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <typeinfo>
+#include <fstream>
 
-boost::property_tree::ptree Configurations::pt;
-std::unordered_map<std::string, boost::any> Configurations::defaults;
+std::unordered_map<std::string, Configurations::value_type> Configurations::values;
+std::unordered_map<std::string, Configurations::value_type> Configurations::defaults;
 
-void Configurations::parse(const std::string& filename) {
-    boost::property_tree::ini_parser::read_ini(filename, pt);
+void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
     defaults["game.screen-width"] = 640;
     defaults["game.screen-height"] = 480;
@@ -69,20 +68,91 @@ void Configurations::parse(const std::string& filename) {
     defaults["startup.scripts-list"] = std::string();
 }
 
+std::vector<std::string> Configurations::parse(std::string filename) {
+    if (defaults.size() == 0) {
+        load_defaults();
+    }
+    normalize_slashes(filename);
+    std::ifstream stream(filename);
+    if (!stream) {
+        throw config_exception("Couldn't read file " + filename);
+    }
+
+    std::vector<std::string> errors;
+
+    std::string current_section;
+    std::string line;
+    int line_number = -1;
+    while (std::getline(stream, line)) {
+        line_number++;
+        trim(line);
+        // Empty line and comments
+        if (line.empty() || line[0] == '#' || line[0] == ';') {
+            continue;
+        }
+
+        // Section
+        if (line[0] == '[') {
+            auto end = line.find(']');
+            if (end == std::string::npos) {
+                errors.push_back(filename + " contains section line without closing ] at line "
+                    + std::to_string(line_number) + ", line content: " + line);
+            } else {
+                current_section = line.substr(1, end - 1);
+                trim(current_section);
+            }
+
+            continue;
+        }
+
+        // Key = Value pairs
+        auto eq = line.find('=');
+        if (eq == std::string::npos) {
+            errors.push_back(filename + " is missing = sign at line "
+                + std::to_string(line_number) + ", line content: " + line);
+        } else {
+            auto key = line.substr(0, eq);
+            trim(key);
+            if (key.empty()) {
+                errors.push_back(filename + " is missing configuration key at line "
+                    + std::to_string(line_number) + ", line content: " + line);
+                continue;
+            }
+            key = current_section + "." + key;
+            if (values.find(key) != values.end()) {
+                errors.push_back(filename + " contains duplicate key '" + key + "' at line "
+                    + std::to_string(line_number) + ", line content: " + line);
+            }
+            auto value_string = line.substr(eq + 1);
+            trim(value_string);
+            if (defaults.find(key) != defaults.end()) {
+                if (value_string == "true") value_string = "1";
+                if (value_string == "false") value_string = "0";
+                values[key] = std::visit(
+                    [&value_string](auto&& arg) {
+                        using T = std::decay_t<decltype(arg)>;
+                        return Configurations::value_type{ boost::lexical_cast<T>(value_string) };
+                    },
+                    defaults[key]);
+            } else {
+                values[key] = value_string;
+            }
+        }
+    }
+
+    if (values.empty()) {
+        errors.push_back(filename + " config file was completely empty or invalid");
+    }
+
+    return errors;
+}
+
 std::string Configurations::get_string(const std::string& name) {
-    if (defaults.find(name) == defaults.end())
-        return get<std::string>(name);
-    // Ugly...
-    auto& type = defaults[name].type();
-    if (type == typeid(std::string))
-        return get<std::string>(name);
-    if (type == typeid(int))
-        return boost::lexical_cast<std::string>(get<int>(name));
-    if (type == typeid(unsigned int))
-        return boost::lexical_cast<std::string>(get<unsigned int>(name));
-    if (type == typeid(float))
-        return boost::lexical_cast<std::string>(get<float>(name));
-    if (type == typeid(bool))
-        return boost::lexical_cast<std::string>(get<bool>(name));
+    auto visitor = [](auto&& arg) { return boost::lexical_cast<std::string>(arg); };
+    if (values.find(name) != values.end()) {
+        return std::visit(visitor, values[name]);
+    } else if (defaults.find(name) != defaults.end()) {
+        return std::visit(visitor, defaults[name]);
+    }
     return "";
 }

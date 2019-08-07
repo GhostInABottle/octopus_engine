@@ -1,35 +1,46 @@
 #ifndef HPP_CONFIGURATIONS
 #define HPP_CONFIGURATIONS
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
+#include <variant>
 #include <unordered_map>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+class config_exception : public std::runtime_error {
+public:
+    config_exception(const std::string& error) : std::runtime_error(error) {}
+};
 
 // A class for dealing with configuration options read from file
 class Configurations {
 public:
-    // Parse the configuration file
-    static void parse(const std::string& filename);
+    // Load default values
+    static void load_defaults();
+    // Parse the configuration file and returns list of parse errors
+    static std::vector<std::string> parse(std::string filename);
     // Get the option with given name
     template<typename T>
     static T get(const std::string& name) {
-        if (defaults.find(name) != defaults.end())
-            return pt.get<T>(name, boost::any_cast<T>(defaults[name]));
+        if (values.find(name) != values.end())
+            return std::get<T>(values[name]);
+        else if (defaults.find(name) != defaults.end())
+            return std::get<T>(defaults[name]);
         else
-            return pt.get<T>(name);
+            throw config_exception(name + " is an invalid config value");
     }
     // Check if an option exists
     template<typename T>
-    static bool contains(const std::string& name) {
-        return static_cast<bool>(pt.get_optional<T>(name));
+    static bool contains_value(const std::string& name) {
+        return values.find(name) != values.end();
     }
     // Get the option with given name as a string
     static std::string get_string(const std::string& name);
 private:
+    typedef std::variant<std::string, int, unsigned int, float, bool> value_type;
     // Variable map to store the options
-    static boost::property_tree::ptree pt;
-    static std::unordered_map<std::string, boost::any> defaults;
+    static std::unordered_map<std::string, value_type> values;
+    static std::unordered_map<std::string, value_type> defaults;
 };
 
 #endif

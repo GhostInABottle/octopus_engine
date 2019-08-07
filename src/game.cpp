@@ -157,10 +157,10 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         return;
     map = Map::load(*this, Configurations::get<std::string>("startup.map"));
     auto start_pos = map->get_starting_position();
-    if (Configurations::contains<float>("startup.player-position-x")) {
+    if (Configurations::contains_value<float>("startup.player-position-x")) {
         start_pos.x = Configurations::get<float>("startup.player-position-x");
     }
-    if (Configurations::contains<float>("startup.player-position-y")) {
+    if (Configurations::contains_value<float>("startup.player-position-y")) {
         start_pos.y = Configurations::get<float>("startup.player-position-y");
     }
     // Create player object
@@ -192,8 +192,9 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     // Run game startup scripts
     std::string scripts_list =
         Configurations::get<std::string>("startup.scripts-list");
+    normalize_slashes(scripts_list);
     if (!scripts_list.empty()) {
-        std::ifstream scripts_file(normalize_slashes(scripts_list));
+        std::ifstream scripts_file(scripts_list);
         if (scripts_file) {
             std::string filename;
             while (std::getline(scripts_file, filename)) {
@@ -389,9 +390,10 @@ int Game::ticks() const {
     return window->ticks() - stopped_time;
 }
 
-void Game::save(const std::string& filename, Save_File& save_file) const {
+void Game::save(std::string filename, Save_File& save_file) const {
+    normalize_slashes(filename);
     try {
-        std::ofstream ofs(normalize_slashes(filename), std::ios::binary);
+        std::ofstream ofs(filename, std::ios::binary);
         if (!ofs) {
             throw std::runtime_error("Unable to open file for writing");
         }
@@ -404,11 +406,12 @@ void Game::save(const std::string& filename, Save_File& save_file) const {
     }
 }
 
-std::unique_ptr<Save_File> Game::load(const std::string& filename) {
+std::unique_ptr<Save_File> Game::load(std::string filename) {
+    normalize_slashes(filename);
     lua_State* state = pimpl->scripting_interface->lua_state();
     std::unique_ptr<Save_File> file(new Save_File(state, luabind::object()));
     try {
-        std::ifstream ifs(normalize_slashes(filename), std::ios::binary);
+        std::ifstream ifs(filename, std::ios::binary);
         if (!ifs) {
             throw std::runtime_error("File doesn't exist or can't be opened");
         }
@@ -517,7 +520,7 @@ void Game::process_keymap() {
         while(std::getline(input, line))
         {
             ++counter;
-            line = trim(line);
+            trim(line);
             if (line.empty() || line[0] == '#')
                 continue;
             auto parts = split(line, "=");
@@ -526,15 +529,16 @@ void Game::process_keymap() {
                     " at line " << counter << ", missing = sign.";
                 continue;
             }
-            std::string name = trim(parts[0]);
+            trim(parts[0]);
             auto keys = split(parts[1], ",");
             if (keys.empty())
                 LOGGER_W << "Error processing key mapping file \"" << map_file <<
                     " at line " << counter << ", no keys specified.";
-            for (auto& key : keys) {
-                key = capitalize(trim(key));
+            for (auto key : keys) {
+                trim(key);
+                capitalize(key);
                 if (key_names.find(key) != key_names.end()) {
-                    window->bind_key(key_names[key], name);
+                    window->bind_key(key_names[key], parts[0]);
                 } else if (gamepad_enabled || key.find("GAMEPAD") == std::string::npos) {
                     LOGGER_W << "Error processing key mapping file \"" << map_file <<
                     " at line " << counter << ", key \"" << key << "\" not found." ;

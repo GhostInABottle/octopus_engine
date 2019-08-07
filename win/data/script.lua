@@ -155,6 +155,10 @@ else
     local music = game.playing_music
     text(o, "Pausing music " .. music.filename):wait()
     music:pause()
+    text(o, "Config title: " .. game:get_config('game.title')
+        .. '\nscreen width: ' .. game:get_config('game.screen-width')
+        .. '\nfullscreen: ' .. game:get_config('game.fullscreen')
+        .. '\naxis-sensitivity: ' .. game:get_config('controls.axis-sensitivity')):wait()
     local tbl = {
         a = 'aa',
         b = 'ba',

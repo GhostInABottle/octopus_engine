@@ -147,9 +147,9 @@ public:
         editor_ticks = ticks;
     }
     // Save game
-    void save(const std::string& filename, Save_File& save_file) const;
+    void save(std::string filename, Save_File& save_file) const;
     // Load game
-    std::unique_ptr<Save_File> load(const std::string& filename);
+    std::unique_ptr<Save_File> load(std::string filename);
     // Get current gamepad ID
     int get_gamepad_id() const;
     // Process key-mapping string

@@ -26,7 +26,8 @@ void Image_Layer::set_image(const std::string& filename) {
                     " to nonexistent file " << filename;
         return;
     }
-    image_source = normalize_slashes(filename);
+    image_source = filename;
+    normalize_slashes(image_source);
     image_texture = std::make_shared<xd::texture>(
         image_source, image_trans_color, GL_REPEAT, GL_REPEAT,
         GL_NEAREST, GL_NEAREST);
@@ -70,8 +71,8 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     if (!sprite.empty()) {
         layer_ptr->set_sprite(game, sprite, pose);
     } else if (auto image_node = node.first_node("image")) {
-        std::string filename = image_node->first_attribute("source")->value();
-        layer_ptr->image_source = normalize_slashes(filename);
+        layer_ptr->image_source = image_node->first_attribute("source")->value();
+        normalize_slashes(layer_ptr->image_source);
         if (auto trans_attr = image_node->first_attribute("trans")) {
             layer_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }

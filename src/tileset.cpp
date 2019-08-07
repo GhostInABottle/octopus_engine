@@ -43,7 +43,8 @@ std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
     if (!tileset_node)
         throw tmx_exception("Invalid external tileset TMX file. Missing tileset node");
     auto tileset = load(*tileset_node);
-    tileset->filename = normalize_slashes(filename);
+    tileset->filename = filename;
+    normalize_slashes(tileset->filename);
     return tileset;
 }
 
@@ -64,12 +65,13 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
     // Image
     if (auto image_node = node.first_node("image")) {
         tileset_ptr->image_source = image_node->first_attribute("source")->value();
+        normalize_slashes(tileset_ptr->image_source);
         if (auto trans_attr = image_node->first_attribute("trans")) {
             tileset_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
         // Load the texture
         tileset_ptr->image_texture = std::make_shared<xd::texture>(
-            normalize_slashes(tileset_ptr->image_source),
+            tileset_ptr->image_source,
             tileset_ptr->image_trans_color, GL_REPEAT, GL_REPEAT,
             GL_NEAREST, GL_NEAREST);
     }

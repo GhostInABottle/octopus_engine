@@ -9,9 +9,9 @@
 #include "rapidxml.hpp"
 
 // Check if a file exists
-bool file_exists(const std::string& filename);
+bool file_exists(std::string filename);
 // Read file content into a string
-std::string read_file(const std::string& filename);
+std::string read_file(std::string filename);
 // Allocate an XML node
 rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
         const std::string& name, const std::string& value = "",
@@ -20,17 +20,17 @@ rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
 rapidxml::xml_attribute<>* xml_attribute(rapidxml::xml_document<>& doc,
         const std::string& name, const std::string& value);
 // Trim a string from both sides
-std::string trim(std::string s);
+void trim(std::string& s);
+// Capitalize all characters in a string
+void capitalize(std::string& original);
+// Change backslashes to forward slashes
+void normalize_slashes(std::string& filename);
+// Check if two strings are equal (case insensitive)
+bool equal_strings(const std::string& str1, const std::string& str2);
 // Split a string to a vector
 std::vector<std::string> split(const std::string& original, const std::string& delims, bool compress = true);
 // Return timestamp in "YYYY-MM-DD HH:MM:SS" format
 std::string timestamp(bool date_only = false);
-// Capitalize all characters in a string
-std::string capitalize(std::string original);
-// Change backslashes to forward slashes
-std::string normalize_slashes(std::string filename);
-// Check if two strings are equal (case insensitive)
-bool equal_strings(const std::string& str1, const std::string& str2);
 // Convert an unsigned int color value to a vec[4] of ARGB components
 xd::vec4 int_to_color(unsigned int value);
 // Convert a vec[4] of ARGB components to an unsigned int color value

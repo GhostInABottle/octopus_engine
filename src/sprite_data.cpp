@@ -30,7 +30,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing spritedata node");
     auto sprite_data = load(manager, *sprite_node);
-    sprite_data->filename = normalize_slashes(filename);
+    sprite_data->filename = filename;
+    normalize_slashes(sprite_data->filename);
     return sprite_data;
 }
 
@@ -51,8 +52,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     if (auto attr = node.first_attribute("Image")) {
         image_loaded = true;
         std::string image_file = attr->value();
+        normalize_slashes(image_file);
         sprite_ptr->image = manager.load_persistent<xd::texture>(
-            normalize_slashes(image_file), sprite_ptr->transparent_color,
+            image_file, sprite_ptr->transparent_color,
             GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     }
 
@@ -94,8 +96,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
+            normalize_slashes(pose_image_file);
             pose.image = manager.load_persistent<xd::texture>(
-                normalize_slashes(pose_image_file),
+                pose_image_file,
                 pose.transparent_color,
                 GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
         } else {
@@ -138,8 +141,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
+                normalize_slashes(frame_image_file);
                 frame.image = manager.load_persistent<xd::texture>(
-                    normalize_slashes(frame_image_file),
+                    frame_image_file,
                     frame.transparent_color,
                     GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
             } else {
@@ -165,8 +169,10 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
         // Tags
         for (auto tag_node = pose_node->first_node("Tag");
                 tag_node; tag_node = tag_node->next_sibling("Tag")) {
-            std::string key = capitalize(tag_node->first_attribute("Key")->value());
-            std::string value = capitalize(tag_node->first_attribute("Value")->value());
+            std::string key = tag_node->first_attribute("Key")->value();
+            std::string value = tag_node->first_attribute("Value")->value();
+            capitalize(key);
+            capitalize(value);
             sprite_ptr->poses[pose_index].tags[key] = value;
         }
     }

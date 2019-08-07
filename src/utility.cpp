@@ -7,13 +7,15 @@
 #include <iomanip>
 #include <boost/algorithm/string.hpp>
 
-bool file_exists(const std::string& filename) {
-    std::ifstream stream(normalize_slashes(filename));
+bool file_exists(std::string filename) {
+    normalize_slashes(filename);
+    std::ifstream stream(filename);
     return static_cast<bool>(stream);
 }
 
-std::string read_file(const std::string& filename) {
-    std::ifstream stream(normalize_slashes(filename));
+std::string read_file(std::string filename) {
+    normalize_slashes(filename);
+    std::ifstream stream(filename);
     if (!stream)
         throw std::runtime_error("Couldn't read file " + filename);
     return std::string((std::istreambuf_iterator<char>(stream)),
@@ -36,10 +38,20 @@ rapidxml::xml_attribute<>* xml_attribute(rapidxml::xml_document<>& doc,
     char* value_str = doc.allocate_string(value.c_str());
     return doc.allocate_attribute(name_str, value_str);
 }
-
-std::string trim(std::string s) {
+void trim(std::string& s) {
     boost::trim(s);
-    return s;
+}
+
+void capitalize(std::string& original) {
+    boost::to_upper(original);
+}
+
+void normalize_slashes(std::string& filename) {
+    boost::replace_all(filename, "\\", "/");
+}
+
+bool equal_strings(const std::string& str1, const std::string& str2) {
+    return boost::iequals(str1, str2);
 }
 
 std::vector<std::string> split(const std::string& original, const std::string& delims, bool compress) {
@@ -76,20 +88,6 @@ std::string timestamp(bool date_only) {
     }
 
     return oss.str();
-}
-
-std::string capitalize(std::string original) {
-    boost::to_upper(original);
-    return original;
-}
-
-std::string normalize_slashes(std::string filename) {
-    boost::replace_all(filename, "\\", "/");
-    return filename;
-}
-
-bool equal_strings(const std::string& str1, const std::string& str2) {
-    return boost::iequals(str1, str2);
 }
 
 xd::vec4 int_to_color(unsigned int value) {
