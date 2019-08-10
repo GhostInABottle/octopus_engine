@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <optional>
+#include <unordered_set>
 
 struct Game::Impl {
     explicit Impl(xd::audio* audio, bool editor_mode) :
@@ -47,7 +48,24 @@ struct Game::Impl {
             game_height(Configurations::get<float>("debug.height")),
             gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")) {}
-
+    // Called when a configuration changes
+    void on_config_change(const std::string& config_key) {
+        config_changes.insert(config_key);
+    }
+    bool config_changed(const std::string& config_key) const {
+        return config_changes.find(config_key) != config_changes.end();
+    }
+    // Process configuration changes
+    void process_config_changes(Game& game) {
+        if (config_changed("game.screen-width") && config_changed("game.screen-width")) {
+            game.set_size(Configurations::get<int>("game.screen-width"),
+                Configurations::get<int>("game.screen-height"));
+        }
+        if (config_changed("game.pause-unfocused")) {
+            pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
+        }
+        config_changes.clear();
+    }
     // Audio system
     xd::audio* audio;
     // Was game started in editor mode?
@@ -90,6 +108,8 @@ struct Game::Impl {
     bool gamepad_enabled;
     // Active gamepad id
     int gamepad_id;
+    // Unapplied config changes
+    std::unordered_set<std::string> config_changes;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -117,12 +137,19 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         text_renderer(0, 0),
         editor_ticks(0),
         editor_size(1, 1) {
+    // Set members
     clock.reset(new Clock(*this));
     camera.reset(new Camera(*this));
     shake_decorator.reset(new Shake_Decorator(*this));
     text_renderer.reset_projection(
         static_cast<float>(game_width()),
         static_cast<float>(game_height()));
+    // Listen to config changes
+    Configurations::add_observer("Game",
+        [this](const std::string& key) {
+            this->pimpl->on_config_change(key);
+        }
+    );
     // Setup fonts
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
         .line_height(Configurations::get<float>("font.line-height"))
@@ -215,6 +242,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
 }
 
 Game::~Game() {
+    Configurations::remove_observer("Game");
 }
 
 xd::audio* Game::get_audio() const {
@@ -258,6 +286,7 @@ void Game::frame_update() {
     pimpl->scripting_interface->update();
     camera->update();
     map->update();
+    pimpl->process_config_changes(*this);
     // Switch map if needed
     if (!pimpl->next_map.empty())
         load_map(pimpl->next_map);

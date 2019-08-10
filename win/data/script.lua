@@ -155,10 +155,21 @@ else
     local music = game.playing_music
     text(o, "Pausing music " .. music.filename):wait()
     music:pause()
+    local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')
         .. '\nscreen width: ' .. game:get_config('game.screen-width')
-        .. '\nfullscreen: ' .. game:get_config('game.fullscreen')
+        .. '\npause-unfocused: ' .. pause_unfocused
         .. '\naxis-sensitivity: ' .. game:get_config('controls.axis-sensitivity')):wait()
+    text(o, "Changing screen width and screen height config"):wait()
+    local game_size = Vec2(game.width, game.height)
+    game:set_int_config('game.screen-width', 800)
+    game:set_int_config('game.screen-height', 800)
+    print('game_width: ' .. tostring(game.width) .. ', height: ' .. tostring(game.height))
+    text(o, "Reverting screen width and screen height config"):wait()
+    game:set_int_config('game.screen-width', game_size.x)
+    game:set_int_config('game.screen-height', game_size.y)
+    text(o, "Toggling game.pause-unfocused config"):wait()
+    game:set_bool_config('game.pause-unfocused', pause_unfocused == "0")
     local tbl = {
         a = 'aa',
         b = 'ba',

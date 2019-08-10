@@ -594,6 +594,31 @@ void Scripting_Interface::setup_scripts() {
                     return Configurations::get_string(key);
                 }
             ))
+            .def("set_bool_config", tag_function<void (Game*, const std::string&, bool)>(
+                [](Game*, const std::string& key, bool value) {
+                    Configurations::set(key, value);
+                }
+            ))
+            .def("set_float_config", tag_function<void (Game*, const std::string&, float)>(
+                [](Game*, const std::string& key, float value) {
+                    Configurations::set(key, value);
+                }
+            ))
+            .def("set_int_config", tag_function<void (Game*, const std::string&, int)>(
+                [](Game*, const std::string& key, int value) {
+                    Configurations::set(key, value);
+                }
+            ))
+            .def("set_unsigned_config", tag_function<void (Game*, const std::string&, unsigned int)>(
+                [](Game*, const std::string& key, unsigned int value) {
+                    Configurations::set(key, value);
+                }
+            ))
+            .def("set_string_config", tag_function<void (Game*, const std::string&, const std::string&)>(
+                [](Game*, const std::string& key, const std::string& value) {
+                    Configurations::set(key, value);
+                }
+            ))
             .def("save", tag_function<bool (Game*, const std::string&, object)>(
                 [&](Game* game, const std::string& filename, object obj) {
                     Save_File file(vm.lua_state(), obj);

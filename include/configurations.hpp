@@ -16,7 +16,7 @@ public:
 // A class for dealing with configuration options read from file
 class Configurations {
 public:
-    typedef std::function<void(std::string)> callback;
+    typedef std::function<void(const std::string&)> callback;
     // Load default values
     static void load_defaults();
     // Parse the configuration file and returns list of parse errors

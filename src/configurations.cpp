@@ -6,6 +6,7 @@
 
 std::unordered_map<std::string, Configurations::value_type> Configurations::values;
 std::unordered_map<std::string, Configurations::value_type> Configurations::defaults;
+std::unordered_map<std::string, Configurations::callback> Configurations::observers;
 
 void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
