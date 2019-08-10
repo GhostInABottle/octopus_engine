@@ -6,7 +6,6 @@
 #include "transform_geometry.hpp"
 #include "types.hpp"
 #include "../glm.hpp"
-#include <boost/noncopyable.hpp>
 #include <vector>
 #include <memory>
 
@@ -15,10 +14,11 @@ namespace xd
     class shader_program;
     class texture;
     // sprite batch
-    class sprite_batch : public boost::noncopyable
+    class sprite_batch
     {
     public:
-
+        sprite_batch(const sprite_batch&) = delete;
+        sprite_batch& operator=(const sprite_batch&) = delete;
         sprite_batch();
         virtual ~sprite_batch();
 

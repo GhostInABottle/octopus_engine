@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "../../include/rapidxml.hpp"
+#include "../../include/vendor/rapidxml.hpp"
 #include "../../include/tileset.hpp"
 
 BOOST_AUTO_TEST_SUITE(tileset_tests)

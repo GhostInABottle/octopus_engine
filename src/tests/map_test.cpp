@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "../../include/rapidxml.hpp"
+#include "../../include/vendor/rapidxml.hpp"
 #include "../../include/map.hpp"
 #include "../../include/tile_layer.hpp"
 #include "../../include/tests/game_fixture.hpp"

@@ -14,11 +14,10 @@
 #include "../include/utility.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/exceptions.hpp"
-#include "../include/rapidxml_print.hpp"
+#include "../include/vendor/rapidxml_print.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/configurations.hpp"
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <unordered_set>
 #include <fstream>
@@ -456,16 +455,15 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
 }
 
 std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
-    using boost::lexical_cast;
     std::unique_ptr<Map> map_ptr(new Map(game));
 
     if (node.first_attribute("orientation")->value() != std::string("orthogonal"))
         throw tmx_exception("Invalid map orientation, expected orthogonal");
 
-    map_ptr->width = lexical_cast<int>(node.first_attribute("width")->value());
-    map_ptr->height = lexical_cast<int>(node.first_attribute("height")->value());
-    map_ptr->tile_width = lexical_cast<int>(node.first_attribute("tilewidth")->value());
-    map_ptr->tile_height = lexical_cast<int>(node.first_attribute("tileheight")->value());
+    map_ptr->width = std::stoi(node.first_attribute("width")->value());
+    map_ptr->height = std::stoi(node.first_attribute("height")->value());
+    map_ptr->tile_width = std::stoi(node.first_attribute("tilewidth")->value());
+    map_ptr->tile_height = std::stoi(node.first_attribute("tileheight")->value());
 
     // Map properties
     map_ptr->properties.read(node);
@@ -485,13 +483,13 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
 
     // Player position
     if (map_ptr->properties.has_property("player-position-x")) {
-        map_ptr->starting_position.x = lexical_cast<float>(map_ptr->properties["player-position-x"]);
+        map_ptr->starting_position.x = std::stof(map_ptr->properties["player-position-x"]);
     }
     else {
         map_ptr->starting_position.x = static_cast<float>(map_ptr->get_pixel_width() / 2);
     }
     if (map_ptr->properties.has_property("player-position-y")) {
-        map_ptr->starting_position.y = lexical_cast<float>(map_ptr->properties["player-position-y"]);
+        map_ptr->starting_position.y = std::stof(map_ptr->properties["player-position-y"]);
     }
     else {
         map_ptr->starting_position.y = static_cast<float>(map_ptr->get_pixel_height() / 2);
@@ -504,7 +502,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         if (auto source_node = tileset_node->first_attribute("source")) {
             std::string source = source_node->value();
             tileset_ptr = Tileset::load(source);
-            tileset_ptr->first_id = lexical_cast<int>(
+            tileset_ptr->first_id = std::stoi(
                 tileset_node->first_attribute("firstgid")->value());
         } else {
             tileset_ptr = Tileset::load(*tileset_node);

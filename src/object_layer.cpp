@@ -5,7 +5,6 @@
 #include "../include/map.hpp"
 #include "../include/utility.hpp"
 #include "../include/exceptions.hpp"
-#include <boost/lexical_cast.hpp>
 
 rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
     auto node = Layer::save(doc, "objectgroup");
@@ -19,7 +18,6 @@ rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map) {
-    using boost::lexical_cast;
     Object_Layer* layer_ptr = new Object_Layer();
     layer_ptr->Layer::load(node);
     if (auto color_node = node.first_attribute("color"))

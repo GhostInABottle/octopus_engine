@@ -3,19 +3,20 @@
 
 #include "../vendor/glew/glew.h"
 #include "../glm.hpp"
-#include <boost/noncopyable.hpp>
 #include <string>
 #include <unordered_map>
 
 namespace xd
 {
-    class shader_program : public boost::noncopyable
+    class shader_program
     {
     public:
 
         // constructors & destructors
         shader_program();
         virtual ~shader_program();
+        shader_program(const shader_program&) = delete;
+        shader_program& operator=(const shader_program&) = delete;
 
         // attach shader and link
         void attach(GLuint type, const std::string& src);

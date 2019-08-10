@@ -4,7 +4,7 @@
 #include "detail/entity.hpp"
 
 #include "event_bus.hpp"
-#include <boost/any.hpp>
+#include <any>
 #include <unordered_map>
 #include <functional>
 #include <algorithm>
@@ -57,7 +57,7 @@ namespace xd
             auto i = m_type_to_data.find(hash);
             if (i == m_type_to_data.end())
                 i = m_type_to_data.insert(std::make_pair(hash, T())).first;
-            return *boost::any_cast<T>(&i->second);
+            return *std::any_cast<T>(&i->second);
         }
 
         template <typename T>
@@ -66,7 +66,7 @@ namespace xd
             auto i = m_key_to_data.find(key);
             if (i == m_key_to_data.end())
                 i = m_key_to_data.insert(std::make_pair(key, T())).first;
-            return *boost::any_cast<T>(&i->second);
+            return *std::any_cast<T>(&i->second);
         }
 
         template <typename T>
@@ -236,8 +236,8 @@ namespace xd
         typedef std::list<std::shared_ptr<detail::render_component<Class>>> render_component_list_t;
 
         // data
-        std::unordered_map<std::size_t, boost::any> m_type_to_data;
-        std::unordered_map<std::string, boost::any> m_key_to_data;
+        std::unordered_map<std::size_t, std::any> m_type_to_data;
+        std::unordered_map<std::string, std::any> m_key_to_data;
 
         // internal struct to hold component lists per priority
         struct components_set
@@ -250,7 +250,7 @@ namespace xd
         std::map<int, components_set> m_components;
 
         // the bound events
-        std::unordered_map<std::size_t, boost::any> m_events;
+        std::unordered_map<std::size_t, std::any> m_events;
 
         // utility function to return event_bus for given arg type
         template <typename T>
@@ -265,7 +265,7 @@ namespace xd
                 m_events[hash] = event_bus<T>();
             }
             // return the event bus
-            return *boost::any_cast<event_bus<T>>(&m_events[hash]);
+            return *std::any_cast<event_bus<T>>(&m_events[hash]);
         }
     };
 }

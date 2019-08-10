@@ -3,7 +3,6 @@
 
 #include "../vendor/glew/glew.h"
 #include "../asset_serializer.hpp"
-#include <boost/noncopyable.hpp>
 #include <tuple>
 #include <string>
 
@@ -11,9 +10,11 @@ namespace xd
 {
     class texture;
 
-    class framebuffer : public boost::noncopyable
+    class framebuffer
     {
     public:
+        framebuffer(const framebuffer&) = delete;
+        framebuffer& operator=(const framebuffer&) = delete;
         framebuffer();
         virtual ~framebuffer();
 

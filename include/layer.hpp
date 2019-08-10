@@ -6,7 +6,7 @@
 #include "xd/graphics/types.hpp"
 #include "tmx_properties.hpp"
 #include "editable.hpp"
-#include "rapidxml.hpp"
+#include "vendor/rapidxml.hpp"
 
 class Layer_Renderer;
 class Layer_Updater;

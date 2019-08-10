@@ -1,10 +1,9 @@
 #include "../include/tile_layer.hpp"
 #include "../include/tile_layer_renderer.hpp"
 #include "../include/utility.hpp"
-#include "../include/base64.hpp"
+#include "../include/vendor/base64.hpp"
 #include "../include/exceptions.hpp"
 #include <zlib.h>
-#include <boost/lexical_cast.hpp>
 #include <cmath>
 
 void Tile_Layer::resize(xd::ivec2 new_size) {
@@ -47,7 +46,6 @@ rapidxml::xml_node<>* Tile_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& camera) {
-    using boost::lexical_cast;
     Tile_Layer* layer_ptr = new Tile_Layer();
     layer_ptr->Layer::load(node);
 

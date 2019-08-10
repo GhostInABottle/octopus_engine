@@ -6,8 +6,7 @@
 #include "../graphics/transform_geometry.hpp"
 #include "..//graphics/types.hpp"
 #include "../event_bus.hpp"
-#include <boost/noncopyable.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
@@ -18,7 +17,7 @@ struct GLFWwindow;
 
 namespace xd
 {
-    class window : public boost::noncopyable
+    class window
     {
     public:
         // typedefs
@@ -26,6 +25,8 @@ namespace xd
         typedef std::function<void ()> tick_callback_t;
 
         // public interface
+        window(const window&) = delete;
+        window& operator=(const window&) = delete;
         window(const std::string& title, int width, int height, const window_options& options = window_options());
         virtual ~window();
 
@@ -46,7 +47,7 @@ namespace xd
         int ticks() const;
         int delta_ticks() const;
         float delta_time() const;
-        void register_tick_handler(tick_callback_t callback, boost::uint32_t interval);
+        void register_tick_handler(tick_callback_t callback, std::uint32_t interval);
         void unregister_tick_handler();
         int fps() const;
         int frame_count() const;
@@ -98,16 +99,16 @@ namespace xd
         float m_axis_sensitivity;
 
         // keep track of ticks
-        boost::uint32_t m_current_ticks;
-        boost::uint32_t m_last_ticks;
-        boost::uint32_t m_tick_handler_counter;
-        boost::uint32_t m_tick_handler_interval;
+        std::uint32_t m_current_ticks;
+        std::uint32_t m_last_ticks;
+        std::uint32_t m_tick_handler_counter;
+        std::uint32_t m_tick_handler_interval;
         tick_callback_t m_tick_handler;
 
         // fps stuff
         int m_fps;
         int m_frame_count;
-        boost::uint32_t m_last_fps_update;
+        std::uint32_t m_last_fps_update;
 
         // internal typedefs
         typedef std::unordered_set<key> key_set_t;

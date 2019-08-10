@@ -3,7 +3,6 @@
 #include "../../../include/xd/audio/detail/audio_handle.hpp"
 #include "../../../include/xd/audio/exceptions.hpp"
 #include "../../../include/log.hpp"
-#include <boost/lexical_cast.hpp>
 #include <FMOD/fmod.hpp>
 #include <memory>
 
@@ -24,7 +23,7 @@ namespace xd { namespace detail {
             if (sound->getTag(name, 0, &tag) == FMOD_OK) {
                 if (tag.datatype == FMOD_TAGDATATYPE_STRING) {
                     std::string data = static_cast<const char*>(tag.data);
-                    value = boost::lexical_cast<int>(data);
+                    value = std::stoi(data);
                 } else {
                     value = -1;
                 }

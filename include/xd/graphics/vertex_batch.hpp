@@ -2,14 +2,15 @@
 #define H_XD_GRAPHICS_VERTEX_BATCH
 
 #include "vertex_traits.hpp"
-#include <boost/noncopyable.hpp>
 
 namespace xd
 {
     template <typename Traits>
-    class vertex_batch : public boost::noncopyable
+    class vertex_batch
     {
     public:
+        vertex_batch(const vertex_batch&) = delete;
+        vertex_batch& operator=(const vertex_batch&) = delete;
 
         vertex_batch(GLenum draw_mode = GL_TRIANGLES, const Traits& traits = Traits())
             : m_draw_mode(draw_mode)

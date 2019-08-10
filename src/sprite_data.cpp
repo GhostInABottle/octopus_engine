@@ -1,9 +1,9 @@
 #include "../include/sprite_data.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/utility.hpp"
-#include <iostream>
 #include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
+#include <iostream>
 
 Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager) {}
 
@@ -36,10 +36,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node) {
-    using boost::lexical_cast;
-
     std::unique_ptr<Sprite_Data> sprite_ptr(new Sprite_Data(manager));
-
     // Image and transparent color
     bool image_loaded = false;
     bool pose_images_loaded = true;
@@ -64,28 +61,28 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
         Pose pose;
         if (auto bb_node = pose_node->first_node("Bounding-Box")) {
             xd::rect rect;
-            rect.x = lexical_cast<float>(bb_node->first_attribute("X")->value());
-            rect.y = lexical_cast<float>(bb_node->first_attribute("Y")->value());
-            rect.w = lexical_cast<float>(bb_node->first_attribute("Width")->value());
-            rect.h = lexical_cast<float>(bb_node->first_attribute("Height")->value());
+            rect.x = std::stof(bb_node->first_attribute("X")->value());
+            rect.y = std::stof(bb_node->first_attribute("Y")->value());
+            rect.w = std::stof(bb_node->first_attribute("Width")->value());
+            rect.h = std::stof(bb_node->first_attribute("Height")->value());
             if (rect.x > 0) pose.bounding_box.x = rect.x;
             if (rect.y > 0) pose.bounding_box.y = rect.y;
             if (rect.w > 0) pose.bounding_box.w = rect.w;
             if (rect.h > 0) pose.bounding_box.h = rect.h;
         }
         if (auto attr = pose_node->first_attribute("Duration"))
-            pose.duration = lexical_cast<int>(attr->value());
+            pose.duration = std::stoi(attr->value());
 
         if (auto attr = pose_node->first_attribute("Repeats"))
-            pose.repeats = lexical_cast<int>(attr->value());
+            pose.repeats = std::stoi(attr->value());
 
         if (auto attr = pose_node->first_attribute("Require-Completion"))
             pose.require_completion = attr->value() == std::string("true");
 
         if (auto attr = pose_node->first_attribute("X-Origin"))
-            pose.origin.x = lexical_cast<float>(attr->value());
+            pose.origin.x = std::stof(attr->value());
         if (auto attr = pose_node->first_attribute("Y-Origin"))
-            pose.origin.y = lexical_cast<float>(attr->value());
+            pose.origin.y = std::stof(attr->value());
 
         // Pose image and transparent color
         if (auto attr = pose_node->first_attribute("Transparent-Color")) {
@@ -110,25 +107,25 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                 frame_node; frame_node = frame_node->next_sibling("Frame")) {
             Frame frame;
             if (auto attr = frame_node->first_attribute("Duration"))
-                frame.duration = lexical_cast<int>(attr->value());
+                frame.duration = std::stoi(attr->value());
 
             if (auto node = frame_node->first_node("Rectangle")) {
-                frame.rectangle.x = lexical_cast<float>(node->first_attribute("X")->value());
-                frame.rectangle.y  = lexical_cast<float>(node->first_attribute("Y")->value());
-                frame.rectangle.w  = lexical_cast<float>(node->first_attribute("Width")->value());
-                frame.rectangle.h  = lexical_cast<float>(node->first_attribute("Height")->value());
+                frame.rectangle.x = std::stof(node->first_attribute("X")->value());
+                frame.rectangle.y  = std::stof(node->first_attribute("Y")->value());
+                frame.rectangle.w  = std::stof(node->first_attribute("Width")->value());
+                frame.rectangle.h  = std::stof(node->first_attribute("Height")->value());
             }
 
             if (auto attr = frame_node->first_attribute("X-Mag"))
-                frame.magnification.x = lexical_cast<float>(attr->value());
+                frame.magnification.x = std::stof(attr->value());
             if (auto attr = frame_node->first_attribute("Y-Mag"))
-                frame.magnification.y = lexical_cast<float>(attr->value());
+                frame.magnification.y = std::stof(attr->value());
 
             if (auto attr = frame_node->first_attribute("Angle"))
-                frame.angle = lexical_cast<int>(attr->value());
+                frame.angle = std::stoi(attr->value());
 
             if (auto attr = frame_node->first_attribute("Opacity"))
-                frame.opacity = lexical_cast<float>(attr->value());
+                frame.opacity = std::stof(attr->value());
 
             if (auto attr = frame_node->first_attribute("Tween"))
                 frame.tween_frame = attr->value() == std::string("true");

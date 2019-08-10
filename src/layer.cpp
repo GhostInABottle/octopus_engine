@@ -2,11 +2,8 @@
 #include "../include/layer_renderer.hpp"
 #include "../include/layer_updater.hpp"
 #include "../include/utility.hpp"
-#include "../include/base64.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
-#include <zlib.h>
-#include <boost/lexical_cast.hpp>
 
 Layer::Layer() : width(0), height(0), opacity(1.0f), visible(true) {}
 
@@ -33,16 +30,15 @@ rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
 }
 
 void Layer::load(rapidxml::xml_node<>& node) {
-    using boost::lexical_cast;
     name = node.first_attribute("name")->value();
     if (node.first_attribute("width"))
-        width = lexical_cast<int>(node.first_attribute("width")->value());
+        width = std::stoi(node.first_attribute("width")->value());
     if (node.first_attribute("height"))
-        height = lexical_cast<int>(node.first_attribute("height")->value());
+        height = std::stoi(node.first_attribute("height")->value());
     if (auto opacity_node = node.first_attribute("opacity"))
-        opacity = lexical_cast<float>(opacity_node->value());
+        opacity = std::stof(opacity_node->value());
     if (auto visible_node = node.first_attribute("visible"))
-        visible = lexical_cast<bool>(visible_node->value());
+        visible = visible_node->value() == "1";
     properties.read(node);
 
     auto has_vert = properties.has_property("vertex-shader");

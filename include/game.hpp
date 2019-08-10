@@ -29,6 +29,8 @@ namespace xd {
 
 class Game {
 public:
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
     explicit Game(xd::audio* audio, bool editor_mode = false);
     ~Game();
     // Get audio system pointer

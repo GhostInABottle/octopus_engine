@@ -1,7 +1,6 @@
 #ifndef H_XD_AUDIO_AUDIO
 #define H_XD_AUDIO_AUDIO
 
-#include <boost/noncopyable.hpp>
 #include <memory>
 
 namespace xd
@@ -11,9 +10,11 @@ namespace xd
         struct audio_handle;
     }
 
-    class audio : public boost::noncopyable
+    class audio
     {
     public:
+        audio(const audio&) = delete;
+        audio& operator=(const audio&) = delete;
         audio();
         ~audio();
         void update();

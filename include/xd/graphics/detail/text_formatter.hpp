@@ -2,7 +2,7 @@
 #define H_XD_GRAPHICS_DETAIL_TEXT_FORMATTER
 
 #include "../font.hpp"
-#include <boost/variant.hpp>
+#include <variant>
 #include <list>
 
 namespace xd { namespace detail { namespace text_formatter {
@@ -17,7 +17,7 @@ namespace xd { namespace detail { namespace text_formatter {
     struct token_close_decorator;
 
     // variant token
-    typedef boost::variant<
+    typedef std::variant<
         token_text,
         token_variable,
         token_open_decorator,
@@ -72,7 +72,7 @@ namespace xd { namespace detail { namespace text_formatter {
     struct state_change_pop_force_autohint : nested_void {};
 
     // variant state change
-    typedef boost::variant<
+    typedef std::variant<
         state_change_push_color,
         state_change_push_alpha,
         state_change_push_size,

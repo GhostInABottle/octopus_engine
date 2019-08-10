@@ -65,9 +65,9 @@ namespace xd { namespace lua { namespace detail {
 
         bool is_complete()
         {
-            // we must pass the scheduler_task_result via a boost::reference_wrapper
+            // we must pass the scheduler_task_result via a std::reference_wrapper
             // to ensure it is passed by reference, not by value which would make a copy
-            return luabind::call_function<bool>(m_callback, boost::ref(m_result));
+            return luabind::call_function<bool>(m_callback, std::ref(m_result));
         }
 
     private:

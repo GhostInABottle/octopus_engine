@@ -1,6 +1,5 @@
 #include "../include/custom_shaders.hpp"
 #include "../include/xd/graphics/vertex_traits.hpp"
-#include <boost/algorithm/string.hpp>
 #include <string>
 
 Custom_Shader::Custom_Shader(const std::string& vertex_src, const std::string& fragment_src) {

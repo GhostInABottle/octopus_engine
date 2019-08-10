@@ -132,9 +132,6 @@
     <ClCompile Include="..\src\tileset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\base64.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -282,6 +279,9 @@
     <ClCompile Include="..\src\vendor\lutf8lib.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vendor\base64.cpp">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -422,12 +422,6 @@
     <ClInclude Include="..\include\tileset.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\base64.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\rapidxml.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -539,9 +533,6 @@
     <ClInclude Include="..\include\editable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rapidxml_print.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -617,9 +608,6 @@
     <ClInclude Include="..\include\xd\system.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\types.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\tmx_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -630,6 +618,15 @@
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vendor\lutf8lib.hpp">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\rapidxml.hpp">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\rapidxml_print.hpp">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\base64.hpp">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,6 @@
 #include "../include/tileset.hpp"
 #include "../include/utility.hpp"
 #include "../include/exceptions.hpp"
-#include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
 
 rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
@@ -49,16 +48,15 @@ std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
 }
 
 std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
-    using boost::lexical_cast;
     std::unique_ptr<Tileset> tileset_ptr(new Tileset());
 	int first_id = 1;
 	if (auto first_id_attr = node.first_attribute("firstgid"))
-		first_id = lexical_cast<int>(first_id_attr->value());
+		first_id = std::stoi(first_id_attr->value());
 	tileset_ptr->first_id = first_id;
     tileset_ptr->name = node.first_attribute("name")->value();
-    tileset_ptr->tile_width = lexical_cast<int>(
+    tileset_ptr->tile_width = std::stoi(
         node.first_attribute("tilewidth")->value());
-    tileset_ptr->tile_height = lexical_cast<int>(
+    tileset_ptr->tile_height = std::stoi(
         node.first_attribute("tileheight")->value());
     // Tileset properties
     tileset_ptr->properties.read(node);
@@ -79,7 +77,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
     for (auto tile_node = node.first_node("tile");
             tile_node; tile_node = tile_node->next_sibling("tile")) {
         Tile tile;
-        tile.id = lexical_cast<int>(tile_node->first_attribute("id")->value());
+        tile.id = std::stoi(tile_node->first_attribute("id")->value());
         tile.properties.read(*tile_node);
         tileset_ptr->tiles.push_back(tile);
     }

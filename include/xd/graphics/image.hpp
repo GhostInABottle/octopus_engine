@@ -4,20 +4,21 @@
 #include "detail/image.hpp"
 
 #include "../glm.hpp"
-#include <boost/noncopyable.hpp>
 #include <string>
 #include <memory>
 
 
 namespace xd
 {
-    class image : public boost::noncopyable
+    class image
     {
     public:
 
         image(const std::string& filename);
         image(const std::string& filename, xd::vec4 color_key);
         virtual ~image();
+        image(const image&) = delete;
+        image& operator=(const image&) = delete;
 
         void load(const std::string& filename);
 

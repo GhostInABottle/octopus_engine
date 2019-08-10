@@ -2,7 +2,6 @@
 #define H_XD_GRAPHICS_EXCEPTIONS
 
 #include "../exception.hpp"
-#include <boost/lexical_cast.hpp>
 #include <string>
 #include <sstream>
 
@@ -43,7 +42,7 @@ namespace xd
     struct glyph_load_failed : exception
     {
         glyph_load_failed(const std::string& font, int char_index)
-            : exception("failed to load glyph for character " + boost::lexical_cast<std::string>(char_index) + " for font " + font)
+            : exception("failed to load glyph for character " + std::to_string(char_index) + " for font " + font)
         {
         }
     };

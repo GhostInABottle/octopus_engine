@@ -2,7 +2,6 @@
 #include "../../../include/xd/graphics/text_formatter.hpp"
 #include "../../../include/xd/glm.hpp"
 #include "../../../include/xd/vendor/utf8.h"
-#include <boost/lexical_cast.hpp>
 #include <string>
 #include <algorithm>
 #include <stdexcept>
@@ -47,7 +46,7 @@ namespace xd { namespace detail { namespace text_formatter {
     };
 
     // expand variables
-    class expand_variables : public boost::static_visitor<>
+    class expand_variables
     {
     public:
         expand_variables(token_list& tokens)
@@ -60,7 +59,7 @@ namespace xd { namespace detail { namespace text_formatter {
             // if we have tokens
             if (m_tokens.size() != 0) {
                 // if previous token is text
-                token_text *prev_tok = boost::get<token_text>(&m_tokens.back());
+                token_text *prev_tok = std::get_if<token_text>(&m_tokens.back());
                 if (prev_tok) {
                     // append variable to the previous token
                     prev_tok->text += tok.text;
@@ -80,7 +79,7 @@ namespace xd { namespace detail { namespace text_formatter {
             // if we have tokens
             if (m_tokens.size() != 0) {
                 // if previous token is text
-                token_text *prev_tok = boost::get<token_text>(&m_tokens.back());
+                token_text *prev_tok = std::get_if<token_text>(&m_tokens.back());
                 if (prev_tok) {
                     // append variable to the previous token
                     prev_tok->text += value;
@@ -111,7 +110,7 @@ namespace xd { namespace detail { namespace text_formatter {
     };
 
     // decorate text
-    class decorate_text : public boost::static_visitor<>
+    class decorate_text
     {
     public:
         decorate_text(formatted_text_list& texts)
@@ -125,8 +124,8 @@ namespace xd { namespace detail { namespace text_formatter {
         {
             // set level for each character
             formatted_text text(tok.text);
-            for (formatted_text::iterator i = text.begin(); i != text.end(); ++i) {
-                i->m_level = m_level;
+            for (auto& formatted_char : text) {
+                formatted_char.m_level = m_level;
             }
 
             // text node, create a formatted version of it
@@ -423,7 +422,7 @@ namespace xd { namespace detail { namespace text_formatter {
     };
 
 
-    class apply_state_changes : public boost::static_visitor<>
+    class apply_state_changes
     {
     public:
         apply_state_changes(stacked_font_style& style_stack)
@@ -834,23 +833,27 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
     // first pass: replace variables and concatenate strings
     detail::text_formatter::token_list expanded_tokens;
     detail::text_formatter::expand_variables expand_variables_step(expanded_tokens);
-    std::for_each(tokens.begin(), tokens.end(), boost::apply_visitor(expand_variables_step));
+    for (auto& token : tokens) {
+        std::visit(expand_variables_step, token);
+    }
 
     // second pass: iterate through the tokens in reverse order, decorating the text
     detail::text_formatter::formatted_text_list texts;
     detail::text_formatter::decorate_text decorate_text_step(texts);
-    std::for_each(expanded_tokens.rbegin(), expanded_tokens.rend(), boost::apply_visitor(decorate_text_step));
+    for (auto i = tokens.rbegin(); i != tokens.rend(); ++i) {
+        std::visit(decorate_text_step, *i);
+    }
 
     // render text
     detail::text_formatter::stacked_font_style style_stack(style);
     glm::vec2 pos;
     int current_level = 0;
-    for (detail::text_formatter::formatted_text_list::iterator i = texts.begin(); i != texts.end(); ++i) {
+    for (auto& text : texts) {
         // iterate through each char until a style change is met
         std::string current_str;
 
-        for (formatted_text::iterator j = i->begin(); j != i->end(); ++j) {
-            if (j->m_state_changes.size() || j->m_level < current_level) {
+        for (auto& formatted_char : text) {
+            if (formatted_char.m_state_changes.size() || formatted_char.m_level < current_level) {
                 // draw the current string using current style
                 if (current_str.length() != 0) {
                     if (style_stack.positions.size() != 0)
@@ -863,17 +866,19 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
 
                 // process the styles
                 detail::text_formatter::apply_state_changes change_current_style(style_stack);
-                std::for_each(j->m_state_changes.begin(), j->m_state_changes.end(), boost::apply_visitor(change_current_style));
+                for (auto& state_change : formatted_char.m_state_changes) {
+                    std::visit(change_current_style, state_change);
+                }
             }
 
             // purge styles from the previous level if the new level is smaller
-            if (j->m_level < current_level) {
-                style_stack.pop_level(j->m_level);
+            if (formatted_char.m_level < current_level) {
+                style_stack.pop_level(formatted_char.m_level);
             }
 
             // add char to the current string and keep track of current level
-            current_level = j->m_level;
-            utf8::append(j->m_chr, std::back_inserter(current_str));
+            current_level = formatted_char.m_level;
+            utf8::append(formatted_char.m_chr, std::back_inserter(current_str));
         }
 
         // draw the rest of the string

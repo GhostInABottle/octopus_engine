@@ -2,7 +2,7 @@
 #define H_XD_ASSET_MANAGER
 
 #include "asset_serializer.hpp"
-#include <boost/any.hpp>
+#include <any>
 #include <unordered_map>
 #include <cstddef>
 #include <memory>
@@ -72,8 +72,8 @@ namespace xd
         }
 
     private:
-        std::unordered_map<std::size_t, boost::any> m_asset_type_map;
-        std::unordered_map<std::size_t, boost::any> m_persistent_asset_type_map;
+        std::unordered_map<std::size_t, std::any> m_asset_type_map;
+        std::unordered_map<std::size_t, std::any> m_persistent_asset_type_map;
 
         template <typename T>
         std::unordered_map<typename asset_serializer<T>::key_type, std::weak_ptr<T>>& get_asset_map()
@@ -83,7 +83,7 @@ namespace xd
             auto it = m_asset_type_map.find(hash);
             if (it == m_asset_type_map.end())
                 m_asset_type_map.insert(std::make_pair(hash, asset_map_type()));
-            return *boost::any_cast<asset_map_type>(&m_asset_type_map[hash]);
+            return *std::any_cast<asset_map_type>(&m_asset_type_map[hash]);
         }
 
         template <typename T>
@@ -94,7 +94,7 @@ namespace xd
             auto it = m_persistent_asset_type_map.find(hash);
             if (it == m_persistent_asset_type_map.end())
                 m_persistent_asset_type_map.insert(std::make_pair(hash, asset_map_type()));
-            return *boost::any_cast<asset_map_type>(&m_persistent_asset_type_map[hash]);
+            return *std::any_cast<asset_map_type>(&m_persistent_asset_type_map[hash]);
         }
     };
 }

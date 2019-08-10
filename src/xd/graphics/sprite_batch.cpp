@@ -3,7 +3,6 @@
 #include "../../../include/xd/graphics/vertex_batch.hpp"
 #include "../../../include/xd/graphics/shader_program.hpp"
 #include "../../../include/xd/graphics/utility.hpp"
-#include <boost/optional.hpp>
 #include <deque>
 
 namespace xd { namespace detail {

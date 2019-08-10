@@ -223,7 +223,7 @@ void xd::font::render(const std::string& text, const font_style& style,
         if (i == m_linked_fonts.end())
             throw invalid_font_type(*style.m_type);
         font_style linked_style = style;
-        linked_style.m_type = boost::none;
+        linked_style.m_type = std::nullopt;
         i->second->render(text, linked_style, shader, mvp, pos, actual_rendering);
         return;
     }

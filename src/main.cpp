@@ -1,4 +1,4 @@
-#include "../include/rapidxml.hpp"
+#include "../include/vendor/rapidxml.hpp"
 #include "../include/utility.hpp"
 #include "../include/log.hpp"
 #include "../include/game.hpp"

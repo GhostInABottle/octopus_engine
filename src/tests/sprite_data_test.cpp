@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/xd/asset_manager.hpp"
-#include "../../include/rapidxml.hpp"
+#include "../../include/vendor/rapidxml.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/map.hpp"
 #include "../../include/game.hpp"

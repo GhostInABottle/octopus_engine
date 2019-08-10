@@ -6,7 +6,6 @@
 #include "../include/exceptions.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/log.hpp"
-#include <boost/lexical_cast.hpp>
 #include "../include/xd/system.hpp"
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
@@ -48,7 +47,6 @@ rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera) {
-    using boost::lexical_cast;
     Image_Layer* layer_ptr = new Image_Layer();
     layer_ptr->Layer::load(node);
 
@@ -56,11 +54,11 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     auto& properties = layer_ptr->properties;
     std::string sprite;
     if (properties.has_property("xspeed"))
-        layer_ptr->velocity.x = lexical_cast<float>(properties["xspeed"]);
+        layer_ptr->velocity.x = std::stof(properties["xspeed"]);
     if (properties.has_property("yspeed"))
-        layer_ptr->velocity.y = lexical_cast<float>(properties["yspeed"]);
+        layer_ptr->velocity.y = std::stof(properties["yspeed"]);
     if (properties.has_property("fixed"))
-        layer_ptr->fixed = lexical_cast<bool>(properties["fixed"]);
+        layer_ptr->fixed = properties["fixed"] == "1";
     if (properties.has_property("sprite"))
         sprite = properties["sprite"];
     std::string pose;

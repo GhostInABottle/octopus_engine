@@ -6,7 +6,7 @@
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
-#include "rapidxml.hpp"
+#include "vendor/rapidxml.hpp"
 #include "tmx_properties.hpp"
 #include "direction.hpp"
 #include "collision_record.hpp"

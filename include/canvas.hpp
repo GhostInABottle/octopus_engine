@@ -23,6 +23,8 @@ namespace xd {
 class Canvas : public Sprite_Holder {
 public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
+    Canvas(const Canvas&) = delete;
+    Canvas& operator=(const Canvas&) = delete;
     // Create a canvas from a sprite
     Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position);
     // Create an image canvas with an optional transparent color

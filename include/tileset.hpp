@@ -6,7 +6,7 @@
 #include <memory>
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/types.hpp"
-#include "rapidxml.hpp"
+#include "vendor/rapidxml.hpp"
 #include "tmx_properties.hpp"
 
 struct Tileset {

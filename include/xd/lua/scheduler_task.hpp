@@ -28,12 +28,12 @@ namespace xd
             }
 
             // get and cast the stored value; a bad cast can result in
-            // boost::bad_any_cast exception being thrown
+            // std::bad_any_cast exception being thrown
             template <typename T>
             T get_value() const
             {
                 if (has_value())
-                    return boost::any_cast<T>(m_value_ptr->any_value());
+                    return std::any_cast<T>(m_value_ptr->any_value());
                 else
                     return T();
             }

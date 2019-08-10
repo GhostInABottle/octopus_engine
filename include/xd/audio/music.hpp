@@ -1,7 +1,6 @@
 #ifndef H_XD_AUDIO_MUSIC
 #define H_XD_AUDIO_MUSIC
 
-#include <boost/noncopyable.hpp>
 #include <string>
 #include <utility>
 #include <memory>
@@ -14,10 +13,12 @@ namespace xd
     }
     class audio;
 
-    class music : public boost::noncopyable
+    class music
     {
     public:
 
+        music(const music&) = delete;
+        music& operator=(const music&) = delete;
         music(audio& audio, const std::string& filename, unsigned int flags = 0);
         virtual ~music();
 

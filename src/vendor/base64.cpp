@@ -25,7 +25,7 @@ Ren� Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
 */
 
-#include "../include/base64.hpp"
+#include "../../include/vendor/base64.hpp"
 #include <iostream>
 
 static const std::string base64_chars =

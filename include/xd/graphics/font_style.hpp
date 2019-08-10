@@ -3,7 +3,7 @@
 
 #include "../glm.hpp"
 #include "exceptions.hpp"
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace xd
 {
@@ -71,14 +71,14 @@ namespace xd
         font_style& outline(const font_outline& outline) { m_outline = outline; return *this; }
 
         // resetters for optional styles
-        font_style& reset_type() { m_type = boost::none; return *this; }
-        font_style& reset_shadow() { m_shadow = boost::none; return *this; }
-        font_style& reset_outline() { m_outline = boost::none; return *this; }
+        font_style& reset_type() { m_type = std::nullopt; return *this; }
+        font_style& reset_shadow() { m_shadow = std::nullopt; return *this; }
+        font_style& reset_outline() { m_outline = std::nullopt; return *this; }
 
         // checkers for optional styles
-        bool has_type() const { return m_type.is_initialized(); }
-        bool has_shadow() const { return m_shadow.is_initialized(); }
-        bool has_outline() const { return m_outline.is_initialized(); }
+        bool has_type() const { return m_type.has_value(); }
+        bool has_shadow() const { return m_shadow.has_value(); }
+        bool has_outline() const { return m_outline.has_value(); }
 
         // getters for optional styles
         std::string type() const
@@ -136,9 +136,9 @@ namespace xd
         bool m_force_autohint;
 
         // optional styles
-        boost::optional<std::string> m_type;
-        boost::optional<font_shadow> m_shadow;
-        boost::optional<font_outline> m_outline;
+        std::optional<std::string> m_type;
+        std::optional<font_shadow> m_shadow;
+        std::optional<font_outline> m_outline;
     };
 }
 

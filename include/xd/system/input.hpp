@@ -1,13 +1,22 @@
 #ifndef H_XD_SYSTEM_INPUT
 #define H_XD_SYSTEM_INPUT
 
-#include "../types.hpp"
-#include <boost/functional/hash.hpp>
-#include <boost/optional.hpp>
+#include <functional>
+#include <optional>
 #include <string>
 
 namespace xd
 {
+    namespace detail
+    {
+        template <class T>
+        inline void hash_combine(std::size_t& seed, const T& v)
+        {
+            std::hash<T> hasher;
+            seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+    }
+
     enum input_type
     {
         INPUT_KEYBOARD,
@@ -37,40 +46,40 @@ namespace xd
     inline std::size_t hash_value(const key& k)
     {
         std::size_t seed = 0;
-        boost::hash_combine(seed, k.type);
-        boost::hash_combine(seed, k.code);
-        boost::hash_combine(seed, k.device_id);
+        detail::hash_combine(seed, k.type);
+        detail::hash_combine(seed, k.code);
+        detail::hash_combine(seed, k.device_id);
         return seed;
     }
 
     struct input_args
     {
         key physical_key;
-        boost::optional<std::string> virtual_key;
+        std::optional<std::string> virtual_key;
         int modifiers;
     };
 
     struct input_filter
     {
         input_filter() {}
-        input_filter(input_type type, boost::optional<int> mod = boost::none) : type(type), modifiers(mod) {}
-        input_filter(const key& pkey, boost::optional<int> mod = boost::none) : physical_key(pkey), modifiers(mod) {}
-        input_filter(std::string vkey, boost::optional<int> mod = boost::none) : virtual_key(vkey), modifiers(mod) {}
+        input_filter(input_type type, std::optional<int> mod = std::nullopt) : type(type), modifiers(mod) {}
+        input_filter(const key& pkey, std::optional<int> mod = std::nullopt) : physical_key(pkey), modifiers(mod) {}
+        input_filter(std::string vkey, std::optional<int> mod = std::nullopt) : virtual_key(vkey), modifiers(mod) {}
 
-        boost::optional<input_type> type;
-        boost::optional<key> physical_key;
-        boost::optional<std::string> virtual_key;
-        boost::optional<int> modifiers;
+        std::optional<input_type> type;
+        std::optional<key> physical_key;
+        std::optional<std::string> virtual_key;
+        std::optional<int> modifiers;
 
         bool operator()(const input_args& args)
         {
-            if (type != boost::none && *type != args.physical_key.type)
+            if (type != std::nullopt && *type != args.physical_key.type)
                 return false;
-            if (physical_key != boost::none && *physical_key != args.physical_key)
+            if (physical_key != std::nullopt && *physical_key != args.physical_key)
                 return false;
-            if (virtual_key != boost::none && *virtual_key != args.virtual_key)
+            if (virtual_key != std::nullopt && *virtual_key != args.virtual_key)
                 return false;
-            if (modifiers != boost::none && (*modifiers & args.modifiers) != *modifiers)
+            if (modifiers != std::nullopt && (*modifiers & args.modifiers) != *modifiers)
                 return false;
             return true;
         }

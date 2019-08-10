@@ -13,16 +13,17 @@ extern "C"
 #endif
 #include <luabind/luabind.hpp>
 #include <luabind/operator.hpp>
-#include <boost/noncopyable.hpp>
 #include <string>
 
 namespace xd
 {
     namespace lua
     {
-        class virtual_machine : public boost::noncopyable
+        class virtual_machine
         {
         public:
+            virtual_machine(const virtual_machine&) = delete;
+            virtual_machine& operator=(const virtual_machine&) = delete;
             virtual_machine();
             virtual ~virtual_machine();
 

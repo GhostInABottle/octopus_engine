@@ -13,6 +13,8 @@ class Choice_Result;
 
 class Scripting_Interface {
 public:
+    Scripting_Interface(const Scripting_Interface&) = delete;
+    Scripting_Interface& operator=(const Scripting_Interface&) = delete;
     explicit Scripting_Interface(Game& game);
     void update();
     void run_script(const std::string& script);

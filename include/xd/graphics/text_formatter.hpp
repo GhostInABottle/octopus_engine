@@ -8,9 +8,6 @@
 #include "font.hpp"
 #include "shader_program.hpp"
 #include "../vendor/utf8.h"
-#include <boost/optional.hpp>
-#include <boost/variant.hpp>
-#include <boost/noncopyable.hpp>
 #include <boost/lexical_cast.hpp>
 #include <list>
 #include <vector>

@@ -18,7 +18,7 @@ exists($$PWD/machine_specific.txt) {
 SOURCES += main.cpp\
     main_window.cpp \
     ../include/xd/vendor/glm/detail/glm.cpp \
-    ../src/base64.cpp \
+    ../src/vendor/base64.cpp \
     ../src/camera.cpp \
     ../src/canvas.cpp \
     ../src/canvas_renderer.cpp \
@@ -105,7 +105,7 @@ SOURCES += main.cpp\
     qtpropertybrowser/src/qtvariantproperty.cpp
 
 HEADERS  += main_window.hpp \
-    ../include/base64.hpp \
+    ../include/vendor/base64.hpp \
     ../include/camera.hpp \
     ../include/canvas.hpp \
     ../include/canvas_renderer.hpp \
@@ -151,8 +151,8 @@ HEADERS  += main_window.hpp \
     ../include/object_layer_updater.hpp \
     ../include/pathfinder.hpp \
     ../include/player_controller.hpp \
-    ../include/rapidxml.hpp \
-    ../include/rapidxml_print.hpp \
+    ../include/vendor/rapidxml.hpp \
+    ../include/vendor/rapidxml_print.hpp \
     ../include/save_file.hpp \
     ../include/scripting_interface.hpp \
     ../include/shake_decorator.hpp \

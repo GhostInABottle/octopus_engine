@@ -5,8 +5,6 @@
 #include "types.hpp"
 #include "virtual_machine.hpp"
 #include "scheduler_task.hpp"
-#include <boost/noncopyable.hpp>
-#include <boost/ref.hpp>
 #ifndef LUABIND_CPLUSPLUS_LUA
 extern "C"
 {
@@ -25,9 +23,11 @@ namespace xd
     {
         // the lua scheduler, supports yielding threads
         // from both C++ and lua's side
-        class scheduler : public boost::noncopyable
+        class scheduler
         {
         public:
+            scheduler(const scheduler&) = delete;
+            scheduler& operator=(const scheduler&) = delete;
             scheduler(virtual_machine& vm);
             virtual ~scheduler();
             lua_State *current_thread();

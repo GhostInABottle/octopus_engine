@@ -299,7 +299,7 @@ void Game::render() {
         auto height = static_cast<float>(game_height());
         if (pimpl->show_fps) {
             text_renderer.render(*font, pimpl->debug_style, 5, height - 10,
-                "FPS: " + boost::lexical_cast<std::string>(fps()));
+                "FPS: " + std::to_string(fps()));
         }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {

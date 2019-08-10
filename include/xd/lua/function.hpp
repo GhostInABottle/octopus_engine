@@ -10,7 +10,7 @@ extern "C"
 }
 #endif
 #include <luabind/luabind.hpp>
-#include <boost/optional.hpp>
+#include <optional>
 
 
 namespace xd
@@ -47,7 +47,7 @@ namespace xd
 
         private:
             luabind::object m_func;
-            boost::optional<T> m_default;
+            std::optional<T> m_default;
         };
 
         template <>

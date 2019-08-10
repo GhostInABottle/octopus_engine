@@ -4,16 +4,16 @@
 #include "../vendor/glew/glew.h"
 #include "../asset_serializer.hpp"
 #include "image.hpp"
-#include <boost/noncopyable.hpp>
 #include <memory>
 #include <string>
 
 namespace xd
 {
-    class texture : public boost::noncopyable
+    class texture
     {
     public:
-
+        texture(const texture&) = delete;
+        texture& operator=(const texture&) = delete;
         texture(int width, int height, const void *data = 0, vec4 ck = vec4(0),
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
             GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);

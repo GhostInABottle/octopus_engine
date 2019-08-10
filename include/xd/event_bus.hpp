@@ -1,14 +1,11 @@
 #ifndef H_XD_EVENT_BUS
 #define H_XD_EVENT_BUS
 
-#include <boost/utility/enable_if.hpp>
-#include <boost/optional.hpp>
 #include <list>
 #include <string>
 #include <stdexcept>
 #include <unordered_map>
 #include <functional>
-#include "types.hpp"
 
 namespace xd
 {

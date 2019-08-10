@@ -1,6 +1,5 @@
 #include "../../../include/xd/lua/scheduler.hpp"
 #include "../../../include/xd/lua/scheduler_task.hpp"
-#include <boost/optional.hpp>
 #include <stack>
 
 namespace xd { namespace lua { namespace detail {

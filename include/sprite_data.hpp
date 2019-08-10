@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
-#include "rapidxml.hpp"
+#include "vendor/rapidxml.hpp"
 
 namespace xd {
     class asset_manager;

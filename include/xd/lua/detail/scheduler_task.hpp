@@ -1,7 +1,7 @@
 #ifndef H_XD_LUA_DETAIL_SCHEDULER_TASK
 #define H_XD_LUA_DETAIL_SCHEDULER_TASK
 
-#include <boost/any.hpp>
+#include <any>
 #ifndef LUABIND_CPLUSPLUS_LUA
 extern "C"
 {
@@ -27,7 +27,7 @@ namespace xd { namespace lua { namespace detail {
     struct scheduler_task_result_placeholder
     {
         virtual ~scheduler_task_result_placeholder() {}
-        virtual boost::any any_value() const = 0;
+        virtual std::any any_value() const = 0;
         virtual luabind::object lua_value(lua_State *thread) const = 0;
     };
 
@@ -41,9 +41,9 @@ namespace xd { namespace lua { namespace detail {
         {
         }
 
-        virtual boost::any any_value() const
+        virtual std::any any_value() const
         {
-            return boost::any(val);
+            return std::any(val);
         }
 
         virtual luabind::object lua_value(lua_State *thread) const
@@ -62,9 +62,9 @@ namespace xd { namespace lua { namespace detail {
         {
         }
 
-        virtual boost::any any_value() const
+        virtual std::any any_value() const
         {
-            return boost::any(val);
+            return std::any(val);
         }
 
         virtual luabind::object lua_value(lua_State *thread) const

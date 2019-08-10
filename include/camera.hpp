@@ -12,6 +12,8 @@ class Screen_Shaker;
 
 class Camera : public xd::entity<Camera> {
 public:
+    Camera(const Camera&) = delete;
+    Camera& operator=(const Camera&) = delete;
     explicit Camera(Game& game);
     // Calculate viewport rectangle based on screen width and height
     void calculate_viewport(int width, int height);

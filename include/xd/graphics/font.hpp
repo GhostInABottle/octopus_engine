@@ -10,20 +10,20 @@
 #include "shader_program.hpp"
 #include "transform_geometry.hpp"
 #include "../vendor/utf8.h"
-#include <boost/noncopyable.hpp>
-#include <boost/optional.hpp>
 #include <memory>
 #include <unordered_map>
 
 namespace xd
 {
     // font class
-    class font : public boost::noncopyable
+    class font
     {
     public:
 
         font(const std::string& filename);
         virtual ~font();
+        font(const font&) = delete;
+        font& operator=(const font&) = delete;
 
         void link_font(const std::string& type, const std::string& filename);
         void link_font(const std::string& type, std::shared_ptr<font> font);

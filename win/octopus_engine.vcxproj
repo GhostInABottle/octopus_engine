@@ -107,7 +107,7 @@
     <ClCompile Include="..\src\xd\lua\virtual_machine.cpp" />
     <ClCompile Include="..\src\xd\system\input.cpp" />
     <ClCompile Include="..\src\xd\system\window.cpp" />
-    <ClCompile Include="..\src\base64.cpp" />
+    <ClCompile Include="..\src\vendor\base64.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\canvas.cpp" />
     <ClCompile Include="..\src\canvas_renderer.cpp" />
@@ -216,8 +216,7 @@
     <ClInclude Include="..\include\xd\system\input.hpp" />
     <ClInclude Include="..\include\xd\system\window.hpp" />
     <ClInclude Include="..\include\xd\system\window_options.hpp" />
-    <ClInclude Include="..\include\xd\types.hpp" />
-    <ClInclude Include="..\include\base64.hpp" />
+    <ClInclude Include="..\include\vendor\base64.hpp" />
     <ClInclude Include="..\include\camera.hpp" />
     <ClInclude Include="..\include\canvas.hpp" />
     <ClInclude Include="..\include\canvas_renderer.hpp" />
@@ -261,8 +260,8 @@
     <ClInclude Include="..\include\object_layer_updater.hpp" />
     <ClInclude Include="..\include\pathfinder.hpp" />
     <ClInclude Include="..\include\player_controller.hpp" />
-    <ClInclude Include="..\include\rapidxml.hpp" />
-    <ClInclude Include="..\include\rapidxml_print.hpp" />
+    <ClInclude Include="..\include\vendor\rapidxml.hpp" />
+    <ClInclude Include="..\include\vendor\rapidxml_print.hpp" />
     <ClInclude Include="..\include\save_file.hpp" />
     <ClInclude Include="..\include\scripting_interface.hpp" />
     <ClInclude Include="..\include\custom_shaders.hpp" />

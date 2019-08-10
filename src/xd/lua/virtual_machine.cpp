@@ -1,8 +1,6 @@
 #include "../../../include/xd/system.hpp"
 #include "../../../include/xd/lua.hpp"
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/optional.hpp>
+#include <functional>
 #include <luabind/operator.hpp>
 #include <fstream>
 
@@ -236,7 +234,7 @@ namespace xd { namespace lua { namespace wrapper {
 
     void test(luabind::object o)
     {
-        boost::function<void(void)> func = function<void>(o);
+        std::function<void(void)> func = function<void>(o);
         func();
     }
 
@@ -387,19 +385,6 @@ void xd::lua::virtual_machine::load_library(const std::string& module_name)
     xd_table["MOUSE_6"] = MOUSE_6;
     xd_table["MOUSE_7"] = MOUSE_7;
     xd_table["MOUSE_8"] = MOUSE_8;
-
-    /*xd_table["mod_none"] = mod_none;
-    xd_table["mod_lshift"] = mod_lshift;
-    xd_table["mod_rshift"] = mod_rshift;
-    xd_table["mod_lctrl"] = mod_lctrl;
-    xd_table["mod_rctrl"] = mod_rctrl;
-    xd_table["mod_lalt"] = mod_lalt;
-    xd_table["mod_ralt"] = mod_ralt;
-    xd_table["mod_lmeta"] = mod_lmeta;
-    xd_table["mod_rmeta"] = mod_rmeta;
-    xd_table["mod_num"] = mod_num;
-    xd_table["mod_caps"] = mod_caps;
-    xd_table["mod_mode"] = mod_mode;*/
 
     xd_table["EVENT_PREPEND"] = EVENT_PREPEND;
     xd_table["EVENT_APPEND"] = EVENT_APPEND;

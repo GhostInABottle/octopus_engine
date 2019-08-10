@@ -6,7 +6,7 @@
 #include <cmath>
 #include "xd/glm.hpp"
 #include "xd/graphics.hpp"
-#include "rapidxml.hpp"
+#include "vendor/rapidxml.hpp"
 
 // Check if a file exists
 bool file_exists(std::string filename);

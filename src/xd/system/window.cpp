@@ -81,7 +81,7 @@ xd::window::window(const std::string& title, int width, int height, const window
     glClearDepth(1.0f);
 
     // intialize ticks
-    m_current_ticks = m_last_ticks = m_last_fps_update = static_cast<boost::uint32_t>(glfwGetTime() * 1000);
+    m_current_ticks = m_last_ticks = m_last_fps_update = static_cast<std::uint32_t>(glfwGetTime() * 1000);
     m_fps = m_frame_count = 0;
 
     // register input callbacks
@@ -172,7 +172,7 @@ void xd::window::update()
 
     // update ticks
     m_last_ticks = m_current_ticks;
-    m_current_ticks = static_cast<boost::uint32_t>(glfwGetTime() * 1000);
+    m_current_ticks = static_cast<std::uint32_t>(glfwGetTime() * 1000);
 
     // invoke tick handler if necessary
     if (m_tick_handler) {
@@ -349,7 +349,7 @@ float xd::window::delta_time() const
     return static_cast<float>(delta_ticks()) / 1000.0f;
 }
 
-void xd::window::register_tick_handler(tick_callback_t callback, boost::uint32_t interval)
+void xd::window::register_tick_handler(tick_callback_t callback, std::uint32_t interval)
 {
     m_tick_handler = callback;
     m_tick_handler_interval = interval;

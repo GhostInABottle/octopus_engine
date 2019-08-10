@@ -7,7 +7,6 @@
 #include "../include/exceptions.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/log.hpp"
-#include <boost/lexical_cast.hpp>
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
@@ -252,30 +251,29 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& game) {
-    using boost::lexical_cast;
     std::unique_ptr<Map_Object> object_ptr(new Map_Object(game));
 
     if (auto id_node = node.first_attribute("id"))
-        object_ptr->id = lexical_cast<int>(id_node->value());
+        object_ptr->id = std::stoi(id_node->value());
 
     if (auto name_node = node.first_attribute("name"))
         object_ptr->name = name_node->value();
     if (auto type_node = node.first_attribute("type"))
         object_ptr->type = type_node->value();
 
-    object_ptr->position.x = lexical_cast<float>(node.first_attribute("x")->value());
-    object_ptr->position.y = lexical_cast<float>(node.first_attribute("y")->value());
+    object_ptr->position.x = std::stof(node.first_attribute("x")->value());
+    object_ptr->position.y = std::stof(node.first_attribute("y")->value());
 
     if (auto width_node = node.first_attribute("width"))
-        object_ptr->size.x = lexical_cast<float>(width_node->value());
+        object_ptr->size.x = std::stof(width_node->value());
     if (auto height_node = node.first_attribute("height"))
-        object_ptr->size.y= lexical_cast<float>(height_node->value());
+        object_ptr->size.y= std::stof(height_node->value());
 
     if (auto gid_node = node.first_attribute("gid"))
-        object_ptr->gid = lexical_cast<int>(gid_node->value());
+        object_ptr->gid = std::stoi(gid_node->value());
 
     if (auto visible_node = node.first_attribute("visible"))
-        object_ptr->visible = lexical_cast<bool>(visible_node->value());
+        object_ptr->visible = visible_node->value() == "1";
 
     auto& properties = object_ptr->properties;
     properties.read(node);
@@ -289,9 +287,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("state"))
         object_ptr->state = properties["state"];
     if (properties.has_property("speed"))
-        object_ptr->set_speed(lexical_cast<float>(properties["speed"]));
+        object_ptr->set_speed(std::stof(properties["speed"]));
     if (properties.has_property("opacity"))
-        object_ptr->opacity = lexical_cast<float>(properties["opacity"]);
+        object_ptr->opacity = std::stof(properties["opacity"]);
     if (properties.has_property("face-state"))
         object_ptr->face_state = properties["face-state"];
     if (properties.has_property("walk-state"))

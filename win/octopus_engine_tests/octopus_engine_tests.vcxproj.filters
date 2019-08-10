@@ -78,9 +78,6 @@
     <ClCompile Include="..\..\src\utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\base64.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -306,6 +303,9 @@
     <ClCompile Include="..\..\src\vendor\lutf8lib.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\vendor\base64.cpp">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\utility.hpp">
@@ -314,13 +314,7 @@
     <ClInclude Include="..\..\include\tileset.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\rapidxml.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\layer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\base64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\map.hpp">
@@ -500,9 +494,6 @@
     <ClInclude Include="..\..\include\xd\system.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xd\types.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xd\audio\audio.hpp">
       <Filter>Header Files\xd\audio</Filter>
     </ClInclude>
@@ -645,6 +636,12 @@
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\vendor\lutf8lib.hpp">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vendor\base64.hpp">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vendor\rapidxml.hpp">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>

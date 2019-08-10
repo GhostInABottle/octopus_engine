@@ -2,8 +2,7 @@ The license below does not apply to the following files:
   - win/data/player.png and win/data/test_tileset.gif by Francis Coulombe (cc-by http://www.frankiesmileshow.com/)
   - win/data/music.ogg by HorrorPen (cc-by https://soundcloud.com/horrorpen/spirit-waltz)
   - win/data/Roboto fonts by Google (Apache 2.0 https://github.com/google/roboto/blob/master/LICENSE)
-  - src/base64.cpp by René Nyffenegger (zlib http://www.adp-gmbh.ch/cpp/common/base64.html)
-  - include/rapidxml.hpp by Marcin Kalicinski (MIT http://rapidxml.sourceforge.net/)
+  - Files in include/vendor/, include/xd/vendor/ and src/vendor/ have their own license (usually MIT, BSD or zlib)
 
 For all other files, the following license applies:
 
