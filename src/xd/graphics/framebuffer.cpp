@@ -66,37 +66,37 @@ void xd::framebuffer::attach_depth_buffer(unsigned int id) const
 
 std::tuple<bool, std::string> xd::framebuffer::check_complete() const
 {
-    auto result = std::make_tuple(true, std::string(""));
+    auto result = std::tuple(true, std::string(""));
     if (!extension_supported())
         return result;
     GLenum status = glGetError();
     if (status != GL_FRAMEBUFFER_COMPLETE_EXT && status != GL_NO_ERROR) {
         std::get<0>(result) = false;
-        std::string error = "Unknown";
+        std::string error = "Unknown framebuffer error";
         switch (status) {
         case GL_INVALID_OPERATION:
-            error = "Operation is invalid";
+            error = "Framebuffer operation is invalid";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-            error = "Attachment is incomplete";
+            error = "Framebuffer attachment is incomplete";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-            error = "An attachment is missing";
+            error = "A framebuffer attachment is missing";
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
             error = "Framebuffer format is not supported";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-            error = "Attachments have different formats";
+            error = "Framebuffer attachments have different formats";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-            error = "Attachments have different dimensions";
+            error = "Framebuffer attachments have different dimensions";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-            error = "Read buffer is missing";
+            error = "Framebuffer read buffer is missing";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-            error = "Draw buffer is missing";
+            error = "Framebuffer draw buffer is missing";
             break;
         }
         std::get<1>(result) = error;

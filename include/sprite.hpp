@@ -18,8 +18,8 @@ public:
     Sprite(Game& game, std::unique_ptr<Sprite_Data> data);
     // Render a frame
     void render(Map_Object& object);
-    void render(xd::sprite_batch& batch, xd::vec2 pos,
-        float opacity = 1.0f, xd::vec4 color = xd::vec4(1.0f),
+    void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
+        xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
         bool repeat = false, xd::vec2 repeat_pos = xd::vec2());
     // Frame update
     void update(Map_Object& object);

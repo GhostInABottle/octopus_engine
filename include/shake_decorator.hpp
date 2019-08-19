@@ -2,7 +2,6 @@
 #define HPP_SHAKE_DECORATOR
 
 #include <string>
-#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include "xd/glm.hpp"

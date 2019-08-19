@@ -243,7 +243,7 @@ void Sprite::render(Map_Object& object) {
 }
 
 void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
-        xd::vec4 color, bool repeat, xd::vec2 repeat_pos) {
+        xd::vec2 mag, xd::vec4 color, bool repeat, xd::vec2 repeat_pos) {
     auto& pose = get_pose();
     auto& frame = get_frame();
     auto& image = frame.image ? frame.image :
@@ -258,8 +258,9 @@ void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
     }
     float angle = xd::radians(static_cast<float>(frame.angle));
     color.a *= opacity * frame.opacity;
+    auto magnification = frame.magnification * mag;
     batch.add(image, src, pos.x, pos.y, angle,
-        frame.magnification, color, get_pose().origin);
+        magnification, color, get_pose().origin);
 }
 
 void Sprite::update(Map_Object&) {

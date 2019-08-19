@@ -57,9 +57,9 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glPopAttrib();
-    auto fb_complete = framebuffer->check_complete();
-    if (!std::get<0>(fb_complete))
-        throw std::exception(std::get<1>(fb_complete).c_str());
+    auto [complete, error] = framebuffer->check_complete();
+    if (!complete)
+        throw std::exception(error.c_str());
 }
 
 void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {
@@ -191,13 +191,13 @@ void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
         pos += parent->get_position();
     }
 
+    xd::vec2 mag = canvas.get_magnification();
     if (auto sprite = canvas.get_sprite()) {
-        sprite->render(batch, xd::vec2(pos.x, pos.y), 1.0f, color);
+        sprite->render(batch, xd::vec2(pos.x, pos.y), 1.0f, mag, color);
     } else {
         float angle = canvas.get_angle();
-        xd::vec2 magnification = canvas.get_magnification();
         batch.add(canvas.get_image_texture(), pos.x, pos.y,
-            xd::radians(angle), magnification, color, canvas.get_origin());
+            xd::radians(angle), mag, color, canvas.get_origin());
     }
     drawn_to_batch = true;
 }

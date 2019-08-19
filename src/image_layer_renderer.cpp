@@ -13,7 +13,7 @@ void Image_Layer_Renderer::render(Map& map) {
     if (image_layer.fixed)
         pos = camera.get_position();
     if (image_layer.sprite) {
-        image_layer.sprite->render(batch, pos, layer.opacity,
+        image_layer.sprite->render(batch, pos, layer.opacity, xd::vec2(1.0f),
             xd::vec4(1.0f), image_layer.repeat, image_layer.position);
     } else {
         auto& texture = image_layer.image_texture;
