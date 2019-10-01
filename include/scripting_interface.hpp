@@ -20,9 +20,9 @@ public:
     void run_script(const std::string& script);
     void set_globals();
     xd::lua::scheduler& get_scheduler() { return scheduler; }
-    Command_Result* register_command(std::shared_ptr<Command> command);
-    Choice_Result* register_choice_command(std::shared_ptr<Command> command);
-    lua_State* lua_state();
+    std::unique_ptr<Command_Result> register_command(std::shared_ptr<Command> command);
+    std::unique_ptr<Choice_Result> register_choice_command(std::shared_ptr<Command> command);
+    sol::state& lua_state();
 private:
     void setup_scripts();
     static Game* game;

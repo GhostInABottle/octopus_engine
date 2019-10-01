@@ -30,9 +30,10 @@ function time_without_days(seconds)
     return seconds - (time_to_days(seconds) - 1) * 43200
 end
 
-class 'NPC'
+local class = require 'data/middleClass'
+local NPC = class('NPC')
 
-function NPC:__init(name, data)
+function NPC:initialize(name, data)
     -- Unique NPC name
     self.name = name
     -- Display name for dialogue etc.

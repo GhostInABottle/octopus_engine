@@ -26,7 +26,6 @@ Dependencies:
   * [FreeType](http://www.freetype.org/index.html)
   * [HarfBuzz](https://www.freedesktop.org/wiki/Software/HarfBuzz/)
   * [Lua 5.2](http://www.lua.org/)
-  * [Luabind](https://github.com/Oberon00/luabind) - Oberon00 version
   * [Boost](http://www.boost.org/) - lexical cast, string algorithms and unit testing
   * [FMOD Studio Programmer's API](http://www.fmod.org/download/)
   * [GLFW3](http://www.glfw.org/)

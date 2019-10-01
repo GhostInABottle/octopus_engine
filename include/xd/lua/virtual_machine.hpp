@@ -1,18 +1,10 @@
 #ifndef H_XD_LUA_VIRTUAL_MACHINE
 #define H_XD_LUA_VIRTUAL_MACHINE
 
-#include "types.hpp"
 #include "exceptions.hpp"
-#ifndef LUABIND_CPLUSPLUS_LUA
-extern "C"
-{
-#endif
-#include <lua.h>
-#ifndef LUABIND_CPLUSPLUS_LUA
-}
-#endif
-#include <luabind/luabind.hpp>
-#include <luabind/operator.hpp>
+#define SOL_USING_CXX_LUA 1
+#define SOL_ALL_SAFETIES_ON 1
+#include "../vendor/sol/sol.hpp"
 #include <string>
 
 namespace xd
@@ -25,40 +17,33 @@ namespace xd
             virtual_machine(const virtual_machine&) = delete;
             virtual_machine& operator=(const virtual_machine&) = delete;
             virtual_machine();
-            virtual ~virtual_machine();
 
-            lua_State *lua_state();
-            function<void> load(const std::string& code);
-            function<void> load_file(const std::string& filename);
-            void exec(const std::string& code);
-            void exec_file(const std::string& filename);
+            sol::state& lua_state() { return m_lua_state; }
 
-            void load_library(const std::string& module_name = "xd");
-
-            luabind::object globals()
+            sol::table globals() const
             {
-                return luabind::globals(m_lua_state);
+                return m_lua_state.globals();
             }
 
             template <typename T>
-            luabind::object globals(const T& key)
+            sol::object globals(const T& key)
             {
-                return luabind::globals(m_lua_state)[key];
+                return m_lua_state.globals()[key];
             }
 
-            luabind::object registry()
+            sol::table registry()
             {
-                return luabind::registry(m_lua_state);
+                return m_lua_state.registry();
             }
 
             template <typename T>
-            luabind::object registry(const T& key)
+            sol::object registry(const T& key)
             {
-                return luabind::registry(m_lua_state)[key];
+                return m_lua_state.registry()[key];
             }
 
         private:
-            lua_State *m_lua_state;
+            sol::state m_lua_state;
         };
     }
 }

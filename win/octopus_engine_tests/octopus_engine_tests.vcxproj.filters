@@ -43,9 +43,6 @@
     <Filter Include="Header Files\xd\lua">
       <UniqueIdentifier>{7abc0ab3-d145-465a-9a6a-cee94f4e9459}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\xd\lua\detail">
-      <UniqueIdentifier>{04d9d47a-4fbb-4570-88ce-4b9485b3032a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\xd\system">
       <UniqueIdentifier>{9d101bf1-2f34-415f-8164-6abf3154482d}</UniqueIdentifier>
     </Filter>
@@ -593,26 +590,14 @@
     <ClInclude Include="..\..\include\xd\lua\exceptions.hpp">
       <Filter>Header Files\xd\lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua\function.hpp">
-      <Filter>Header Files\xd\lua</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xd\lua\scheduler.hpp">
       <Filter>Header Files\xd\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\lua\scheduler_task.hpp">
       <Filter>Header Files\xd\lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua\types.hpp">
-      <Filter>Header Files\xd\lua</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xd\lua\virtual_machine.hpp">
       <Filter>Header Files\xd\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua\detail\scheduler.hpp">
-      <Filter>Header Files\xd\lua\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua\detail\scheduler_task.hpp">
-      <Filter>Header Files\xd\lua\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\system\exceptions.hpp">
       <Filter>Header Files\xd\system</Filter>

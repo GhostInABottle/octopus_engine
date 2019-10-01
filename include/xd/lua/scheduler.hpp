@@ -1,26 +1,21 @@
 #ifndef H_XD_LUA_SCHEDULER
 #define H_XD_LUA_SCHEDULER
 
-#include "detail/scheduler.hpp"
-#include "types.hpp"
-#include "virtual_machine.hpp"
 #include "scheduler_task.hpp"
-#ifndef LUABIND_CPLUSPLUS_LUA
-extern "C"
-{
-#endif
-#include <lua.h>
-#ifndef LUABIND_CPLUSPLUS_LUA
-}
-#endif
-#include <luabind/tag_function.hpp>
+#define SOL_USING_CXX_LUA 1
+#define SOL_ALL_SAFETIES_ON 1
+#include "../vendor/sol/sol.hpp"
 #include <list>
+#include <stack>
 #include <type_traits>
+#include <string_view>
 
 namespace xd
 {
     namespace lua
     {
+        class virtual_machine;
+
         // the lua scheduler, supports yielding threads
         // from both C++ and lua's side
         class scheduler
@@ -28,26 +23,17 @@ namespace xd
         public:
             scheduler(const scheduler&) = delete;
             scheduler& operator=(const scheduler&) = delete;
-            scheduler(virtual_machine& vm);
-            virtual ~scheduler();
-            lua_State *current_thread();
-            void start(luabind::object func);
+            scheduler(virtual_machine&  vm);
+            virtual ~scheduler() = default;
+            void start(const std::string_view& code);
             void run();
             void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();
 
-            // a convenience function for starting a xd::lua::function<T>
-            // instead of having to cast it to luabind::object yourself
-            template <typename T>
-            void start(function<T> func)
-            {
-                start(func.object());
-            }
-
             // yields a thread; copies the passed scheduler_task
             template <typename T>
             typename std::enable_if<std::is_base_of<scheduler_task, T>::value>::type
-            yield(const T& task)
+                yield(const T& task)
             {
                 yield(std::make_shared<T>(task));
             }
@@ -55,75 +41,64 @@ namespace xd
             // yields a shared_ptr to a task
             template <typename T>
             typename std::enable_if<std::is_base_of<scheduler_task, T>::value>::type
-            yield(std::shared_ptr<T> task)
+                yield(std::shared_ptr<T> task)
             {
                 yield(static_cast<std::shared_ptr<scheduler_task>>(task));
             }
 
             // we also want to support plain function types as tasks
-            void yield(bool (*callback)())
+            void yield(bool(*callback)())
             {
-                yield(std::make_shared<detail::callback_task>(callback));
+                yield(std::make_shared<callback_task>(callback));
             }
 
-            // for function tasks that have a result
-            void yield(bool (*callback)(scheduler_task_result&))
-            {
-                yield(std::make_shared<detail::callback_task_result>(callback));
-            }
-
-            // for class types, assume we're dealing with a function object
-            // since we have to support tasks with and without result,
-            // we also have to check for the functor arity, which we do by
-            // proxying the call to one of the two following overloads
+            // class types
             template <typename F>
             typename std::enable_if<std::is_class<F>::value && !std::is_base_of<scheduler_task, F>::value>::type
-            yield(F f)
+                yield(F f)
             {
                 yield(f, &F::operator());
             }
 
-            // an overload for functor callbacks with no result
-            // this doesn't have to be called directly; just call yield(functor)
-            // and it'll proxy the call to this function
+            // support for functors
             template <typename F>
-            void yield(F f, bool (F::*callback)() const)
+            void yield(F f, bool (F::* callback)() const)
             {
-                yield(std::make_shared<detail::callback_task>(f));
+                yield(std::make_shared<callback_task>(f));
             }
 
-            // an overload for functor callbacks with a result
-            // this doesn't have to be called directly; just call yield(functor)
-            // and it'll proxy the call to this function
-            template <typename F>
-            void yield(F f, bool (F::*callback)(scheduler_task_result&) const)
-            {
-                yield(std::make_shared<detail::callback_task_result>(f));
-            }
-
+            // Forwarding arguments
             template <typename Task, typename... Args>
-            void yield(Args&&... args)
+            void yield(Args&& ... args)
             {
                 yield(std::shared_ptr<xd::lua::scheduler_task>(new Task(std::forward<Args>(args)...)));
             }
 
-            // a convenience function for registering a yielding, optionally stateful,
-            // C++ function to lua. By specifying module you can export the function
-            // in a given lua table
-            template <typename S, typename F>
-            void register_function(std::string name, F f, std::string module = "")
+            // a convenience function for registering a yielding, optionally stateful, C++ function to lua.
+            template <typename F>
+            void register_function(std::string name, F&& f)
             {
-                luabind::module(m_vm.lua_state(), module.size() ? module.c_str() : 0)
-                [
-                    luabind::def(name.c_str(), luabind::tag_function<S>(f), luabind::yield)
-                ];
+                state[name] = sol::yielding(f);
             }
 
         private:
-            virtual_machine& m_vm;
-            lua_State *m_current_thread;
-            detail::scheduler_task_list *m_tasks;
-            detail::thread_stack *m_thread_stack;
+            sol::state& state;
+            struct scheduler_cothread {
+                sol::thread thread;
+                sol::coroutine coroutine;
+                scheduler_cothread(sol::state& state, const sol::string_view& code) {
+                    thread = sol::thread::create(state);
+                    coroutine = thread.state().load(code);
+                }
+            };
+            struct scheduler_thread_task
+            {
+                std::shared_ptr<scheduler_cothread> thread;
+                std::shared_ptr<scheduler_task> task;
+            };
+            std::shared_ptr<scheduler_cothread> m_current_thread;
+            std::stack<std::shared_ptr<scheduler_cothread>> m_thread_stack;
+            std::list<scheduler_thread_task> m_tasks;
         };
     }
 }

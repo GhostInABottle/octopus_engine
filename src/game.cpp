@@ -17,7 +17,6 @@
 #include "../include/xd/graphics.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
-#include <luabind/luabind.hpp>
 #include <algorithm>
 #include <functional>
 #include <sstream>
@@ -70,6 +69,9 @@ struct Game::Impl {
     xd::audio* audio;
     // Was game started in editor mode?
     bool editor_mode;
+    // The shared Lua virtual machine
+    xd::lua::virtual_machine vm;
+    // Game-specific scripting interface
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Show frames per second?
     bool show_fps;
@@ -96,8 +98,6 @@ struct Game::Impl {
     bool exit_requested;
     // Texture asset manager
     xd::asset_manager asset_manager;
-    // The shared Lua virtual machine
-    xd::lua::virtual_machine vm;
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
     // Game width
@@ -437,8 +437,8 @@ void Game::save(std::string filename, Save_File& save_file) const {
 
 std::unique_ptr<Save_File> Game::load(std::string filename) {
     normalize_slashes(filename);
-    lua_State* state = pimpl->scripting_interface->lua_state();
-    std::unique_ptr<Save_File> file(new Save_File(state, luabind::object()));
+    auto& state = pimpl->scripting_interface->lua_state();
+    std::unique_ptr<Save_File> file(new Save_File(state));
     try {
         std::ifstream ifs(filename, std::ios::binary);
         if (!ifs) {

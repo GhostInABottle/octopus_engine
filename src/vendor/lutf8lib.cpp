@@ -31,14 +31,14 @@ SOFTWARE.
 
 #include "../../include/vendor/lutf8lib.hpp"
 
-#ifndef LUABIND_CPLUSPLUS_LUA
+#ifndef SOL_USING_CXX_LUA
 extern "C"
 {
 #endif
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-#ifndef LUABIND_CPLUSPLUS_LUA
+#ifndef SOL_USING_CXX_LUA
 }
 #endif
 

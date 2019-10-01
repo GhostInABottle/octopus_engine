@@ -1,7 +1,6 @@
 #include "../include/save_file.hpp"
 #include "../include/configurations.hpp"
 #include <iostream>
-#include <luabind/luabind.hpp>
 #include <string>
 #include <stdexcept>
 
@@ -24,96 +23,92 @@ namespace detail {
         value = std::string(length, ' ');
         stream.read(&value[0], length);
     }
-    bool valid_type(int type, bool key) {
-        if (type != LUA_TNUMBER && type != LUA_TSTRING) {
+    bool valid_type(sol::type type, bool key) {
+        if (type != sol::type::number && type != sol::type::string) {
             if (key)
                 return false;
             else
-                return type == LUA_TBOOLEAN || type == LUA_TTABLE;
+                return type == sol::type::boolean || type == sol::type::table;
         }
         return true;
     }
-    const int end_table_marker = LUA_TNONE;
-    void write_object(std::ostream& stream, luabind::object obj) {
-        using namespace luabind;
-        for (iterator i(obj), end; i != end; ++i) {
-            object key = i.key();
-            object val = *i;
-            if (!valid_type(type(key), true))
+    const sol::type end_table_marker = sol::type::none;
+    void write_object(std::ostream& stream, sol::table obj) {
+        for (auto& kv : obj) {
+            auto key = kv.first;
+            auto val = kv.second;
+            if (!valid_type(key.get_type(), true))
                 continue;
-            if (!valid_type(type(val), false))
+            if (!valid_type(val.get_type(), false))
                 continue;
             // Write key
-            write(stream, type(key));
-            switch(type(key)) {
-            case LUA_TNUMBER:
-                write(stream, object_cast<double>(key));
+            write(stream, key.get_type());
+            switch(key.get_type()) {
+            case sol::type::number:
+                write(stream, key.as<double>());
                 break;
-            case LUA_TSTRING:
-                write(stream, object_cast<std::string>(key));
+            case sol::type::string:
+                write(stream, key.as<std::string>());
                 break;
             }
             // Write value
-            write(stream, type(val));
-            switch(type(val)) {
-            case LUA_TBOOLEAN:
-                write(stream, object_cast<bool>(val));
+            write(stream, val.get_type());
+            switch(val.get_type()) {
+            case sol::type::boolean:
+                write(stream, val.as<bool>());
                 break;
-            case LUA_TNUMBER:
-                write(stream, object_cast<double>(val));
+            case sol::type::number:
+                write(stream, val.as<double>());
                 break;
-            case LUA_TSTRING:
-                write(stream, object_cast<std::string>(val));
+            case sol::type::string:
+                write(stream, val.as<std::string>());
                 break;
-            case LUA_TTABLE:
+            case sol::type::table:
                 write_object(stream, val);
                 break;
+            default:
+                throw std::runtime_error("Invalid object key");
             }
         }
         write(stream, end_table_marker);
     }
-    luabind::object read_object(std::istream& stream, lua_State* state);
-    luabind::object read_value(std::istream& stream, lua_State* state, int type_tag) {
+    sol::table read_object(std::istream& stream, const sol::state& state);
+    sol::object read_value(std::istream& stream, const sol::state& state, sol::type type_tag) {
         double temp_num;
         std::string temp_str;
         bool temp_bool;
-        luabind::object value;
         switch(type_tag) {
-        case LUA_TBOOLEAN:
+        case sol::type::boolean:
             read(stream, temp_bool);
-            value = luabind::object(state, temp_bool);
-            break;
-        case LUA_TNUMBER:
+            return sol::make_object(state, temp_bool);
+        case sol::type::number:
             read(stream, temp_num);
-            value = luabind::object(state, temp_num);
-            break;
-        case LUA_TSTRING:
+            return sol::make_object(state, temp_num);
+        case sol::type::string:
             read(stream, temp_str);
-            value = luabind::object(state, temp_str);
-            break;
-        case LUA_TTABLE:
-            value = read_object(stream, state);
-            break;
+            return sol::make_object(state, temp_str);
+        case sol::type::table:
+            return read_object(stream, state);
+        default:
+            throw std::runtime_error("Unexpected value type");
         }
-        return value;
     }
-    luabind::object read_object(std::istream& stream, lua_State* state) {
-        using namespace luabind;
-        object obj = newtable(state);
-        int type_tag;
+    sol::table read_object(std::istream& stream, const sol::state& state) {
+        sol::table obj(state, sol::create);
+        sol::type type_tag;
         while (stream) {
             // Read key
             read(stream, type_tag);
             if (type_tag == end_table_marker)
                 return obj;
 
-            object key = read_value(stream, state, type_tag);
-            if (!key.is_valid())
+            auto key = read_value(stream, state, type_tag);
+            if (!key.valid())
                 throw std::runtime_error("Invalid object key");
 
             // Read value
             read(stream, type_tag);
-            object val = read_value(stream, state, type_tag);
+            auto val = read_value(stream, state, type_tag);
             // Set key and value
             obj[key] = val;
         }
@@ -121,7 +116,10 @@ namespace detail {
     }
 }
 
-Save_File::Save_File(lua_State* state, luabind::object data) :
+Save_File::Save_File(sol::state& state) :
+    state(state), data(state, sol::create), valid(false) {}
+
+Save_File::Save_File(sol::state& state, const sol::table& data) :
     state(state), data(data), valid(true) {}
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
