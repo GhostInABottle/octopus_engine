@@ -14,7 +14,11 @@ void xd::lua::scheduler::start(const std::string_view& code)
     m_thread_stack.push(std::make_shared<scheduler_cothread>(state, code));
     m_current_thread = m_thread_stack.top();
     // start the thread
-    m_current_thread->coroutine();
+    auto result = m_current_thread->coroutine();
+    if (!result.valid()) {
+        sol::error err = result;
+        throw err;
+    }
     // reset current thread
     m_thread_stack.pop();
     if (m_thread_stack.empty())
@@ -44,6 +48,10 @@ void xd::lua::scheduler::run()
             m_current_thread = thread_task.thread;
             // resume the thread
             auto result = thread_task.thread->coroutine();
+            if (!result.valid()) {
+                sol::error err = result;
+                throw err;
+            }
             auto type = result.get_type();
             // reset current thread
             m_thread_stack.pop();

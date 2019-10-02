@@ -4,6 +4,7 @@
 #include "exceptions.hpp"
 #define SOL_USING_CXX_LUA 1
 #define SOL_ALL_SAFETIES_ON 1
+#define SOL_PRINT_ERRORS 1
 #include "../vendor/sol/sol.hpp"
 #include <string>
 

@@ -38,23 +38,13 @@ void Scripting_Interface::update() {
         }
         ++i;
     }
-    try {
-        if (scheduler.pending_tasks() > 0)
-            scheduler.run();
-    } catch (const sol::error& e) {
-        LOGGER_E << "Lua Error: " << e.what();
-        throw;
-    }
+    if (scheduler.pending_tasks() > 0)
+        scheduler.run();
 }
 
 void Scripting_Interface::run_script(const std::string& script) {
-    try {
-        if (!script.empty())
-            scheduler.start(script);
-    } catch (const sol::error& e) {
-        LOGGER_E << "Lua Error: " << e.what();
-        throw;
-    }
+    if (script.empty()) return;
+    scheduler.start(script);
 }
 
 void Scripting_Interface::set_globals() {
@@ -191,21 +181,23 @@ void Scripting_Interface::setup_scripts() {
     };
 
     // Returned from commands that allow yielding
-    lua.new_usertype<Command_Result>("Command_Result",
-        "is_complete", sol::overload(
-            &Command_Result::operator(),
-            (bool (Command_Result::*)(int) const) & Command_Result::is_complete),
-        "execute", sol::overload(
-        (void (Command_Result::*)()) & Command_Result::execute,
-            (void (Command_Result::*)(int)) & Command_Result::execute),
-        "wait", sol::yielding(result_wait),
-        "stop", &Command_Result::stop
-        );
-    // Like Command_Result but stores the index of selected choice
-    lua.new_usertype<Choice_Result>("Choice_Result",
-        sol::base_classes, sol::bases<Command_Result>(),
-        "selected", sol::property([](Choice_Result& cr) { return cr.choice_index() + 1; })
+    auto cmd_result_type = lua.new_usertype<Command_Result>("Command_Result");
+    cmd_result_type["is_complete"] = sol::overload(
+        &Command_Result::operator(),
+        (bool (Command_Result::*)(int) const) &Command_Result::is_complete
     );
+    cmd_result_type["execute"] = sol::overload(
+        (void (Command_Result::*)()) &Command_Result::execute,
+        (void (Command_Result::*)(int)) &Command_Result::execute
+    );
+    cmd_result_type["wait"] = sol::yielding(result_wait);
+    cmd_result_type["stop"] = &Command_Result::stop;
+
+    // Like Command_Result but stores the index of selected choice
+    auto choice_result_type = lua.new_usertype<Choice_Result>("Choice_Result",
+        sol::base_classes, sol::bases<Command_Result>());
+    choice_result_type["selected"] = sol::property([](Choice_Result& cr) { return cr.choice_index() + 1; });
+
     // A generic command for waiting (used in NPC scheduling)
     lua["Wait_Command"] = [&](int duration, int start_time) {
         return std::make_unique<Command_Result>(std::make_shared<Wait_Command>(
@@ -254,43 +246,42 @@ void Scripting_Interface::setup_scripts() {
     };
 
     // Options for displaying text
-    lua.new_usertype<Text_Options>("Text_Options",
-        sol::call_constructor, sol::constructors<Text_Options(), Text_Options(Map_Object*), Text_Options(xd::vec2)>(),
-        "text", sol::readonly(&Text_Options::text),
-        "choices", sol::readonly(&Text_Options::choices),
-        "object", sol::readonly(&Text_Options::object),
-        "position", sol::readonly(&Text_Options::position),
-        "position_type", sol::readonly(&Text_Options::position_type),
-        "duration", sol::readonly(&Text_Options::duration),
-        "centered", sol::readonly(&Text_Options::centered),
-        "show_dashes", sol::readonly(&Text_Options::show_dashes),
-        "choice_indent", sol::readonly(&Text_Options::choice_indent),
-        "translated", sol::readonly(&Text_Options::translated),
-        "canvas_priority", sol::readonly(&Text_Options::canvas_priority),
-        "fade_in_duration", sol::readonly(&Text_Options::fade_in_duration),
-        "fade_out_duration", sol::readonly(&Text_Options::fade_out_duration),
-        "set_text", &Text_Options::set_text,
-        "set_object", &Text_Options::set_object,
-        "set_position", &Text_Options::set_position,
-        "set_duration", &Text_Options::set_duration,
-        "set_centered", &Text_Options::set_centered,
-        "set_show_dashes", &Text_Options::set_show_dashes,
-        "set_translated", &Text_Options::set_translated,
-        "set_choice_indent", &Text_Options::set_choice_indent,
-        "set_canvas_priority", &Text_Options::set_canvas_priority,
-        "set_fade_in_duration", &Text_Options::set_fade_in_duration,
-        "set_fade_out_duration", &Text_Options::set_fade_out_duration,
-        "set_choices", [&](Text_Options& options, const sol::table& table) -> Text_Options & {
-            std::vector<std::string> choices;
-            for (auto& kv : table) {
-                choices.push_back(kv.second.as<std::string>());
-            }
-            return options.set_choices(choices);
-        },
-        "set_position_type", [&](Text_Options& options, int type) -> Text_Options & {
-            return options.set_position_type(static_cast<Text_Position_Type>(type));
+    auto options_type = lua.new_usertype<Text_Options>("Text_Options",
+        sol::call_constructor, sol::constructors<Text_Options(), Text_Options(Map_Object*), Text_Options(xd::vec2)>());
+    options_type["text"] = sol::readonly(&Text_Options::text);
+    options_type["choices"] = sol::readonly(&Text_Options::choices);
+    options_type["object"] = sol::readonly(&Text_Options::object);
+    options_type["position"] = sol::readonly(&Text_Options::position);
+    options_type["position_type"] = sol::readonly(&Text_Options::position_type);
+    options_type["duration"] = sol::readonly(&Text_Options::duration);
+    options_type["centered"] = sol::readonly(&Text_Options::centered);
+    options_type["show_dashes"] = sol::readonly(&Text_Options::show_dashes);
+    options_type["choice_indent"] = sol::readonly(&Text_Options::choice_indent);
+    options_type["translated"] = sol::readonly(&Text_Options::translated);
+    options_type["canvas_priority"] = sol::readonly(&Text_Options::canvas_priority);
+    options_type["fade_in_duration"] = sol::readonly(&Text_Options::fade_in_duration);
+    options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
+    options_type["set_text"] = &Text_Options::set_text;
+    options_type["set_object"] = &Text_Options::set_object;
+    options_type["set_position"] = &Text_Options::set_position;
+    options_type["set_duration"] = &Text_Options::set_duration;
+    options_type["set_centered"] = &Text_Options::set_centered;
+    options_type["set_show_dashes"] = &Text_Options::set_show_dashes;
+    options_type["set_translated"] = &Text_Options::set_translated;
+    options_type["set_choice_indent"] = &Text_Options::set_choice_indent;
+    options_type["set_canvas_priority"] = &Text_Options::set_canvas_priority;
+    options_type["set_fade_in_duration"] = &Text_Options::set_fade_in_duration;
+    options_type["set_fade_out_duration"] = &Text_Options::set_fade_out_duration;
+    options_type["set_choices"] = [&](Text_Options& options, const sol::table& table) -> Text_Options& {
+        std::vector<std::string> choices;
+        for (auto& kv : table) {
+            choices.push_back(kv.second.as<std::string>());
         }
-    );
+        return options.set_choices(choices);
+    };
+    options_type["set_position_type"] = [&](Text_Options& options, int type) -> Text_Options& {
+        return options.set_position_type(static_cast<Text_Position_Type>(type));
+    };
 
     // Show text
     lua["text"] = sol::overload(
@@ -363,54 +354,54 @@ void Scripting_Interface::setup_scripts() {
     );
     
     // 2D vector
-    lua.new_usertype<xd::vec2>("Vec2",
-        sol::call_constructor, sol::constructors<xd::vec2(), xd::vec2(const xd::vec2&), xd::vec2(float, float)>(),
-        "x", &xd::vec2::x,
-        "y", &xd::vec2::y,
-        "length", [](xd::vec2& v) { return xd::length(v); },
-        "normal", [](xd::vec2& v) { return xd::normalize(v); },
-        sol::meta_function::addition, [](const xd::vec2& v1, const xd::vec2& v2) { return v1 + v2; },
-        sol::meta_function::subtraction, [](const xd::vec2& v1, const xd::vec2& v2) { return v1 - v2; },
-        sol::meta_function::multiplication, sol::overload(
-            [](const xd::vec2& v1, float f) { return v1 * f; },
-            [](float f, const xd::vec2& v1) { return f * v1; }
-        )
+    auto vec2_type = lua.new_usertype<xd::vec2>("Vec2",
+        sol::call_constructor, sol::constructors<xd::vec2(), xd::vec2(const xd::vec2&), xd::vec2(float, float)>());
+    vec2_type["x"] = &xd::vec2::x;
+    vec2_type["y"] = &xd::vec2::y;
+    vec2_type["length"] = [](xd::vec2& v) { return xd::length(v); };
+    vec2_type["normal"] = [](xd::vec2& v) { return xd::normalize(v); };
+    vec2_type[sol::meta_function::addition] = [](const xd::vec2& v1, const xd::vec2& v2) { return v1 + v2; };
+    vec2_type[sol::meta_function::subtraction] = [](const xd::vec2& v1, const xd::vec2& v2) { return v1 - v2; };
+    vec2_type[sol::meta_function::multiplication] = sol::overload(
+        [](const xd::vec2& v1, float f) { return v1 * f; },
+        [](float f, const xd::vec2& v1) { return f * v1; }
     );
+
     // 3D vector
-    lua.new_usertype<xd::vec3>("Vec3",
-        sol::call_constructor, sol::constructors<xd::vec3(), xd::vec3(const xd::vec3&), xd::vec3(float, float, float)>(),
-        "x", &xd::vec3::x,
-        "y", &xd::vec3::y,
-        "z", &xd::vec3::z,
-        "length", [](xd::vec3& v) { return xd::length(v); },
-        "normal", [](xd::vec3& v) { return xd::normalize(v); },
-        sol::meta_function::addition, [](const xd::vec3& v1, const xd::vec3& v2) { return v1 + v2; },
-        sol::meta_function::subtraction, [](const xd::vec3& v1, const xd::vec3& v2) { return v1 - v2; },
-        sol::meta_function::multiplication, sol::overload(
-            [](const xd::vec3& v1, float f) { return v1 * f; },
-            [](float f, const xd::vec3& v1) { return f * v1; }
-        )
+    auto vec3_type = lua.new_usertype<xd::vec3>("Vec3",
+        sol::call_constructor, sol::constructors<xd::vec3(), xd::vec3(const xd::vec3&), xd::vec3(float, float, float)>());
+    vec3_type["x"] = &xd::vec3::x;
+    vec3_type["y"] = &xd::vec3::y;
+    vec3_type["z"] = &xd::vec3::z;
+    vec3_type["length"] = [](xd::vec3& v) { return xd::length(v); };
+    vec3_type["normal"] = [](xd::vec3& v) { return xd::normalize(v); };
+    vec3_type[sol::meta_function::addition] = [](const xd::vec3& v1, const xd::vec3& v2) { return v1 + v2; };
+    vec3_type[sol::meta_function::subtraction] = [](const xd::vec3& v1, const xd::vec3& v2) { return v1 - v2; };
+    vec3_type[sol::meta_function::multiplication] = sol::overload(
+        [](const xd::vec3& v1, float f) { return v1 * f; },
+        [](float f, const xd::vec3& v1) { return f * v1; }
     );
+
     // 4D vector (or color)
-    lua.new_usertype<xd::vec4>("Vec4",
-        sol::call_constructor, sol::constructors<xd::vec4(), xd::vec4(const xd::vec4&), xd::vec4(float, float, float, float)>(),
-        "x", &xd::vec4::x,
-        "y", &xd::vec4::y,
-        "z", &xd::vec4::z,
-        "w", &xd::vec4::w,
-        "r", &xd::vec4::r,
-        "g", &xd::vec4::g,
-        "b", &xd::vec4::b,
-        "a", &xd::vec4::a,
-        "length", [](xd::vec4& v) { return xd::length(v); },
-        "normal", [](xd::vec4& v) { return xd::normalize(v); },
-        sol::meta_function::addition, [](const xd::vec4& v1, const xd::vec4& v2) { return v1 + v2; },
-        sol::meta_function::subtraction, [](const xd::vec4& v1, const xd::vec4& v2) { return v1 - v2; },
-        sol::meta_function::multiplication, sol::overload(
-            [](const xd::vec4& v1, float f) { return v1 * f; },
-            [](float f, const xd::vec4& v1) { return f * v1; }
-        )
+    auto vec4_type = lua.new_usertype<xd::vec4>("Vec4",
+        sol::call_constructor, sol::constructors<xd::vec4(), xd::vec4(const xd::vec4&), xd::vec4(float, float, float, float)>());
+    vec4_type["x"] = &xd::vec4::x;
+    vec4_type["y"] = &xd::vec4::y;
+    vec4_type["z"] = &xd::vec4::z;
+    vec4_type["w"] = &xd::vec4::w;
+    vec4_type["r"] = &xd::vec4::r;
+    vec4_type["g"] = &xd::vec4::g;
+    vec4_type["b"] = &xd::vec4::b;
+    vec4_type["a"] = &xd::vec4::a;
+    vec4_type["length"] = [](xd::vec4& v) { return xd::length(v); };
+    vec4_type["normal"] = [](xd::vec4& v) { return xd::normalize(v); };
+    vec4_type[sol::meta_function::addition] = [](const xd::vec4& v1, const xd::vec4& v2) { return v1 + v2; };
+    vec4_type[sol::meta_function::subtraction] = [](const xd::vec4& v1, const xd::vec4& v2) { return v1 - v2; };
+    vec4_type[sol::meta_function::multiplication] = sol::overload(
+        [](const xd::vec4& v1, float f) { return v1 * f; },
+        [](float f, const xd::vec4& v1) { return f * v1; }
     );
+
     // Aliases for creating a color
     lua["Color"] = sol::overload(
         [](float r, float g, float b, float a) { return std::make_unique<xd::vec4>(r, g, b, a); },
@@ -446,438 +437,428 @@ void Scripting_Interface::setup_scripts() {
         }
     );
     // Rectangle
-    lua.new_usertype<xd::rect>("Rect",
+    auto rect_type = lua.new_usertype<xd::rect>("Rect",
         sol::call_constructor, sol::constructors<
         xd::rect(),
         xd::rect(const xd::rect&),
         xd::rect(float, float, float, float),
         xd::rect(const xd::vec2&, const xd::vec2&),
         xd::rect(const xd::vec2&, float, float),
-        xd::rect(const xd::vec4&)>(),
-        "x", &xd::rect::x,
-        "y", &xd::rect::y,
-        "w", &xd::rect::w,
-        "h", &xd::rect::h,
-        "intersects", &xd::rect::intersects
-    );
+        xd::rect(const xd::vec4&)>());
+    rect_type["x"] = &xd::rect::x;
+    rect_type["y"] = &xd::rect::y;
+    rect_type["w"] = &xd::rect::w;
+    rect_type["h"] = &xd::rect::h;
+    rect_type["intersects"] = &xd::rect::intersects;
 
     // Sprite holders: map object, image layer, canvas, etc.
-    lua.new_usertype<Sprite_Holder>("Sprite_Holder",
-        "reset", &Sprite_Holder::reset,
-        "set_sprite", sol::overload(
-            [&](Sprite_Holder* holder, const std::string& filename) {
-                holder->set_sprite(*game, filename);
-            },
-            [&](Sprite_Holder* holder, const std::string& filename, const std::string& pose) {
-                holder->set_sprite(*game, filename, pose);
-            }
-        ),
-        "show_pose", sol::overload(
-            [&](Sprite_Holder* obj, const std::string& pose_name) {
-                return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name));
-            },
-            [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state) {
-                return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state));
-            },
-            [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state, Direction dir) {
-                return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state, dir));
-            }
-        )
+    auto holder_type = lua.new_usertype<Sprite_Holder>("Sprite_Holder");
+    holder_type["reset"] = &Sprite_Holder::reset;
+    holder_type["set_sprite"] = sol::overload(
+        [&](Sprite_Holder* holder, const std::string& filename) {
+            holder->set_sprite(*game, filename);
+        },
+        [&](Sprite_Holder* holder, const std::string& filename, const std::string& pose) {
+            holder->set_sprite(*game, filename, pose);
+        }
     );
-    // Map object
-    lua.new_usertype<Map_Object>("Map_Object",
-        sol::base_classes, sol::bases<Sprite_Holder>(),
-        "id", sol::property(&Map_Object::get_id),
-        "name", sol::property(&Map_Object::get_name, &Map_Object::set_name),
-        "type", sol::property(&Map_Object::get_type, &Map_Object::set_type),
-        "position", sol::property(&Map_Object::get_position, &Map_Object::set_position),
-        "x", sol::property(&Map_Object::get_x, &Map_Object::set_x),
-        "y", sol::property(&Map_Object::get_y, &Map_Object::set_y),
-        "color", sol::property(&Map_Object::get_color, &Map_Object::set_color),
-        "opacity", sol::property(&Map_Object::get_opacity, &Map_Object::set_opacity),
-        "disabled", sol::property(&Map_Object::is_disabled, &Map_Object::set_disabled),
-        "stopped", sol::property(&Map_Object::is_stopped, &Map_Object::set_stopped),
-        "frozen", sol::property(&Map_Object::is_frozen, &Map_Object::set_frozen),
-        "passthrough", sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough),
-        "pose_name", sol::property(&Map_Object::get_pose_name),
-        "state", sol::property(&Map_Object::get_state, &Map_Object::update_state),
-        "walk_state", sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state),
-        "face_state", sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state),
-        "visible", sol::property(&Map_Object::is_visible, &Map_Object::set_visible),
-        "script", sol::property(&Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source),
-        "triggered_object", sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object),
-        "collision_object", sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object),
-        "collision_area", sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area),
-        "outlined", sol::property(&Map_Object::is_outlined),
-        "draw_order", sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order),
-        "real_position", sol::property(&Map_Object::get_real_position),
-        "bounding_box", sol::property(&Map_Object::get_bounding_box),
-        "speed", sol::property(&Map_Object::get_speed, &Map_Object::set_speed),
-        "angle", sol::property(&Map_Object::get_angle, &Map_Object::set_angle),
-        "direction", sol::property(
-            [](Map_Object* obj) {
-                return static_cast<int>(obj->get_direction());
-            },
-            [](Map_Object* obj, int dir) {
-                obj->set_direction(static_cast<Direction>(dir));
-            }
-        ),
-        "magnification", sol::property(
-            [](Map_Object* obj) -> xd::vec2 {
-                auto sprite = obj->get_sprite();
-                if (sprite)
-                    return sprite->get_frame().magnification;
-                else
-                    return xd::vec2(1.0f, 1.0f);
-            }
-        ),
-        "get_property", &Map_Object::get_property,
-        "set_property", &Map_Object::set_property,
-        "move_to", sol::overload(
-            [&](Map_Object* obj, float x, float y) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Object_To_Command>(
-                        *game->get_map(), *obj, x, y
-                        )
-                );
-            },
-            [&](Map_Object* obj, float x, float y, bool keep_trying) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Object_To_Command>(
-                        *game->get_map(), *obj, x, y,
-                        Collision_Check_Types::BOTH, keep_trying
-                        )
-                );
-            }
-        ),
-        "move", sol::overload(
-            [&](Map_Object* obj, int dir, float pixels, bool skip, bool change_facing) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Object_Command>(
-                        *obj, static_cast<Direction>(dir),
-                        pixels, skip, change_facing
-                        )
-                );
-            },
-            [&](Map_Object* obj, int dir, float pixels, bool skip) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Object_Command>(
-                        *obj, static_cast<Direction>(dir), pixels, skip, true
-                        )
-                );
-            },
-            [&](Map_Object* obj, int dir, float pixels) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Object_Command>(
-                        *obj, static_cast<Direction>(dir), pixels, true, true
-                        )
-                );
-            }
-        ),
-        "face", sol::overload(
-            (void (Map_Object::*)(xd::vec2))& Map_Object::face,
-            (void (Map_Object::*)(float, float))& Map_Object::face,
-            (void (Map_Object::*)(const Map_Object&))& Map_Object::face,
-            [&](Map_Object* obj, int dir) {
-                obj->face(static_cast<Direction>(dir));
-            }
-        ),
-        "run_script", &Map_Object::run_trigger_script
+    holder_type["show_pose"] = sol::overload(
+        [&](Sprite_Holder* obj, const std::string& pose_name) {
+            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name));
+        },
+        [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state) {
+            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state));
+        },
+        [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state, Direction dir) {
+            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state, dir));
+        }
     );
 
+    // Map object
+    auto object_type = lua.new_usertype<Map_Object>("Map_Object",
+        sol::base_classes, sol::bases<Sprite_Holder>());
+    object_type["id"] = sol::property(&Map_Object::get_id);
+    object_type["name"] = sol::property(&Map_Object::get_name, &Map_Object::set_name);
+    object_type["type"] = sol::property(&Map_Object::get_type, &Map_Object::set_type);
+    object_type["position"] = sol::property(&Map_Object::get_position, &Map_Object::set_position);
+    object_type["x"] = sol::property(&Map_Object::get_x, &Map_Object::set_x);
+    object_type["y"] = sol::property(&Map_Object::get_y, &Map_Object::set_y);
+    object_type["color"] = sol::property(&Map_Object::get_color, &Map_Object::set_color);
+    object_type["opacity"] = sol::property(&Map_Object::get_opacity, &Map_Object::set_opacity);
+    object_type["disabled"] = sol::property(&Map_Object::is_disabled, &Map_Object::set_disabled);
+    object_type["stopped"] = sol::property(&Map_Object::is_stopped, &Map_Object::set_stopped);
+    object_type["frozen"] = sol::property(&Map_Object::is_frozen, &Map_Object::set_frozen);
+    object_type["passthrough"] = sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough);
+    object_type["pose_name"] = sol::property(&Map_Object::get_pose_name);
+    object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::update_state);
+    object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
+    object_type["face_state"] = sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state);
+    object_type["visible"] = sol::property(&Map_Object::is_visible, &Map_Object::set_visible);
+    object_type["script"] = sol::property(&Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source);
+    object_type["triggered_object"] = sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object);
+    object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
+    object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
+    object_type["outlined"] = sol::property(&Map_Object::is_outlined);
+    object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
+    object_type["real_position"] = sol::property(&Map_Object::get_real_position);
+    object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box);
+    object_type["speed"] = sol::property(&Map_Object::get_speed, &Map_Object::set_speed);
+    object_type["angle"] = sol::property(&Map_Object::get_angle, &Map_Object::set_angle);
+    object_type["direction"] = sol::property(
+        [](Map_Object* obj) {
+            return static_cast<int>(obj->get_direction());
+        },
+        [](Map_Object* obj, int dir) {
+            obj->set_direction(static_cast<Direction>(dir));
+        }
+    );
+    object_type["magnification"] = sol::property(
+        [](Map_Object* obj) -> xd::vec2 {
+            auto sprite = obj->get_sprite();
+            if (sprite)
+                return sprite->get_frame().magnification;
+            else
+                return xd::vec2(1.0f, 1.0f);
+        }
+    );
+    object_type["get_property"] = &Map_Object::get_property;
+    object_type["set_property"] = &Map_Object::set_property;
+    object_type["move_to"] = sol::overload(
+        [&](Map_Object* obj, float x, float y) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Move_Object_To_Command>(
+                    *game->get_map(), *obj, x, y
+                    )
+            );
+        },
+        [&](Map_Object* obj, float x, float y, bool keep_trying) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Move_Object_To_Command>(
+                    *game->get_map(), *obj, x, y,
+                    Collision_Check_Types::BOTH, keep_trying
+                    )
+            );
+        }
+    );
+    object_type["move"] = sol::overload(
+        [&](Map_Object* obj, int dir, float pixels, bool skip, bool change_facing) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Move_Object_Command>(
+                    *obj, static_cast<Direction>(dir),
+                    pixels, skip, change_facing
+                    )
+            );
+        },
+        [&](Map_Object* obj, int dir, float pixels, bool skip) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Move_Object_Command>(
+                    *obj, static_cast<Direction>(dir), pixels, skip, true
+                    )
+            );
+        },
+        [&](Map_Object* obj, int dir, float pixels) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Move_Object_Command>(
+                    *obj, static_cast<Direction>(dir), pixels, true, true
+                    )
+            );
+        }
+    );
+    object_type["face"] = sol::overload(
+        (void (Map_Object::*)(xd::vec2)) &Map_Object::face,
+        (void (Map_Object::*)(float, float)) &Map_Object::face,
+        (void (Map_Object::*)(const Map_Object&)) &Map_Object::face,
+        [&](Map_Object* obj, int dir) {
+            obj->face(static_cast<Direction>(dir));
+        }
+    );
+    object_type["run_script"] = &Map_Object::run_trigger_script;
+
     // Sound effect
-    lua.new_usertype<xd::sound>("Sound",
+    auto sound = lua.new_usertype<xd::sound>("Sound",
         sol::call_constructor, sol::factories(
             [&](const std::string& filename) {
                 return std::make_unique<xd::sound>(*game->get_audio(), filename);
             }
-        ),
-        "playing", sol::property(&xd::sound::playing),
-        "paused", sol::property(&xd::sound::paused),
-        "stopped", sol::property(&xd::sound::stopped),
-        "offset", sol::property(&xd::sound::get_offset, &xd::sound::set_offset),
-        "volume", sol::property(&xd::sound::get_volume, &xd::sound::set_volume),
-        "pitch", sol::property(&xd::sound::get_pitch, &xd::sound::set_pitch),
-        "looping", sol::property(&xd::sound::get_looping, &xd::sound::set_looping),
-        "filename", sol::property(&xd::sound::get_filename),
-        "play", &xd::sound::play,
-        "pause", &xd::sound::pause,
-        "stop", &xd::sound::stop,
-        "set_loop_points", &xd::sound::set_loop_points
-    );
+    ));
+    sound["playing"] = sol::property(&xd::sound::playing);
+    sound["paused"] = sol::property(&xd::sound::paused);
+    sound["stopped"] = sol::property(&xd::sound::stopped);
+    sound["offset"] = sol::property(&xd::sound::get_offset, &xd::sound::set_offset);
+    sound["volume"] = sol::property(&xd::sound::get_volume, &xd::sound::set_volume);
+    sound["pitch"] = sol::property(&xd::sound::get_pitch, &xd::sound::set_pitch);
+    sound["looping"] = sol::property(&xd::sound::get_looping, &xd::sound::set_looping);
+    sound["filename"] = sol::property(&xd::sound::get_filename);
+    sound["play"] = &xd::sound::play;
+    sound["pause"] = &xd::sound::pause;
+    sound["stop"] = &xd::sound::stop;
+    sound["set_loop_points"] = &xd::sound::set_loop_points;
     
     // Background music
-    lua.new_usertype<xd::music>("Music",
-        "playing", sol::property(&xd::music::playing),
-        "paused", sol::property(&xd::music::paused),
-        "stopped", sol::property(&xd::music::stopped),
-        "offset", sol::property(&xd::music::get_offset, &xd::music::set_offset),
-        "volume", sol::property(&xd::music::get_volume, &xd::music::set_volume),
-        "pitch", sol::property(&xd::music::get_pitch, &xd::music::set_pitch),
-        "looping", sol::property(&xd::music::get_looping, &xd::music::set_looping),
-        "filename", sol::property(&xd::music::get_filename),
-        "play", &xd::music::play,
-        "pause", &xd::music::pause,
-        "stop", &xd::music::stop,
-        "set_loop_points", &xd::music::set_loop_points,
-        "fade", [&](xd::music* music, float volume, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Fade_Music_Command>(
-                    *game, volume, duration
-                    )
-            );
-        }
-    );
+    auto music = lua.new_usertype<xd::music>("Music");
+    music["playing"] = sol::property(&xd::music::playing);
+    music["paused"] = sol::property(&xd::music::paused);
+    music["stopped"] = sol::property(&xd::music::stopped);
+    music["offset"] = sol::property(&xd::music::get_offset, &xd::music::set_offset);
+    music["volume"] = sol::property(&xd::music::get_volume, &xd::music::set_volume);
+    music["pitch"] = sol::property(&xd::music::get_pitch, &xd::music::set_pitch);
+    music["looping"] = sol::property(&xd::music::get_looping, &xd::music::set_looping);
+    music["filename"] = sol::property(&xd::music::get_filename);
+    music["play"] = &xd::music::play;
+    music["pause"] = &xd::music::pause;
+    music["stop"] = &xd::music::stop;
+    music["set_loop_points"] = &xd::music::set_loop_points;
+    music["fade"] = [&](xd::music* music, float volume, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Fade_Music_Command>(
+                *game, volume, duration
+                )
+        );
+    };
 
     // Map object
-    lua.new_usertype<Game>("Game",
-        "width", sol::property(&Game::width),
-        "height", sol::property(&Game::height),
-        "game_width", sol::property([](Game& game) { return game.game_width(); }),
-        "game_height", sol::property([](Game& game) { return game.game_height(); }),
-        "magnification", sol::property(&Game::get_magnification, &Game::set_magnification),
-        "ticks", sol::property(&Game::ticks),
-        "fps", sol::property(&Game::fps),
-        "frame_count", sol::property(&Game::frame_count),
-        "stopped", sol::property(&Game::stopped),
-        "seconds", sol::property(&Game::seconds),
-        "sizes", sol::property(
-            [&](Game& game) {
-                sol::table objects(vm.lua_state(), sol::create);
-                auto sizes = game.get_sizes();
-                for (auto i = 0u; i < sizes.size(); ++i) {
-                    objects[i + 1] = sizes[i];
-                }
-                return objects;
+    auto game_type = lua.new_usertype<Game>("Game");
+    game_type["width"] = sol::property(&Game::width);
+    game_type["height"] = sol::property(&Game::height);
+    game_type["game_width"] = sol::property([](Game& game) { return game.game_width(); });
+    game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
+    game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);
+    game_type["ticks"] = sol::property(&Game::ticks);
+    game_type["fps"] = sol::property(&Game::fps);
+    game_type["frame_count"] = sol::property(&Game::frame_count);
+    game_type["stopped"] = sol::property(&Game::stopped);
+    game_type["seconds"] = sol::property(&Game::seconds);
+    game_type["playing_music"] = sol::property([](Game* game) { return game->playing_music().get(); });
+    game_type["set_size"] = &Game::set_size;
+    game_type["exit"] = &Game::exit;
+    game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
+    game_type["triggered"] = [](Game* game, const std::string& key) { return game->triggered(key); };
+    game_type["triggered_once"] = [](Game* game, const std::string& key) { return game->triggered_once(key); };
+    game_type["run_script"] = &Game::run_script;
+    game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
+    game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };
+    game_type["sizes"] = sol::property(
+        [&](Game& game) {
+            sol::table objects(vm.lua_state(), sol::create);
+            auto sizes = game.get_sizes();
+            for (auto i = 0u; i < sizes.size(); ++i) {
+                objects[i + 1] = sizes[i];
             }
-        ),
-        "playing_music", sol::property([](Game* game) { return game->playing_music().get(); }),
-        "set_size", & Game::set_size,
-        "exit", &Game::exit,
-        "pressed", [](Game* game, const std::string& key) { return game->pressed(key); },
-        "triggered", [](Game* game, const std::string& key) { return game->triggered(key); },
-        "triggered_once", [](Game* game, const std::string& key) { return game->triggered_once(key); },
-        "run_script", & Game::run_script,
-        "stop_time", [](Game* game) { game->get_clock()->stop_time(); },
-        "resume_time", [](Game* game) { game->get_clock()->resume_time(); },
-        "load_map", sol::overload(
-            [](Game* game, const std::string& filename) {
-                game->set_next_map(filename, Direction::NONE);
-            },
-            [](Game* game, const std::string& filename, int dir) {
-                game->set_next_map(filename, static_cast<Direction>(dir));
-            },
-            [](Game* game, const std::string& filename, float x, float y, int dir) {
-                game->set_next_map(filename, x, y, static_cast<Direction>(dir));
-            }
-        ),
-        "get_config", [](Game*, const std::string& key) { return Configurations::get_string(key); },
-        "set_bool_config", [](Game*, const std::string& key, bool value) {
-            Configurations::set(key, value);
-        },
-        "set_float_config", [](Game*, const std::string& key, float value) {
-            Configurations::set(key, value);
-        },
-        "set_int_config", [](Game*, const std::string& key, int value) {
-            Configurations::set(key, value);
-        },
-        "set_unsigned_config", [](Game*, const std::string& key, unsigned int value) {
-            Configurations::set(key, value);
-        },
-        "set_string_config", [](Game*, const std::string& key, const std::string& value) {
-            Configurations::set(key, value);
-        },
-        "save", [&](Game* game, const std::string& filename, sol::table obj) {
-            Save_File file(vm.lua_state(), obj);
-            game->save(filename, file);
-            return file.is_valid();
-        },
-        "load", [&](Game* game, const std::string& filename) {
-            auto file = game->load(filename);
-            if (file->is_valid())
-                return file->lua_data();
-            else
-                return sol::object(sol::nil);
-        },
-        "load_music", [&](Game* game, const std::string& filename) {
-            game->load_music(filename);
-            return game->playing_music();
-        },
-        "play_music", [&](Game* game, const std::string& filename) {
-            game->load_music(filename);
-            game->playing_music()->play();
+            return objects;
         }
     );
+    game_type["load_map"] = sol::overload(
+        [](Game* game, const std::string& filename) {
+            game->set_next_map(filename, Direction::NONE);
+        },
+        [](Game* game, const std::string& filename, int dir) {
+            game->set_next_map(filename, static_cast<Direction>(dir));
+        },
+        [](Game* game, const std::string& filename, float x, float y, int dir) {
+            game->set_next_map(filename, x, y, static_cast<Direction>(dir));
+        }
+    );
+    game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
+    game_type["set_bool_config"] = [](Game*, const std::string& key, bool value) {
+        Configurations::set(key, value);
+    };
+    game_type["set_float_config"] = [](Game*, const std::string& key, float value) {
+        Configurations::set(key, value);
+    };
+    game_type["set_int_config"] = [](Game*, const std::string& key, int value) {
+        Configurations::set(key, value);
+    };
+    game_type["set_unsigned_config"] = [](Game*, const std::string& key, unsigned int value) {
+        Configurations::set(key, value);
+    };
+    game_type["set_string_config"] = [](Game*, const std::string& key, const std::string& value) {
+        Configurations::set(key, value);
+    };
+    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj) {
+        Save_File file(vm.lua_state(), obj);
+        game->save(filename, file);
+        return file.is_valid();
+    };
+    game_type["load"] = [&](Game* game, const std::string& filename) {
+        auto file = game->load(filename);
+        if (file->is_valid())
+            return file->lua_data();
+        else
+            return sol::object(sol::nil);
+    };
+    game_type["load_music"] = [&](Game* game, const std::string& filename) {
+        game->load_music(filename);
+        return game->playing_music();
+    };
+    game_type["play_music"] = [&](Game* game, const std::string& filename) {
+        game->load_music(filename);
+        game->playing_music()->play();
+    };
 
     // Map layer
-    lua.new_usertype<Layer>("Layer",
-        "name", sol::readonly(&Layer::name),
-        "visible", &Layer::visible,
-        "opacity", &Layer::opacity,
-        "get_property", &Layer::get_property,
-        "set_property", &Layer::set_property,
-        "update_opacity", [&](Layer* layer, float opacity, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Layer_Command>(
-                    *game, *layer, opacity, duration
-                    )
-            );
-        }
-    );
+    auto layer_type = lua.new_usertype<Layer>("Layer");
+    layer_type["name"] = sol::readonly(&Layer::name);
+    layer_type["visible"] = &Layer::visible;
+    layer_type["opacity"] = &Layer::opacity;
+    layer_type["get_property"] = &Layer::get_property;
+    layer_type["set_property"] = &Layer::set_property;
+    layer_type["update_opacity"] = [&](Layer* layer, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Layer_Command>(
+                *game, *layer, opacity, duration
+                )
+        );
+    };
+
     // Image layer
-    lua.new_usertype<Image_Layer>("Image_Layer",
-        sol::base_classes, sol::bases<Layer, Sprite_Holder>(),
-        "velocity", &Image_Layer::velocity
-    );
+    auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer",
+        sol::base_classes, sol::bases<Layer, Sprite_Holder>());
+    image_layer_type["velocity"] = &Image_Layer::velocity;
 
     // Current map / scene
-    lua.new_usertype<Map>("Map",
-        "width", sol::property(&Map::get_width),
-        "height", sol::property(&Map::get_height),
-        "tile_width", sol::property(&Map::get_tile_width),
-        "tile_height", sol::property(&Map::get_tile_height),
-        "filename", sol::property(&Map::get_filename),
-        "name", sol::property(&Map::get_name),
-        "get_property", &Map::get_property,
-        "set_property", &Map::set_property,
-        "object_count", &Map::object_count,
-        "get_object", sol::overload(
-            (Map_Object* (Map::*)(int))& Map::get_object,
-            (Map_Object* (Map::*)(std::string))& Map::get_object
-        ),
-        "add_new_object", &Map::add_new_object,
-        "add_object", [](Map& map, Map_Object& object, int layer_index) {
-            return map.add_object(&object, layer_index);
-        },
-        "delete_object", (void (Map::*)(Map_Object*))& Map::delete_object,
-        "layer_count", & Map::layer_count,
-        "get_layer", sol::overload(
-            (Layer* (Map::*)(int))& Map::get_layer,
-            (Layer* (Map::*)(std::string))& Map::get_layer
-        ),
-        "get_objects", [&](Map* map) {
-            sol::table objects(vm.lua_state(), sol::create);
-            int i = 1;
-            auto& map_objects = map->get_objects();
-            for (auto pair : map_objects) {
-                objects[i++] = pair.second.get();
-            }
-            return objects;
-        },
-        "run_script", & Map::run_script,
-        "passable", [&](Map& map, const Map_Object& object, int dir) {
-            auto c = map.passable(object, static_cast<Direction>(dir));
-            return c.passable();
-        },
-        "colliding_object", [&](Map& map, const Map_Object& object) -> Map_Object* {
-            auto c = map.passable(object, object.get_direction(),
-                Collision_Check_Types::OBJECT);
-            if (c.type == Collision_Types::OBJECT)
-                return c.other_object;
-            else
-                return nullptr;
-        }
+    auto map_type = lua.new_usertype<Map>("Map");
+    map_type["width"] = sol::property(&Map::get_width);
+    map_type["height"] = sol::property(&Map::get_height);
+    map_type["tile_width"] = sol::property(&Map::get_tile_width);
+    map_type["tile_height"] = sol::property(&Map::get_tile_height);
+    map_type["filename"] = sol::property(&Map::get_filename);
+    map_type["name"] = sol::property(&Map::get_name);
+    map_type["get_property"] = &Map::get_property;
+    map_type["set_property"] = &Map::set_property;
+    map_type["object_count"] = &Map::object_count;
+    map_type["get_object"] = sol::overload(
+        (Map_Object* (Map::*)(int)) &Map::get_object,
+        (Map_Object* (Map::*)(std::string)) &Map::get_object
     );
+    map_type["add_new_object"] = &Map::add_new_object;
+    map_type["add_object"] = [](Map& map, Map_Object& object, int layer_index) {
+        return map.add_object(&object, layer_index);
+    };
+    map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;
+    map_type["layer_count"] = &Map::layer_count;
+    map_type["get_layer"] = sol::overload(
+        (Layer* (Map::*)(int)) &Map::get_layer,
+        (Layer* (Map::*)(std::string)) &Map::get_layer
+    );
+    map_type["get_objects"] = [&](Map* map) {
+        sol::table objects(vm.lua_state(), sol::create);
+        int i = 1;
+        auto& map_objects = map->get_objects();
+        for (auto pair : map_objects) {
+            objects[i++] = pair.second.get();
+        }
+        return objects;
+    };
+    map_type["run_script"] = &Map::run_script;
+    map_type["passable"] = [&](Map& map, const Map_Object& object, int dir) {
+        auto c = map.passable(object, static_cast<Direction>(dir));
+        return c.passable();
+    };
+    map_type["colliding_object"] = [&](Map& map, const Map_Object& object) -> Map_Object* {
+        auto c = map.passable(object, object.get_direction(),
+            Collision_Check_Types::OBJECT);
+        if (c.type == Collision_Types::OBJECT)
+            return c.other_object;
+        else
+            return nullptr;
+    };
 
     // Camera tracking and effects
-    lua.new_usertype<Camera>("Camera",
-        "tint_color", sol::property(&Camera::get_tint_color, &Camera::set_tint_color),
-        "position", sol::property(&Camera::get_position, &Camera::set_position),
-        "move", [&](Camera& camera, int dir, float pixels, float speed) {
+    auto camera_type = lua.new_usertype<Camera>("Camera");
+    camera_type["tint_color"] = sol::property(&Camera::get_tint_color, &Camera::set_tint_color);
+    camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
+    camera_type["move"] = [&](Camera& camera, int dir, float pixels, float speed) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed)
+        );
+    };
+    camera_type["move_to"] = sol::overload(
+        [&](Camera& camera, float x, float y, float speed) {
             auto si = game->get_current_scripting_interface();
             return si->register_command(
-                std::make_shared<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed)
+                std::make_shared<Move_Camera_Command>(camera, x, y, speed)
             );
         },
-        "move_to", sol::overload(
-            [&](Camera& camera, float x, float y, float speed) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Camera_Command>(camera, x, y, speed)
-                );
-            },
-            [&](Camera& camera, Map_Object& object, float speed) {
-                xd::vec2 position = object.get_position();
-                auto sprite = object.get_sprite();
-                float width = sprite ? sprite->get_size().x : 0.0f;
-                float height = sprite ? sprite->get_size().y : 0.0f;
-                float x = position.x + width / 2 - game->game_width() / 2;
-                float y = position.y + height / 2 - game->game_height() / 2;
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Move_Camera_Command>(camera, x, y, speed)
-                );
-            }
-        ),
-        "tint_screen", sol::overload(
-            [&](Camera& camera, xd::vec4 color, long duration) {
-                auto si = game->get_current_scripting_interface();
-                return si->register_command(
-                    std::make_shared<Tint_Screen_Command>(*game, color, duration)
-                );
-            },
-            [&](Camera& camera, const std::string& hex_color, long duration) {
-                auto si = game->get_current_scripting_interface();
-                auto color = hex_to_color(hex_color);
-                return si->register_command(
-                    std::make_shared<Tint_Screen_Command>(*game, color, duration)
-                );
-            }
-        ),
-        "zoom", [&](Camera& camera, float scale, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Zoom_Command>(*game, scale, duration));
-        },
-        "center_at", sol::overload(
-            (void (Camera::*)(xd::vec2))& Camera::center_at,
-            (void (Camera::*)(const Map_Object&))& Camera::center_at,
-            [](Camera& camera, float x, float y) { camera.center_at(xd::vec2(x, y)); }
-        ),
-        "track_object", [&](Camera& camera, Map_Object& object) { camera.set_object(&object); },
-        "start_shaking", & Camera::start_shaking,
-        "cease_shaking", & Camera::cease_shaking,
-        "shake_screen", [&](Camera* camera, float strength, float speed, long duration) {
+        [&](Camera& camera, Map_Object& object, float speed) {
+            xd::vec2 position = object.get_position();
+            auto sprite = object.get_sprite();
+            float width = sprite ? sprite->get_size().x : 0.0f;
+            float height = sprite ? sprite->get_size().y : 0.0f;
+            float x = position.x + width / 2 - game->game_width() / 2;
+            float y = position.y + height / 2 - game->game_height() / 2;
             auto si = game->get_current_scripting_interface();
             return si->register_command(
-                std::make_shared<Shake_Screen_Command>(
-                    *game, strength, speed, duration
-                    )
+                std::make_shared<Move_Camera_Command>(camera, x, y, speed)
             );
         }
     );
+    camera_type["tint_screen"] = sol::overload(
+        [&](Camera& camera, xd::vec4 color, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command(
+                std::make_shared<Tint_Screen_Command>(*game, color, duration)
+            );
+        },
+        [&](Camera& camera, const std::string& hex_color, long duration) {
+            auto si = game->get_current_scripting_interface();
+            auto color = hex_to_color(hex_color);
+            return si->register_command(
+                std::make_shared<Tint_Screen_Command>(*game, color, duration)
+            );
+        }
+    );
+    camera_type["zoom"] = [&](Camera& camera, float scale, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(std::make_shared<Zoom_Command>(*game, scale, duration));
+    };
+    camera_type["center_at"] = sol::overload(
+        (void (Camera::*)(xd::vec2)) &Camera::center_at,
+        (void (Camera::*)(const Map_Object&)) &Camera::center_at,
+        [](Camera& camera, float x, float y) { camera.center_at(xd::vec2(x, y)); }
+    );
+    camera_type["track_object"] = [&](Camera& camera, Map_Object& object) { camera.set_object(&object); };
+    camera_type["start_shaking"] = &Camera::start_shaking;
+    camera_type["cease_shaking"] = &Camera::cease_shaking;
+    camera_type["shake_screen"] = [&](Camera* camera, float strength, float speed, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Shake_Screen_Command>(
+                *game, strength, speed, duration
+                )
+        );
+    };
 
     // Parsed text token
-    lua.new_usertype<Token>("Token",
-        "type", sol::readonly(&Token::type),
-        "tag", sol::readonly(&Token::tag),
-        "value", sol::readonly(&Token::value),
-        "unmatched", sol::readonly(&Token::unmatched),
-        "start_index", sol::readonly(&Token::start_index),
-        "end_index", sol::readonly(&Token::end_index)
-    );
+    auto token_type = lua.new_usertype<Token>("Token");
+    token_type["type"] = sol::readonly(&Token::type);
+    token_type["tag"] = sol::readonly(&Token::tag);
+    token_type["value"] = sol::readonly(&Token::value);
+    token_type["unmatched"] = sol::readonly(&Token::unmatched);
+    token_type["start_index"] = sol::readonly(&Token::start_index);
+    token_type["end_index"] = sol::readonly(&Token::end_index);
 
     // Text parser
-    lua.new_usertype<Text_Parser>("Text_Parser",
-        sol::call_constructor, sol::constructors<Text_Parser()>(),
-        "parse", [&](Text_Parser& parser, const std::string& text, bool permissive) {
-            sol::table objects(vm.lua_state(), sol::create);
-            auto tokens = parser.parse(text, permissive);
-            for (size_t i = 1; i <= tokens.size(); ++i) {
-                objects[i] = tokens[i - 1];
-            }
-            return objects;
+    auto parser_type = lua.new_usertype<Text_Parser>("Text_Parser",
+        sol::call_constructor, sol::constructors<Text_Parser()>());
+    parser_type["parse"] = [&](Text_Parser& parser, const std::string& text, bool permissive) {
+        sol::table objects(vm.lua_state(), sol::create);
+        auto tokens = parser.parse(text, permissive);
+        for (size_t i = 1; i <= tokens.size(); ++i) {
+            objects[i] = tokens[i - 1];
         }
-    );
+        return objects;
+    };
 
     // A drawing canvas
-    lua.new_usertype<Canvas>("Canvas",
+    auto canvas_type = lua.new_usertype<Canvas>("Canvas",
         sol::call_constructor, sol::factories(
             // Canvas constructor (with position)
             [&](const std::string& filename, float x, float y) {
@@ -914,130 +895,129 @@ void Scripting_Interface::setup_scripts() {
                 return canvas;
             }
         ),
-        sol::base_classes, sol::bases<Sprite_Holder>(),
-        "name", sol::property(&Canvas::get_name, &Canvas::set_name),
-        "priority", sol::property(&Canvas::get_priority, &Canvas::set_priority),
-        "position", sol::property(&Canvas::get_position, &Canvas::set_position),
-        "x", sol::property(&Canvas::get_x, &Canvas::set_x),
-        "y", sol::property(&Canvas::get_y, &Canvas::set_y),
-        "pose_name", sol::property(&Canvas::get_pose_name),
-        "pose_state", sol::property(&Canvas::get_pose_state),
-        "pose_direction", sol::property(&Canvas::get_pose_direction),
-        "origin", sol::property(&Canvas::get_origin, &Canvas::set_origin),
-        "magnification", sol::property(&Canvas::get_magnification, &Canvas::set_magnification),
-        "scissor_box", sol::property(&Canvas::get_scissor_box, &Canvas::set_scissor_box),
-        "angle", sol::property(&Canvas::get_angle, &Canvas::set_angle),
-        "opacity", sol::property(&Canvas::get_opacity, &Canvas::set_opacity),
-        "color", sol::property(&Canvas::get_color, &Canvas::set_color),
-        "filename", sol::property(&Canvas::get_filename),
-        "text", sol::property(&Canvas::get_text, &Canvas::set_text),
-        "width", sol::property(&Canvas::get_width),
-        "height", sol::property(&Canvas::get_height),
-        "font_size", sol::property(&Canvas::get_font_size, &Canvas::set_font_size),
-        "text_color", sol::property(&Canvas::get_text_color, &Canvas::set_text_color),
-        "line_height", sol::property(&Canvas::get_line_height, &Canvas::set_line_height),
-        "text_outline_width", sol::property(&Canvas::get_text_outline_width, &Canvas::set_text_outline_width),
-        "text_outline_color", sol::property(&Canvas::get_text_outline_color, &Canvas::set_text_outline_color),
-        "text_shadow_offset", sol::property(&Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset),
-        "text_shadow_color", sol::property(&Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color),
-        "text_type", sol::property(&Canvas::get_text_type, &Canvas::set_text_type),
-        "child_count", sol::property(&Canvas::get_child_count),
-        "permissive_tag_parsing", sol::property(&Canvas::get_permissive_tag_parsing, &Canvas::set_permissive_tag_parsing),
-        "has_image_outline", sol::property(&Canvas::has_image_outline, &Canvas::set_image_outline),
-        "image_outline_color", sol::property(&Canvas::get_image_outline_color, &Canvas::set_image_outline_color),
-        "reset_text_outline", &Canvas::reset_text_outline,
-        "reset_text_shadow", &Canvas::reset_text_shadow,
-        "reset_text_type", &Canvas::reset_text_type,
-        "set_font", &Canvas::set_font,
-        "link_font", &Canvas::link_font,
-        "remove_child", &Canvas::remove_child,
-        "get_child", sol::overload(
-            (Canvas* (Canvas::*)(std::size_t))& Canvas::get_child,
-            (Canvas* (Canvas::*)(const std::string&))& Canvas::get_child
-        ),
-        "show", [](Canvas& canvas) {
-            canvas.set_visible(true);
+        sol::base_classes, sol::bases<Sprite_Holder>());
+    canvas_type["name"] = sol::property(&Canvas::get_name, &Canvas::set_name);
+    canvas_type["priority"] = sol::property(&Canvas::get_priority, &Canvas::set_priority);
+    canvas_type["position"] = sol::property(&Canvas::get_position, &Canvas::set_position);
+    canvas_type["x"] = sol::property(&Canvas::get_x, &Canvas::set_x);
+    canvas_type["y"] = sol::property(&Canvas::get_y, &Canvas::set_y);
+    canvas_type["pose_name"] = sol::property(&Canvas::get_pose_name);
+    canvas_type["pose_state"] = sol::property(&Canvas::get_pose_state);
+    canvas_type["pose_direction"] = sol::property(&Canvas::get_pose_direction);
+    canvas_type["origin"] = sol::property(&Canvas::get_origin, &Canvas::set_origin);
+    canvas_type["magnification"] = sol::property(&Canvas::get_magnification, &Canvas::set_magnification);
+    canvas_type["scissor_box"] = sol::property(&Canvas::get_scissor_box, &Canvas::set_scissor_box);
+    canvas_type["angle"] = sol::property(&Canvas::get_angle, &Canvas::set_angle);
+    canvas_type["opacity"] = sol::property(&Canvas::get_opacity, &Canvas::set_opacity);
+    canvas_type["color"] = sol::property(&Canvas::get_color, &Canvas::set_color);
+    canvas_type["filename"] = sol::property(&Canvas::get_filename);
+    canvas_type["text"] = sol::property(&Canvas::get_text, &Canvas::set_text);
+    canvas_type["width"] = sol::property(&Canvas::get_width);
+    canvas_type["height"] = sol::property(&Canvas::get_height);
+    canvas_type["font_size"] = sol::property(&Canvas::get_font_size, &Canvas::set_font_size);
+    canvas_type["text_color"] = sol::property(&Canvas::get_text_color, &Canvas::set_text_color);
+    canvas_type["line_height"] = sol::property(&Canvas::get_line_height, &Canvas::set_line_height);
+    canvas_type["text_outline_width"] = sol::property(&Canvas::get_text_outline_width, &Canvas::set_text_outline_width);
+    canvas_type["text_outline_color"] = sol::property(&Canvas::get_text_outline_color, &Canvas::set_text_outline_color);
+    canvas_type["text_shadow_offset"] = sol::property(&Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset);
+    canvas_type["text_shadow_color"] = sol::property(&Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color);
+    canvas_type["text_type"] = sol::property(&Canvas::get_text_type, &Canvas::set_text_type);
+    canvas_type["child_count"] = sol::property(&Canvas::get_child_count);
+    canvas_type["permissive_tag_parsing"] = sol::property(&Canvas::get_permissive_tag_parsing, &Canvas::set_permissive_tag_parsing);
+    canvas_type["has_image_outline"] = sol::property(&Canvas::has_image_outline, &Canvas::set_image_outline);
+    canvas_type["image_outline_color"] = sol::property(&Canvas::get_image_outline_color, &Canvas::set_image_outline_color);
+    canvas_type["reset_text_outline"] = &Canvas::reset_text_outline;
+    canvas_type["reset_text_shadow"] = &Canvas::reset_text_shadow;
+    canvas_type["reset_text_type"] = &Canvas::reset_text_type;
+    canvas_type["set_font"] = &Canvas::set_font;
+    canvas_type["link_font"] = &Canvas::link_font;
+    canvas_type["remove_child"] = &Canvas::remove_child;
+    canvas_type["get_child"] = sol::overload(
+        (Canvas* (Canvas::*)(std::size_t)) &Canvas::get_child,
+        (Canvas* (Canvas::*)(const std::string&)) &Canvas::get_child
+    );
+    canvas_type["show"] = [](Canvas& canvas) {
+        canvas.set_visible(true);
+    };
+    canvas_type["hide"] = [](Canvas& canvas) {
+        canvas.set_visible(false);
+    };
+    canvas_type["set_image"] = sol::overload(
+        [](Canvas& canvas, const std::string& filename) { canvas.set_image(filename); },
+        [](Canvas& canvas, const std::string& filename, xd::vec4 ck) { canvas.set_image(filename, ck); }
+    );
+    canvas_type["update"] = [&](Canvas& canvas, float x, float y, float mag_x,
+            float mag_y, float angle, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Canvas_Command>(
+                *game, canvas, duration, xd::vec2(x, y),
+                xd::vec2(mag_x, mag_y), angle, opacity
+                )
+        );
+    };
+    canvas_type["move"] = [&](Canvas& canvas, float x, float y, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Canvas_Command>(
+                *game, canvas, duration,
+                xd::vec2(x, y), canvas.get_magnification(),
+                canvas.get_angle(), canvas.get_opacity()
+                )
+        );
+    };
+    canvas_type["resize"] = [&](Canvas& canvas, float mag_x, float mag_y, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Canvas_Command>(
+                *game, canvas, duration,
+                canvas.get_position(), xd::vec2(mag_x, mag_y),
+                canvas.get_angle(), canvas.get_opacity()
+                )
+        );
+    };
+    canvas_type["update_opacity"] = [&](Canvas& canvas, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Canvas_Command>(
+                *game, canvas, duration, canvas.get_position(),
+                canvas.get_magnification(), canvas.get_angle(), opacity
+                )
+        );
+    };
+    canvas_type["rotate"] = [&](Canvas& canvas, float angle, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command(
+            std::make_shared<Update_Canvas_Command>(
+                *game, canvas, duration, canvas.get_position(),
+                canvas.get_magnification(), angle, canvas.get_opacity()
+                )
+        );
+    };
+    canvas_type["add_child_image"] = sol::overload(
+        // with position
+        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y) -> Canvas* {
+            auto extension = filename.substr(filename.find_last_of(".") + 1);
+            if (extension == "spr")
+                return parent.add_child(name, *game, filename, "", xd::vec2(x, y));
+            else
+                return parent.add_child(name, filename, xd::vec2(x, y));
         },
-        "hide", [](Canvas& canvas) {
-            canvas.set_visible(false);
+        // with hex trans color or sprite with pose name
+        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& trans_or_pose) -> Canvas* {
+            auto extension = filename.substr(filename.find_last_of(".") + 1);
+            if (extension == "spr")
+                return parent.add_child(name, *game, filename, trans_or_pose, xd::vec2(x, y));
+            else
+                return parent.add_child(name, filename, xd::vec2(x, y), hex_to_color(trans_or_pose));
         },
-        "set_image", sol::overload(
-            [](Canvas& canvas, const std::string& filename) { canvas.set_image(filename); },
-            [](Canvas& canvas, const std::string& filename, xd::vec4 ck) { canvas.set_image(filename, ck); }
-        ),
-        "update", [&](Canvas& canvas, float x, float y, float mag_x,
-                float mag_y, float angle, float opacity, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
-                    *game, canvas, duration, xd::vec2(x, y),
-                    xd::vec2(mag_x, mag_y), angle, opacity
-                    )
-            );
+        // with transparent color as vec4
+        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
+            return parent.add_child(name, filename, xd::vec2(x, y), trans);
         },
-        "move", [&](Canvas& canvas, float x, float y, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    xd::vec2(x, y), canvas.get_magnification(),
-                    canvas.get_angle(), canvas.get_opacity()
-                    )
-            );
-        },
-        "resize", [&](Canvas& canvas, float mag_x, float mag_y, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    canvas.get_position(), xd::vec2(mag_x, mag_y),
-                    canvas.get_angle(), canvas.get_opacity()
-                    )
-            );
-        },
-        "update_opacity", [&](Canvas& canvas, float opacity, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
-                    *game, canvas, duration, canvas.get_position(),
-                    canvas.get_magnification(), canvas.get_angle(), opacity
-                    )
-            );
-        },
-        "rotate", [&](Canvas& canvas, float angle, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
-                    *game, canvas, duration, canvas.get_position(),
-                    canvas.get_magnification(), angle, canvas.get_opacity()
-                    )
-            );
-        },
-        "add_child_image", sol::overload(
-            // with position
-            [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y) -> Canvas* {
-                auto extension = filename.substr(filename.find_last_of(".") + 1);
-                if (extension == "spr")
-                    return parent.add_child(name, *game, filename, "", xd::vec2(x, y));
-                else
-                    return parent.add_child(name, filename, xd::vec2(x, y));
-            },
-            // with hex trans color or sprite with pose name
-            [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& trans_or_pose) -> Canvas* {
-                auto extension = filename.substr(filename.find_last_of(".") + 1);
-                if (extension == "spr")
-                    return parent.add_child(name, *game, filename, trans_or_pose, xd::vec2(x, y));
-                else
-                    return parent.add_child(name, filename, xd::vec2(x, y), hex_to_color(trans_or_pose));
-            },
-            // with transparent color as vec4
-            [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
-                return parent.add_child(name, filename, xd::vec2(x, y), trans);
-            },
-            // with text and position
-            [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
-                return parent.add_child(name, *game, xd::vec2(x, y), text, true);
-            }
-        )
+        // with text and position
+        [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
+            return parent.add_child(name, *game, xd::vec2(x, y), text, true);
+        }
     );
 }

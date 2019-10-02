@@ -12,7 +12,8 @@ xd::lua::virtual_machine::virtual_machine()
         sol::lib::os,
         sol::lib::math,
         sol::lib::table,
-        sol::lib::debug);
+        sol::lib::debug,
+        sol::lib::io);
     luaopen_utf8(m_lua_state.lua_state());
 }
 
