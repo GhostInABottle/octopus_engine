@@ -724,6 +724,8 @@ void Scripting_Interface::setup_scripts() {
 
     // Current map / scene
     auto map_type = lua.new_usertype<Map>("Map");
+    map_type[sol::meta_function::index] = &Map::get_lua_property;
+    map_type[sol::meta_function::new_index] = &Map::set_lua_property;
     map_type["width"] = sol::property(&Map::get_width);
     map_type["height"] = sol::property(&Map::get_height);
     map_type["tile_width"] = sol::property(&Map::get_tile_width);
@@ -825,6 +827,7 @@ void Scripting_Interface::setup_scripts() {
         [](Camera& camera, float x, float y) { camera.center_at(xd::vec2(x, y)); }
     );
     camera_type["track_object"] = [&](Camera& camera, Map_Object& object) { camera.set_object(&object); };
+    camera_type["stop_tracking"] = [&](Camera& camera) { camera.set_object(nullptr); };
     camera_type["start_shaking"] = &Camera::start_shaking;
     camera_type["cease_shaking"] = &Camera::cease_shaking;
     camera_type["shake_screen"] = [&](Camera* camera, float strength, float speed, long duration) {
@@ -896,6 +899,8 @@ void Scripting_Interface::setup_scripts() {
             }
         ),
         sol::base_classes, sol::bases<Sprite_Holder>());
+    canvas_type[sol::meta_function::index] = &Canvas::get_lua_property;
+    canvas_type[sol::meta_function::new_index] = &Canvas::set_lua_property;
     canvas_type["name"] = sol::property(&Canvas::get_name, &Canvas::set_name);
     canvas_type["priority"] = sol::property(&Canvas::get_priority, &Canvas::set_priority);
     canvas_type["position"] = sol::property(&Canvas::get_position, &Canvas::set_position);
@@ -1014,10 +1019,10 @@ void Scripting_Interface::setup_scripts() {
         // with transparent color as vec4
         [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const xd::vec4& trans) -> Canvas* {
             return parent.add_child(name, filename, xd::vec2(x, y), trans);
-        },
-        // with text and position
-        [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
-            return parent.add_child(name, *game, xd::vec2(x, y), text, true);
         }
     );
+    // with text and position
+    canvas_type["add_child_text"] = [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) -> Canvas* {
+        return parent.add_child(name, *game, xd::vec2(x, y), text, true);
+    };
 }

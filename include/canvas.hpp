@@ -14,13 +14,14 @@
 #include "sprite_holder.hpp"
 #include "sprite.hpp"
 #include "text_parser.hpp"
+#include "lua_object.hpp"
 
 class Game;
 namespace xd {
     class simple_text_renderer;
 }
 
-class Canvas : public Sprite_Holder {
+class Canvas : public Sprite_Holder, public Lua_Object {
 public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     Canvas(const Canvas&) = delete;

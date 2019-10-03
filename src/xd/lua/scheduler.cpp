@@ -17,7 +17,7 @@ void xd::lua::scheduler::start(const std::string_view& code)
     auto result = m_current_thread->coroutine();
     if (!result.valid()) {
         sol::error err = result;
-        throw err;
+        throw panic_error(err.what());
     }
     // reset current thread
     m_thread_stack.pop();
@@ -50,7 +50,7 @@ void xd::lua::scheduler::run()
             auto result = thread_task.thread->coroutine();
             if (!result.valid()) {
                 sol::error err = result;
-                throw err;
+                throw panic_error(err.what());
             }
             auto type = result.get_type();
             // reset current thread

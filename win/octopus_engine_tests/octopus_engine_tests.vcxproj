@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\lua_object.cpp" />
     <ClCompile Include="..\..\src\vendor\base64.cpp" />
     <ClCompile Include="..\..\src\camera.cpp" />
     <ClCompile Include="..\..\src\canvas.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="..\..\src\xd\system\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\lua_object.hpp" />
     <ClInclude Include="..\..\include\vendor\base64.hpp" />
     <ClInclude Include="..\..\include\camera.hpp" />
     <ClInclude Include="..\..\include\canvas.hpp" />
@@ -267,6 +269,7 @@
     <ClInclude Include="..\..\include\xd\lua\exceptions.hpp" />
     <ClInclude Include="..\..\include\xd\lua\scheduler.hpp" />
     <ClInclude Include="..\..\include\xd\lua\scheduler_task.hpp" />
+    <ClInclude Include="..\..\include\xd\lua\sol.hpp" />
     <ClInclude Include="..\..\include\xd\lua\virtual_machine.hpp" />
     <ClInclude Include="..\..\include\xd\system.hpp" />
     <ClInclude Include="..\..\include\xd\system\exceptions.hpp" />

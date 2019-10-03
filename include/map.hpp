@@ -16,6 +16,7 @@
 #include "collision_check_types.hpp"
 #include "editable.hpp"
 #include "layer_types.hpp"
+#include "lua_object.hpp"
 
 namespace xd {
     class music;
@@ -30,7 +31,7 @@ class Scripting_Interface;
 class Map_Renderer;
 class Map_Updater;
 
-class Map : public xd::entity<Map>, public Editable {
+class Map : public xd::entity<Map>, public Editable, public Lua_Object {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;

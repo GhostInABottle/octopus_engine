@@ -69,6 +69,8 @@ struct Game::Impl {
     xd::audio* audio;
     // Was game started in editor mode?
     bool editor_mode;
+    // Texture asset manager
+    xd::asset_manager asset_manager;
     // The shared Lua virtual machine
     xd::lua::virtual_machine vm;
     // Game-specific scripting interface
@@ -96,8 +98,6 @@ struct Game::Impl {
     int total_paused_time;
     // Is it time to exit the main loop?
     bool exit_requested;
-    // Texture asset manager
-    xd::asset_manager asset_manager;
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
     // Game width
