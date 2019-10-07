@@ -62,9 +62,9 @@ void Scripting_Interface::set_globals() {
     vm.globals()["FORWARD"] = static_cast<int>(Direction::FORWARD);
     vm.globals()["BACKWARD"] = static_cast<int>(Direction::BACKWARD);
     // Object draw order
-    vm.globals()["DRAW_BELOW"] = 0;
-    vm.globals()["DRAW_NORMAL"] = 1;
-    vm.globals()["DRAW_ABOVE"] = 2;
+    vm.globals()["DRAW_BELOW"] = static_cast<int>(Map_Object::Draw_Order::BELOW);
+    vm.globals()["DRAW_NORMAL"] = static_cast<int>(Map_Object::Draw_Order::NORMAL);
+    vm.globals()["DRAW_ABOVE"] = static_cast<int>(Map_Object::Draw_Order::ABOVE);
     // Text positioning
     vm.globals()["TEXT_POSITION_NONE"] = static_cast<int>(Text_Position_Type::NONE);
     vm.globals()["TEXT_POSITION_EXACT_X"] = static_cast<int>(Text_Position_Type::EXACT_X);
@@ -93,7 +93,7 @@ void Scripting_Interface::setup_scripts() {
     auto& vm = *game->get_lua_vm();
 
     if (Configurations::get<bool>("debug.seed-lua-rng")) {
-        vm.lua_state().script("math.randomseed(os.time())");
+        scheduler.start("math.randomseed(os.time())");
     }
     auto result_wait = [](Command_Result* cmd) {
         auto& scheduler = game->get_current_scripting_interface()->scheduler;
@@ -740,9 +740,6 @@ void Scripting_Interface::setup_scripts() {
         (Map_Object* (Map::*)(std::string)) &Map::get_object
     );
     map_type["add_new_object"] = &Map::add_new_object;
-    map_type["add_object"] = [](Map& map, Map_Object& object, int layer_index) {
-        return map.add_object(&object, layer_index);
-    };
     map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;
     map_type["layer_count"] = &Map::layer_count;
     map_type["get_layer"] = sol::overload(

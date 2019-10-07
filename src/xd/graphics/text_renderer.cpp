@@ -3,7 +3,7 @@
 
 
 xd::text_renderer::text_renderer()
-    : m_shader(new xd::text_shader)
+    : m_shader(std::make_unique<xd::text_shader>())
 {
 }
 

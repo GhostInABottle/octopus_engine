@@ -39,7 +39,7 @@ namespace xd
         void set_outline_color(vec4 outline_color) { m_outline_color = outline_color; }
         vec4 get_outline_color() const { return m_outline_color; }
 
-        void set_shader(shader_program* shader);
+        void set_shader(std::unique_ptr<shader_program> shader);
 
         void add(const std::shared_ptr<texture>& texture, float x, float y,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));

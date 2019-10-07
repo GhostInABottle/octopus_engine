@@ -228,7 +228,7 @@ const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
 const float Sprite::Impl::max_speed = 10.0f;
 
 Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
-        : pimpl(new Impl(game, std::move(data))) {
+        : pimpl(std::make_unique<Impl>(game, std::move(data))) {
     pimpl->reset();
 }
 

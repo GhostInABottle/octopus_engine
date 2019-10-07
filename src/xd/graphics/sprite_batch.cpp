@@ -26,14 +26,14 @@ namespace xd { namespace detail {
         std::unique_ptr<xd::shader_program> outline_shader;
 
         sprite_batch_data() :
-            shader(new xd::sprite_shader),
-            outline_shader(new xd::sprite_outline_shader) {}
+            shader(std::make_unique<xd::sprite_shader>()),
+            outline_shader(std::make_unique<xd::sprite_outline_shader>()) {}
     };
 
 } }
 
 xd::sprite_batch::sprite_batch()
-    : m_data(new detail::sprite_batch_data)
+    : m_data(std::make_unique<detail::sprite_batch_data>())
     , m_scale(1)
     , m_outline_color(1.0, 1.0, 0.0, 1.0)
 {
@@ -213,8 +213,8 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
     }
 }
 
-void xd::sprite_batch::set_shader(shader_program* shader) {
-    m_data->shader.reset(shader);
+void xd::sprite_batch::set_shader(std::unique_ptr<shader_program> shader) {
+    m_data->shader = std::move(shader);
 }
 
 void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,

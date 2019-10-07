@@ -35,8 +35,6 @@ class Map : public xd::entity<Map>, public Editable, public Lua_Object {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;
-    typedef std::shared_ptr<Map_Object> Object_Ptr;
-    typedef std::unordered_map<int, Object_Ptr> Object_Map;
     // Constructor and destructor
     explicit Map(Game& game);
     ~Map();
@@ -65,10 +63,8 @@ public:
     bool tile_passable(int x, int y);
     // Get number of objects
     int object_count();
-    // Add a new object to object layer at index (or center object layer if -1)
-    Map_Object* add_object(Object_Ptr object,
-        int layer_index = -1, Object_Layer* layer = nullptr);
-    Map_Object* add_object(Map_Object* object,
+    // Add an object to object layer at index (or center object layer if -1)
+    Map_Object* add_object(const std::shared_ptr<Map_Object>& object,
         int layer_index = -1, Object_Layer* layer = nullptr);
     // Create and add an object
     Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
@@ -78,7 +74,7 @@ public:
     // Get object by ID
     Map_Object* get_object(int id);
     // Get all objects
-    Object_Map& get_objects() {
+    std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
         return objects;
     }
     // Delete object
@@ -195,7 +191,7 @@ private:
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Hash table of object IDs to objects
-    Object_Map objects;
+    std::unordered_map<int, std::shared_ptr<Map_Object>> objects;
     // Hash table of object names to IDs
     std::unordered_multimap<std::string, int> object_name_to_id;
     // List of map tilesets

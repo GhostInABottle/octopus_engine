@@ -174,7 +174,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
         throw glyph_load_failed(m_filename, char_index);
 
     // create glyph
-    m_glyph_map[key] = std::unique_ptr<detail::font::glyph>(new detail::font::glyph);
+    m_glyph_map[key] = std::make_unique<detail::font::glyph>();
     detail::font::glyph& glyph = *m_glyph_map[key];
     glyph.glyph_index = char_index;
     glyph.advance.x = static_cast<float>(m_face->handle->glyph->advance.x >> 6);
@@ -204,7 +204,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
     data[3].tex = glm::vec2(1, 1);
 
     // create a batch
-    glyph.quad_ptr = detail::font::vertex_batch_ptr_t(new detail::font::vertex_batch_t(GL_QUADS));
+    glyph.quad_ptr = std::make_shared<detail::font::vertex_batch_t>(GL_QUADS);
     glyph.quad_ptr->load(data, 4);
     glyph.offset.x = static_cast<float>(m_face->handle->glyph->bitmap_left);
     glyph.offset.y = static_cast<float>(m_face->handle->glyph->bitmap_top - (int)bitmap.rows);

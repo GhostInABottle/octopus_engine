@@ -39,7 +39,7 @@ struct Move_Object_To_Command::Impl {
         finder.calculate_path();
         if (finder.nearest().h > 0 &&
             (!nearest || finder.nearest().h < nearest->h)) {
-            nearest.reset(new Pathfinder::Node(finder.nearest()));
+            nearest = std::make_unique<Pathfinder::Node>(finder.nearest());
             nearest->parent = nullptr;
         }
         path = finder.generate_path();
@@ -104,7 +104,7 @@ struct Move_Object_To_Command::Impl {
             auto within_tile = (std::abs(pos.x - destination.x) <= tile_width
                     && std::abs(pos.y - destination.y) <= tile_height);
             if (within_tile) {
-                move_object(facing_direction(pos, destination, true));
+                auto collision = move_object(facing_direction(pos, destination, true));
             } else {
                 blocked = true;
             }
@@ -122,7 +122,7 @@ struct Move_Object_To_Command::Impl {
 
 Move_Object_To_Command::Move_Object_To_Command(Map& map, Map_Object& object,
     float x, float y, Collision_Check_Types check_type, bool keep_trying)
-    :  pimpl(new Impl(map, object, x, y, check_type, keep_trying)) {}
+    :  pimpl(std::make_unique<Impl>(map, object, x, y, check_type, keep_trying)) {}
 
 Move_Object_To_Command::~Move_Object_To_Command() {}
 

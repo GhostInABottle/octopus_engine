@@ -31,7 +31,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         collision_object(nullptr),
         collision_area(nullptr),
         triggered_object(nullptr),
-        draw_order(NORMAL) {
+        draw_order(Draw_Order::NORMAL) {
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
@@ -251,7 +251,7 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& game) {
-    std::unique_ptr<Map_Object> object_ptr(new Map_Object(game));
+    auto object_ptr = std::make_unique<Map_Object>(game);
 
     if (auto id_node = node.first_attribute("id"))
         object_ptr->id = std::stoi(id_node->value());

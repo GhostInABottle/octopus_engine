@@ -271,7 +271,7 @@ struct Show_Text_Command::Impl {
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :
-    pimpl(new Impl(game, std::move(options))) {}
+    pimpl(std::make_unique<Impl>(game, std::move(options))) {}
 
 void Show_Text_Command::execute() {
     execute(pimpl->game.ticks());

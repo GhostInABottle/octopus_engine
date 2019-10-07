@@ -17,7 +17,7 @@ namespace xd
         }
     }
 
-    enum input_type
+    enum class input_type
     {
         INPUT_KEYBOARD,
         INPUT_MOUSE,
@@ -89,7 +89,7 @@ namespace xd
     inline key KEY(int code)
     {
         key k;
-        k.type = INPUT_KEYBOARD;
+        k.type = input_type::INPUT_KEYBOARD;
         k.code = code;
         k.device_id = -1;
         return k;
@@ -99,7 +99,7 @@ namespace xd
     inline key MOUSE(int code)
     {
         key k;
-        k.type = INPUT_MOUSE;
+        k.type = input_type::INPUT_MOUSE;
         k.code = code;
         k.device_id = -1;
         return k;
@@ -109,7 +109,7 @@ namespace xd
     inline key GAMEPAD(int code, int joystick_id = -1)
     {
         key k;
-        k.type = INPUT_GAMEPAD;
+        k.type = input_type::INPUT_GAMEPAD;
         k.code = code;
         k.device_id = joystick_id;
         return k;

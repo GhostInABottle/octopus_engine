@@ -46,7 +46,7 @@ rapidxml::xml_node<>* Tile_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& camera) {
-    Tile_Layer* layer_ptr = new Tile_Layer();
+    auto layer_ptr = std::make_unique<Tile_Layer>();
     layer_ptr->Layer::load(node);
 
     // Layer data
@@ -73,7 +73,7 @@ std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& came
     // Put decopressed and decoded  data in the tiles vector
     layer_ptr->tiles = std::vector<unsigned int>(tile_array.get(), tile_array.get() + num_tiles);
 
-    layer_ptr->renderer.reset(new Tile_Layer_Renderer(*layer_ptr, camera));
+    layer_ptr->renderer = std::make_unique<Tile_Layer_Renderer>(*layer_ptr, camera);
 
-    return std::unique_ptr<Layer>(layer_ptr);
+    return layer_ptr;
 }

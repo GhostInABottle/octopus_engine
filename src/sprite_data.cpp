@@ -36,7 +36,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node) {
-    std::unique_ptr<Sprite_Data> sprite_ptr(new Sprite_Data(manager));
+    auto sprite_ptr = std::make_unique<Sprite_Data>(manager);
     // Image and transparent color
     bool image_loaded = false;
     bool pose_images_loaded = true;

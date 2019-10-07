@@ -29,16 +29,16 @@ void Object_Layer_Renderer::render(Map& map) {
         [](Map_Object* a, Map_Object* b) {
             float a_order, b_order;
             bool same_order = a->get_draw_order() == b->get_draw_order();
-            if (a->get_draw_order() == Map_Object::NORMAL || same_order)
+            if (a->get_draw_order() == Map_Object::Draw_Order::NORMAL || same_order)
                 a_order = a->get_real_position().y;
-            else if (a->get_draw_order() == Map_Object::BELOW)
+            else if (a->get_draw_order() == Map_Object::Draw_Order::BELOW)
                 a_order = std::numeric_limits<float>().min();
             else
                 a_order = std::numeric_limits<float>().max();
 
-            if (b->get_draw_order() == Map_Object::NORMAL || same_order)
+            if (b->get_draw_order() == Map_Object::Draw_Order::NORMAL || same_order)
                 b_order = b->get_real_position().y;
-            else if (b->get_draw_order() == Map_Object::BELOW)
+            else if (b->get_draw_order() == Map_Object::Draw_Order::BELOW)
                 b_order = std::numeric_limits<float>().min();
             else
                 b_order = std::numeric_limits<float>().max();

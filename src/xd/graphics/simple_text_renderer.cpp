@@ -2,7 +2,7 @@
 #include <memory>
 
 xd::simple_text_renderer::simple_text_renderer(float width, float height)
-    : m_shader(new xd::text_shader)
+    : m_shader(std::make_unique<xd::text_shader>())
 {
     reset_projection(width, height);
 }

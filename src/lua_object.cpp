@@ -7,7 +7,7 @@ struct Lua_Object::Impl {
     std::unordered_map<std::string, sol::main_object> table;
 };
 
-Lua_Object::Lua_Object() : pimpl(new Impl{}) {}
+Lua_Object::Lua_Object() : pimpl(std::make_unique<Impl>()) {}
 
 Lua_Object::~Lua_Object() {}
 

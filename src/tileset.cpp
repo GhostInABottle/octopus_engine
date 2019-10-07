@@ -48,7 +48,7 @@ std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
 }
 
 std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
-    std::unique_ptr<Tileset> tileset_ptr(new Tileset());
+    auto tileset_ptr = std::make_unique<Tileset>();
 	int first_id = 1;
 	if (auto first_id_attr = node.first_attribute("firstgid"))
 		first_id = std::stoi(first_id_attr->value());

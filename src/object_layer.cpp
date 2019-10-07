@@ -18,7 +18,7 @@ rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map) {
-    Object_Layer* layer_ptr = new Object_Layer();
+    auto layer_ptr = std::make_unique<Object_Layer>();
     layer_ptr->Layer::load(node);
     if (auto color_node = node.first_attribute("color"))
         layer_ptr->color = hex_to_color(color_node->value());
@@ -30,14 +30,14 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
             object_node; object_node = object_node->next_sibling("object")) {
         auto object_ptr = Map_Object::load(*object_node, game);
         auto object = std::shared_ptr<Map_Object>(object_ptr.release());
-        map.add_object(object, -1, layer_ptr);
+        map.add_object(object, -1, layer_ptr.get());
         if (object->get_name().empty()) {
             object->set_name("UNTITLED" + std::to_string(object->get_id()));
         }
     }
 
-    layer_ptr->renderer.reset(new Object_Layer_Renderer(*layer_ptr, camera));
-    layer_ptr->updater.reset(new Object_Layer_Updater(layer_ptr));
+    layer_ptr->renderer = std::make_unique<Object_Layer_Renderer>(*layer_ptr, camera);
+    layer_ptr->updater = std::make_unique<Object_Layer_Updater>(*layer_ptr);
 
-    return std::unique_ptr<Layer>(layer_ptr);
+    return layer_ptr;
 }

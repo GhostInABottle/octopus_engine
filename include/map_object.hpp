@@ -20,7 +20,7 @@ struct Object_Layer;
 
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable {
 public:
-    enum Draw_Order { BELOW, NORMAL, ABOVE };
+    enum class Draw_Order { BELOW, NORMAL, ABOVE };
     struct Script {
         Script() : is_global(false) {}
         // Script source text

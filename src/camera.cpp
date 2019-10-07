@@ -17,8 +17,7 @@
 #include <algorithm>
 
 struct Camera::Impl {
-    explicit Impl() :
-            current_shader(nullptr) {}
+    explicit Impl() {}
     // Update OpenGL viewport
     void update_viewport(xd::rect viewport, float shake_offset = 0.0f) const {
         glViewport(static_cast<int>(viewport.x + shake_offset),
@@ -27,7 +26,7 @@ struct Camera::Impl {
             static_cast<int>(viewport.h));
     }
     // Full-screen shader data
-    xd::shader_program* current_shader;
+    std::unique_ptr<xd::shader_program> current_shader;
     xd::sprite_batch full_screen_batch;
     std::shared_ptr<xd::texture> full_screen_texture;
     // Apply a certain shader
@@ -62,10 +61,9 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
         }
     }
     if (!vsrc.empty()) {
-        current_shader = new Custom_Shader(vsrc, fsrc);
-        full_screen_batch.set_shader(current_shader);
+        full_screen_batch.set_shader(std::make_unique<Custom_Shader>(vsrc, fsrc));
     } else {
-        current_shader = nullptr;
+        current_shader.release();
     }
 }
 
@@ -118,7 +116,7 @@ Camera::Camera(Game& game)
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         object(nullptr),
         shaker(nullptr),
-        pimpl(new Impl())
+        pimpl(std::make_unique<Impl>())
 {
     calculate_viewport(game.width(), game.height());
     // Add components

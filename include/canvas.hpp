@@ -35,7 +35,7 @@ public:
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class ...Args>
     Canvas* add_child(const std::string& child_name, Args&&... args) {
-        children.emplace_back(new Canvas(std::forward<Args>(args)...));
+        children.emplace_back(std::make_unique<Canvas>(std::forward<Args>(args)...));
         auto& child = children.back();
         child->set_name(child_name);
         if (child->get_type() != children_type) {

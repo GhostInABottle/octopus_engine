@@ -47,7 +47,7 @@ rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera) {
-    Image_Layer* layer_ptr = new Image_Layer();
+    auto layer_ptr = std::make_unique<Image_Layer>();
     layer_ptr->Layer::load(node);
 
     // Layer properties
@@ -82,12 +82,12 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
         throw tmx_exception("Missing image in image layer");
     }
 
-    layer_ptr->renderer.reset(new Image_Layer_Renderer(*layer_ptr, camera));
+    layer_ptr->renderer = std::make_unique<Image_Layer_Renderer>(*layer_ptr, camera);
     if (!check_close(layer_ptr->velocity.x, 0.0f) || !check_close(layer_ptr->velocity.y, 0.0f))
         layer_ptr->repeat = true;
 
     if (layer_ptr->sprite || layer_ptr->repeat)
-        layer_ptr->updater.reset(new Image_Layer_Updater(layer_ptr));
+        layer_ptr->updater = std::make_unique<Image_Layer_Updater>(*layer_ptr);
 
-    return std::unique_ptr<Layer>(layer_ptr);
+    return layer_ptr;
 }

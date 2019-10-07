@@ -27,7 +27,7 @@ xd::image::image(const std::string& filename, xd::vec4 color_key)
     : m_width(0)
     , m_height(0)
     , m_color_key(color_key)
-    , m_image(detail::image::handle_ptr(new detail::image::handle))
+    , m_image(std::make_shared<detail::image::handle>())
 {
     load(filename);
 }

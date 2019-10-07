@@ -43,7 +43,7 @@ Map::Map(Game& game) :
         tile_width(1),
         tile_height(1),
         next_object_id(1),
-        scripting_interface(new Scripting_Interface(game)),
+        scripting_interface(std::make_unique<Scripting_Interface>(game)),
         collision_tileset(nullptr),
         collision_layer(nullptr),
         needs_redraw(true),
@@ -183,11 +183,7 @@ int Map::object_count() {
     return objects.size();
 }
 
-Map_Object* Map::add_object(Map_Object* object, int layer_index, Object_Layer* layer) {
-    return add_object(Object_Ptr(object), layer_index, layer);
-}
-
-Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* layer) {
+Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, int layer_index, Object_Layer* layer) {
     // If layer isn't specified try getting a layer named "objects",
     // if none is found use the 'middle' object layer
     if (!layer) {
@@ -232,9 +228,7 @@ Map_Object* Map::add_object(Object_Ptr object, int layer_index, Object_Layer* la
 
 Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
     xd::vec2 pos, Direction dir) {
-    auto object_ptr = new Map_Object(game, name, sprite_file, pos, dir);
-    add_object(object_ptr);
-    return object_ptr;
+    return add_object(std::make_shared<Map_Object>(game, name, sprite_file, pos, dir));
 }
 
 Map_Object* Map::get_object(std::string name) {
@@ -455,7 +449,7 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
 }
 
 std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
-    std::unique_ptr<Map> map_ptr(new Map(game));
+    auto map_ptr = std::make_unique<Map>(game);
 
     if (node.first_attribute("orientation")->value() != std::string("orthogonal"))
         throw tmx_exception("Invalid map orientation, expected orthogonal");

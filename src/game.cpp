@@ -113,8 +113,8 @@ struct Game::Impl {
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
-        pimpl(new Impl(audio, editor_mode)),
-        window(editor_mode ? nullptr : new xd::window(
+        pimpl(std::make_unique<Impl>(audio, editor_mode)),
+        window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
             Configurations::get<int>("game.screen-width"),
             Configurations::get<int>("game.screen-height"),
@@ -138,9 +138,9 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         editor_ticks(0),
         editor_size(1, 1) {
     // Set members
-    clock.reset(new Clock(*this));
-    camera.reset(new Camera(*this));
-    shake_decorator.reset(new Shake_Decorator(*this));
+    clock = std::make_unique<Clock>(*this);
+    camera = std::make_unique<Camera>(*this);
+    shake_decorator = std::make_unique<Shake_Decorator>(*this);
     text_renderer.reset_projection(
         static_cast<float>(game_width()),
         static_cast<float>(game_height()));
@@ -191,13 +191,11 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         start_pos.y = Configurations::get<float>("startup.player-position-y");
     }
     // Create player object
-    auto player_ptr = new Map_Object(
+    player = std::make_shared<Map_Object>(
         *this,
         "player",
         Configurations::get<std::string>("startup.player-sprite"),
-        start_pos
-    );
-    player.reset(player_ptr);
+        start_pos);
     // Create input controller for player
     auto controller = std::make_shared<Player_Controller>(*this);
     player->add_component(controller);
@@ -210,11 +208,11 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         music->play();
     }
     // Track player by camera
-    camera->set_object(player_ptr);
+    camera->set_object(player.get());
     // Bind game keys
     process_keymap();
     // Setup Lua scripts
-    pimpl->scripting_interface.reset(new Scripting_Interface(*this));
+    pimpl->scripting_interface = std::make_unique<Scripting_Interface>(*this);
     pimpl->scripting_interface->set_globals();
     // Run game startup scripts
     std::string scripts_list =
@@ -385,7 +383,7 @@ void Game::load_music(const std::string& filename) {
     if (!pimpl->audio) return;
     if (music)
         music->stop();
-    music.reset(new xd::music(*pimpl->audio, filename));
+    music = std::make_unique<xd::music>(*pimpl->audio, filename);
 }
 
 void Game::set_next_map(const std::string& filename, Direction dir) {
@@ -438,7 +436,7 @@ void Game::save(std::string filename, Save_File& save_file) const {
 std::unique_ptr<Save_File> Game::load(std::string filename) {
     normalize_slashes(filename);
     auto& state = pimpl->scripting_interface->lua_state();
-    std::unique_ptr<Save_File> file(new Save_File(state));
+    auto file = std::make_unique<Save_File>(state);
     try {
         std::ifstream ifs(filename, std::ios::binary);
         if (!ifs) {
@@ -484,7 +482,7 @@ void Game::load_map(const std::string& filename) {
 }
 
 void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
-    map.reset(new Map(*this));
+    map = std::make_unique<Map>(*this);
     map->resize(map_size, tile_size);
 }
 

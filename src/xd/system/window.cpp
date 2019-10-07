@@ -11,12 +11,12 @@ namespace
 
     void on_key_proxy(GLFWwindow*, int key, int, int action, int)
     {
-        window_instance->on_input(xd::INPUT_KEYBOARD, key, action);
+        window_instance->on_input(xd::input_type::INPUT_KEYBOARD, key, action);
     }
 
     void on_mouse_proxy(GLFWwindow*, int key, int action, int)
     {
-        window_instance->on_input(xd::INPUT_MOUSE, key, action);
+        window_instance->on_input(xd::input_type::INPUT_MOUSE, key, action);
     }
 
     void on_joystick_changed(int id, int event) {
@@ -135,13 +135,13 @@ void xd::window::on_input(input_type type, int key, int action, int device_id)
     }
 
     switch (type) {
-    case INPUT_KEYBOARD:
+    case input_type::INPUT_KEYBOARD:
         args.physical_key = KEY(key);
         break;
-    case INPUT_GAMEPAD:
+    case input_type::INPUT_GAMEPAD:
         args.physical_key = GAMEPAD(key, device_id);
         break;
-    case INPUT_MOUSE:
+    case input_type::INPUT_MOUSE:
         args.physical_key = MOUSE(key);
         break;
     }
@@ -260,7 +260,7 @@ void xd::window::update_joysticks()
 
         for (int button = 0; button < button_count; button++) {
             if (buttons[button] != joystick_state.prev_buttons[button]) {
-                on_input(INPUT_GAMEPAD, button, buttons[button], joystick_id);
+                on_input(input_type::INPUT_GAMEPAD, button, buttons[button], joystick_id);
                 joystick_state.prev_buttons[button] = buttons[button];
             }
         }
@@ -411,11 +411,11 @@ void xd::window::unbind_key(const std::string& virtual_key)
 bool xd::window::pressed(const xd::key& key, int joystick_id)
 {
     switch (key.type) {
-    case xd::INPUT_KEYBOARD:
+    case xd::input_type::INPUT_KEYBOARD:
         return glfwGetKey(m_window, key.code) == GLFW_PRESS;
-    case xd::INPUT_MOUSE:
+    case xd::input_type::INPUT_MOUSE:
         return  glfwGetMouseButton(m_window, key.code) == GLFW_PRESS;
-    case xd::INPUT_GAMEPAD:
+    case xd::input_type::INPUT_GAMEPAD:
         return joystick_present(joystick_id) &&
             m_joystick_states[joystick_id].buttons[key.code] == GLFW_PRESS;
     default:
@@ -440,7 +440,7 @@ bool xd::window::pressed(const std::string& key, int joystick_id)
 bool xd::window::triggered(const xd::key& key, int joystick_id)
 {
     auto key_copy = key;
-    if (key_copy.type == INPUT_GAMEPAD) {
+    if (key_copy.type == input_type::INPUT_GAMEPAD) {
         key_copy.device_id = joystick_id;
     }
     if (m_in_update)
@@ -466,7 +466,7 @@ bool xd::window::triggered(const std::string& key, int joystick_id)
 bool xd::window::triggered_once(const xd::key& key, int joystick_id)
 {
     auto key_copy = key;
-    if (key_copy.type == INPUT_GAMEPAD) {
+    if (key_copy.type == input_type::INPUT_GAMEPAD) {
         key_copy.device_id = joystick_id;
     }
     if (triggered(key, joystick_id)) {
@@ -493,7 +493,7 @@ bool xd::window::triggered_once(const std::string& key, int joystick_id)
 
 float xd::window::axis_value(const xd::key& key, int joystick_id)
 {
-    if (key.type != INPUT_GAMEPAD || !joystick_present(joystick_id)) {
+    if (key.type != input_type::INPUT_GAMEPAD || !joystick_present(joystick_id)) {
         return 0.0f;
     }
 
