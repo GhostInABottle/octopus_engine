@@ -1,6 +1,7 @@
 #include "../../../include/xd/lua/scheduler.hpp"
 #include "../../../include/xd/lua/scheduler_task.hpp"
 #include "../../../include/xd/lua/virtual_machine.hpp"
+#include "../../../include/xd/lua/exceptions.hpp"
 
 xd::lua::scheduler::scheduler(virtual_machine& vm)
     : state(vm.lua_state())
@@ -77,4 +78,14 @@ void xd::lua::scheduler::yield(std::shared_ptr<scheduler_task> task)
 int xd::lua::scheduler::pending_tasks()
 {
     return m_tasks.size();
+}
+
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::string_view& code) {
+    thread = sol::thread::create(state);
+    auto load_result = thread.state().load(code);
+    if (!load_result.valid()) {
+        sol::error err = load_result;
+        throw panic_error(err.what());
+    }
+    coroutine = load_result;
 }

@@ -1,7 +1,6 @@
 #ifndef H_XD_LUA_VIRTUAL_MACHINE
 #define H_XD_LUA_VIRTUAL_MACHINE
 
-#include "exceptions.hpp"
 #include "sol.hpp"
 #include <string>
 

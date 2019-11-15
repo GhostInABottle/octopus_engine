@@ -84,10 +84,7 @@ namespace xd
             struct scheduler_cothread {
                 sol::thread thread;
                 sol::coroutine coroutine;
-                scheduler_cothread(sol::state& state, const sol::string_view& code) {
-                    thread = sol::thread::create(state);
-                    coroutine = thread.state().load(code);
-                }
+                scheduler_cothread(sol::state& state, const sol::string_view& code);
             };
             struct scheduler_thread_task
             {
