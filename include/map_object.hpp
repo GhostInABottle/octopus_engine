@@ -99,6 +99,13 @@ public:
     void set_color(xd::vec4 new_color) {
         color = new_color;
     }
+    xd::vec2 get_magnification() const {
+        return magnification;
+    }
+    void set_magnification(xd::vec2 new_mag) {
+        magnification = new_mag;
+    }
+    xd::vec2 get_sprite_magnification() const;
     unsigned int get_gid() const {
         return gid;
     }
@@ -278,6 +285,8 @@ private:
     xd::vec2 size;
     // Object's tint color
     xd::vec4 color;
+    // Object's display size, bounding box is not affected
+    xd::vec2 magnification;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity

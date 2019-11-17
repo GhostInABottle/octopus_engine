@@ -14,6 +14,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         layer(nullptr),
         id(-1),
         color(1.0f),
+        magnification(1.0f),
         gid(0),
         opacity(1.0f),
         visible(true),
@@ -155,6 +156,14 @@ void  Map_Object::set_trigger_script_source(const std::string& script) {
 void  Map_Object::set_exit_script_source(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
     exit_script.source = extension == "lua" ? read_file(script) : script;
+}
+
+xd::vec2 Map_Object::get_sprite_magnification() const {
+    auto sprite = get_sprite();
+    if (sprite)
+        return sprite->get_frame().magnification;
+    else
+        return xd::vec2(1.0f, 1.0f);
 }
 
 bool Map_Object::is_outlined() const {

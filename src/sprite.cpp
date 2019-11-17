@@ -239,6 +239,7 @@ void Sprite::render(Map_Object& object) {
     auto& batch = layer->renderer->get_batch();
     render(batch, object.get_position(),
            layer->opacity * object.get_opacity(),
+           object.get_magnification(),
            layer->color * object.get_color());
 }
 

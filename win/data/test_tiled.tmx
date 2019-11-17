@@ -47,10 +47,10 @@
     <property name="sprite" value="data/sprite.spr"/>
    </properties>
   </object>
-  <object id="2" name="area51" type="area" x="86" y="241" width="24" height="32">
+  <object id="2" name="area51" type="area" x="86" y="241" width="8" height="8">
    <properties>
-    <property name="exit-script" value="player.opacity = 1.0"/>
-    <property name="script" value="player.opacity = 0.5"/>
+    <property name="exit-script" value="player.opacity = 1;player.color = Color(1,1.0,1);player.magnification = Vec2(1,1)"/>
+    <property name="script" value="player.opacity = 0.5;player.color = Color(1, 0.5, 0.5);player.magnification = Vec2(1.2,0.8)"/>
    </properties>
   </object>
   <object id="3" name="obj" type="object" x="384" y="240" width="16" height="16">

@@ -484,6 +484,7 @@ void Scripting_Interface::setup_scripts() {
     object_type["x"] = sol::property(&Map_Object::get_x, &Map_Object::set_x);
     object_type["y"] = sol::property(&Map_Object::get_y, &Map_Object::set_y);
     object_type["color"] = sol::property(&Map_Object::get_color, &Map_Object::set_color);
+    object_type["magnification"] = sol::property(&Map_Object::get_magnification, &Map_Object::set_magnification);
     object_type["opacity"] = sol::property(&Map_Object::get_opacity, &Map_Object::set_opacity);
     object_type["disabled"] = sol::property(&Map_Object::is_disabled, &Map_Object::set_disabled);
     object_type["stopped"] = sol::property(&Map_Object::is_stopped, &Map_Object::set_stopped);
@@ -512,15 +513,7 @@ void Scripting_Interface::setup_scripts() {
             obj->set_direction(static_cast<Direction>(dir));
         }
     );
-    object_type["magnification"] = sol::property(
-        [](Map_Object* obj) -> xd::vec2 {
-            auto sprite = obj->get_sprite();
-            if (sprite)
-                return sprite->get_frame().magnification;
-            else
-                return xd::vec2(1.0f, 1.0f);
-        }
-    );
+    object_type["sprite_magnification"] = sol::property(&Map_Object::get_sprite_magnification);
     object_type["get_property"] = &Map_Object::get_property;
     object_type["set_property"] = &Map_Object::set_property;
     object_type["move_to"] = sol::overload(
