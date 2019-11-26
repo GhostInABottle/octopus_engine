@@ -231,7 +231,7 @@ Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
     return add_object(std::make_shared<Map_Object>(game, name, sprite_file, pos, dir));
 }
 
-Map_Object* Map::get_object(std::string name) {
+Map_Object* Map::get_object(std::string name) const {
     capitalize(name);
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
         int id = object_name_to_id.find(name)->second;
@@ -240,9 +240,10 @@ Map_Object* Map::get_object(std::string name) {
     return nullptr;
 }
 
-Map_Object* Map::get_object(int id) {
-    if (objects.find(id) != objects.end())
-        return objects[id].get();
+Map_Object* Map::get_object(int id) const {
+    auto obj = objects.find(id);
+    if (obj != objects.end())
+        return obj->second.get();
     else
         return nullptr;
 }
@@ -273,18 +274,18 @@ void Map::erase_object_references(Map_Object* object) {
     objects.erase(object->get_id());
 }
 
-int Map::layer_count() {
+int Map::layer_count() const {
     return layers.size();
 }
 
-Layer* Map::get_layer(int id) {
+Layer* Map::get_layer(int id) const {
     if (id >= 1 && id <= layer_count())
         return layers[id - 1].get();
     else
         return nullptr;
 }
 
-Layer* Map::get_layer(std::string name) {
+Layer* Map::get_layer(std::string name) const {
     capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
@@ -296,6 +297,14 @@ Layer* Map::get_layer(std::string name) {
         return layer->get();
     else
         return nullptr;
+}
+
+Image_Layer* Map::get_image_layer(int id) const {
+    return dynamic_cast<Image_Layer*>(get_layer(id));
+}
+
+Image_Layer* Map::get_image_layer(const std::string& name) const {
+    return dynamic_cast<Image_Layer*>(get_layer(name));
 }
 
 void Map::add_layer(Layer_Types layer_type) {

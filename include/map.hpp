@@ -26,6 +26,7 @@ class Map_Object;
 class Canvas;
 struct Object_Layer;
 struct Tile_Layer;
+struct Image_Layer;
 struct Layer;
 class Scripting_Interface;
 class Map_Renderer;
@@ -70,9 +71,9 @@ public:
     Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Get object by name
-    Map_Object* get_object(std::string name);
+    Map_Object* get_object(std::string name) const;
     // Get object by ID
-    Map_Object* get_object(int id);
+    Map_Object* get_object(int id) const;
     // Get all objects
     std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
         return objects;
@@ -82,11 +83,15 @@ public:
     void delete_object(int id);
     void delete_object(Map_Object* object);
     // Get number of layers
-    int layer_count();
+    int layer_count() const;
     // Get layer by index (starting from 1, lua convention)
-    Layer* get_layer(int id);
+    Layer* get_layer(int id) const;
     // Get layer by name
-    Layer* get_layer(std::string name);
+    Layer* get_layer(std::string name) const;
+    // Get image layer by index (starting from 1, lua convention)
+    Image_Layer* get_image_layer(int id) const;
+    // Get image layer by name
+    Image_Layer* get_image_layer(const std::string& name) const;
     // Add a new layer
     void add_layer(Layer_Types type);
     // Delete layer with given name

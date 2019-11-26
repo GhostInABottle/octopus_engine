@@ -729,15 +729,19 @@ void Scripting_Interface::setup_scripts() {
     map_type["set_property"] = &Map::set_property;
     map_type["object_count"] = &Map::object_count;
     map_type["get_object"] = sol::overload(
-        (Map_Object* (Map::*)(int)) &Map::get_object,
-        (Map_Object* (Map::*)(std::string)) &Map::get_object
+        (Map_Object* (Map::*)(int) const) &Map::get_object,
+        (Map_Object* (Map::*)(std::string) const) &Map::get_object
     );
     map_type["add_new_object"] = &Map::add_new_object;
     map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;
     map_type["layer_count"] = &Map::layer_count;
     map_type["get_layer"] = sol::overload(
-        (Layer* (Map::*)(int)) &Map::get_layer,
-        (Layer* (Map::*)(std::string)) &Map::get_layer
+        (Layer* (Map::*)(int) const) &Map::get_layer,
+        (Layer* (Map::*)(std::string) const) &Map::get_layer
+    );
+    map_type["get_image_layer"] = sol::overload(
+        (Image_Layer* (Map::*)(int) const) &Map::get_image_layer,
+        (Image_Layer* (Map::*)(const std::string&) const) &Map::get_image_layer
     );
     map_type["get_objects"] = [&](Map* map) {
         sol::table objects(vm.lua_state(), sol::create);
