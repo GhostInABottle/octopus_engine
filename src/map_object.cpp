@@ -282,7 +282,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->gid = std::stoi(gid_node->value());
 
     if (auto visible_node = node.first_attribute("visible"))
-        object_ptr->visible = visible_node->value() == "1";
+        object_ptr->visible = visible_node->value() == std::string{"1"};
 
     auto& properties = object_ptr->properties;
     properties.read(node);

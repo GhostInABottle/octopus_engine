@@ -25,6 +25,7 @@ rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
         node->append_attribute(xml_attribute(doc, "opacity", std::to_string(opacity)));
     if (!visible)
         node->append_attribute(xml_attribute(doc, "visible", "0"));
+
     properties.save(doc, *node);
     return node;
 }
@@ -38,7 +39,8 @@ void Layer::load(rapidxml::xml_node<>& node) {
     if (auto opacity_node = node.first_attribute("opacity"))
         opacity = std::stof(opacity_node->value());
     if (auto visible_node = node.first_attribute("visible"))
-        visible = visible_node->value() == "1";
+        visible = visible_node->value() == std::string{"1"};
+
     properties.read(node);
 
     auto has_vert = properties.has_property("vertex-shader");
