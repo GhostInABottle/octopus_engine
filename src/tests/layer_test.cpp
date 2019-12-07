@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     auto& obj1 = *(object_layer->objects[0]);
     auto& obj2 = *(object_layer->objects[1]);
     BOOST_CHECK_EQUAL(obj1.get_id(), 5);
-    BOOST_CHECK_EQUAL(obj1.get_name(), "cool");
+    BOOST_CHECK_EQUAL(obj1.get_name(), "COOL");
     BOOST_CHECK_EQUAL(obj1.get_type(), "dragon");
     BOOST_CHECK_CLOSE(obj1.get_position().x, 168.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_position().y, 208.0f, 0.1f);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     BOOST_CHECK_EQUAL(obj1.get_face_state(), "facing");
     BOOST_CHECK_EQUAL(obj1.get_walk_state(), "walking");
     BOOST_CHECK_EQUAL(obj2.get_id(), 6);
-    BOOST_CHECK_EQUAL(obj2.get_name(), "collision");
+    BOOST_CHECK_EQUAL(obj2.get_name(), "COLLISION");
     BOOST_CHECK_CLOSE(obj2.get_size()[0], 8.0f, 0.1f);
     BOOST_CHECK_CLOSE(obj2.get_size()[1], 16.0f, 0.1f);
 }

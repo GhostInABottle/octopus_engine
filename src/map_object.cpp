@@ -167,9 +167,14 @@ xd::vec2 Map_Object::get_sprite_magnification() const {
 }
 
 bool Map_Object::is_outlined() const {
+    if (outlined.has_value()) {
+        return outlined.value();
+    }
+
     auto player = game.get_player();
-    return player && player->get_collision_object() == this &&
-        !trigger_script.source.empty();
+    return player
+        && player->get_collision_object() == this
+        && !trigger_script.source.empty();
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {

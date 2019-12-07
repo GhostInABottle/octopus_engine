@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <optional>
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
@@ -198,6 +199,15 @@ public:
         triggered_object = obj;
     }
     bool is_outlined() const;
+    void set_outlined(std::optional<bool> new_outlined) {
+        outlined = new_outlined;
+    }
+    std::optional<xd::vec4> get_outline_color() const {
+        return outline_color;
+    }
+    void set_outline_color(std::optional<xd::vec4> new_color) {
+        outline_color = new_color;
+    }
     Draw_Order get_draw_order() const {
         return draw_order;
     }
@@ -287,6 +297,10 @@ private:
     xd::vec4 color;
     // Object's display size, bounding box is not affected
     xd::vec2 magnification;
+    // Outline color
+    std::optional<xd::vec4> outline_color;
+    // Is the object outlined?
+    std::optional<bool> outlined;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity

@@ -11,8 +11,8 @@
 
 Object_Layer_Renderer::Object_Layer_Renderer(const Layer& layer, const Camera& camera)
         : Layer_Renderer(layer, camera) {
-    auto color = hex_to_color(Configurations::get<std::string>("game.object-outline-color"));
-    batch.set_outline_color(color);
+    default_outline_color = hex_to_color(Configurations::get<std::string>("game.object-outline-color"));
+    batch.set_outline_color(default_outline_color);
 }
 
 void Object_Layer_Renderer::render(Map& map) {
@@ -49,6 +49,8 @@ void Object_Layer_Renderer::render(Map& map) {
 
     for (auto& object : object_layer.objects) {
         if (object->is_outlined()) {
+            auto color = object->get_outline_color();
+            batch.set_outline_color(color.value_or(default_outline_color));
             batch.draw(camera.get_mvp(), map.get_game().ticks());
             batch.clear();
             object->render();

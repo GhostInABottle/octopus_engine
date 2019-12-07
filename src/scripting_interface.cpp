@@ -499,7 +499,8 @@ void Scripting_Interface::setup_scripts() {
     object_type["triggered_object"] = sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object);
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
-    object_type["outlined"] = sol::property(&Map_Object::is_outlined);
+    object_type["outlined"] = sol::property(&Map_Object::is_outlined, &Map_Object::set_outlined);
+    object_type["outline_color"] = sol::property(&Map_Object::get_outline_color, &Map_Object::set_outline_color);
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
     object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box);
