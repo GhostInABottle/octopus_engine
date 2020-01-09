@@ -87,6 +87,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     auto bounding_box = object.get_bounding_box();
     if (bounding_box.w < 1 || bounding_box.h < 1)
         return result;
+
     float x_change = (direction & Direction::RIGHT) != Direction::NONE ?
             speed : (direction & Direction::LEFT) != Direction::NONE ?
             -speed : 0.0f;
@@ -100,44 +101,56 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         bounding_box.h
     );
     Map_Object* area = nullptr;
+
     // Check object collisions
     if (check_type & Collision_Check_Types::OBJECT) {
         Collision_Record obj_result(Collision_Types::NONE, &object);
         for (auto& object_pair : objects) {
             auto other_id = object_pair.first;
             auto other_object = object_pair.second;
+            // Area objects are detected but not blocking
+            std::string other_type = other_object->get_type();
+            auto is_area = other_type == "area" || other_type == "area object";
             // Skip self and invisible/passthrough objects
-            if (other_id == object.get_id() || !other_object->is_visible() ||
-                    other_object->is_passthrough())
+            auto skip_passthrough = !is_area && other_object->is_passthrough();
+            if (other_id == object.get_id() || !other_object->is_visible() || skip_passthrough)
                 continue;
+
             // Skip objects with no bounding box
             auto box = other_object->get_bounding_box();
             if (box.w < 1 || box.h < 1)
                 continue;
+
             xd::vec2 other_position = other_object->get_position();
             xd::rect object_box(other_position.x + box.x,
                 other_position.y + box.y,
                 box.w, box.h);
             if (object_box.w > 0 && object_box.h > 0 &&
                     this_box.intersects(object_box)) {
-                std::string other_type = other_object->get_type();
-                if (other_type == "area" || other_type == "area object") {
+                if (is_area) {
                     area = other_object.get();
+                    // Passthrough areas skip further collision detection
+                    if (area->is_passthrough()) {
+                        break;
+                    }
                 } else {
                     int multi = check_type & Collision_Check_Types::MULTI;
                     obj_result.set(Collision_Types::OBJECT, other_object.get());
                     if (multi) {
                         obj_result.other_objects[other_object->get_name()] = other_object.get();
-                    } else
+                    } else {
                         return obj_result;
+                    }
                 }
             }
         }
         if (obj_result.type == Collision_Types::OBJECT)
             return obj_result;
     }
-    if (check_type & Collision_Check_Types::TILE) {
-        // Check tile collisions
+
+    // Check tile collisions (unless there was a passthrough area)
+    auto passthrough_area = area && area->is_passthrough();
+    if (!passthrough_area && check_type & Collision_Check_Types::TILE) {
         int min_x = static_cast<int>(this_box.x / tile_width);
         int min_y = static_cast<int>(this_box.y / tile_height);
         int max_x = static_cast<int>((this_box.x + this_box.w) / tile_width);
@@ -162,6 +175,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             }
         }
     }
+
     if (area) {
         auto type = area->get_type() == "area" ?
             Collision_Types::AREA : Collision_Types::AREA_OBJECT;
