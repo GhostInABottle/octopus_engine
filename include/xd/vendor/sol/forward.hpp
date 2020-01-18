@@ -20,8 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // This file was generated with a script.
-// Generated 2019-09-15 04:36:38.687873 UTC
-// This header was generated with sol v3.0.3 (revision b2c22ea)
+// Generated 2020-01-17 10:21:31.165776 UTC
+// This header was generated with sol v3.2.0 (revision 1c89390)
 // https://github.com/ThePhD/sol2
 
 #ifndef SOL_SINGLE_INCLUDE_FORWARD_HPP
@@ -34,7 +34,7 @@
 
 // beginning of sol/feature_test.hpp
 
-#if (defined(__cplusplus) && __cplusplus == 201703L) || (defined(_MSC_VER) && _MSC_VER > 1900 && ((defined(_HAS_CXX17) && _HAS_CXX17 == 1) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201402L))))
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || (defined(_MSC_VER) && _MSC_VER > 1900 && ((defined(_HAS_CXX17) && _HAS_CXX17 == 1) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201402L))))
 #ifndef SOL_CXX17_FEATURES
 #define SOL_CXX17_FEATURES 1
 #endif // C++17 features macro
@@ -99,13 +99,13 @@
 
 #endif // vc++ || clang++/g++
 
-#if defined(SOL_CHECK_ARGUMENTS) && SOL_CHECK_ARGUMENTS
+#if defined(SOL_CHECK_ARGUMENTS) && SOL_CHECK_ARGUMENTS != 0
 	#if defined(SOL_ALL_SAFETIES_ON)
 		#define SOL_ALL_SAFETIES_ON 1
 	#endif // turn all the safeties on
-#endif // Compatibility define
+#endif // Compatibility Define for Safety
 
-#if defined(SOL_ALL_SAFETIES_ON) && SOL_ALL_SAFETIES_ON
+#if defined(SOL_ALL_SAFETIES_ON) && SOL_ALL_SAFETIES_ON != 0
 
 	// Checks low-level getter function
 	// (and thusly, affects nearly entire framework)
@@ -174,7 +174,7 @@
 
 #endif // Turn on Safety for all if top-level macro is defined
 
-#if defined(SOL_IN_DEBUG_DETECTED) && SOL_IN_DEBUG_DETECTED
+#if defined(SOL_IN_DEBUG_DETECTED) && SOL_IN_DEBUG_DETECTED != 0
 
 	#if !defined(SOL_SAFE_REFERENCES)
 	// Ensure that references are forcefully type-checked upon construction
@@ -343,12 +343,13 @@ namespace sol {
 	using function = protected_function;
 	using main_function = main_protected_function;
 	using stack_function = stack_protected_function;
+	using stack_aligned_function = stack_aligned_safe_function;
 #else
 	using function = unsafe_function;
 	using main_function = main_unsafe_function;
 	using stack_function = stack_unsafe_function;
-#endif
 	using stack_aligned_function = stack_aligned_unsafe_function;
+#endif
 	using stack_aligned_stack_handler_function = basic_protected_function<stack_reference, true, stack_reference>;
 
 	struct unsafe_function_result;
