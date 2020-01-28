@@ -22,6 +22,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         stopped(false),
         frozen(false),
         passthrough(false),
+        override_tile_collision(false),
         speed(1.0f),
         name(name),
         position(pos),
@@ -29,6 +30,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         direction(dir),
         face_state("FACE"),
         walk_state("WALK"),
+        script_context(Script_Context::MAP),
+        player_facing(true),
         collision_object(nullptr),
         collision_area(nullptr),
         triggered_object(nullptr),
@@ -148,14 +151,24 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     return collision;
 }
 
-void  Map_Object::set_trigger_script_source(const std::string& script) {
-    auto extension = script.substr(script.find_last_of(".") + 1);
-    trigger_script.source = extension == "lua" ? read_file(script) : script;
+void Map_Object::set_name(const std::string& new_name) {
+    name = new_name;
+    capitalize(name);
 }
 
-void  Map_Object::set_exit_script_source(const std::string& script) {
+void  Map_Object::set_trigger_script(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
-    exit_script.source = extension == "lua" ? read_file(script) : script;
+    trigger_script = extension == "lua" ? read_file(script) : script;
+}
+
+void  Map_Object::set_touch_script(const std::string& script) {
+    auto extension = script.substr(script.find_last_of(".") + 1);
+    touch_script = extension == "lua" ? read_file(script) : script;
+}
+
+void  Map_Object::set_leave_script(const std::string& script) {
+    auto extension = script.substr(script.find_last_of(".") + 1);
+    leave_script = extension == "lua" ? read_file(script) : script;
 }
 
 xd::vec2 Map_Object::get_sprite_magnification() const {
@@ -174,7 +187,8 @@ bool Map_Object::is_outlined() const {
     auto player = game.get_player();
     return player
         && player->get_collision_object() == this
-        && !trigger_script.source.empty();
+        && !passthrough
+        && !trigger_script.empty();
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
@@ -234,13 +248,14 @@ void Map_Object::face(Direction dir) {
     update_pose();
 }
 
-void Map_Object::run_script(const Script& script) {
-    if (script.source.empty())
+void Map_Object::run_script(const std::string& script) {
+    if (script.empty())
         return;
-    if (script.is_global)
-        game.run_script(script.source);
+
+    if (script_context == Script_Context::GLOBAL)
+        game.run_script(script);
     else
-        game.get_map()->run_script(script.source);
+        game.get_map()->run_script(script);
 }
 
 rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
@@ -271,9 +286,10 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->id = std::stoi(id_node->value());
 
     if (auto name_node = node.first_attribute("name"))
-        object_ptr->name = name_node->value();
+        object_ptr->set_name(name_node->value());
+
     if (auto type_node = node.first_attribute("type"))
-        object_ptr->type = type_node->value();
+        object_ptr->set_type(type_node->value());
 
     object_ptr->position.x = std::stof(node.first_attribute("x")->value());
     object_ptr->position.y = std::stof(node.first_attribute("y")->value());
@@ -295,7 +311,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("sprite"))
         object_ptr->set_sprite(game, properties["sprite"]);
     if (properties.has_property("direction"))
-        object_ptr->direction = string_to_direction(properties["direction"]);
+        object_ptr->set_direction(string_to_direction(properties["direction"]));
     if (properties.has_property("pose"))
         object_ptr->pose_name = properties["pose"];
     if (properties.has_property("state"))
@@ -303,37 +319,37 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("speed"))
         object_ptr->set_speed(std::stof(properties["speed"]));
     if (properties.has_property("opacity"))
-        object_ptr->opacity = std::stof(properties["opacity"]);
+        object_ptr->set_opacity(std::stof(properties["opacity"]));
     if (properties.has_property("face-state"))
-        object_ptr->face_state = properties["face-state"];
+        object_ptr->set_face_state(properties["face-state"]);
     if (properties.has_property("walk-state"))
-        object_ptr->walk_state = properties["walk-state"];
+        object_ptr->set_walk_state(properties["walk-state"]);
 
-    auto set_script = [&properties](Map_Object* obj, const std::string& type) {
-        auto source = properties[type];
-        Script* script = &obj->trigger_script;
-        if (type.find("exit") != std::string::npos) {
-            script = &obj->exit_script;
-            obj->set_exit_script_source(source);
-        } else {
-            obj->set_trigger_script_source(source);
-        }
-        script->is_global = type.find("global") != std::string::npos;
-    };
-    // Trigger script
+    if (properties.has_property("script-context")) {
+        auto context = properties["script-context"];
+        capitalize(context);
+        object_ptr->set_script_context(context == "GLOBAL" ? Script_Context::GLOBAL : Script_Context::MAP);
+    }
+
     if (properties.has_property("script"))
-        set_script(object_ptr.get(), "script");
-    else if (properties.has_property("map-script"))
-        set_script(object_ptr.get(), "map-script");
-    else if (properties.has_property("global-script"))
-        set_script(object_ptr.get(), "global-script");
-    // Exit script
-    if (properties.has_property("exit-script"))
-        set_script(object_ptr.get(), "exit-script");
-    else if (properties.has_property("map-exit-script"))
-        set_script(object_ptr.get(), "map-exit-script");
-    else if (properties.has_property("global-exit-script"))
-        set_script(object_ptr.get(), "global-exit-script");
+        object_ptr->set_trigger_script(properties["script"]);
+    else if (properties.has_property("trigger-script"))
+        object_ptr->set_trigger_script(properties["trigger-script"]);
+
+    if (properties.has_property("touch-script"))
+        object_ptr->set_touch_script(properties["touch-script"]);
+
+    if (properties.has_property("leave-script"))
+        object_ptr->set_leave_script (properties["leave-script"]);
+
+    if (properties.has_property("player-facing"))
+        object_ptr->set_player_facing(properties["player-facing"] == "true");
+    if (properties.has_property("passthrough"))
+        object_ptr->set_passthrough(properties["passthrough"] == "true");
+    if (properties.has_property("override-tile-collision"))
+        object_ptr->set_passthrough(properties["override-tile-collision"] == "true");
+    if (properties.has_property("outlined"))
+        object_ptr->set_outlined(properties["outlined"] == "true");
 
     object_ptr->update_pose();
 

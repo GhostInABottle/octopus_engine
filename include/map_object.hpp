@@ -22,13 +22,7 @@ struct Object_Layer;
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable {
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
-    struct Script {
-        Script() : is_global(false) {}
-        // Script source text
-        std::string source;
-        // Is script a local (map) or global script?
-        bool is_global;
-    };
+    enum class Script_Context { MAP, GLOBAL };
     // Map object onstructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
@@ -52,9 +46,7 @@ public:
     std::string get_name() const {
         return name;
     }
-    void set_name(const std::string& new_name) {
-        name = new_name;
-    }
+    void set_name(const std::string& new_name);
     void set_property(const std::string& name, const std::string& value) {
         properties[name] = value;
     }
@@ -148,6 +140,12 @@ public:
     void set_passthrough(bool new_passthrough) {
         passthrough = new_passthrough;
     }
+    bool overrides_tile_collision() const {
+        return override_tile_collision;
+    }
+    void set_override_tile_collision(bool new_override) {
+        override_tile_collision = new_override;
+    }
     Direction get_direction() const {
         return direction;
     }
@@ -172,14 +170,42 @@ public:
     void set_walk_state(const std::string& name) {
         walk_state = name;
     }
-    std::string get_trigger_script_source() const {
-        return trigger_script.source;
+    Script_Context get_script_context() const {
+        return script_context;
     }
-    void set_trigger_script_source(const std::string& script);
-    std::string get_exit_script_source() const {
-        return exit_script.source;
+    void set_script_context(Script_Context context) {
+        script_context = context;
     }
-    void set_exit_script_source(const std::string& script);
+    bool has_trigger_script() const {
+        return !trigger_script.empty();
+    }
+    std::string get_trigger_script() const {
+        return trigger_script;
+    }
+    void set_trigger_script(const std::string& script);
+    bool has_touch_script() const {
+        return !touch_script.empty();
+    }
+    std::string get_touch_script() const {
+        return touch_script;
+    }
+    void set_touch_script(const std::string& script);
+    bool has_leave_script() const {
+        return !leave_script.empty();
+    }
+    std::string get_leave_script() const {
+        return leave_script;
+    }
+    void set_leave_script(const std::string& script);
+    bool has_any_script() const {
+        return !trigger_script.empty() || !touch_script.empty() || !leave_script.empty();
+    }
+    bool is_player_facing() const {
+        return player_facing;
+    }
+    void set_player_facing(bool facing) {
+        player_facing = facing;
+    }
     Map_Object* get_collision_object() const {
         return collision_object;
     }
@@ -270,9 +296,13 @@ public:
     void run_trigger_script() {
         run_script(trigger_script);
     }
-    // Run exit script (for areas)
-    void run_exit_script() {
-        run_script(exit_script);
+    // Run the touch script
+    void run_touch_script() {
+        run_script(touch_script);
+    }
+    // Run leave/exit script
+    void run_leave_script() {
+        run_script(leave_script);
     }
     // Serialize object to TMX data
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
@@ -315,6 +345,8 @@ private:
     bool frozen;
     // Can object pass through obstaces?
     bool passthrough;
+    // Does this object override tile collision?
+    bool override_tile_collision;
     // Object direction
     Direction direction;
     // Current pose name
@@ -325,10 +357,16 @@ private:
     std::string face_state;
     // Name of walking state
     std::string walk_state;
-    // Script executed when object is triggered
-    Script trigger_script;
-    // Script executed when exiting an area
-    Script exit_script;
+    // Context in which script is executed: globally or per map
+    Script_Context script_context;
+    // Script executed when object is triggered by pressing a button
+    std::string trigger_script;
+    // Script executed when the object is touched/collided with
+    std::string touch_script;
+    // Script executed when leaving/no longer touching this object
+    std::string leave_script;
+    // Should the object face player when triggered?
+    bool player_facing;
     // Object currently colliding with player
     Map_Object* collision_object;
     // Area the plaer is inside
@@ -348,7 +386,7 @@ private:
         Sprite_Holder::set_pose(pose_name, state, direction);
     }
     // Run a script
-    void run_script(const Script& script);
+    void run_script(const std::string& script);
 };
 
 #endif

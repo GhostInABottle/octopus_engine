@@ -7,8 +7,6 @@ enum class Collision_Check_Types {
     TILE = 1,
     OBJECT = 2,
     BOTH = 3,
-    MULTI = 4,
-    MULTI_OBJECTS = 6
 };
 
 inline Collision_Check_Types operator|(

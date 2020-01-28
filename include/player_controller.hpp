@@ -12,6 +12,7 @@ public:
     void update(Map_Object& object);
 private:
     Game& game;
+    void process_collision(Map_Object& object, Map_Object* other, Collision_Record collision, Collision_Types type, bool action_pressed);
 };
 
 #endif

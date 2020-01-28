@@ -36,14 +36,13 @@ void Player_Controller::update(Map_Object& object) {
     }
     auto collision = object.move(direction, object.get_speed());
     // Check if stuck inside another object
-    if (moved && !collision.passable() &&
-            collision.type == Collision_Types::OBJECT) {
+    if (moved && collision.type == Collision_Types::OBJECT) {
         bool passable = false;
-        auto check_type = Collision_Check_Types::MULTI_OBJECTS;
         auto map = game.get_map();
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
-            auto rec = map->passable(object, dir, check_type);
+            if (dir == direction) continue;
+            auto rec = map->passable(object, dir);
             auto& others = rec.other_objects;
             if (others.find(collision.other_object->get_name()) == others.end()) {
                 passable = true;
@@ -56,30 +55,42 @@ void Player_Controller::update(Map_Object& object) {
                 Collision_Check_Types::TILE);
     }
 
-    object.set_collision_object(collision.other_object);
-    // If action button pressed, activate NPC
-    if (action_pressed && collision.other_object &&
-            collision.input_triggerable()) {
-        object.set_triggered_object(collision.other_object);
-        collision.other_object->face(object);
-        collision.other_object->run_trigger_script();
-    }
-    // Check if inside a collision area
-    if (collision.is_area()) {
-        auto area = collision.other_object;
-        if (area != object.get_collision_area()) {
-            object.set_collision_area(area);
-            // Automatically trigger regular areas
-            if (area && moved && !collision.input_triggerable()) {
-                object.set_triggered_object(area);
-                area->run_trigger_script();
-            }
-        }
-    } else if (collision.type == Collision_Types::NONE) {
-        auto old_area = object.get_collision_area();
-        if (old_area)
-            old_area->run_exit_script();
-        object.set_collision_area(nullptr);
-    }
+    process_collision(object, collision.other_object, collision, Collision_Types::OBJECT, action_pressed);
+    process_collision(object, collision.other_area, collision, Collision_Types::AREA, action_pressed);
+}
 
+void Player_Controller::process_collision(Map_Object& object, Map_Object* other, Collision_Record collision, Collision_Types type, bool action_pressed) {
+    Map_Object* old_object = nullptr;
+    if (type == Collision_Types::OBJECT) {
+        old_object = object.get_collision_object();
+        if (other)
+            object.set_collision_object(other);
+    } else {
+        old_object = object.get_collision_area();
+        if (other)
+            object.set_collision_area(other);
+    }
+    auto touched = other && other->has_touch_script() && other != old_object;
+    auto triggered = other && action_pressed && other->has_trigger_script();
+    if (touched || triggered) {
+        object.set_triggered_object(other);
+        if (other->is_player_facing()) {
+            other->face(object);
+        }
+        if (touched) {
+            other->run_touch_script();
+        }
+        if (triggered) {
+            other->run_trigger_script();
+        }
+    } else if (!other) {
+        if (old_object && old_object->has_leave_script()) {
+            old_object->run_leave_script();
+        }
+        if (type == Collision_Types::OBJECT) {
+            object.set_collision_object(nullptr);
+        } else {
+            object.set_collision_area(nullptr);
+        }
+    }
 }

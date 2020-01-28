@@ -73,6 +73,9 @@ void Scripting_Interface::set_globals() {
     vm.globals()["TEXT_POSITION_BOTTOM_Y"] = static_cast<int>(Text_Position_Type::BOTTOM_Y);
     vm.globals()["TEXT_POSITION_CAMERA"] = static_cast<int>(Text_Position_Type::CAMERA_RELATIVE);
     vm.globals()["TEXT_POSITION_ALWAYS_VISIBLE"] = static_cast<int>(Text_Position_Type::ALWAYS_VISIBLE);
+    // Script context
+    vm.globals()["SCRIPT_CONTEXT_GLOBAL"] = static_cast<int>(Map_Object::Script_Context::GLOBAL);
+    vm.globals()["SCRIPT_CONTEXT_MAP"] = static_cast<int>(Map_Object::Script_Context::MAP);
 }
 
 std::unique_ptr<Command_Result> Scripting_Interface::register_command(std::shared_ptr<Command> command) {
@@ -495,7 +498,13 @@ void Scripting_Interface::setup_scripts() {
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
     object_type["face_state"] = sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state);
     object_type["visible"] = sol::property(&Map_Object::is_visible, &Map_Object::set_visible);
-    object_type["script"] = sol::property(&Map_Object::get_trigger_script_source, &Map_Object::set_trigger_script_source);
+    object_type["script_context"] = sol::property(&Map_Object::get_script_context, &Map_Object::set_script_context);
+    object_type["script"] = sol::property(&Map_Object::get_trigger_script, &Map_Object::set_trigger_script);
+    object_type["trigger_script"] = sol::property(&Map_Object::get_trigger_script, &Map_Object::set_trigger_script);
+    object_type["touch_script"] = sol::property(&Map_Object::get_touch_script, &Map_Object::set_touch_script);
+    object_type["leave_script"] = sol::property(&Map_Object::get_leave_script, &Map_Object::set_leave_script);
+    object_type["overrides_tile_collision"] = sol::property(&Map_Object::overrides_tile_collision, &Map_Object::set_override_tile_collision);
+    object_type["player_facing"] = sol::property(&Map_Object::is_player_facing, &Map_Object::set_player_facing);
     object_type["triggered_object"] = sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object);
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
@@ -572,6 +581,9 @@ void Scripting_Interface::setup_scripts() {
         }
     );
     object_type["run_script"] = &Map_Object::run_trigger_script;
+    object_type["run_trigger_script"] = &Map_Object::run_trigger_script;
+    object_type["run_touch_script"] = &Map_Object::run_touch_script;
+    object_type["run_leave_script"] = &Map_Object::run_leave_script;
 
     // Sound effect
     auto sound = lua.new_usertype<xd::sound>("Sound",

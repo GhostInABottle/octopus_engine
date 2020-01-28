@@ -53,7 +53,6 @@ void xd::lua::scheduler::run()
                 sol::error err = result;
                 throw panic_error(err.what());
             }
-            auto type = result.get_type();
             // reset current thread
             m_thread_stack.pop();
             if (m_thread_stack.empty())

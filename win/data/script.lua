@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Other' })
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Other', 'Nothing' })
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -150,7 +150,7 @@ elseif c.selected == 4 then
     camera:track_object(player)
     text(o, "Tinting screen back"):wait()
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
-else
+elseif c.selected == 5 then
     -- Others
     local music = game.playing_music
     text(o, "Pausing music " .. music.filename):wait()

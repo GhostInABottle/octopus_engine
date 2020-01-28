@@ -49,8 +49,10 @@
   </object>
   <object id="2" name="area51" type="area" x="86" y="241" width="8" height="8">
    <properties>
-    <property name="exit-script" value="player.opacity = 1;player.color = Color(1,1.0,1);player.magnification = Vec2(1,1)"/>
-    <property name="script" value="player.opacity = 0.5;player.color = Color(1, 0.5, 0.5);player.magnification = Vec2(1.2,0.8)"/>
+    <property name="passthrough" value="true"/>
+    <property name="leave-script" value="player.opacity = 1;player.color = Color(1,1.0,1);player.magnification = Vec2(1,1)"/>
+    <property name="trigger-script" value="data/script.lua"/>
+    <property name="touch-script" value="player.opacity = 0.5;player.color = Color(1, 0.5, 0.5);player.magnification = Vec2(1.2,0.8)"/>
    </properties>
   </object>
   <object id="3" name="obj" type="object" x="384" y="240" width="16" height="16">
@@ -60,7 +62,9 @@
   </object>
   <object id="4" name="exit" type="area" x="0" y="200" width="8" height="48">
    <properties>
-    <property name="global-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled2.tmx', RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
+    <property name="script-context" value="global"/>
+    <property name="passthrough" value="true"/>
+    <property name="touch-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled2.tmx', RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
    </properties>
   </object>
  </objectgroup>

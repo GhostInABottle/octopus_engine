@@ -100,22 +100,24 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         bounding_box.w,
         bounding_box.h
     );
-    Map_Object* area = nullptr;
+
+    bool check_tile_collision = check_type & Collision_Check_Types::TILE;
 
     // Check object collisions
     if (check_type & Collision_Check_Types::OBJECT) {
-        Collision_Record obj_result(Collision_Types::NONE, &object);
         for (auto& object_pair : objects) {
             auto other_id = object_pair.first;
-            auto other_object = object_pair.second;
-            // Area objects are detected but not blocking
-            std::string other_type = other_object->get_type();
-            auto is_area = other_type == "area" || other_type == "area object";
-            // Skip self and invisible/passthrough objects
-            auto skip_passthrough = !is_area && other_object->is_passthrough();
-            if (other_id == object.get_id() || !other_object->is_visible() || skip_passthrough)
+            auto other_object = object_pair.second.get();
+            auto visible = other_object->is_visible();
+            auto passthrough = other_object->is_passthrough();
+            // Special case for skipping tile collision detection
+            if (other_object->overrides_tile_collision() && visible && passthrough)
+                check_tile_collision = false;
+            // Areas are passthrough objects with a script
+            auto is_area = passthrough && other_object->has_any_script();
+            // Skip self, invisible, or passthrough objects (except areas)
+            if (other_id == object.get_id()|| !visible|| (!is_area && passthrough))
                 continue;
-
             // Skip objects with no bounding box
             auto box = other_object->get_bounding_box();
             if (box.w < 1 || box.h < 1)
@@ -128,29 +130,21 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             if (object_box.w > 0 && object_box.h > 0 &&
                     this_box.intersects(object_box)) {
                 if (is_area) {
-                    area = other_object.get();
-                    // Passthrough areas skip further collision detection
-                    if (area->is_passthrough()) {
-                        break;
-                    }
+                    if (result.type == Collision_Types::NONE)
+                        result.type = Collision_Types::AREA;
+                    result.other_area = other_object;
+                    result.other_areas[other_object->get_name()] = other_object;
                 } else {
-                    int multi = check_type & Collision_Check_Types::MULTI;
-                    obj_result.set(Collision_Types::OBJECT, other_object.get());
-                    if (multi) {
-                        obj_result.other_objects[other_object->get_name()] = other_object.get();
-                    } else {
-                        return obj_result;
-                    }
+                    result.type = Collision_Types::OBJECT;
+                    result.other_object = other_object;
+                    result.other_objects[other_object->get_name()] = other_object;
                 }
             }
         }
-        if (obj_result.type == Collision_Types::OBJECT)
-            return obj_result;
     }
 
-    // Check tile collisions (unless there was a passthrough area)
-    auto passthrough_area = area && area->is_passthrough();
-    if (!passthrough_area && check_type & Collision_Check_Types::TILE) {
+    // Check tile collisions (unless an object overrides collision)
+    if (check_tile_collision) {
         int min_x = static_cast<int>(this_box.x / tile_width);
         int min_y = static_cast<int>(this_box.y / tile_height);
         int max_x = static_cast<int>((this_box.x + this_box.w) / tile_width);
@@ -176,13 +170,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         }
     }
 
-    if (area) {
-        auto type = area->get_type() == "area" ?
-            Collision_Types::AREA : Collision_Types::AREA_OBJECT;
-        return Collision_Record(type, &object, area);
-    } else {
-         return result;
-    }
+    return result;
 }
 
 bool Map::tile_passable(int x, int y) {
@@ -231,7 +219,6 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, int layer
     if (name.empty()) {
         name+= "UNTITLED" + std::to_string(id);
     }
-    capitalize(name);
     auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
     object_name_to_id.insert(mapping);
     objects[id] = object;
