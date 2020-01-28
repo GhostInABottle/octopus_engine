@@ -138,6 +138,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     result.type = Collision_Types::OBJECT;
                     result.other_object = other_object;
                     result.other_objects[other_object->get_name()] = other_object;
+                    check_tile_collision = false;
                 }
             }
         }
@@ -152,18 +153,20 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         for (int y = min_y; y <= max_y; ++y) {
             for (int x = min_x; x <= max_x; ++x) {
                 // Check map bounds
-                if (x < 0 || x >= width || y < 0 || y >= height)
-                    return Collision_Record(Collision_Types::TILE);
+                if (x < 0 || x >= width || y < 0 || y >= height) {
+                    result.type = Collision_Types::TILE;
+                    return result;
+                }
                 // Check if tile is blocking
                 if (collision_layer && collision_tileset) {
                     int tile = collision_layer->tiles[x + y * width] -
                         collision_tileset->first_id;
                     if (tile >= 2) {
-                        Collision_Record tile_record(Collision_Types::TILE);
+                        result.type = Collision_Types::TILE;
                         if (tile >= 3 && tile <= 6) {
-                            tile_record.edge_direction = static_cast<Direction>((tile - 2) * 3);
+                            result.edge_direction = static_cast<Direction>((tile - 2) * 3);
                         }
-                        return tile_record;
+                        return result;
                     }
                 }
             }
