@@ -155,6 +155,7 @@ elseif c.selected == 5 then
     local music = game.playing_music
     text(o, "Pausing music " .. music.filename):wait()
     music:pause()
+    text(o, "Are we in debug mode? " .. (game.is_debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')
         .. '\nscreen width: ' .. game:get_config('game.screen-width')

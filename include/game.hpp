@@ -54,6 +54,14 @@ public:
     int height() const {
         return window ? window->framebuffer_height() : editor_size.y;
     }
+    // Was the executable build in debug mode?
+    bool is_debug() const {
+#ifdef NDEBUG
+        return false;
+#else
+        return true;
+#endif
+    }
     // Manually set window resolution
     void set_size(int width, int height);
     // Returns list of supported resolutions

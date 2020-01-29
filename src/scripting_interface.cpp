@@ -641,6 +641,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["stopped"] = sol::property(&Game::stopped);
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["playing_music"] = sol::property([](Game* game) { return game->playing_music().get(); });
+    game_type["is_debug"] = sol::property(&Game::is_debug);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
