@@ -136,6 +136,8 @@ public:
     Map_Object* get_player() { return player.get(); }
     // Get global asset manager
     xd::asset_manager& get_asset_manager();
+    void render_text(xd::font& font, xd::text_formatter& formatter,
+        const xd::font_style& style, float x, float y, const std::string& text);
     // Get text renderer
     xd::simple_text_renderer& get_text_renderer() { return text_renderer; }
     // Get font

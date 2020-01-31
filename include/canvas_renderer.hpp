@@ -27,7 +27,6 @@ private:
     Camera& camera;
     std::string last_drawn_text;
     xd::sprite_batch batch;
-    bool drawn_to_batch;
     bool fbo_supported;
 };
 

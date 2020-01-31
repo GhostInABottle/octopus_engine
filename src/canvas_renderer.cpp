@@ -6,9 +6,10 @@
 #include "../include/sprite_data.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility.hpp"
+#include "../include/log.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
-    : game(game), camera(camera), drawn_to_batch(false) {
+    : game(game), camera(camera) {
     fbo_supported = Configurations::get<bool>("debug.use-fbo")
         && xd::framebuffer::extension_supported();
 }
@@ -26,13 +27,8 @@ void Canvas_Renderer::render(Map& map) {
             if (has_scissor_box) {
                 camera.enable_scissor_test(scissor);
             }
-            batch.clear();
 
             render_canvas(*canvas);
-
-            if (drawn_to_batch) {
-                draw(camera.get_mvp(), *canvas);
-            }
 
             glEnable(GL_BLEND);
             if (has_scissor_box) {
@@ -81,8 +77,6 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
     );
     geometry.model_view().push(xd::mat4());
     draw(geometry.mvp(), root);
-    batch.clear();
-    drawn_to_batch = false;
 }
 
 void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root) {
@@ -91,72 +85,49 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
         return;
     }
 
-    // Text canvases with text children are drawn to one
-    // framebuffer object as an optimization
+    // Drawing to a framebuffer that updates less frequently improves performance,
+    // especially for text. For sprites/images the improvement isn't as significant.
+    // and they are more likely to be moved/animated. Therefore we ristrict this
+    // optimization for images/sprites in a child/parent hierarchy
     auto& root_parent = root ? *root : canvas;
-    auto children_type = canvas.get_children_type();
-    auto child_count = canvas.get_child_count();
-    bool is_text_child = parent && parent->get_children_type() == Canvas::Type::TEXT;
-    bool redraw = should_redraw(canvas);
-    bool redraw_parent = is_text_child && should_redraw(*parent);
-    bool using_fbo = false;
+    bool has_children = canvas.get_child_count() > 0;
+    bool is_text = canvas.get_type() == Canvas::Type::TEXT;
+    bool using_fbo = !parent && fbo_supported && (is_text || has_children);
+    bool individual = !(parent || has_children);
+    bool redraw = should_redraw(canvas)
+        || parent && should_redraw(*parent)
+        || !is_text && (individual || !fbo_supported);
 
-    if (canvas.get_type() == Canvas::Type::TEXT) {
+    if (redraw) {
         // Setup framebuffer for top parent canvas
-        if (!parent && fbo_supported) {
-            if (redraw) {
-                setup_framebuffer(canvas);
-            }
-            using_fbo = true;
+        if (using_fbo) {
+            setup_framebuffer(canvas);
         }
-
-        if (redraw || redraw_parent) {
+        // Render canvas and children
+        if (canvas.get_type() == Canvas::Type::TEXT) {
             render_text(canvas, parent);
+        } else {
+            render_image(canvas, parent);
         }
-
-        bool has_text_children = child_count > 0 && children_type == Canvas::Type::TEXT;
-        if (fbo_supported && !is_text_child && !has_text_children) {
-            // Finish up previous FBO
-            render_framebuffer(canvas, root_parent);
-            using_fbo = false;
+        for (size_t i = 0; i < canvas.get_child_count(); ++i) {
+            auto& child = *canvas.get_child(i);
+            render_canvas(child, &canvas, &root_parent);
         }
-    } else {
-        render_image(canvas, parent);
-        // If image canvas has text children, render them in one FBO
-        if (fbo_supported && child_count > 0 && children_type == Canvas::Type::TEXT) {
-            draw(camera.get_mvp(), root_parent);
-            if (should_redraw(*canvas.get_child(0))) {
-                setup_framebuffer(canvas);
-            }
-            using_fbo = true;
+        // Mark children and parent as drawn. Children are marked separately
+        // to avoid changing parent's should_draw while iterating children
+        for (size_t i = 0; i < canvas.get_child_count(); ++i) {
+            canvas.get_child(i)->mark_as_drawn(game.ticks());
         }
-    }
-    // Render children
-    for (size_t i = 0; i < canvas.get_child_count(); ++i) {
-        auto& child = *canvas.get_child(i);
-        // Individual text children in mixed group are drawn to their own FBO
-        if (fbo_supported && child.get_type() == Canvas::Type::TEXT && !using_fbo) {
-            if (drawn_to_batch) {
-                // Finish up any previous image drawing
+        if (!parent) {
+            canvas.mark_as_drawn(game.ticks());
+            if (!batch.empty()) {
                 draw(camera.get_mvp(), root_parent);
-                drawn_to_batch = false;
-            }
-            if (should_redraw(child)) {
-                setup_framebuffer(child);
             }
         }
-        render_canvas(child, &canvas, &root_parent);
-    }
-    // Need to mark children separately to avoid changing parent's
-    // should_draw while iterating children
-    for (size_t i = 0; i < canvas.get_child_count(); ++i) {
-        canvas.get_child(i)->mark_as_drawn(game.ticks());
     }
     if (using_fbo) {
         render_framebuffer(canvas, root_parent);
     }
-    if (redraw && !redraw_parent)
-        canvas.mark_as_drawn(game.ticks());
 }
 
 void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
@@ -177,7 +148,7 @@ void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
             draw_y -= camera_pos.y;
         }
 
-        canvas.render_text(line, draw_x, game.game_height() - draw_y);
+        canvas.render_text(line, draw_x, draw_y);
         pos.y += style->line_height();
     }
 }
@@ -199,7 +170,6 @@ void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
         batch.add(canvas.get_image_texture(), pos.x, pos.y,
             xd::radians(angle), mag, color, canvas.get_origin());
     }
-    drawn_to_batch = true;
 }
 
 bool Canvas_Renderer::should_redraw(const Canvas& canvas) {
@@ -213,4 +183,5 @@ void Canvas_Renderer::draw(const xd::mat4 mvp, const Canvas& root) {
     } else {
         batch.draw(mvp);
     }
+    batch.clear();
 }

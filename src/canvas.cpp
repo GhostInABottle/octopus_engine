@@ -12,28 +12,27 @@
 #include "../include/log.hpp"
 #include "../include/direction_utilities.hpp"
 
-Canvas::Canvas(xd::vec2 position) :
-    priority(0), type(Canvas::Type::IMAGE), position(position), origin(0.5f, 0.5f),
-    magnification(1.0f, 1.0f), angle(0.0f), color(1.0f), visible(false),
-    text_renderer(nullptr), camera_relative(false), redraw_needed(true),
-    last_drawn_time(0),  children_type(Canvas::Type::IMAGE),
-    permissive_tag_parsing(false), use_outline_shader(false),
-    outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))) {}
+Canvas::Canvas(Game& game, xd::vec2 position) :
+        game(game), priority(0), type(Canvas::Type::IMAGE), position(position),
+        origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f), color(1.0f),
+        visible(false), camera_relative(false), redraw_needed(true),
+        last_drawn_time(0),  children_type(Canvas::Type::IMAGE),
+        permissive_tag_parsing(false), use_outline_shader(false),
+        outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))) {}
 
-Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(position) {
+Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(game, position) {
     camera_relative = false;
     children_type = Canvas::Type::SPRITE;
     set_sprite(game, sprite, pose_name);
 }
 
-Canvas::Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans) : Canvas(position) {
+Canvas::Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans) : Canvas(game, position) {
     camera_relative = false;
     children_type = Canvas::Type::IMAGE;
     set_image(filename, trans);
 }
 
-Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative) : Canvas(position) {
-    text_renderer = &game.get_text_renderer();
+Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative, bool is_child) : Canvas(game, position) {
     font = game.get_font();
     formatter = std::make_unique<xd::stock_text_formatter>();
     auto shake_decorator = game.get_shake_decorator();
@@ -42,7 +41,9 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
     });
     style = std::make_unique<xd::font_style>(game.get_font_style());
     this->camera_relative = camera_relative;
-    setup_fbo();
+    if (!is_child) {
+        setup_fbo();
+    }
     type = Canvas::Type::TEXT;
     children_type = type;
     set_text(text);
@@ -164,7 +165,7 @@ void Canvas::set_text(const std::string& new_text) {
 }
 
 void Canvas::render_text(const std::string& text_to_render, float x, float y) const {
-    text_renderer->render_formatted(*font, *formatter, *style,
+    game.render_text(*font, *formatter, *style,
         std::round(x), std::round(y), text_to_render);
 }
 
@@ -190,9 +191,7 @@ bool Canvas::should_redraw(int time) const {
         [time](const std::unique_ptr<Canvas>& c) { return c->should_redraw(time);  });
     static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
     bool time_to_update = time - last_drawn_time > ms_between_refresh;
-    // Sprites and images are always redrawn, might change it later
-    return redraw_needed || type != Canvas::Type::TEXT
-        || redraw_children || time_to_update;
+    return redraw_needed || redraw_children || time_to_update;
 }
 
 void Canvas::mark_as_drawn(int time) {

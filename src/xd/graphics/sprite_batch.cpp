@@ -48,6 +48,10 @@ void xd::sprite_batch::clear()
     m_data->sprites.clear();
 }
 
+bool xd::sprite_batch::empty() const {
+    return m_data->sprites.empty();
+}
+
 xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 {
     xd::sprite_batch::batch_list batches;
@@ -122,6 +126,8 @@ void xd::sprite_batch::draw_outlined(const xd::mat4& mvp_matrix, int ticks)
 void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches, int ticks)
 {
     assert(m_data->sprites.size() == batches.size());
+    if (empty())
+        return;
     // setup the shader
     shader.use();
     shader.bind_uniform("mvpMatrix", mvp_matrix);
@@ -147,6 +153,8 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
 
 void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, int ticks)
 {
+    if (empty())
+        return;
     // create a vertex batch for sending vertex data
     if (!m_batch) {
         m_batch = std::make_unique<xd::vertex_batch<detail::sprite_vertex_traits>>(GL_QUADS);

@@ -23,6 +23,7 @@ namespace xd
         virtual ~sprite_batch();
 
         void clear();
+        bool empty() const;
 
         typedef std::vector<std::shared_ptr<xd::vertex_batch<detail::sprite_vertex_traits>>> batch_list;
         batch_list create_batches();

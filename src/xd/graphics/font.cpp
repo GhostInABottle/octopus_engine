@@ -198,16 +198,16 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
     data[1].pos = glm::vec2(0, bitmap.rows);
     data[2].pos = glm::vec2(bitmap.width, bitmap.rows);
     data[3].pos = glm::vec2(bitmap.width, 0);
-    data[0].tex = glm::vec2(0, 1);
-    data[1].tex = glm::vec2(0, 0);
-    data[2].tex = glm::vec2(1, 0);
-    data[3].tex = glm::vec2(1, 1);
+    data[0].tex = glm::vec2(0, 0);
+    data[1].tex = glm::vec2(0, 1);
+    data[2].tex = glm::vec2(1, 1);
+    data[3].tex = glm::vec2(1, 0);
 
     // create a batch
     glyph.quad_ptr = std::make_shared<detail::font::vertex_batch_t>(GL_QUADS);
     glyph.quad_ptr->load(data, 4);
     glyph.offset.x = static_cast<float>(m_face->handle->glyph->bitmap_left);
-    glyph.offset.y = static_cast<float>(m_face->handle->glyph->bitmap_top - (int)bitmap.rows);
+    glyph.offset.y = static_cast<float>(m_face->handle->glyph->bitmap_top);
 
     return glyph;
 }
@@ -291,7 +291,7 @@ void xd::font::render(const std::string& text, const font_style& style,
             // calculate exact offset
             glm::vec2 glyph_pos = text_pos;
             glyph_pos.x += (hb_glyph_pos.x_offset / 64.0f) + glyph.offset.x;
-            glyph_pos.y -= (hb_glyph_pos.y_offset / 64.0f) - glyph.offset.y;
+            glyph_pos.y += (hb_glyph_pos.y_offset / 64.0f) - glyph.offset.y;
 
             // add optional letter spacing
             glyph_pos.x += style.m_letter_spacing / 2;

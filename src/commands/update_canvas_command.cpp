@@ -57,4 +57,5 @@ void Update_Canvas_Command::update_canvas(float alpha) const {
         canvas.set_angle(lerp(old_angle, new_angle, alpha));
     if (new_opacity != old_opacity)
         canvas.set_opacity(lerp(old_opacity, new_opacity, alpha));
+    canvas.redraw();
 }

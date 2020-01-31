@@ -134,16 +134,13 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         magnification(Configurations::get<float>("debug.magnification")),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         current_scripting_interface(nullptr),
-        text_renderer(0, 0),
+        text_renderer(),
         editor_ticks(0),
         editor_size(1, 1) {
     // Set members
     clock = std::make_unique<Clock>(*this);
     camera = std::make_unique<Camera>(*this);
     shake_decorator = std::make_unique<Shake_Decorator>(*this);
-    text_renderer.reset_projection(
-        static_cast<float>(game_width()),
-        static_cast<float>(game_height()));
     // Listen to config changes
     Configurations::add_observer("Game",
         [this](const std::string& key) {
@@ -296,13 +293,15 @@ void Game::render() {
         // Draw FPS
         auto height = static_cast<float>(game_height());
         if (pimpl->show_fps) {
-            text_renderer.render(*font, pimpl->debug_style, 5, height - 10,
+            text_renderer.render(*font, pimpl->debug_style,
+                camera->get_geometry().projection().get(),5, 10,
                 "FPS: " + std::to_string(fps()));
         }
         // Draw game time
         if (pimpl->show_time || pimpl->paused) {
             auto seconds = std::to_string(clock->seconds());
-            text_renderer.render(*font, pimpl->debug_style, 5, height - 20, seconds);
+            text_renderer.render(*font, pimpl->debug_style,
+                camera->get_geometry().projection().get(), 5, 20, seconds);
         }
         window->swap();
     }
@@ -365,9 +364,6 @@ void Game::set_magnification(float mag) {
     magnification = mag;
     camera->calculate_viewport(width(), height());
     camera->update_viewport();
-    text_renderer.reset_projection(
-        static_cast<float>(game_width()),
-        static_cast<float>(game_height()));
 }
 
 void Game::run_script(const std::string& script) {
@@ -399,6 +395,11 @@ void Game::set_next_map(const std::string& filename, float x, float y, Direction
 
 xd::asset_manager& Game::get_asset_manager() {
     return pimpl->asset_manager;
+}
+
+void Game::render_text(xd::font& font, xd::text_formatter& formatter,
+        const xd::font_style& style, float x, float y, const std::string& text) {
+    text_renderer.render_formatted(font, formatter, style, camera->get_geometry().projection().get(), x, y, text);
 }
 
 bool Game::stopped() const {

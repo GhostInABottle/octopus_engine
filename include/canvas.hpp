@@ -29,9 +29,9 @@ public:
     // Create a canvas from a sprite
     Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position);
     // Create an image canvas with an optional transparent color
-    Canvas(const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
+    Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
     // Create a canvas with some text
-    Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true);
+    Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true, bool is_child = false);
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class ...Args>
     Canvas* add_child(const std::string& child_name, Args&&... args) {
@@ -43,6 +43,9 @@ public:
         }
         child->set_priority(get_priority() + children.size());
         child->inherit_properties(*this);
+        if (type != Type::TEXT && !framebuffer) {
+            setup_fbo();
+        }
 
         redraw_needed = true;
         return children.back().get();
@@ -375,10 +378,15 @@ public:
         use_outline_shader = value;
     }
     bool should_redraw(int time) const;
+    void redraw() {
+        redraw_needed = true;
+    }
     void mark_as_drawn(int time);
 private:
     // Sets shared default values
-    Canvas(xd::vec2 position);
+    Canvas(Game& game, xd::vec2 position);
+    // The game instance
+    Game& game;
     // Optional name used to identify the canvas
     std::string name;
     // Canvas priority, higher priority canvases are drawn on top
@@ -416,8 +424,6 @@ private:
     std::vector<std::string> text_lines;
     // Font to use
     std::shared_ptr<xd::font> font;
-    // Text renderer
-    xd::simple_text_renderer* text_renderer;
     // Text style
     std::unique_ptr<xd::font_style> style;
     // Text formatter

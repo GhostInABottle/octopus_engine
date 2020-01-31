@@ -877,7 +877,7 @@ void Scripting_Interface::setup_scripts() {
         }
         else {
             auto color = color_or_pose.empty() ? xd::vec4{ 0 } : hex_to_color(color_or_pose);
-            canvas = std::make_shared<Canvas>(filename, pos, color);
+            canvas = std::make_shared<Canvas>(*game, filename, pos, color);
         }
         game->add_canvas(canvas);
         return canvas;
@@ -900,12 +900,12 @@ void Scripting_Interface::setup_scripts() {
             },
             // Canvas constructor (with transparent color as vec4)
             [&](const std::string& filename, float x, float y, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Canvas>(filename, xd::vec2{ x, y }, transparent);
+                auto canvas = std::make_shared<Canvas>(*game, filename, xd::vec2{ x, y }, transparent);
                 game->add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Canvas>(filename, pos, transparent);
+                auto canvas = std::make_shared<Canvas>(*game, filename, pos, transparent);
                 game->add_canvas(canvas);
                 return canvas;
             },
@@ -1024,7 +1024,7 @@ void Scripting_Interface::setup_scripts() {
         }
         else {
             auto color = color_or_pose.empty() ? xd::vec4{ 0 } : hex_to_color(color_or_pose);
-            return parent.add_child(name, filename, pos, color);
+            return parent.add_child(name, *game, filename, pos, color);
         }
     };
     canvas_type["add_child_image"] = sol::overload(
@@ -1044,19 +1044,19 @@ void Scripting_Interface::setup_scripts() {
         },
         // with transparent color as vec4
         [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, xd::vec4 transparent) {
-            return parent.add_child(name, filename, xd::vec2(x, y), transparent);
+            return parent.add_child(name, *game, filename, xd::vec2(x, y), transparent);
         },
         [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-            return parent.add_child(name, filename, pos, transparent);
+            return parent.add_child(name, *game, filename, pos, transparent);
         }
     );
     // with text and position
     canvas_type["add_child_text"] = sol::overload(
         [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) {
-            return parent.add_child(name, *game, xd::vec2(x, y), text, true);
+            return parent.add_child(name, *game, xd::vec2(x, y), text, true, true);
         },
         [&](Canvas& parent, const std::string& name, xd::vec2 pos, const std::string& text) {
-            return parent.add_child(name, *game, pos, text, true);
+            return parent.add_child(name, *game, pos, text, true, true);
         }
     );
 }
