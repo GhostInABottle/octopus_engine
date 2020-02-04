@@ -1,5 +1,5 @@
 #include "../include/tmx_properties.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/xml.hpp"
 
 void Tmx_Properties::read(rapidxml::xml_node<>& parent_node) {
     if (auto props_node = parent_node.first_node("properties")) {

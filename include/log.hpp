@@ -4,8 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "utility.hpp"
-#include "configurations.hpp"
+#include "utility/string.hpp"
 
 // Ignore 'inheritance by dominance' warning
 #pragma warning(push)
@@ -22,28 +21,18 @@ public:
     // Constructor: sets the level
     explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
         if (!log_file.is_open()) {
-            std::string file_name = Configurations::get<std::string>("logging.filename");
-            int mode = static_cast<int>(std::fstream::out);
-            auto config_mode = Configurations::get<std::string>("logging.mode");
-            if (config_mode == "truncate")
-                mode |= std::ios_base::trunc;
-            else if (config_mode == "append")
-                mode |= std::ios_base::app;
-            log_file.open(file_name.c_str(), mode);
-            std::string config_level = Configurations::get<std::string>("logging.level");
-            capitalize(config_level);
-            reporting_level = log_level_from_string(config_level);
+            open_log_file();
         }
     }
     // Destructor: writes the message to file
     ~Log() {
-        if (current_level > Log::get_reporting_level())
+        if (!enabled || current_level > Log::get_reporting_level())
             return;
-        log_file << "- " << timestamp();
-        log_file << " " << log_level_to_string(current_level);
-        log_file << ": ";
-        log_file << this->str() << std::endl;
-        log_file.flush();
+        log_file << "- " << timestamp() << " " << log_level_to_string(current_level)
+            << ": " << this->str() << std::endl;
+        if (!log_file) {
+            enabled = false;
+        }
     }
     // To avoid rvalue issues in stringstream(e.g. char* being treated as void*)
     Log& lvalue() {
@@ -90,6 +79,10 @@ private:
     static Log_Level reporting_level;
     // The file to write into
     static std::ofstream log_file;
+    // Is logging disabled? (e.g. failed to open log file)
+    static bool enabled;
+    // Open the log file for the first time
+    static void open_log_file();
 };
 
 #pragma warning(pop)

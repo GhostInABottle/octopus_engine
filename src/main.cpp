@@ -1,10 +1,8 @@
 #include "../include/vendor/rapidxml.hpp"
-#include "../include/utility.hpp"
 #include "../include/log.hpp"
 #include "../include/game.hpp"
-#include "../include/configurations.hpp"
+#include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
-#include <iostream>
 #ifdef __APPLE__
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
@@ -24,10 +22,7 @@ int main() {
             throw std::runtime_error("Unable to get OSX resources folder");
         }
 #endif
-        auto warnings = Configurations::parse("config.ini");
-        for (auto& warning : warnings) {
-            LOGGER_W << warning;
-        }
+        parse_config("config.ini");
 
         xd::audio audio;
         LOGGER_I << "Reticulating Splines";

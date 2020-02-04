@@ -64,6 +64,12 @@
     <Filter Include="Header Files\vendor">
       <UniqueIdentifier>{df649214-daf6-4421-a47e-028d8d4d801d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\utility">
+      <UniqueIdentifier>{48aa426e-f3d0-4ad2-9b7b-83a17c80436a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{821a3ce3-aab0-4281-9ac9-970d0eaa829c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -121,9 +127,6 @@
       <Filter>Source Files\xd\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tileset.cpp">
@@ -285,6 +288,21 @@
     <ClCompile Include="..\src\vendor\platform_folders.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\utility\string.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\color.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\xml.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\math.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\file.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -406,9 +424,6 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\graphics\framebuffer.hpp">
       <Filter>Header Files\xd\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\utility.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\tileset.hpp">
       <Filter>Header Files</Filter>
@@ -628,6 +643,21 @@
     </ClInclude>
     <ClInclude Include="..\include\vendor\platform_folders.hpp">
       <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\string.hpp">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\color.hpp">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\xml.hpp">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\math.hpp">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\file.hpp">
+      <Filter>Header Files\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

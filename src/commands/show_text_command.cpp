@@ -6,7 +6,7 @@
 #include "../../include/canvas.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"
-#include "../../include/utility.hpp"
+#include "../../include/utility/string.hpp"
 #include "../../include/configurations.hpp"
 #include <utility>
 

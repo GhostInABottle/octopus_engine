@@ -1,6 +1,7 @@
 #include "../include/tile_layer.hpp"
 #include "../include/tile_layer_renderer.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/string.hpp"
+#include "../include/utility/xml.hpp"
 #include "../include/vendor/base64.hpp"
 #include "../include/exceptions.hpp"
 #include <zlib.h>

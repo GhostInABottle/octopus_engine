@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "direction.hpp"
-#include "utility.hpp"
+#include "utility/string.hpp"
 
 // Combine two directions
 inline Direction operator|(Direction a, Direction b) {

@@ -1,5 +1,7 @@
 #include "../include/configurations.hpp"
-#include "../include/utility.hpp"
+#include "../include/log.hpp"
+#include "../include/utility/file.hpp"
+#include "../include/utility/string.hpp"
 #include <boost/lexical_cast.hpp>
 #include <typeinfo>
 #include <fstream>
@@ -20,7 +22,7 @@ void Configurations::load_defaults() {
     defaults["game.pause-vertex-shader"] = std::string();
     defaults["game.pause-fragment-shader"] = std::string();
     defaults["game.pause-unfocused"] = true;
-    defaults["game.save-folder"] = std::string();
+    defaults["game.data-folder"] = std::string();
     defaults["game.text-fade-in-duration"] = 250;
     defaults["game.text-fade-out-duration"] = 250;
     defaults["game.choice-press-delay"] = 250;
@@ -43,6 +45,7 @@ void Configurations::load_defaults() {
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.mapping-file"] = std::string("keymap.ini");
 
+    defaults["logging.enabled"] = true;
     defaults["logging.filename"] = std::string("game.log");
     defaults["logging.level"] = std::string("debug");
     defaults["logging.mode"] = std::string("truncate");
@@ -79,9 +82,8 @@ std::vector<std::string> Configurations::parse(std::string filename) {
     if (!stream) {
         throw config_exception("Couldn't read file " + filename);
     }
-
+    values.clear();
     std::vector<std::string> errors;
-
     std::string current_section;
     std::string line;
     int line_number = -1;
@@ -120,7 +122,9 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                     + std::to_string(line_number) + ", line content: " + line);
                 continue;
             }
-            key = current_section + "." + key;
+            if (!current_section.empty()) {
+                key = current_section + "." + key;
+            }
             if (values.find(key) != values.end()) {
                 errors.push_back(filename + " contains duplicate key '" + key + "' at line "
                     + std::to_string(line_number) + ", line content: " + line);
@@ -147,6 +151,43 @@ std::vector<std::string> Configurations::parse(std::string filename) {
     }
 
     return errors;
+}
+
+void Configurations::save(std::string filename) {
+    normalize_slashes(filename);
+    std::ofstream stream(filename);
+    if (!stream) {
+        throw config_exception("Couldn't open config file for saving " + filename);
+    }
+    LOGGER_I << "Saving config file " << filename;
+    std::unordered_map<std::string, std::vector<std::pair<std::string, Configurations::value_type>>> sections;
+    for (auto& [full_key, value] : values) {
+        auto dot = full_key.find(".");
+        if (dot == std::string::npos) {
+            sections["global"].emplace_back(full_key, value);
+        } else {
+            auto section = full_key.substr(0, dot);
+            auto key = full_key.substr(dot + 1);
+            sections[section].emplace_back(key, value);
+        }
+    }
+    for (auto& [section, section_values] : sections) {
+        if (section != "global") {
+            stream << "[" << section << "]\n";
+        }
+        if (!stream) {
+            throw config_exception("Error writing section " + section + " to config file " + filename);
+        }
+        for (auto& [key, val] : section_values) {
+            auto full_key = section == "global" ? key : section + "." + key;
+            if (values.find(full_key) != values.end()) {
+                stream << key << " = " << get_string(full_key) << "\n";
+                if (!stream) {
+                    throw config_exception("Error writing key " + full_key + " to config file " + filename);
+                }
+            }
+        }
+    }
 }
 
 std::string Configurations::get_string(const std::string& name) {

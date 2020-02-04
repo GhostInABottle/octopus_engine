@@ -9,7 +9,8 @@
 #include "../include/map_object.hpp"
 #include "../include/command_result.hpp"
 #include "../include/commands.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/color.hpp"
+#include "../include/utility/file.hpp"
 #include "../include/configurations.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/direction_utilities.hpp"
@@ -126,6 +127,8 @@ void Scripting_Interface::setup_scripts() {
             wait_press(*game, key);
         }
     ));
+
+    lua["list_directory_files"] = &list_directory_files;
 
     lua["text_width"] = [&](const std::string& text) {
         return game->get_font()->get_width(text,
@@ -642,6 +645,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["playing_music"] = sol::property([](Game* game) { return game->playing_music().get(); });
     game_type["is_debug"] = sol::property(&Game::is_debug);
+    game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };

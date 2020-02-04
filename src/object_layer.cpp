@@ -3,7 +3,8 @@
 #include "../include/object_layer_updater.hpp"
 #include "../include/map_object.hpp"
 #include "../include/map.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/color.hpp"
+#include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
 
 rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {

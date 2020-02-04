@@ -2,7 +2,6 @@
 #include "../../include/camera.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction_utilities.hpp"
-#include "../../include/utility.hpp"
 
 
 Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float speed)

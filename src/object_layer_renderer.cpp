@@ -3,7 +3,8 @@
 #include "../include/map_object.hpp"
 #include "../include/map.hpp"
 #include "../include/game.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/color.hpp"
+#include "../include/utility/math.hpp"
 #include "../include/camera.hpp"
 #include "../include/configurations.hpp"
 #include <algorithm>

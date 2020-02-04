@@ -1,6 +1,6 @@
 #include "../../include/commands/zoom_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/utility.hpp"
+#include "../../include/utility/math.hpp"
 
 Zoom_Command::Zoom_Command(Game& game, float magnification, long duration) :
     game(game), old_magnification(game.get_magnification()),

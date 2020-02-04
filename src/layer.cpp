@@ -1,7 +1,8 @@
 #include "../include/layer.hpp"
 #include "../include/layer_renderer.hpp"
 #include "../include/layer_updater.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/math.hpp"
+#include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
 

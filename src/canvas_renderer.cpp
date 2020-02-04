@@ -5,8 +5,6 @@
 #include "../include/camera.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/configurations.hpp"
-#include "../include/utility.hpp"
-#include "../include/log.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
     : game(game), camera(camera) {

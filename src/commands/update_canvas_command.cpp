@@ -1,7 +1,7 @@
 #include "../../include/commands/update_canvas_command.hpp"
 #include "../../include/game.hpp"
 #include "../../include/canvas.hpp"
-#include "../../include/utility.hpp"
+#include "../../include/utility/math.hpp"
 
 Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas) :
         game(game),

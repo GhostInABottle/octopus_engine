@@ -1,7 +1,7 @@
 #include "../../include/commands/update_layer_command.hpp"
 #include "../../include/game.hpp"
 #include "../../include/layer.hpp"
-#include "../../include/utility.hpp"
+#include "../../include/utility/math.hpp"
 
 Update_Layer_Command::Update_Layer_Command(Game& game, Layer& layer, float opacity, long duration) :
     game(game),

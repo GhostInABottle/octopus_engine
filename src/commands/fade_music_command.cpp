@@ -1,6 +1,6 @@
 #include "../../include/commands/fade_music_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/utility.hpp"
+#include "../../include/utility/math.hpp"
 #include "../../include/xd/audio.hpp"
 
 Fade_Music_Command::Fade_Music_Command(Game& game, float volume, long duration) :

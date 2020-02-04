@@ -86,6 +86,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lua_object.cpp" />
+    <ClCompile Include="..\..\src\utility\color.cpp" />
+    <ClCompile Include="..\..\src\utility\file.cpp" />
+    <ClCompile Include="..\..\src\utility\math.cpp" />
+    <ClCompile Include="..\..\src\utility\string.cpp" />
+    <ClCompile Include="..\..\src\utility\xml.cpp" />
     <ClCompile Include="..\..\src\vendor\base64.cpp" />
     <ClCompile Include="..\..\src\camera.cpp" />
     <ClCompile Include="..\..\src\canvas.cpp" />
@@ -144,7 +149,6 @@
     <ClCompile Include="..\..\src\tile_layer.cpp" />
     <ClCompile Include="..\..\src\tile_layer_renderer.cpp" />
     <ClCompile Include="..\..\src\tmx_properties.cpp" />
-    <ClCompile Include="..\..\src\utility.cpp" />
     <ClCompile Include="..\..\src\vendor\lutf8lib.cpp" />
     <ClCompile Include="..\..\src\vendor\platform_folders.cpp" />
     <ClCompile Include="..\..\src\xd\audio\audio.cpp" />
@@ -168,6 +172,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\lua_object.hpp" />
+    <ClInclude Include="..\..\include\utility\color.hpp" />
+    <ClInclude Include="..\..\include\utility\file.hpp" />
+    <ClInclude Include="..\..\include\utility\math.hpp" />
+    <ClInclude Include="..\..\include\utility\string.hpp" />
+    <ClInclude Include="..\..\include\utility\xml.hpp" />
     <ClInclude Include="..\..\include\vendor\base64.hpp" />
     <ClInclude Include="..\..\include\camera.hpp" />
     <ClInclude Include="..\..\include\canvas.hpp" />
@@ -224,7 +233,6 @@
     <ClInclude Include="..\..\include\tile_layer.hpp" />
     <ClInclude Include="..\..\include\tile_layer_renderer.hpp" />
     <ClInclude Include="..\..\include\tmx_properties.hpp" />
-    <ClInclude Include="..\..\include\utility.hpp" />
     <ClInclude Include="..\..\include\vendor\lutf8lib.hpp" />
     <ClInclude Include="..\..\include\vendor\unidata.h" />
     <ClInclude Include="..\..\include\xd\asset_manager.hpp" />

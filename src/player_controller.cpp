@@ -5,7 +5,6 @@
 #include "../include/game.hpp"
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
-#include "../include/utility.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/configurations.hpp"
 

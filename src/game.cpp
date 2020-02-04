@@ -8,7 +8,8 @@
 #include "../include/scripting_interface.hpp"
 #include "../include/command.hpp"
 #include "../include/configurations.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/color.hpp"
+#include "../include/utility/file.hpp"
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
@@ -48,7 +49,8 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
-            gamepad_id(Configurations::get<int>("controls.gamepad-number")) {}
+            gamepad_id(Configurations::get<int>("controls.gamepad-number")),
+            save_path("not set") {}
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
         config_changes.insert(config_key);
@@ -69,55 +71,16 @@ struct Game::Impl {
     }
     // Get default save folder
     std::string get_save_directory() {
-        if (cached_save_directory.empty()) {
-            std::string default_folder;
-            auto add_game_folder = false;
-            auto config_folder = Configurations::get<std::string>("game.save-folder");
-            if (config_folder.empty()) {
-                try {
-                    default_folder = sago::getSaveGamesFolder1();
-                    add_game_folder = true;
-                } catch (std::runtime_error&) {
-                    LOGGER_W << "Unable to retrieve default save folder. Using executable folder.";
-                }
-            } else {
-                default_folder = config_folder;
-            }
-            normalize_slashes(default_folder);
-            if (default_folder.empty()) {
-                default_folder = "./";
-            }
-            if (default_folder.back() != '/') {
-                default_folder += '/';
-            }
-            if (add_game_folder) {
-                auto title = Configurations::get<std::string>("game.title");
-                if (title.empty()) title = "OctopusEngine";
-                default_folder += title + "/";
-            }
-            cached_save_directory = default_folder;
+        if (!save_path.empty() && (save_path == "not set" || !file_exists(save_path))) {
+            save_path = get_data_directory();
         }
-        // Create the folder if needed
-        if (cached_save_directory != "./") {
-            try {
-                if (!std::filesystem::exists(cached_save_directory)) {
-                    std::filesystem::create_directories(cached_save_directory);
-                }
-            } catch (std::filesystem::filesystem_error&) {
-                LOGGER_W << "Unable to create save folder. Using executable folder.";
-                cached_save_directory = "./";
-            }
-        }
-        return cached_save_directory;
+        return save_path;
     }
     // Add directory to save filename
     void cleanup_save_filename(std::string& filename) {
         normalize_slashes(filename);
         if (filename.find('/') == std::string::npos) {
             filename = get_save_directory() + filename;
-        }
-        if (filename.rfind("./", 0) == 0) {
-            filename = filename.substr(2);
         }
     }
     // Audio system
@@ -166,7 +129,7 @@ struct Game::Impl {
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
     // Calculated save folder path
-    std::string cached_save_directory;
+    std::string save_path;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -205,6 +168,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         }
     );
     // Setup fonts
+    LOGGER_I << "Setting up fonts";
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
         .line_height(Configurations::get<float>("font.line-height"))
         .force_autohint(true);
@@ -244,6 +208,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     if (Configurations::contains_value<float>("startup.player-position-y")) {
         start_pos.y = Configurations::get<float>("startup.player-position-y");
     }
+    LOGGER_I << "Creating player object";
     // Create player object
     player = std::make_shared<Map_Object>(
         *this,
@@ -269,6 +234,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     pimpl->scripting_interface = std::make_unique<Scripting_Interface>(*this);
     pimpl->scripting_interface->set_globals();
     // Run game startup scripts
+    LOGGER_I << "Running game startup scripts";
     std::string scripts_list =
         Configurations::get<std::string>("startup.scripts-list");
     normalize_slashes(scripts_list);

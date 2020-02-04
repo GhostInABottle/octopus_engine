@@ -152,6 +152,11 @@ elseif c.selected == 4 then
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
 elseif c.selected == 5 then
     -- Others
+    local files = list_directory_files('.')
+    print('Files in current folder:')
+    for _, file in ipairs(files) do
+        print('\t- ' .. file)
+    end
     local music = game.playing_music
     text(o, "Pausing music " .. music.filename):wait()
     music:pause()

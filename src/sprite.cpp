@@ -4,7 +4,8 @@
 #include "../include/object_layer.hpp"
 #include "../include/object_layer_renderer.hpp"
 #include "../include/game.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/math.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/xd/audio.hpp"
 #include <algorithm>
 #include <iostream>

@@ -11,13 +11,15 @@
 #include "../include/tileset.hpp"
 #include "../include/game.hpp"
 #include "../include/scripting_interface.hpp"
-#include "../include/utility.hpp"
+#include "../include/utility/file.hpp"
+#include "../include/utility/xml.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/vendor/rapidxml_print.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/configurations.hpp"
+#include "../include/log.hpp"
 #include <vector>
 #include <unordered_set>
 #include <fstream>
@@ -63,6 +65,7 @@ void Map::run_script(const std::string& script) {
 }
 
 void Map::run_startup_scripts() {
+    LOGGER_I << "Running startup scripts";
     scripting_interface->set_globals();
     auto map_loaded_script = Configurations::get<std::string>("game.map-loaded-script");
     if (!map_loaded_script.empty()) {
@@ -449,6 +452,7 @@ rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
+    LOGGER_I << "Loading map " << filename;
     rapidxml::xml_document<> doc;
     char* content = doc.allocate_string(read_file(filename).c_str());
     doc.parse<0>(content);
