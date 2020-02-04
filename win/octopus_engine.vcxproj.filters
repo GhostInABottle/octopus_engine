@@ -282,6 +282,9 @@
     <ClCompile Include="..\src\lua_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vendor\platform_folders.cpp">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -622,6 +625,9 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\lua\sol.hpp">
       <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\platform_folders.hpp">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

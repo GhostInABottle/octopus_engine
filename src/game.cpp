@@ -13,18 +13,20 @@
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
 #include "../include/direction_utilities.hpp"
+#include "../include/vendor/platform_folders.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/graphics.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include <algorithm>
-#include <functional>
-#include <sstream>
-#include <iostream>
+#include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iomanip>
-#include <stdexcept>
+#include <iostream>
 #include <optional>
+#include <sstream>
+#include <stdexcept>
 #include <unordered_set>
 
 struct Game::Impl {
@@ -64,6 +66,59 @@ struct Game::Impl {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
         config_changes.clear();
+    }
+    // Get default save folder
+    std::string get_save_directory() {
+        if (cached_save_directory.empty()) {
+            std::string default_folder;
+            auto add_game_folder = false;
+            auto config_folder = Configurations::get<std::string>("game.save-folder");
+            if (config_folder.empty()) {
+                try {
+                    default_folder = sago::getSaveGamesFolder1();
+                    add_game_folder = true;
+                } catch (std::runtime_error&) {
+                    LOGGER_W << "Unable to retrieve default save folder. Using executable folder.";
+                }
+            } else {
+                default_folder = config_folder;
+            }
+            normalize_slashes(default_folder);
+            if (default_folder.empty()) {
+                default_folder = "./";
+            }
+            if (default_folder.back() != '/') {
+                default_folder += '/';
+            }
+            if (add_game_folder) {
+                auto title = Configurations::get<std::string>("game.title");
+                if (title.empty()) title = "OctopusEngine";
+                default_folder += title + "/";
+            }
+            cached_save_directory = default_folder;
+        }
+        // Create the folder if needed
+        if (cached_save_directory != "./") {
+            try {
+                if (!std::filesystem::exists(cached_save_directory)) {
+                    std::filesystem::create_directories(cached_save_directory);
+                }
+            } catch (std::filesystem::filesystem_error&) {
+                LOGGER_W << "Unable to create save folder. Using executable folder.";
+                cached_save_directory = "./";
+            }
+        }
+        return cached_save_directory;
+    }
+    // Add directory to save filename
+    void cleanup_save_filename(std::string& filename) {
+        normalize_slashes(filename);
+        if (filename.find('/') == std::string::npos) {
+            filename = get_save_directory() + filename;
+        }
+        if (filename.rfind("./", 0) == 0) {
+            filename = filename.substr(2);
+        }
     }
     // Audio system
     xd::audio* audio;
@@ -110,6 +165,8 @@ struct Game::Impl {
     int gamepad_id;
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
+    // Calculated save folder path
+    std::string cached_save_directory;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -418,8 +475,12 @@ int Game::ticks() const {
     return window->ticks() - stopped_time;
 }
 
+std::string Game::get_save_directory() const {
+    return pimpl->get_save_directory();
+}
+
 void Game::save(std::string filename, Save_File& save_file) const {
-    normalize_slashes(filename);
+    pimpl->cleanup_save_filename(filename);
     try {
         std::ofstream ofs(filename, std::ios::binary);
         if (!ofs) {
@@ -427,6 +488,7 @@ void Game::save(std::string filename, Save_File& save_file) const {
         }
         ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         ofs << save_file;
+        LOGGER_I << "Saved file " << filename;
     } catch (const std::ios_base::failure& e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
     } catch (const std::runtime_error& e) {
@@ -435,7 +497,7 @@ void Game::save(std::string filename, Save_File& save_file) const {
 }
 
 std::unique_ptr<Save_File> Game::load(std::string filename) {
-    normalize_slashes(filename);
+    pimpl->cleanup_save_filename(filename);
     auto& state = pimpl->scripting_interface->lua_state();
     auto file = std::make_unique<Save_File>(state);
     try {
@@ -445,6 +507,7 @@ std::unique_ptr<Save_File> Game::load(std::string filename) {
         }
         ifs.exceptions (std::ifstream::failbit | std::ifstream::badbit);
         ifs >> *file;
+        LOGGER_I << "Loaded file " << filename;
     } catch (const std::ios_base::failure& e) {
         LOGGER_E << "Error loading file " << filename << " - error code: " << e.code() << " - message: " << e.what();
     } catch (const std::runtime_error& e) {

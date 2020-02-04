@@ -45,6 +45,7 @@ void Configurations::load_defaults() {
 
     defaults["logging.filename"] = std::string("game.log");
     defaults["logging.level"] = std::string("debug");
+    defaults["logging.mode"] = std::string("truncate");
 
     defaults["debug.width"] = 320.0f;
     defaults["debug.height"] = 240.0f;

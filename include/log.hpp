@@ -23,7 +23,13 @@ public:
     explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
         if (!log_file.is_open()) {
             std::string file_name = Configurations::get<std::string>("logging.filename");
-            log_file.open(file_name.c_str(), std::ios_base::app);
+            int mode = static_cast<int>(std::fstream::out);
+            auto config_mode = Configurations::get<std::string>("logging.mode");
+            if (config_mode == "truncate")
+                mode |= std::ios_base::trunc;
+            else if (config_mode == "append")
+                mode |= std::ios_base::app;
+            log_file.open(file_name.c_str(), mode);
             std::string config_level = Configurations::get<std::string>("logging.level");
             capitalize(config_level);
             reporting_level = log_level_from_string(config_level);

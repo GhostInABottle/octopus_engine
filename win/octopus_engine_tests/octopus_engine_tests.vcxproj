@@ -146,6 +146,7 @@
     <ClCompile Include="..\..\src\tmx_properties.cpp" />
     <ClCompile Include="..\..\src\utility.cpp" />
     <ClCompile Include="..\..\src\vendor\lutf8lib.cpp" />
+    <ClCompile Include="..\..\src\vendor\platform_folders.cpp" />
     <ClCompile Include="..\..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\..\src\xd\audio\music.cpp" />
     <ClCompile Include="..\..\src\xd\audio\sound.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\..\include\object_layer_updater.hpp" />
     <ClInclude Include="..\..\include\pathfinder.hpp" />
     <ClInclude Include="..\..\include\player_controller.hpp" />
+    <ClInclude Include="..\..\include\vendor\platform_folders.hpp" />
     <ClInclude Include="..\..\include\vendor\rapidxml.hpp" />
     <ClInclude Include="..\..\include\save_file.hpp" />
     <ClInclude Include="..\..\include\scripting_interface.hpp" />

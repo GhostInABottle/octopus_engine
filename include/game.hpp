@@ -158,6 +158,8 @@ public:
     void set_ticks(int ticks) {
         editor_ticks = ticks;
     }
+    // Get save file directory and creates it if needed
+    std::string get_save_directory() const;
     // Save game
     void save(std::string filename, Save_File& save_file) const;
     // Load game
