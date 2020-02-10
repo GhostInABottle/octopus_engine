@@ -101,7 +101,8 @@ void parse_config(const std::string& filename) {
     }
 }
 
-std::vector<std::string> list_directory_files(const std::string& path) {
+std::vector<std::string> list_directory_files(std::string path) {
+    normalize_slashes(path);
     std::vector<std::string> result;
     try {
         if (!std::filesystem::is_directory(path)) {
@@ -117,4 +118,26 @@ std::vector<std::string> list_directory_files(const std::string& path) {
         LOGGER_E << "Error while trying to list directory " << path << ", some or all files might be ignored - " << e.what();
     }
     return result;
+}
+
+bool copy_file(std::string source, std::string destination) {
+    normalize_slashes(source);
+    normalize_slashes(destination);
+    try {
+        std::filesystem::copy(source, destination, std::filesystem::copy_options::overwrite_existing);
+        return true;
+    } catch (std::filesystem::filesystem_error & e) {
+        LOGGER_E << "Error copying " << source << " to " << destination << ": " << e.what();
+        return false;
+    }
+}
+
+bool remove_file(std::string filename) {
+    normalize_slashes(filename);
+    try {
+        return std::filesystem::remove(filename);
+    } catch (std::filesystem::filesystem_error & e) {
+        LOGGER_E << "Error deleting file " << filename << ": " << e.what();
+        return false;
+    }
 }

@@ -152,7 +152,7 @@ elseif c.selected == 4 then
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
 elseif c.selected == 5 then
     -- Others
-    local files = list_directory_files('.')
+    local files = filesystem.list_directory('.')
     print('Files in current folder:')
     for _, file in ipairs(files) do
         print('\t- ' .. file)
@@ -191,13 +191,25 @@ elseif c.selected == 5 then
         x = function() end
     }
     text(o, "Saving a table where f.x = 1"):wait()
+    print('Original table:')
     print(print_table(tbl))
     game:save('data/test_save.txt', tbl)
-    tbl2 = game:load('data/test_save.txt')
+    local tbl2 = game:load('data/test_save.txt')
     text(o, "And loading it back. Loaded f.x = " .. tbl2.f.x):wait()
+    print('Loaded file:')
     print(print_table(tbl2))
+    text(o, "Copying file"):wait()
+    local copy_name = "data/test_save2.txt"
+    filesystem.copy("data/test_save.txt", copy_name)
+    local tbl3 = game:load(copy_name)
+    print('Loaded copied file:')
+    print(print_table(tbl3))
+    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
+    text(o, 'Removing the copy'):wait()
+    filesystem.remove(copy_name)
+    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
     text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
-    text(o, "UP | RIGHT = " .. bitor(UP, RIGHT)):wait()
+    text(o, "UP | RIGHT = " .. bit.bor(UP, RIGHT)):wait()
     text(o, "Waiting 1000 ms then resuming music"):wait()
     wait(1000)
     music:play()

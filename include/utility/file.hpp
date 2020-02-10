@@ -15,6 +15,11 @@ std::string get_data_directory(bool log_errors = true);
 // Parse config file and save it to data directory if needed
 void parse_config(const std::string& filename);
 // Get file names in a directory
-std::vector<std::string> list_directory_files(const std::string& path);
+std::vector<std::string> list_directory_files(std::string path);
+// Copy a file, returns a boolean indicating success
+bool copy_file(std::string source, std::string destination);
+// Remove a file, returns a boolean indicating success
+bool remove_file(std::string filename);
+
 
 #endif

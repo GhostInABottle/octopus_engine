@@ -128,7 +128,11 @@ void Scripting_Interface::setup_scripts() {
         }
     ));
 
-    lua["list_directory_files"] = &list_directory_files;
+    auto filesystem = lua["filesystem"].get_or_create<sol::table>();
+    filesystem["exists"] = &file_exists;
+    filesystem["list_directory"] = &list_directory_files;
+    filesystem["copy"] = &copy_file;
+    filesystem["remove"] = &remove_file;
 
     lua["text_width"] = [&](const std::string& text) {
         return game->get_font()->get_width(text,
@@ -137,44 +141,47 @@ void Scripting_Interface::setup_scripts() {
     };
 
     // Logging
-    lua["log_info"] = [](const std::string& message) {
+    auto log = lua["logger"].get_or_create<sol::table>();
+    log["info"] = [](const std::string& message) {
         LOGGER_I << message;
     };
-    lua["log_debug"] = [](const std::string& message) {
+    log["debug"] = [](const std::string& message) {
         LOGGER_D << message;
     };
-    lua["log_warning"] = [](const std::string& message) {
+    log["warning"] = [](const std::string& message) {
         LOGGER_W << message;
     };
-    lua["log_error"] = [](const std::string& message) {
+    log["error"] = [](const std::string& message) {
         LOGGER_E << message;
     };
 
     // Bit operations
-    lua["bitor"] = [](int a, int b) { return a | b; };
-    lua["bitand"] = [](int a, int b) { return a & b; };
-    lua["bitxor"] = [](int a, int b) { return a ^ b; };
-    lua["bitnot"] = [](int a) { return ~a; };
-    lua["rshift"] = [](int a, int b) { return a >> b; };
-    lua["lshift"] = [](int a, int b) { return a << b; };
+    auto bit = lua["bit"].get_or_create<sol::table>();
+    bit["bor"] = [](int a, int b) { return a | b; };
+    bit["band"] = [](int a, int b) { return a & b; };
+    bit["bxor"] = [](int a, int b) { return a ^ b; };
+    bit["bnot"] = [](int a) { return ~a; };
+    bit["rshift"] = [](int a, int b) { return a >> b; };
+    bit["lshift"] = [](int a, int b) { return a << b; };
 
     // Direction utilities
-    lua["opposite_direction"] = [](int dir) {
+    auto dir = lua["direction"].get_or_create<sol::table>();
+    dir["opposite"] = [](int dir) {
         return static_cast<int>(opposite_direction(static_cast<Direction>(dir)));
     };
-    lua["direction_to_vector"] = [](int dir) {
+    dir["to_vector"] = [](int dir) {
         return direction_to_vector(static_cast<Direction>(dir));
     };
-    lua["vector_to_direction"] = [](xd::vec2 vec) {
+    dir["from_vector"] = [](xd::vec2 vec) {
         return static_cast<int>(vector_to_direction(vec));
     };
-    lua["direction_to_string"] = [](int dir) {
+    dir["to_string"] = [](int dir) {
         return direction_to_string(static_cast<Direction>(dir));
     };
-    lua["string_to_direction"] = [](const std::string& str) {
+    dir["from_string"] = [](const std::string& str) {
         return static_cast<int>(string_to_direction(str));
     };
-    lua["facing_direction"] = sol::overload(
+    dir["facing_direction"] = sol::overload(
         [](xd::vec2 pos1, xd::vec2 pos2) {
             return static_cast<int>(facing_direction(pos1, pos2));
         },
@@ -182,7 +189,7 @@ void Scripting_Interface::setup_scripts() {
             return static_cast<int>(facing_direction(pos1, pos2, diagonal));
         }
     );
-    lua["is_diagonal"] = [](int dir) {
+    dir["is_diagonal"] = [](int dir) {
         return is_diagonal(static_cast<Direction>(dir));
     };
 
