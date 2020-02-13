@@ -113,25 +113,25 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             auto other_object = object_pair.second.get();
             auto visible = other_object->is_visible();
             auto passthrough = other_object->is_passthrough();
+
+            // Skip objects with no bounding box
+            auto box = other_object->get_bounding_box();
+            if (box.w < 1 || box.h < 1)
+                continue;
+            auto other_pos = other_object->get_position();
+            xd::rect object_box{other_pos.x + box.x, other_pos.y + box.y, box.w, box.h};
+            auto intersects = this_box.intersects(object_box);
+
             // Special case for skipping tile collision detection
-            if (other_object->overrides_tile_collision() && visible && passthrough)
+            if (other_object->overrides_tile_collision() && visible && passthrough && intersects)
                 check_tile_collision = false;
             // Areas are passthrough objects with a script
             auto is_area = passthrough && other_object->has_any_script();
             // Skip self, invisible, or passthrough objects (except areas)
             if (other_id == object.get_id()|| !visible|| (!is_area && passthrough))
                 continue;
-            // Skip objects with no bounding box
-            auto box = other_object->get_bounding_box();
-            if (box.w < 1 || box.h < 1)
-                continue;
 
-            xd::vec2 other_position = other_object->get_position();
-            xd::rect object_box(other_position.x + box.x,
-                other_position.y + box.y,
-                box.w, box.h);
-            if (object_box.w > 0 && object_box.h > 0 &&
-                    this_box.intersects(object_box)) {
+            if (intersects) {
                 if (is_area) {
                     if (result.type == Collision_Types::NONE)
                         result.type = Collision_Types::AREA;
