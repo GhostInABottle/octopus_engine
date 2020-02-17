@@ -149,14 +149,20 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
     // Check tile collisions (unless an object overrides collision)
     if (check_tile_collision) {
-        int min_x = static_cast<int>(this_box.x / tile_width);
-        int min_y = static_cast<int>(this_box.y / tile_height);
+        xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
+        // Minimum map bounds check (before small negatives are cast to 0)
+        if (tile_pos.x < 0.0f || tile_pos.y < 0.0f) {
+            result.type = Collision_Types::TILE;
+            return result;
+        }
+        int min_x = static_cast<int>(tile_pos.x);
+        int min_y = static_cast<int>(tile_pos.y);
         int max_x = static_cast<int>((this_box.x + this_box.w) / tile_width);
         int max_y = static_cast<int>((this_box.y + this_box.h) / tile_height);
         for (int y = min_y; y <= max_y; ++y) {
             for (int x = min_x; x <= max_x; ++x) {
-                // Check map bounds
-                if (x < 0 || x >= width || y < 0 || y >= height) {
+                // Maximum map bounds check (taking collision box into account)
+                if (x >= width || y >= height) {
                     result.type = Collision_Types::TILE;
                     return result;
                 }

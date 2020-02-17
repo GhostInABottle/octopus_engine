@@ -8,6 +8,7 @@
 #include "../include/exceptions.hpp"
 #include "../include/direction_utilities.hpp"
 #include "../include/log.hpp"
+#include "../include/utility/math.hpp"
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
@@ -55,8 +56,10 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
 
     xd::vec2 movement_vector = direction_to_vector(move_dir);
     xd::vec2 change = movement_vector * pixels;
-    bool multiple_directions = change.x && change.y;
-    bool movement = change.x || change.y;
+    bool x_changed = !check_close(change.x, 0.0f);
+    bool y_changed = !check_close(change.y, 0.0f);
+    bool multiple_directions = x_changed && y_changed;
+    bool movement = x_changed || y_changed;
 
     if (!movement) {
         update_state(face_state);
@@ -79,15 +82,18 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
 
     // Check suggested direction (e.g. corrections for doors)
     auto edge_dir = collision.edge_direction;
+    auto corrected_dir = Direction::NONE;
     if (edge_dir != Direction::NONE && movement && !multiple_directions && !collision.passable()) {
         auto edge_vector = direction_to_vector(edge_dir);
         auto corrected_vector = xd::normalize(movement_vector + edge_vector);
-        auto corrected_dir = vector_to_direction(corrected_vector);
+        corrected_dir = vector_to_direction(corrected_vector);
         if (corrected_dir != Direction::NONE) {
             collision = map->passable(*this,
                 corrected_dir, check_type);
             if (collision.passable()) {
                 change = direction_to_vector(corrected_dir) * pixels;
+            } else {
+                corrected_dir = Direction::NONE;
             }
         }
     }
@@ -125,24 +131,20 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     // Update movement pose
     if (movement) {
         if (change_facing) {
-            if (change.y == -pixels) {
+            if (corrected_dir != Direction::NONE) {
+                direction = move_dir;
+            } else if (check_close(change.y, -pixels)) {
                 direction = Direction::UP;
-            }
-            else if (change.y == pixels) {
+            } else if (check_close(change.y, pixels)) {
                 direction = Direction::DOWN;
-            }
-            else {
-                if (change.x == -pixels) {
-                    direction = Direction::LEFT;
-                }
-                else if (change.x == pixels) {
-                    direction = Direction::RIGHT;
-                }
-                else {
-                    direction = move_dir;
-                    update_state(face_state);
-                    return collision;
-                }
+            } else if (check_close(change.x, -pixels)) {
+                direction = Direction::LEFT;
+            } else if (check_close(change.x, pixels)) {
+                direction = Direction::RIGHT;
+            } else {
+                direction = move_dir;
+                update_state(face_state);
+                return collision;
             }
         }
         update_state(walk_state);

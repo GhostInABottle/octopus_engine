@@ -496,6 +496,7 @@ void Game::load_map(const std::string& filename) {
         map->add_object(player);
         camera->set_object(player.get());
         player->set_triggered_object(nullptr);
+        player->set_collision_object(nullptr);
         player->set_collision_area(nullptr);
         // Play background music
         auto bg_music = map->get_bg_music_filename();
