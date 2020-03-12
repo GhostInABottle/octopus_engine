@@ -119,6 +119,9 @@ public:
     void load_music(const std::string& filename);
     // Get the music currently playing
     std::shared_ptr<xd::music> playing_music() { return music; }
+    // Set or get the global volume for all files
+    float get_global_volume() const;
+    void set_global_volume(float volume) const;
     // Load map file and set as current map at the end of the frame
     void set_next_map(const std::string& filename, Direction dir);
     void set_next_map(const std::string& filename, float x, float y, Direction dir);

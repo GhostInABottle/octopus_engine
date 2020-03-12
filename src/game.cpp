@@ -312,22 +312,21 @@ void Game::frame_update() {
 
 void Game::render() {
     camera->render();
-    if (!pimpl->editor_mode) {
-        // Draw FPS
-        auto height = static_cast<float>(game_height());
-        if (pimpl->show_fps) {
-            text_renderer.render(*font, pimpl->debug_style,
-                camera->get_geometry().projection().get(),5, 10,
-                "FPS: " + std::to_string(fps()));
-        }
-        // Draw game time
-        if (pimpl->show_time || pimpl->paused) {
-            auto seconds = std::to_string(clock->seconds());
-            text_renderer.render(*font, pimpl->debug_style,
-                camera->get_geometry().projection().get(), 5, 20, seconds);
-        }
-        window->swap();
+    if (pimpl->editor_mode) return;
+    // Draw FPS
+    auto height = static_cast<float>(game_height());
+    if (pimpl->show_fps) {
+        text_renderer.render(*font, pimpl->debug_style,
+            camera->get_geometry().projection().get(),5, 10,
+            "FPS: " + std::to_string(fps()));
     }
+    // Draw game time
+    if (pimpl->show_time || pimpl->paused) {
+        auto seconds = std::to_string(clock->seconds());
+        text_renderer.render(*font, pimpl->debug_style,
+            camera->get_geometry().projection().get(), 5, 20, seconds);
+    }
+    window->swap();
 }
 
 void Game::pause() {
@@ -403,6 +402,16 @@ void Game::load_music(const std::string& filename) {
     if (music)
         music->stop();
     music = std::make_unique<xd::music>(*pimpl->audio, filename);
+}
+
+float Game::get_global_volume() const {
+    if (!pimpl->audio) return 0.0f;
+    return pimpl->audio->get_global_volume();
+}
+
+void Game::set_global_volume(float volume) const {
+    if (!pimpl->audio) return;
+    pimpl->audio->set_global_volume(volume);
 }
 
 void Game::set_next_map(const std::string& filename, Direction dir) {
@@ -484,32 +493,31 @@ std::unique_ptr<Save_File> Game::load(std::string filename) {
 
 void Game::load_map(const std::string& filename) {
     map = Map::load(*this, filename);
-    if (!pimpl->editor_mode) {
-        // Add player to the map
-        player->set_id(-1);
-        auto start_pos = pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position();
-        auto bounding_box = player->get_bounding_box();
-        start_pos.x -= bounding_box.x;
-        start_pos.y -= bounding_box.y;
-        player->set_position(start_pos);
-        player->face(pimpl->next_direction);
-        map->add_object(player);
-        camera->set_object(player.get());
-        player->set_triggered_object(nullptr);
-        player->set_collision_object(nullptr);
-        player->set_collision_area(nullptr);
-        // Play background music
-        auto bg_music = map->get_bg_music_filename();
-        auto playing_music = music ? music->get_filename() : "";
-        if (!bg_music.empty() && bg_music != playing_music) {
-            load_music(bg_music);
-            music->set_looping(true);
-            music->play();
-        }
-        // Run map startup scripts
-        map->run_startup_scripts();
-        pimpl->next_map = "";
+    if (pimpl->editor_mode) return;
+    // Add player to the map
+    player->set_id(-1);
+    auto start_pos = pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position();
+    auto bounding_box = player->get_bounding_box();
+    start_pos.x -= bounding_box.x;
+    start_pos.y -= bounding_box.y;
+    player->set_position(start_pos);
+    player->face(pimpl->next_direction);
+    map->add_object(player);
+    camera->set_object(player.get());
+    player->set_triggered_object(nullptr);
+    player->set_collision_object(nullptr);
+    player->set_collision_area(nullptr);
+    // Play background music
+    auto bg_music = map->get_bg_music_filename();
+    auto playing_music = music ? music->get_filename() : "";
+    if (!bg_music.empty() && bg_music != playing_music) {
+        load_music(bg_music);
+        music->set_looping(true);
+        music->play();
     }
+    // Run map startup scripts
+    map->run_startup_scripts();
+    pimpl->next_map = "";
 }
 
 void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {

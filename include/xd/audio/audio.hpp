@@ -17,7 +17,9 @@ namespace xd
         audio& operator=(const audio&) = delete;
         audio();
         ~audio();
-        void update();
+        void update() const;
+        void set_global_volume(float volume) const;
+        float get_global_volume() const;
         detail::audio_handle* get_handle() {
             return m_audio_handle.get();
         }

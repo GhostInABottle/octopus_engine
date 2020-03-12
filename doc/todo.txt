@@ -2,7 +2,6 @@
 - Proper Linux distributables (.deb files? autopackage?)
 - Pimpl idiom for Map_Object and Canvas to reduce header dependencies.
 - Editor: Handle object name change.
-- Global sound/music volume option.
 - Improve sprite and pose handling.
 - Implement smarter corner/edge correction.
 - Update GLFW when https://github.com/glfw/glfw/issues/1295 is fixed.
