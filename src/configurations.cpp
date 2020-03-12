@@ -30,6 +30,8 @@ void Configurations::load_defaults() {
     defaults["game.map-loaded-script"] = std::string();
     defaults["game.choice-select-sfx"] = std::string();
     defaults["game.choice-confirm-sfx"] = std::string();
+    defaults["game.music-volume"] = 1.0f;
+    defaults["game.sound-volume"] = 1.0f;
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();

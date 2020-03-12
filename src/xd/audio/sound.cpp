@@ -10,11 +10,12 @@ namespace xd { namespace detail {
     struct sound_handle
     {
         detail::audio_handle* audio_handle;
+        bool is_music;
         FMOD::Sound* sound;
         FMOD::Channel* channel;
         std::string filename;
-        sound_handle(detail::audio_handle* audio_handle) :
-            audio_handle(audio_handle), sound(nullptr), channel(nullptr) {}
+        sound_handle(detail::audio_handle* audio_handle, bool is_music) :
+            audio_handle(audio_handle), is_music(is_music), sound(nullptr), channel(nullptr) {}
         int get_loop_tag(const char* name) {
             if (!sound)
                 return -1;
@@ -43,7 +44,8 @@ xd::sound::sound(audio& audio, const std::string& filename, unsigned int flags)
     auto audio_handle = audio.get_handle();
     // load sound from file
     flags = flags ? flags : FMOD_LOOP_OFF | FMOD_2D;
-    m_handle = std::make_unique<detail::sound_handle>(audio_handle);
+    auto is_music = (flags & FMOD_CREATESTREAM) != 0;
+    m_handle = std::make_unique<detail::sound_handle>(audio_handle, is_music);
     auto result = audio_handle->system->createSound(filename.c_str(),
         flags, nullptr,  &m_handle->sound);
     if (result != FMOD_OK) throw audio_file_load_failed(filename);
@@ -85,8 +87,12 @@ void xd::sound::play()
         if (result != FMOD_OK) {
             LOGGER_W << "Playback of sound file " << m_handle->filename << " failed - FMOD result: " << result;
         }
+        result = m_handle->channel->setChannelGroup(m_handle->is_music ?
+            audio_handle->music_channel_group : audio_handle->sound_channel_group);
+        if (result != FMOD_OK) {
+            LOGGER_W << "Unable to set channel group for " << m_handle->filename << " - FMOD result: " << result;
+        }
     }
-
     m_handle->channel->setPaused(false);
 }
 

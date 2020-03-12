@@ -651,7 +651,8 @@ void Scripting_Interface::setup_scripts() {
     game_type["stopped"] = sol::property(&Game::stopped);
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["playing_music"] = sol::property([](Game* game) { return game->playing_music().get(); });
-    game_type["global_volume"] = sol::property(&Game::get_global_volume, &Game::set_global_volume);
+    game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
+    game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
     game_type["is_debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["set_size"] = &Game::set_size;

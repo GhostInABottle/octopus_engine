@@ -67,6 +67,12 @@ struct Game::Impl {
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
+        if (config_changed("game.music-volume")) {
+            game.set_global_music_volume(Configurations::get<float>("game.music-volume"));
+        }
+        if (config_changed("game.sound-volume")) {
+            game.set_global_sound_volume(Configurations::get<float>("game.sound-volume"));
+        }
         config_changes.clear();
     }
     // Get default save folder
@@ -167,6 +173,9 @@ Game::Game(xd::audio* audio, bool editor_mode) :
             this->pimpl->on_config_change(key);
         }
     );
+    // Default volumes
+    set_global_music_volume(Configurations::get<float>("game.music-volume"));
+    set_global_sound_volume(Configurations::get<float>("game.sound-volume"));
     // Setup fonts
     LOGGER_I << "Setting up fonts";
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
@@ -404,14 +413,24 @@ void Game::load_music(const std::string& filename) {
     music = std::make_unique<xd::music>(*pimpl->audio, filename);
 }
 
-float Game::get_global_volume() const {
+float Game::get_global_music_volume() const {
     if (!pimpl->audio) return 0.0f;
-    return pimpl->audio->get_global_volume();
+    return pimpl->audio->get_music_volume();
 }
 
-void Game::set_global_volume(float volume) const {
+void Game::set_global_music_volume(float volume) const {
     if (!pimpl->audio) return;
-    pimpl->audio->set_global_volume(volume);
+    pimpl->audio->set_music_volume(volume);
+}
+
+float Game::get_global_sound_volume() const {
+    if (!pimpl->audio) return 0.0f;
+    return pimpl->audio->get_sound_volume();
+}
+
+void Game::set_global_sound_volume(float volume) const {
+    if (!pimpl->audio) return;
+    pimpl->audio->set_sound_volume(volume);
 }
 
 void Game::set_next_map(const std::string& filename, Direction dir) {

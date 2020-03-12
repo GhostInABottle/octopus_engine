@@ -6,9 +6,14 @@
 namespace xd { namespace detail {
     struct audio_handle
     {
-        FMOD::System* system;
-        audio_handle() : system(nullptr) {}
+        FMOD::System* system{nullptr};
+        FMOD::ChannelGroup* music_channel_group{nullptr};
+        FMOD::ChannelGroup* sound_channel_group{nullptr};
         ~audio_handle() {
+            if (music_channel_group)
+                music_channel_group->release();
+            if (sound_channel_group)
+                sound_channel_group->release();
             if (system)
                 system->release();
         }

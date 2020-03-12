@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Other', 'Nothing' })
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Other', 'Nothing' })
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -151,15 +151,36 @@ elseif c.selected == 4 then
     text(o, "Tinting screen back"):wait()
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
 elseif c.selected == 5 then
-    -- Others
+    -- Audio
+    local sound_file = 'data/as3sfxr_menu_select.wav'
+    text(o, 'Playing sound effect ' .. sound_file):wait()
+    Sound(sound_file):play()
+    text(o, 'Changing global sound volume then playing again'):wait()
+    local old_sound_volume = game.global_sound_volume
+    game.global_sound_volume = 0.5
+    Sound(sound_file):play()
+    text(o, 'Changing global sound volume via configuration'):wait()
+    game:set_float_config('game.sound-volume', 0.25)
+    wait(1)
+    Sound(sound_file):play()
+    text(o, 'Changing global music volume'):wait()
+    local old_music_volume = game.global_music_volume
+    game.global_music_volume = 0.3
+    local music = game.playing_music
+    text(o, "Pausing music " .. music.filename):wait()
+    music:pause()
+    text(o, "Waiting 1000 ms then resuming music"):wait()
+    wait(1000)
+    game.global_sound_volume = old_sound_volume
+    game.global_music_volume = old_music_volume
+    music:play()
+elseif c.selected == 6 then
+    -- Other
     local files = filesystem.list_directory('.')
     print('Files in current folder:')
     for _, file in ipairs(files) do
         print('\t- ' .. file)
     end
-    local music = game.playing_music
-    text(o, "Pausing music " .. music.filename):wait()
-    music:pause()
     text(o, "Are we in debug mode? " .. (game.is_debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')
@@ -210,9 +231,6 @@ elseif c.selected == 5 then
     print('File exists: ' .. tostring(filesystem.exists(copy_name)))
     text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
     text(o, "UP | RIGHT = " .. bit.bor(UP, RIGHT)):wait()
-    text(o, "Waiting 1000 ms then resuming music"):wait()
-    wait(1000)
-    music:play()
 end
 text(o, "That's all!"):wait()
 player.disabled = false
