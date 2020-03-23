@@ -60,18 +60,24 @@ struct Game::Impl {
     }
     // Process configuration changes
     void process_config_changes(Game& game) {
-        if (config_changed("game.screen-width") && config_changed("game.screen-width")) {
-            game.set_size(Configurations::get<int>("game.screen-width"),
-                Configurations::get<int>("game.screen-height"));
-        }
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
-        if (config_changed("game.music-volume")) {
-            game.set_global_music_volume(Configurations::get<float>("game.music-volume"));
+        if (config_changed("graphics.screen-width") && config_changed("graphics.screen-width")) {
+            game.set_size(Configurations::get<int>("graphics.screen-width"),
+                Configurations::get<int>("graphics.screen-height"));
         }
-        if (config_changed("game.sound-volume")) {
-            game.set_global_sound_volume(Configurations::get<float>("game.sound-volume"));
+        if (config_changed("graphics.brightness")) {
+            game.get_camera()->set_brightness(Configurations::get<float>("graphics.brightness"));
+        }
+        if (config_changed("graphics.contrast")) {
+            game.get_camera()->set_contrast(Configurations::get<float>("graphics.contrast"));
+        }
+        if (config_changed("audio.music-volume")) {
+            game.set_global_music_volume(Configurations::get<float>("audio.music-volume"));
+        }
+        if (config_changed("audio.sound-volume")) {
+            game.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
         }
         config_changes.clear();
     }
@@ -142,10 +148,10 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         pimpl(std::make_unique<Impl>(audio, editor_mode)),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
-            Configurations::get<int>("game.screen-width"),
-            Configurations::get<int>("game.screen-height"),
+            Configurations::get<int>("graphics.screen-width"),
+            Configurations::get<int>("graphics.screen-height"),
             xd::window_options(
-                Configurations::get<bool>("game.fullscreen"),
+                Configurations::get<bool>("graphics.fullscreen"),
                 false, // allow resize
                 false, // display_cursor
                 false, // vsync
@@ -174,8 +180,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         }
     );
     // Default volumes
-    set_global_music_volume(Configurations::get<float>("game.music-volume"));
-    set_global_sound_volume(Configurations::get<float>("game.sound-volume"));
+    set_global_music_volume(Configurations::get<float>("audio.music-volume"));
+    set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
     // Setup fonts
     LOGGER_I << "Setting up fonts";
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
@@ -264,8 +270,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     int logic_fps = Configurations::get<int>("debug.logic-fps");
     window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
     // Setup shader, if any
-    camera->set_shader(Configurations::get<std::string>("game.vertex-shader"),
-        Configurations::get<std::string>("game.fragment-shader"));
+    camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
+        Configurations::get<std::string>("graphics.fragment-shader"));
 }
 
 Game::~Game() {
@@ -348,8 +354,8 @@ void Game::pause() {
         if (!pimpl->music_was_paused)
             music->pause();
     }
-    camera->set_shader(Configurations::get<std::string>("game.pause-vertex-shader"),
-        Configurations::get<std::string>("game.pause-fragment-shader"));
+    camera->set_shader(Configurations::get<std::string>("graphics.pause-vertex-shader"),
+        Configurations::get<std::string>("graphics.pause-fragment-shader"));
 }
 
 void Game::resume() {
@@ -359,8 +365,8 @@ void Game::resume() {
         clock->resume_time();
     if (music && !pimpl->music_was_paused)
         music->play();
-    camera->set_shader(Configurations::get<std::string>("game.vertex-shader"),
-        Configurations::get<std::string>("game.fragment-shader"));
+    camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
+        Configurations::get<std::string>("graphics.fragment-shader"));
 }
 
 void Game::exit() {
@@ -375,8 +381,7 @@ void Game::set_size(int width, int height) {
     } else {
         window->set_size(width, height);
     }
-    camera->calculate_viewport(width, height);
-    camera->update_viewport();
+    camera->set_size(width, height);
 }
 
 std::vector<xd::vec2> Game::get_sizes() const {

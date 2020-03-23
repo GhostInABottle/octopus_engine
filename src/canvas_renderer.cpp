@@ -175,11 +175,12 @@ bool Canvas_Renderer::should_redraw(const Canvas& canvas) {
 }
 
 void Canvas_Renderer::draw(const xd::mat4 mvp, const Canvas& root) {
+    xd::shader_uniforms uniforms{mvp};
     if (root.has_image_outline()) {
         batch.set_outline_color(root.get_image_outline_color());
-        batch.draw_outlined(mvp);
+        batch.draw_outlined(uniforms);
     } else {
-        batch.draw(mvp);
+        batch.draw(uniforms);
     }
     batch.clear();
 }

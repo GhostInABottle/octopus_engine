@@ -12,15 +12,6 @@ std::unordered_map<std::string, Configurations::callback> Configurations::observ
 
 void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
-    defaults["game.screen-width"] = 640;
-    defaults["game.screen-height"] = 480;
-    defaults["game.fullscreen"] = false;
-    // Scaling modes: aspect, window, stretch
-    defaults["game.scale-mode"] = std::string("window");
-    defaults["game.vertex-shader"] = std::string();
-    defaults["game.fragment-shader"] = std::string();
-    defaults["game.pause-vertex-shader"] = std::string();
-    defaults["game.pause-fragment-shader"] = std::string();
     defaults["game.pause-unfocused"] = true;
     defaults["game.data-folder"] = std::string();
     defaults["game.text-fade-in-duration"] = 250;
@@ -28,10 +19,24 @@ void Configurations::load_defaults() {
     defaults["game.choice-press-delay"] = 250;
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
     defaults["game.map-loaded-script"] = std::string();
-    defaults["game.choice-select-sfx"] = std::string();
-    defaults["game.choice-confirm-sfx"] = std::string();
-    defaults["game.music-volume"] = 1.0f;
-    defaults["game.sound-volume"] = 1.0f;
+
+    defaults["graphics.screen-width"] = 640;
+    defaults["graphics.screen-height"] = 480;
+    defaults["graphics.fullscreen"] = false;
+    // Scaling modes: aspect, window, stretch
+    defaults["graphics.scale-mode"] = std::string("window");
+    defaults["graphics.vertex-shader"] = std::string();
+    defaults["graphics.fragment-shader"] = std::string();
+    defaults["graphics.pause-vertex-shader"] = std::string();
+    defaults["graphics.pause-fragment-shader"] = std::string();
+    defaults["graphics.brightness"] = 1.0f;
+    defaults["graphics.contrast"] = 1.0f;
+    defaults["graphics.postprocessing-enabled"] = true;
+
+    defaults["audio.music-volume"] = 1.0f;
+    defaults["audio.sound-volume"] = 1.0f;
+    defaults["audio.choice-select-sfx"] = std::string();
+    defaults["audio.choice-confirm-sfx"] = std::string();
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();

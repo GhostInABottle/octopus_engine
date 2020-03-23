@@ -51,6 +51,12 @@ namespace xd
     public:
         sprite_outline_shader();
     };
+
+    class fullscreen_shader : public shader_program
+    {
+    public:
+        fullscreen_shader();
+    };
 }
 
 #endif

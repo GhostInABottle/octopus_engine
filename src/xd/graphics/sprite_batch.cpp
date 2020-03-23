@@ -101,37 +101,39 @@ xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 
     return batches;
 }
-void xd::sprite_batch::draw(const xd::mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches, int ticks)
+void xd::sprite_batch::draw(const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
 {
-    draw(*m_data->shader, mvp_matrix, batches, ticks);
+    draw(*m_data->shader, uniforms, batches);
 }
 
-void xd::sprite_batch::draw(const xd::mat4& mvp_matrix, int ticks)
+void xd::sprite_batch::draw(const shader_uniforms& uniforms)
 {
-    draw(*m_data->shader, mvp_matrix, ticks);
+    draw(*m_data->shader, uniforms);
 }
 
-void xd::sprite_batch::draw_outlined(const xd::mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches, int ticks)
+void xd::sprite_batch::draw_outlined(const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
 {
-    draw(*m_data->shader, mvp_matrix, batches, ticks);
-    draw(*m_data->outline_shader, mvp_matrix, batches, ticks);
+    draw(*m_data->shader, uniforms, batches);
+    draw(*m_data->outline_shader, uniforms, batches);
 }
 
-void xd::sprite_batch::draw_outlined(const xd::mat4& mvp_matrix, int ticks)
+void xd::sprite_batch::draw_outlined(const shader_uniforms& uniforms)
 {
-    draw(*m_data->shader, mvp_matrix, ticks);
-    draw(*m_data->outline_shader, mvp_matrix, ticks);
+    draw(*m_data->shader, uniforms);
+    draw(*m_data->outline_shader, uniforms);
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches, int ticks)
+void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
 {
     assert(m_data->sprites.size() == batches.size());
     if (empty())
         return;
     // setup the shader
     shader.use();
-    shader.bind_uniform("mvpMatrix", mvp_matrix);
-    shader.bind_uniform("ticks", ticks);
+    shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
+    if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
+    if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
 
     // iterate through all sprites
     for (unsigned int i = 0; i < m_data->sprites.size(); ++i) {
@@ -151,7 +153,7 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
     }
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, int ticks)
+void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& uniforms)
 {
     if (empty())
         return;
@@ -162,8 +164,10 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
 
     // setup the shader
     shader.use();
-    shader.bind_uniform("mvpMatrix", mvp_matrix);
-    shader.bind_uniform("ticks", ticks);
+    shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
+    if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
+    if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
     shader.bind_uniform("vOutlineColor", m_outline_color);
 
     // create a quad for rendering sprites
@@ -223,6 +227,10 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const xd::mat4& mvp_matr
 
 void xd::sprite_batch::set_shader(std::unique_ptr<shader_program> shader) {
     m_data->shader = std::move(shader);
+}
+
+void xd::sprite_batch::reset_shader() {
+    m_data->shader = std::make_unique<xd::sprite_shader>();
 }
 
 void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,

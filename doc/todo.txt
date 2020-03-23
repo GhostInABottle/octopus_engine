@@ -5,3 +5,4 @@
 - Improve sprite and pose handling.
 - Implement smarter corner/edge correction.
 - Update GLFW when https://github.com/glfw/glfw/issues/1295 is fixed.
+- Save changed config when saving game.

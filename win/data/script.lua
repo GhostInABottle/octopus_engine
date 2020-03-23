@@ -119,6 +119,16 @@ elseif c.selected == 3 then
     o:face(LEFT)
 elseif c.selected == 4 then
     -- Camera
+    game:set_float_config('graphics.brightness', -0.1)
+    text(o, "Changed brightness to -0.1"):wait()
+    game:set_float_config('graphics.brightness', 0.1)
+    text(o, "Changed brightness to 0.1"):wait()
+    game:set_float_config('graphics.brightness', 0.0)
+    game:set_float_config('graphics.contrast', 0.5)
+    text(o, "Changed contrast to 0.5"):wait()
+    game:set_float_config('graphics.contrast', 3.0)
+    text(o, "Changed contrast to 3.0"):wait()
+    game:set_float_config('graphics.contrast', 1.0)
     text(o, "Tinting screen"):wait()
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0.3), 500):wait()
     text(o, "Setting magnification"):wait()

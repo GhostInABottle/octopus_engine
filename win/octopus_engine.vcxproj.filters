@@ -659,6 +659,9 @@
     <ClInclude Include="..\include\utility\file.hpp">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\xd\graphics\shader_uniforms.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\canvas_updater.hpp">

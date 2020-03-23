@@ -263,3 +263,41 @@ xd::sprite_outline_shader::sprite_outline_shader()
     bind_attribute("vTexCoords", xd::VERTEX_TEXTURE);
     link();
 }
+
+xd::fullscreen_shader::fullscreen_shader()
+{
+    static const char* vertex_shader_src =
+        "#version 110\n"
+        "uniform mat4 mvpMatrix;"
+        "uniform vec4 vPosition;"
+        "attribute vec4 vVertex;"
+        "attribute vec2 vTexCoords;"
+        "varying vec2 vVaryingTexCoords;"
+        "void main(void)"
+        "{"
+        "    vVaryingTexCoords = vTexCoords;"
+        "    gl_Position = mvpMatrix * (vPosition + vVertex);"
+        "}";
+
+    static const char* fragment_shader_src =
+        "#version 110\n"
+        "uniform vec4 vColor;"
+        "uniform vec4 vColorKey;"
+        "uniform sampler2D colorMap;"
+        "uniform float brightness;"
+        "uniform float contrast;"
+        "varying vec2 vVaryingTexCoords;"
+        "void main(void) {"
+        "    vec4 vTexColor = texture2D(colorMap, vVaryingTexCoords.st);"
+        "    if (vColorKey.a > 0.0 && vTexColor == vColorKey) vTexColor.a = 0.0;"
+        "    vec4 pixelColor = vColor * vTexColor;"
+        "    pixelColor.rgb = (pixelColor.rgb - 0.5) * max(contrast, 0.0) + 0.5 + brightness;"
+        "    gl_FragColor = pixelColor;"
+        "}";
+
+    attach(GL_VERTEX_SHADER, vertex_shader_src);
+    attach(GL_FRAGMENT_SHADER, fragment_shader_src);
+    bind_attribute("vVertex", xd::VERTEX_POSITION);
+    bind_attribute("vTexCoords", xd::VERTEX_TEXTURE);
+    link();
+}

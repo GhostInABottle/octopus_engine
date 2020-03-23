@@ -18,7 +18,7 @@
 #include <algorithm>
 
 struct Camera::Impl {
-    explicit Impl() {}
+    explicit Impl() : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled")) {}
     // Update OpenGL viewport
     void update_viewport(xd::rect viewport, float shake_offset = 0.0f) const {
         glViewport(static_cast<int>(viewport.x + shake_offset),
@@ -27,13 +27,13 @@ struct Camera::Impl {
             static_cast<int>(viewport.h));
     }
     // Full-screen shader data
-    std::unique_ptr<xd::shader_program> current_shader;
+    bool postprocessing_enabled;
     xd::sprite_batch full_screen_batch;
     std::shared_ptr<xd::texture> full_screen_texture;
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
-    void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry);
+    void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry, float brightness, float contrast);
     // Draw a quad (for screen tint)
     struct quad_vertex
     {
@@ -51,6 +51,8 @@ struct Camera::Impl {
 };
 
 void Camera::Impl::set_shader(const std::string& vertex, const std::string& fragment) {
+    if (!postprocessing_enabled) return;
+
     std::string vsrc, fsrc;
     if (!vertex.empty() && !fragment.empty()) {
         try {
@@ -61,19 +63,23 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
             vsrc = fsrc = "";
         }
     }
+
     if (!vsrc.empty()) {
         full_screen_batch.set_shader(std::make_unique<Custom_Shader>(vsrc, fsrc));
     } else {
-        current_shader.release();
+        full_screen_batch.set_shader(std::make_unique<xd::fullscreen_shader>());
     }
 }
 
-void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry) {
+void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry, float brightness, float contrast) {
+    if (!postprocessing_enabled) return;
+
     int w = game.width();
     int h = game.height();
-    if (!full_screen_texture)
+    if (!full_screen_texture) {
         full_screen_texture = std::make_shared<xd::texture>(w, h, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP);
+    }
     full_screen_texture->copy_read_buffer(0, 0, w, h);
     full_screen_batch.clear();
     full_screen_batch.add(full_screen_texture, 0, 0);
@@ -87,7 +93,7 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     geometry.model_view().push(xd::mat4());
     glViewport(0, 0, w, h);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    full_screen_batch.draw(geometry.mvp(), game.ticks());
+    full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(), brightness, contrast});
     update_viewport(viewport);
     geometry.model_view().pop();
     geometry.projection().pop();
@@ -115,6 +121,8 @@ Camera::Camera(Game& game)
         : game(game),
         position(xd::vec2(0.0f, 0.0f)),
         tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
+        brightness(Configurations::get<float>("graphics.brightness")),
+        contrast(Configurations::get<float>("graphics.contrast")),
         object(nullptr),
         shaker(nullptr),
         pimpl(std::make_unique<Impl>())
@@ -127,9 +135,15 @@ Camera::Camera(Game& game)
     update_viewport();
 }
 
+void Camera::set_size(int width, int height) {
+    pimpl->full_screen_texture.reset();
+    calculate_viewport(width, height);
+    update_viewport();
+}
+
 void Camera::calculate_viewport(int width, int height) {
     // Calculate viewport rectangle
-    auto scale_mode = Configurations::get<std::string>("game.scale-mode");
+    auto scale_mode = Configurations::get<std::string>("graphics.scale-mode");
     auto screen_width = static_cast<float>(width);
     auto screen_height = static_cast<float>(height);
     auto game_width = static_cast<float>(game.game_width(false));
@@ -241,8 +255,7 @@ void Camera::set_shader(const std::string& vertex, const std::string& fragment) 
 }
 
 void Camera::render_shader() {
-    if (!pimpl->current_shader) return;
-    pimpl->render_shader(game, viewport, geometry);
+    pimpl->render_shader(game, viewport, geometry, brightness, contrast);
 }
 
 void Camera::start_shaking(float strength, float speed) {

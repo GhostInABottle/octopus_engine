@@ -6,6 +6,7 @@
 #include "transform_geometry.hpp"
 #include "types.hpp"
 #include "../glm.hpp"
+#include "shader_uniforms.hpp"
 #include <vector>
 #include <memory>
 
@@ -28,12 +29,12 @@ namespace xd
         typedef std::vector<std::shared_ptr<xd::vertex_batch<detail::sprite_vertex_traits>>> batch_list;
         batch_list create_batches();
 
-        void draw(const xd::mat4& mvp_matrix, const batch_list& batches, int ticks = 0);
-        void draw(const mat4& matrix, int ticks = 0);
-        void draw(xd::shader_program& shader, const xd::mat4& mvp_matrix, const batch_list& batches, int ticks);
-        void draw(xd::shader_program& shader, const mat4& matrix, int ticks);
-        void draw_outlined(const xd::mat4& mvp_matrix, const batch_list& batches, int ticks = 0);
-        void draw_outlined(const mat4& matrix, int ticks = 0);
+        void draw(const shader_uniforms& uniforms, const batch_list& batches);
+        void draw(const shader_uniforms& uniforms);
+        void draw(xd::shader_program& shader, const shader_uniforms& uniforms, const batch_list& batches);
+        void draw(xd::shader_program& shader, const shader_uniforms& uniforms);
+        void draw_outlined(const shader_uniforms& uniforms, const batch_list& batches);
+        void draw_outlined(const shader_uniforms& uniforms);
 
         void set_scale(float scale) { m_scale = scale; }
         float get_scale() const { return m_scale; }
@@ -41,6 +42,7 @@ namespace xd
         vec4 get_outline_color() const { return m_outline_color; }
 
         void set_shader(std::unique_ptr<shader_program> shader);
+        void reset_shader();
 
         void add(const std::shared_ptr<texture>& texture, float x, float y,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));

@@ -25,11 +25,11 @@ struct Show_Text_Command::Impl {
 
         // Load choice sound effects
         auto audio = game.get_audio();
-        auto select_sound_file = Configurations::get<std::string>("game.choice-select-sfx");
+        auto select_sound_file = Configurations::get<std::string>("audio.choice-select-sfx");
         if (audio && !select_sound_file.empty()) {
             select_sound = std::make_unique<xd::sound>(*audio, select_sound_file);
         }
-        auto confirm_sound_file = Configurations::get<std::string>("game.choice-confirm-sfx");
+        auto confirm_sound_file = Configurations::get<std::string>("audio.choice-confirm-sfx");
         if (audio && !confirm_sound_file.empty()) {
             confirm_sound = std::make_unique<xd::sound>(*audio, confirm_sound_file);
         }

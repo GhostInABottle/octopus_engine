@@ -15,6 +15,8 @@ public:
     Camera(const Camera&) = delete;
     Camera& operator=(const Camera&) = delete;
     explicit Camera(Game& game);
+    // Called when game window size is changed
+    void set_size(int width, int height);
     // Calculate viewport rectangle based on screen width and height
     void calculate_viewport(int width, int height);
     // Setup viewport for rendering
@@ -63,6 +65,18 @@ public:
     void set_tint_color(xd::vec4 color) {
         tint_color = color;
     }
+    float get_brightness() const {
+        return brightness;
+    }
+    void set_brightness(float brightness) {
+        this->brightness = brightness;
+    }
+    float get_contrast() const {
+        return contrast;
+    }
+    void set_contrast(float contrast) {
+        this->contrast = contrast;
+    }
     const Map_Object* get_object() const {
         return object;
     }
@@ -86,6 +100,10 @@ private:
     xd::transform_geometry geometry;
     // Screen tint color
     xd::vec4 tint_color;
+    // Screen brightness
+    float brightness;
+    // Screen contrast
+    float contrast;
     // Tracked map object
     Map_Object* object;
     // Screen shaker component

@@ -31,5 +31,5 @@ void Tile_Layer_Renderer::render(Map& map) {
         cache = batch.create_batches();
         needs_redraw = false;
     }
-    batch.draw(camera.get_mvp(), cache, map.get_game().ticks());
+    batch.draw(xd::shader_uniforms{camera.get_mvp(), map.get_game().ticks()}, cache);
 }

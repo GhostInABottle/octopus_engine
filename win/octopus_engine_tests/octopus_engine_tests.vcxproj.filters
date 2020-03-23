@@ -674,5 +674,8 @@
     <ClInclude Include="..\..\include\utility\xml.hpp">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\xd\graphics\shader_uniforms.hpp">
+      <Filter>Header Files\xd\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

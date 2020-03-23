@@ -1,8 +1,6 @@
 #version 110
 uniform mat4 mvpMatrix;
 uniform vec4 vPosition;
-uniform int ticks;
-uniform vec2 vTexSize;
 attribute vec4 vVertex;
 attribute vec2 vTexCoords;
 varying vec2 vVaryingTexCoords;
