@@ -23,21 +23,27 @@ public:
     static bool defaults_loaded() { return !defaults.empty(); }
     // Parse the configuration file and returns list of parse errors
     static std::vector<std::string> parse(std::string filename);
+    // Save the configuration file
     static void save(std::string filename);
+    // Has the configurations changed since it was last saved?
+    static bool changed() { return changed_since_save; }
     // Get the option with given name
     template<typename T>
     static T get(const std::string& name) {
-        if (values.find(name) != values.end())
+        if (has_value(name))
             return std::get<T>(values[name]);
-        else if (defaults.find(name) != defaults.end())
+        else if (has_default(name))
             return std::get<T>(defaults[name]);
         else
             throw config_exception(name + " is an invalid config value");
     }
     // Check if an option exists
-    template<typename T>
-    static bool contains_value(const std::string& name) {
+    static bool has_value(const std::string& name) {
         return values.find(name) != values.end();
+    }
+    // Check if option has a default value
+    static bool has_default(const std::string& name) {
+        return defaults.find(name) != defaults.end();
     }
     // Get the option with given name as a string
     static std::string get_string(const std::string& name);
@@ -52,17 +58,22 @@ public:
     // Update an option with given name
     template<typename T>
     static void set(const std::string& name, T value) {
+        if ((has_value(name) || has_default(name)) && get<T>(name) == value) {
+            return;
+        }
         values[name] = value;
         for (auto& pair : observers) {
             pair.second(name);
         }
+        changed_since_save = true;
     }
 private:
     typedef std::variant<std::string, int, unsigned int, float, bool> value_type;
+    inline static bool changed_since_save = false;
     // Variable map to store the options
-    static std::unordered_map<std::string, value_type> values;
-    static std::unordered_map<std::string, value_type> defaults;
-    static std::unordered_map<std::string, callback> observers;
+    inline static std::unordered_map<std::string, value_type> values;
+    inline static std::unordered_map<std::string, value_type> defaults;
+    inline static std::unordered_map<std::string, callback> observers;
 };
 
 #endif

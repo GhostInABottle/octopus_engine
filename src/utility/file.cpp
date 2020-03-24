@@ -84,21 +84,31 @@ void parse_config(const std::string& filename) {
         LOGGER_W << warning;
     }
     auto data_dir = get_data_directory();
+    if (data_dir.empty()) return;
+
     auto config_path = data_dir + filename;
-    if (!data_dir.empty()) {
-        try {
-            if (file_exists(config_path)) {
-                warnings = Configurations::parse(config_path);
-                for (auto& warning : warnings) {
-                    LOGGER_W << warning;
-                }
-            } else {
-                Configurations::save(data_dir + "config.ini");
+    try {
+        if (file_exists(config_path)) {
+            warnings = Configurations::parse(config_path);
+            for (auto& warning : warnings) {
+                LOGGER_W << warning;
             }
-        } catch (config_exception & e) {
-            LOGGER_E << "Unable to write config file to " << data_dir << ": " << e.what();
+        } else {
+            Configurations::save(config_path);
         }
+    } catch (config_exception& e) {
+        LOGGER_E << "Unable to write config file to " << data_dir << ": " << e.what();
     }
+}
+
+void save_config(const std::string& filename) {
+    if (!Configurations::changed() || !Configurations::get<bool>("debug.update-config-file")) {
+        return;
+    }
+    auto data_dir = get_data_directory();
+    auto config_path = data_dir + filename;
+    Configurations::save(config_path);
+    LOGGER_I << "Saved config file " << config_path;
 }
 
 std::vector<std::string> list_directory_files(std::string path) {

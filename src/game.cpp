@@ -217,10 +217,10 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         return;
     map = Map::load(*this, Configurations::get<std::string>("startup.map"));
     auto start_pos = map->get_starting_position();
-    if (Configurations::contains_value<float>("startup.player-position-x")) {
+    if (Configurations::has_value("startup.player-position-x")) {
         start_pos.x = Configurations::get<float>("startup.player-position-x");
     }
-    if (Configurations::contains_value<float>("startup.player-position-y")) {
+    if (Configurations::has_value("startup.player-position-y")) {
         start_pos.y = Configurations::get<float>("startup.player-position-y");
     }
     LOGGER_I << "Creating player object";
@@ -488,8 +488,11 @@ void Game::save(std::string filename, Save_File& save_file) const {
         ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         ofs << save_file;
         LOGGER_I << "Saved file " << filename;
-    } catch (const std::ios_base::failure& e) {
+        save_config("config.ini");
+    } catch (const std::ios_base::failure & e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
+    } catch (const config_exception& e) {
+        LOGGER_E << "Error while saving config file - message: " << e.what();
     } catch (const std::runtime_error& e) {
         LOGGER_E << "Error saving file " << filename << " - message: " << e.what();
     }

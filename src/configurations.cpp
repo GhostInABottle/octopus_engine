@@ -6,10 +6,6 @@
 #include <typeinfo>
 #include <fstream>
 
-std::unordered_map<std::string, Configurations::value_type> Configurations::values;
-std::unordered_map<std::string, Configurations::value_type> Configurations::defaults;
-std::unordered_map<std::string, Configurations::callback> Configurations::observers;
-
 void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
     defaults["game.pause-unfocused"] = true;
@@ -70,6 +66,7 @@ void Configurations::load_defaults() {
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
     defaults["debug.text-canvas-priority"] = 1000;
+    defaults["debug.update-config-file"] = true;
 
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
@@ -132,13 +129,13 @@ std::vector<std::string> Configurations::parse(std::string filename) {
             if (!current_section.empty()) {
                 key = current_section + "." + key;
             }
-            if (values.find(key) != values.end()) {
+            if (has_value(key)) {
                 errors.push_back(filename + " contains duplicate key '" + key + "' at line "
                     + std::to_string(line_number) + ", line content: " + line);
             }
             auto value_string = line.substr(eq + 1);
             trim(value_string);
-            if (defaults.find(key) != defaults.end()) {
+            if (has_default(key)) {
                 if (value_string == "true") value_string = "1";
                 if (value_string == "false") value_string = "0";
                 values[key] = std::visit(
@@ -153,6 +150,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
         }
     }
 
+    changed_since_save = false;
     if (values.empty()) {
         errors.push_back(filename + " config file was completely empty or invalid");
     }
@@ -187,21 +185,21 @@ void Configurations::save(std::string filename) {
         }
         for (auto& [key, val] : section_values) {
             auto full_key = section == "global" ? key : section + "." + key;
-            if (values.find(full_key) != values.end()) {
-                stream << key << " = " << get_string(full_key) << "\n";
-                if (!stream) {
-                    throw config_exception("Error writing key " + full_key + " to config file " + filename);
-                }
+            if (!has_value(full_key)) continue;
+            stream << key << " = " << get_string(full_key) << "\n";
+            if (!stream) {
+                throw config_exception("Error writing key " + full_key + " to config file " + filename);
             }
         }
     }
+    changed_since_save = false;
 }
 
 std::string Configurations::get_string(const std::string& name) {
     auto visitor = [](auto&& arg) { return boost::lexical_cast<std::string>(arg); };
-    if (values.find(name) != values.end()) {
+    if (has_value(name)) {
         return std::visit(visitor, values[name]);
-    } else if (defaults.find(name) != defaults.end()) {
+    } else if (has_default(name)) {
         return std::visit(visitor, defaults[name]);
     }
     return "";
