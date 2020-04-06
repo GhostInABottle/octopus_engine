@@ -92,7 +92,6 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     );
     geometry.model_view().push(xd::mat4());
     glViewport(0, 0, w, h);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(), brightness, contrast});
     update_viewport(viewport);
     geometry.model_view().pop();
