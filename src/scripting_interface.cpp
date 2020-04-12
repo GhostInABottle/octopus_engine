@@ -79,16 +79,6 @@ void Scripting_Interface::set_globals() {
     vm.globals()["SCRIPT_CONTEXT_MAP"] = static_cast<int>(Map_Object::Script_Context::MAP);
 }
 
-std::unique_ptr<Command_Result> Scripting_Interface::register_command(std::shared_ptr<Command> command) {
-    commands.push_back(command);
-    return std::make_unique<Command_Result>(command);
-}
-
-std::unique_ptr<Choice_Result> Scripting_Interface::register_choice_command(std::shared_ptr<Command> command) {
-    commands.push_back(command);
-    return std::make_unique<Choice_Result>(command);
-}
-
 sol::state& Scripting_Interface::lua_state() {
     return game->get_lua_vm()->lua_state();
 }
@@ -300,41 +290,39 @@ void Scripting_Interface::setup_scripts() {
     lua["text"] = sol::overload(
         [&](const Text_Options& options) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(*game, options));
+            return si->register_command<Show_Text_Command>(*game, options);
         },
         [&](Map_Object& obj, const std::string& text) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ &obj }.set_text(text)));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ &obj }.set_text(text));
         },
         [&](xd::vec2& position, const std::string& text) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ position }.set_text(text)));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ position }.set_text(text));
         },
         [&](Map_Object& obj, const std::string& text, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ &obj }.set_text(text).set_duration(duration)));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ &obj }.set_text(text).set_duration(duration));
         },
         [&](xd::vec2& position, const std::string& text, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ position }.set_text(text).set_duration(duration)));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ position }.set_text(text).set_duration(duration));
         }
     );
     lua["centered_text"] = sol::overload(
         [&](float y, const std::string& text) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ xd::vec2{0.0f, y} }.set_text(text).set_centered(true)
-                ));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ xd::vec2{0.0f, y} }.set_text(text).set_centered(true));
         },
         [&](float y, const std::string& text, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ xd::vec2{0.0f, y} }.set_text(text).set_duration(duration).set_centered(true)
-                ));
+            return si->register_command<Show_Text_Command>(
+                *game, Text_Options{ xd::vec2{0.0f, y} }.set_text(text).set_duration(duration).set_centered(true));
         }
     );
 
@@ -342,27 +330,25 @@ void Scripting_Interface::setup_scripts() {
     lua["choices"] = sol::overload(
         [&](const Text_Options& options) {
             auto si = game->get_current_scripting_interface();
-            return si->register_choice_command(std::make_shared<Show_Text_Command>(*game, options));
+            return si->register_choice_command<Show_Text_Command>(*game, options);
         },
         [&](Map_Object& obj, const std::string& text, const sol::table& table) {
             std::vector<std::string> choices;
             for (auto& kv : table) {
                 choices.push_back(kv.second.as<std::string>());
             }
-            auto command = std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ &obj }.set_choices(choices).set_text(text));
             auto si = game->get_current_scripting_interface();
-            return si->register_choice_command(command);
+            return si->register_choice_command<Show_Text_Command>(
+                *game, Text_Options{&obj}.set_choices(choices).set_text(text));
         },
         [&](xd::vec2& position, const std::string& text, const sol::table& table) {
             std::vector<std::string> choices;
             for (auto& kv : table) {
                 choices.push_back(kv.second.as<std::string>());
             }
-            auto command = std::make_shared<Show_Text_Command>(
-                *game, Text_Options{ position }.set_choices(choices).set_text(text));
             auto si = game->get_current_scripting_interface();
-            return si->register_choice_command(command);
+            return si->register_choice_command<Show_Text_Command>(
+                *game, Text_Options{position}.set_choices(choices).set_text(text));
         }
     );
 
@@ -539,47 +525,43 @@ void Scripting_Interface::setup_scripts() {
     object_type["move_to"] = sol::overload(
         [&](Map_Object* obj, float x, float y) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Object_To_Command>(
-                    *game->get_map(), *obj, x, y
-                    )
-            );
+            return si->register_command<Move_Object_To_Command>(
+                    *game->get_map(), *obj, x, y);
+        },
+        [&](Map_Object* obj, xd::vec2 pos) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Move_Object_To_Command>(
+                    *game->get_map(), *obj, pos.x, pos.y);
         },
         [&](Map_Object* obj, float x, float y, bool keep_trying) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Object_To_Command>(
+            return si->register_command<Move_Object_To_Command>(
                     *game->get_map(), *obj, x, y,
-                    Collision_Check_Types::BOTH, keep_trying
-                    )
-            );
+                    Collision_Check_Types::BOTH, keep_trying);
+        },
+        [&](Map_Object* obj, xd::vec2 pos, bool keep_trying) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Move_Object_To_Command>(
+                    *game->get_map(), *obj, pos.x, pos.y,
+                    Collision_Check_Types::BOTH, keep_trying);
         }
     );
     object_type["move"] = sol::overload(
         [&](Map_Object* obj, int dir, float pixels, bool skip, bool change_facing) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Object_Command>(
+            return si->register_command<Move_Object_Command>(
                     *obj, static_cast<Direction>(dir),
-                    pixels, skip, change_facing
-                    )
-            );
+                    pixels, skip, change_facing);
         },
         [&](Map_Object* obj, int dir, float pixels, bool skip) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Object_Command>(
-                    *obj, static_cast<Direction>(dir), pixels, skip, true
-                    )
-            );
+            return si->register_command<Move_Object_Command>(
+                    *obj, static_cast<Direction>(dir), pixels, skip, true);
         },
         [&](Map_Object* obj, int dir, float pixels) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Object_Command>(
-                    *obj, static_cast<Direction>(dir), pixels, true, true
-                    )
-            );
+            return si->register_command<Move_Object_Command>(
+                    *obj, static_cast<Direction>(dir), pixels, true, true);
         }
     );
     object_type["face"] = sol::overload(
@@ -631,11 +613,7 @@ void Scripting_Interface::setup_scripts() {
     music["set_loop_points"] = &xd::music::set_loop_points;
     music["fade"] = [&](xd::music* music, float volume, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Fade_Music_Command>(
-                *game, volume, duration
-                )
-        );
+        return si->register_command<Fade_Music_Command>(*game, volume, duration);
     };
 
     // Game object
@@ -682,6 +660,9 @@ void Scripting_Interface::setup_scripts() {
         },
         [](Game* game, const std::string& filename, float x, float y, int dir) {
             game->set_next_map(filename, x, y, static_cast<Direction>(dir));
+        },
+        [](Game* game, const std::string& filename, xd::vec2 pos, int dir) {
+            game->set_next_map(filename, pos.x, pos.y, static_cast<Direction>(dir));
         }
     );
     game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
@@ -730,11 +711,8 @@ void Scripting_Interface::setup_scripts() {
     layer_type["set_property"] = &Layer::set_property;
     layer_type["update_opacity"] = [&](Layer* layer, float opacity, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Update_Layer_Command>(
-                *game, *layer, opacity, duration
-                )
-        );
+        return si->register_command<Update_Layer_Command>(
+                *game, *layer, opacity, duration);
     };
 
     // Image layer
@@ -799,16 +777,16 @@ void Scripting_Interface::setup_scripts() {
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
     camera_type["move"] = [&](Camera& camera, int dir, float pixels, float speed) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed)
-        );
+        return si->register_command<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed);
     };
     camera_type["move_to"] = sol::overload(
         [&](Camera& camera, float x, float y, float speed) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Camera_Command>(camera, x, y, speed)
-            );
+            return si->register_command<Move_Camera_Command>(camera, x, y, speed);
+        },
+        [&](Camera& camera, xd::vec2 pos, float speed) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);
         },
         [&](Camera& camera, Map_Object& object, float speed) {
             xd::vec2 position = object.get_position();
@@ -818,29 +796,23 @@ void Scripting_Interface::setup_scripts() {
             float x = position.x + width / 2 - game->game_width() / 2;
             float y = position.y + height / 2 - game->game_height() / 2;
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Move_Camera_Command>(camera, x, y, speed)
-            );
+            return si->register_command<Move_Camera_Command>(camera, x, y, speed);
         }
     );
     camera_type["tint_screen"] = sol::overload(
         [&](Camera& camera, xd::vec4 color, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Tint_Screen_Command>(*game, color, duration)
-            );
+            return si->register_command<Tint_Screen_Command>(*game, color, duration);
         },
         [&](Camera& camera, const std::string& hex_color, long duration) {
             auto si = game->get_current_scripting_interface();
             auto color = hex_to_color(hex_color);
-            return si->register_command(
-                std::make_shared<Tint_Screen_Command>(*game, color, duration)
-            );
+            return si->register_command<Tint_Screen_Command>(*game, color, duration);
         }
     );
     camera_type["zoom"] = [&](Camera& camera, float scale, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(std::make_shared<Zoom_Command>(*game, scale, duration));
+        return si->register_command<Zoom_Command>(*game, scale, duration);
     };
     camera_type["center_at"] = sol::overload(
         (void (Camera::*)(xd::vec2)) &Camera::center_at,
@@ -853,11 +825,7 @@ void Scripting_Interface::setup_scripts() {
     camera_type["cease_shaking"] = &Camera::cease_shaking;
     camera_type["shake_screen"] = [&](Camera* camera, float strength, float speed, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Shake_Screen_Command>(
-                *game, strength, speed, duration
-                )
-        );
+        return si->register_command<Shake_Screen_Command>(*game, strength, speed, duration);
     };
 
     // Parsed text token
@@ -987,48 +955,71 @@ void Scripting_Interface::setup_scripts() {
         [](Canvas& canvas, const std::string& filename) { canvas.set_image(filename); },
         [](Canvas& canvas, const std::string& filename, xd::vec4 ck) { canvas.set_image(filename, ck); }
     );
-    canvas_type["update"] = [&](Canvas& canvas, float x, float y, float mag_x,
-        float mag_y, float angle, float opacity, long duration) {
+    canvas_type["update"] = sol::overload(
+        [&](Canvas& canvas, float x, float y, float mag_x,
+                float mag_y, float angle, float opacity, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command(
-                std::make_shared<Update_Canvas_Command>(
+            return si->register_command<Update_Canvas_Command>(
                     *game, canvas, duration, xd::vec2(x, y),
-                    xd::vec2(mag_x, mag_y), angle, opacity)
-            );
-    };
-    canvas_type["move"] = [&](Canvas& canvas, float x, float y, long duration) {
-        auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Update_Canvas_Command>(
-                *game, canvas, duration,
-                xd::vec2(x, y), canvas.get_magnification(),
-                canvas.get_angle(), canvas.get_opacity())
-        );
-    };
-    canvas_type["resize"] = [&](Canvas& canvas, float mag_x, float mag_y, long duration) {
-        auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Update_Canvas_Command>(
-                *game, canvas, duration,
-                canvas.get_position(), xd::vec2(mag_x, mag_y),
-                canvas.get_angle(), canvas.get_opacity())
-        );
-    };
+                    xd::vec2(mag_x, mag_y), angle, opacity);
+        },
+        [&](Canvas& canvas, xd::vec2 pos, xd::vec2 mag,
+                float angle, float opacity, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration, pos, mag, angle, opacity);
+        }
+    );
+    canvas_type["move"] = sol::overload(
+        [&](Canvas& canvas, xd::vec2 pos, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration,
+                    pos, canvas.get_magnification(),
+                    canvas.get_angle(), canvas.get_opacity());
+        },
+        [&](Canvas& canvas, float x, float y, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration,
+                    xd::vec2(x, y), canvas.get_magnification(),
+                    canvas.get_angle(), canvas.get_opacity());
+        }
+    );
+    canvas_type["resize"] = sol::overload(
+        [&](Canvas& canvas, float mag, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration,
+                    canvas.get_position(), xd::vec2(mag, mag),
+                    canvas.get_angle(), canvas.get_opacity());
+        },
+        [&](Canvas& canvas, float mag_x, float mag_y, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration,
+                    canvas.get_position(), xd::vec2(mag_x, mag_y),
+                    canvas.get_angle(), canvas.get_opacity());
+        },
+        [&](Canvas& canvas, xd::vec2 mag, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Update_Canvas_Command>(
+                    *game, canvas, duration,
+                    canvas.get_position(), mag,
+                    canvas.get_angle(), canvas.get_opacity());
+        }
+    );
     canvas_type["update_opacity"] = [&](Canvas& canvas, float opacity, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Update_Canvas_Command>(
+        return si->register_command<Update_Canvas_Command>(
                 *game, canvas, duration, canvas.get_position(),
-                canvas.get_magnification(), canvas.get_angle(), opacity)
-        );
+                canvas.get_magnification(), canvas.get_angle(), opacity);
     };
     canvas_type["rotate"] = [&](Canvas& canvas, float angle, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command(
-            std::make_shared<Update_Canvas_Command>(
+        return si->register_command<Update_Canvas_Command>(
                 *game, canvas, duration, canvas.get_position(),
-                canvas.get_magnification(), angle, canvas.get_opacity())
-        );
+                canvas.get_magnification(), angle, canvas.get_opacity());
     };
     auto add_child_image = [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& color_or_pose) {
         auto extension = filename.substr(filename.find_last_of(".") + 1);

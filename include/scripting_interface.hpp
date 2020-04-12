@@ -20,8 +20,18 @@ public:
     void run_script(const std::string& script);
     void set_globals();
     xd::lua::scheduler& get_scheduler() { return scheduler; }
-    std::unique_ptr<Command_Result> register_command(std::shared_ptr<Command> command);
-    std::unique_ptr<Choice_Result> register_choice_command(std::shared_ptr<Command> command);
+    template<typename T, typename ... Args>
+    std::unique_ptr<Command_Result> register_command(Args&& ... args) {
+        auto command = std::make_shared<T>(std::forward<Args>(args)...);
+        commands.push_back(command);
+        return std::make_unique<Command_Result>(command);
+    }
+    template<typename T, typename ... Args>
+    std::unique_ptr<Choice_Result> register_choice_command(Args&& ... args) {
+        auto command = std::make_shared<T>(std::forward<Args>(args)...);
+        commands.push_back(command);
+        return std::make_unique<Choice_Result>(command);
+    }
     sol::state& lua_state();
 private:
     void setup_scripts();
