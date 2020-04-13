@@ -935,6 +935,7 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["permissive_tag_parsing"] = sol::property(&Canvas::get_permissive_tag_parsing, &Canvas::set_permissive_tag_parsing);
     canvas_type["has_image_outline"] = sol::property(&Canvas::has_image_outline, &Canvas::set_image_outline);
     canvas_type["image_outline_color"] = sol::property(&Canvas::get_image_outline_color, &Canvas::set_image_outline_color);
+    canvas_type["visible"] = sol::property(&Canvas::is_visible, &Canvas::set_visible);
     canvas_type["reset_text_outline"] = &Canvas::reset_text_outline;
     canvas_type["reset_text_shadow"] = &Canvas::reset_text_shadow;
     canvas_type["reset_text_type"] = &Canvas::reset_text_type;

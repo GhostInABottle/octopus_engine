@@ -139,7 +139,10 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     result.other_areas[other_object->get_name()] = other_object;
                 } else {
                     result.type = Collision_Types::OBJECT;
-                    result.other_object = other_object;
+                    // Prefer objects with scripts
+                    if (!result.other_object || other_object->has_any_script()) {
+                        result.other_object = other_object;
+                    }
                     result.other_objects[other_object->get_name()] = other_object;
                     check_tile_collision = false;
                 }
