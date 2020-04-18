@@ -37,11 +37,10 @@ void Player_Controller::update(Map_Object& object) {
     // Check if stuck inside another object
     if (moved && collision.type == Collision_Types::OBJECT) {
         bool passable = false;
-        auto map = game.get_map();
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
             if (dir == direction) continue;
-            auto rec = map->passable(object, dir);
+            auto rec = game.get_map()->passable(object, dir);
             auto& others = rec.other_objects;
             if (others.find(collision.other_object->get_name()) == others.end()) {
                 passable = true;
@@ -54,18 +53,28 @@ void Player_Controller::update(Map_Object& object) {
                 Collision_Check_Types::TILE);
     }
 
-    process_collision(object, collision.other_object, collision, Collision_Types::OBJECT, action_pressed);
-    process_collision(object, collision.other_area, collision, Collision_Types::AREA, action_pressed);
+    process_collision(object, collision, Collision_Types::OBJECT, action_pressed);
+    process_collision(object, collision, Collision_Types::AREA, action_pressed);
+
+    // Check collision one more time to outline any touched objects
+    if (object.get_collision_object()) return;
+    auto touching = game.get_map()->passable(object, object.get_direction(), Collision_Check_Types::OBJECT);
+    if (touching.type == Collision_Types::OBJECT) {
+        process_collision(object, touching, Collision_Types::OBJECT, false);
+    }
 }
 
-void Player_Controller::process_collision(Map_Object& object, Map_Object* other, Collision_Record collision, Collision_Types type, bool action_pressed) {
+void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Types type, bool action_pressed) {
     Map_Object* old_object = nullptr;
+    Map_Object* other = nullptr;
     if (type == Collision_Types::OBJECT) {
         old_object = object.get_collision_object();
+        other = collision.other_object;
         if (other)
             object.set_collision_object(other);
     } else {
         old_object = object.get_collision_area();
+        other = collision.other_area;
         if (other)
             object.set_collision_area(other);
     }
