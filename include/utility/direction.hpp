@@ -1,9 +1,9 @@
-#ifndef HPP_DIRECTION_UTILITIES
-#define HPP_DIRECTION_UTILITIES
+#ifndef HPP_UTILITY_DIRECTION
+#define HPP_UTILITY_DIRECTION
 
 #include <iostream>
-#include "direction.hpp"
-#include "utility/string.hpp"
+#include "../direction.hpp"
+#include "string.hpp"
 
 // Combine two directions
 inline Direction operator|(Direction a, Direction b) {

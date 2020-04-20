@@ -170,37 +170,31 @@ struct Sprite::Impl {
     }
 
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
-        // Clear existing tags if needed
-        tags.clear();
         // Update current pose tags
+        tags = new_tags;
+        // Lookup pose in cache
         std::string tag_string;
-        for (auto new_tag = new_tags.begin(); new_tag != new_tags.end(); ++new_tag) {
-            std::string key = new_tag->first;
-            std::string value = new_tag->second;
-            capitalize(key);
-            capitalize(value);
-            this->tags[key] = value;
+        for (auto& [key, value] : tags) {
             tag_string += key + ":" + value + " ";
         }
         int matched_pose = -1;
-        // Lookup pose in cache
         if (tag_map.find(tag_string) != tag_map.end()) {
             matched_pose = tag_map[tag_string];
         } else {
             // Map of pose IDs to their tag match count
             std::unordered_map<int, unsigned int> matches;
             // Loop over tags incrementing poses that match
-            for (auto tag = tags.begin(); tag != tags.end(); ++tag) {
+            for (auto& [key, value] : tags) {
                 for (unsigned int i = 0; i < data->poses.size(); ++i) {
                     auto& pose_tags = data->poses[i].tags;
-                    if (pose_tags.find(tag->first) != pose_tags.end() &&
-                            pose_tags[tag->first] == tag->second) {
+                    if (pose_tags.find(key) != pose_tags.end() &&
+                            pose_tags[key] == value) {
                         matches[i]++;
                         // Update best match
                         if (matched_pose == -1 ||
                                 matches[i] > matches[matched_pose] ||
                                 (matches[i] == matches[matched_pose] &&
-                                tag->first == "NAME")) {
+                                key == "NAME")) {
                             matched_pose = i;
                             // If all tags are matched, exit loops
                             if (matches[i] == tags.size())

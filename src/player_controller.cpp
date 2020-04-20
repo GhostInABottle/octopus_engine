@@ -5,7 +5,7 @@
 #include "../include/game.hpp"
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
-#include "../include/direction_utilities.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/configurations.hpp"
 
 Player_Controller::Player_Controller(Game& game) : game(game) {}

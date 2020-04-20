@@ -168,6 +168,7 @@
     <ClInclude Include="..\include\commands\text_options.hpp" />
     <ClInclude Include="..\include\lua_object.hpp" />
     <ClInclude Include="..\include\utility\color.hpp" />
+    <ClInclude Include="..\include\utility\direction.hpp" />
     <ClInclude Include="..\include\utility\file.hpp" />
     <ClInclude Include="..\include\utility\math.hpp" />
     <ClInclude Include="..\include\utility\string.hpp" />
@@ -252,7 +253,6 @@
     <ClInclude Include="..\include\tmx_properties.hpp" />
     <ClInclude Include="..\include\configurations.hpp" />
     <ClInclude Include="..\include\direction.hpp" />
-    <ClInclude Include="..\include\direction_utilities.hpp" />
     <ClInclude Include="..\include\editable.hpp" />
     <ClInclude Include="..\include\exceptions.hpp" />
     <ClInclude Include="..\include\game.hpp" />

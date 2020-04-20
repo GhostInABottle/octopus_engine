@@ -1,7 +1,5 @@
-- Allow running a script while game is paused.
 - Proper Linux distributables (.deb files? autopackage?)
 - Pimpl idiom for Map_Object and Canvas to reduce header dependencies.
 - Editor: Handle object name change.
-- Improve sprite and pose handling.
 - Implement smarter corner/edge correction.
 - Update GLFW when https://github.com/glfw/glfw/issues/1295 is fixed.

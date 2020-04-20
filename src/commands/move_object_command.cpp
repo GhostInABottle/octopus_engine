@@ -1,6 +1,6 @@
 #include "../../include/commands/move_object_command.hpp"
 #include "../../include/map_object.hpp"
-#include "../../include/direction_utilities.hpp"
+#include "../../include/utility/direction.hpp"
 
 
 Move_Object_Command::Move_Object_Command(Map_Object& object, Direction dir,
@@ -24,7 +24,7 @@ void Move_Object_Command::execute() {
     else if (skip_blocking)
         pixels = 0.0f;
 
-    complete = stopped || object.is_stopped() || pixels <= 0;
+    complete = stopped || object.is_stopped() || pixels <= 0.01f;
     if (complete) {
         object.update_state(old_state);
     }

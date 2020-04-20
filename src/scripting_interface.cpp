@@ -10,10 +10,10 @@
 #include "../include/command_result.hpp"
 #include "../include/commands.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/configurations.hpp"
 #include "../include/sprite_data.hpp"
-#include "../include/direction_utilities.hpp"
 #include "../include/save_file.hpp"
 #include "../include/log.hpp"
 #include "../include/xd/audio.hpp"
@@ -775,6 +775,10 @@ void Scripting_Interface::setup_scripts() {
     auto camera_type = lua.new_usertype<Camera>("Camera");
     camera_type["tint_color"] = sol::property(&Camera::get_tint_color, &Camera::set_tint_color);
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
+    camera_type["position_bounds"] = sol::readonly_property(&Camera::get_position_bounds);
+    camera_type["get_centered_position"] = sol::overload(
+            sol::resolve<xd::vec2(xd::vec2) const>(&Camera::get_centered_position),
+            sol::resolve<xd::vec2(const Map_Object&) const>(&Camera::get_centered_position));
     camera_type["move"] = [&](Camera& camera, int dir, float pixels, float speed) {
         auto si = game->get_current_scripting_interface();
         return si->register_command<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed);
@@ -789,14 +793,9 @@ void Scripting_Interface::setup_scripts() {
             return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);
         },
         [&](Camera& camera, Map_Object& object, float speed) {
-            xd::vec2 position = object.get_position();
-            auto sprite = object.get_sprite();
-            float width = sprite ? sprite->get_size().x : 0.0f;
-            float height = sprite ? sprite->get_size().y : 0.0f;
-            float x = position.x + width / 2 - game->game_width() / 2;
-            float y = position.y + height / 2 - game->game_height() / 2;
+            auto pos = camera.get_centered_position(object);
             auto si = game->get_current_scripting_interface();
-            return si->register_command<Move_Camera_Command>(camera, x, y, speed);
+            return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);
         }
     );
     camera_type["tint_screen"] = sol::overload(

@@ -13,7 +13,7 @@
 #include "../include/scripting_interface.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/xml.hpp"
-#include "../include/direction_utilities.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/vendor/rapidxml_print.hpp"
 #include "../include/xd/system.hpp"

@@ -3,12 +3,12 @@
 #include "../include/map.hpp"
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
+#include "../include/utility/math.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
-#include "../include/direction_utilities.hpp"
 #include "../include/log.hpp"
-#include "../include/utility/math.hpp"
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :

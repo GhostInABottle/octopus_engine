@@ -4,6 +4,7 @@
 #include "../include/xd/graphics/framebuffer.hpp"
 #include "../include/canvas.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/game.hpp"
 #include "../include/map.hpp"
@@ -11,7 +12,6 @@
 #include "../include/shake_decorator.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
-#include "../include/direction_utilities.hpp"
 
 Canvas::Canvas(Game& game, xd::vec2 position) :
         game(game), priority(0), type(Canvas::Type::IMAGE), position(position),

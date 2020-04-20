@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/utility/color.hpp"
+#include "../../include/utility/direction.hpp"
 #include "../../include/utility/math.hpp"
-#include "../../include/direction_utilities.hpp"
 
 BOOST_AUTO_TEST_SUITE(utility_tests)
 

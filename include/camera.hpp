@@ -29,6 +29,14 @@ public:
     void center_at(xd::vec2 pos);
     // Center camera at object
     void center_at(const Map_Object& object);
+    // Get camera centered position around pos
+    xd::vec2 get_centered_position(xd::vec2 pos) const;
+    // Get camera centered position around object
+    xd::vec2 get_centered_position(const Map_Object& object) const;
+    // Get minimum and maximum position bounds to stay within map limits
+    xd::rect get_position_bounds() const;
+    // Get position within camera bounds
+    xd::vec2 get_bounded_position(xd::vec2 pos) const;
     // Update position within map bounds
     void set_position(xd::vec2 pos);
     // Draw a rectangle

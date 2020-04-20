@@ -8,7 +8,7 @@
 #include "../../include/map_object.hpp"
 #include "../../include/object_layer.hpp"
 #include "../../include/tests/game_fixture.hpp"
-#include "../..//include/direction_utilities.hpp"
+#include "../..//include/utility/direction.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)
 

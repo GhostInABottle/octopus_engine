@@ -7,8 +7,20 @@ void trim(std::string& s) {
     boost::trim(s);
 }
 
+std::string trim(const std::string& s) {
+    std::string copy{s};
+    trim(copy);
+    return copy;
+}
+
 void capitalize(std::string& original) {
     boost::to_upper(original);
+}
+
+std::string capitalize(const std::string& original) {
+    std::string copy{original};
+    capitalize(copy);
+    return copy;
 }
 
 bool equal_strings(const std::string& str1, const std::string& str2) {

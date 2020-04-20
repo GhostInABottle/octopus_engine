@@ -9,24 +9,20 @@
 #include "../include/command.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
 #include "../include/log.hpp"
-#include "../include/direction_utilities.hpp"
 #include "../include/vendor/platform_folders.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/graphics.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
-#include <algorithm>
-#include <filesystem>
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <optional>
-#include <sstream>
 #include <stdexcept>
 #include <unordered_set>
 

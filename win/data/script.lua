@@ -146,6 +146,10 @@ elseif c.selected == 4 then
     for i, size in ipairs(game.sizes) do
         print(i .. ' - ' .. size.x .. ' x ' .. size.y)
     end
+    local bounds = camera.position_bounds
+    print('Camera bounds: ' .. bounds.x .. ', ' .. bounds.y .. ', ' .. bounds.w .. ', ' .. bounds.h)
+    local cpos = camera:get_centered_position(o)
+    print('Centered position for object: ' .. cpos.x .. ', ' .. cpos.y)
     local w = game.width
     local h = game.height
     text(o, "Changing screen size to 800, 800"):wait()
@@ -201,7 +205,7 @@ elseif c.selected == 6 then
     local game_size = Vec2(game.width, game.height)
     game:set_int_config('graphics.screen-width', 800)
     game:set_int_config('graphics.screen-height', 800)
-    print('game_width: ' .. tostring(game.width) .. ', height: ' .. tostring(game.height))
+    print('game_width: ' .. game.width .. ', height: ' .. game.height)
     text(o, "Reverting screen width and screen height config"):wait()
     game:set_int_config('graphics.screen-width', game_size.x)
     game:set_int_config('graphics.screen-height', game_size.y)

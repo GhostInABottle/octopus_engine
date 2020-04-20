@@ -6,8 +6,10 @@
 
 // Trim a string from both sides
 void trim(std::string& s);
+std::string trim(const std::string& s);
 // Capitalize all characters in a string
 void capitalize(std::string& original);
+std::string capitalize(const std::string& original);
 // Check if two strings are equal (case insensitive)
 bool equal_strings(const std::string& str1, const std::string& str2);
 // Split a string to a vector

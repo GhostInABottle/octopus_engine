@@ -677,5 +677,14 @@
     <ClInclude Include="..\..\include\xd\graphics\shader_uniforms.hpp">
       <Filter>Header Files\xd\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\utility\direction.hpp">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\direction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\exceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

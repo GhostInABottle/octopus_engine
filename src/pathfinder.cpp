@@ -1,5 +1,5 @@
 #include "../include/pathfinder.hpp"
-#include "../include/direction_utilities.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
 #include "../include/configurations.hpp"

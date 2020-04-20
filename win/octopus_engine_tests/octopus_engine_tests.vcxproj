@@ -171,8 +171,11 @@
     <ClCompile Include="..\..\src\xd\system\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\direction.hpp" />
+    <ClInclude Include="..\..\include\exceptions.hpp" />
     <ClInclude Include="..\..\include\lua_object.hpp" />
     <ClInclude Include="..\..\include\utility\color.hpp" />
+    <ClInclude Include="..\..\include\utility\direction.hpp" />
     <ClInclude Include="..\..\include\utility\file.hpp" />
     <ClInclude Include="..\..\include\utility\math.hpp" />
     <ClInclude Include="..\..\include\utility\string.hpp" />

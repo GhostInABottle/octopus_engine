@@ -199,29 +199,41 @@ void Camera::set_clear_color(xd::vec4 color) const {
 }
 
 void Camera::center_at(xd::vec2 pos) {
-    set_position(pos - xd::vec2(game.game_width() / 2, game.game_height() / 2));
+    position = get_centered_position(pos);
 }
 
 void Camera::center_at(const Map_Object& target) {
-    xd::vec2 target_position = target.get_position();
-    auto sprite = target.get_sprite();
-    float width = sprite ? sprite->get_size().x : 0.0f;
-    float height = sprite ? sprite->get_size().y : 0.0f;
-    target_position.x += width / 2;
-    target_position.y += height / 2;
-
-    center_at(target_position);
+    position = get_centered_position(target);
 }
 
-void Camera::set_position(xd::vec2 pos) {
+xd::vec2 Camera::get_centered_position(xd::vec2 pos) const {
+    return get_bounded_position(pos - xd::vec2{game.game_width() / 2.0f, game.game_height() / 2.0f});
+}
+
+xd::vec2 Camera::get_centered_position(const Map_Object& target) const {
+    xd::vec2 target_position = target.get_position();
+    auto sprite = target.get_sprite();
+    auto sprite_size = sprite ? sprite->get_size() : xd::vec2{0.0f, 0.0f};
+    auto object_pos = target.get_position() + sprite_size / 2.0f;
+    return get_centered_position(object_pos);
+}
+
+xd::rect Camera::get_position_bounds() const {
     auto map = game.get_map();
     float map_width = static_cast<float>(map->get_pixel_width());
     float map_height = static_cast<float>(map->get_pixel_height());
-    float right_limit = map_width - game.game_width();
-    float bottom_limit = map_height - game.game_height();
+    return xd::rect{0.0f, 0.0f,
+        map_width - game.game_width(), map_height - game.game_height()};
+}
 
-    position = xd::vec2{std::min(right_limit, std::max(0.0f, pos.x)),
-                        std::min(bottom_limit, std::max(0.0f, pos.y))};
+xd::vec2 Camera::get_bounded_position(xd::vec2 pos) const {
+    auto bounds = get_position_bounds();
+    return xd::vec2{std::min(bounds.w, std::max(bounds.x, pos.x)),
+                        std::min(bounds.h, std::max(bounds.y, pos.y))};
+}
+
+void Camera::set_position(xd::vec2 pos) {
+    position = get_bounded_position(pos);
 }
 
 void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {

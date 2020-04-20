@@ -4,7 +4,7 @@
 #include "../../include/game.hpp"
 #include "../../include/pathfinder.hpp"
 #include "../../include/direction.hpp"
-#include "../../include/direction_utilities.hpp"
+#include "../../include/utility/direction.hpp"
 #include "../../include/utility/math.hpp"
 #include "../../include/xd/graphics/types.hpp"
 #include <deque>

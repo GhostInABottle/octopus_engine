@@ -1,13 +1,13 @@
 #include "../../include/commands/move_camera_command.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/map_object.hpp"
-#include "../../include/direction_utilities.hpp"
+#include "../../include/utility/direction.hpp"
 
 
 Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float speed)
     : camera(camera), camera_object(camera.get_object()), speed(speed) {
     camera.set_object(nullptr);
-    xd::vec2 displacement = xd::vec2(x, y) - camera.get_position();
+    xd::vec2 displacement = camera.get_bounded_position(xd::vec2(x, y)) - camera.get_position();
     direction = xd::normalize(displacement);
     pixels = static_cast<float>(xd::length(displacement));
 }
@@ -27,5 +27,5 @@ void Move_Camera_Command::execute() {
 }
 
 bool Move_Camera_Command::is_complete() const {
-    return pixels <= 0;
+    return pixels < 0.01f;
 }
