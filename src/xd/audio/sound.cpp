@@ -7,6 +7,12 @@
 #include <memory>
 
 namespace xd { namespace detail {
+    bool invalid_result(FMOD_RESULT result) {
+        // Stolen and stale channel handles are expected
+        return result != FMOD_OK
+            && result != FMOD_ERR_CHANNEL_STOLEN
+            && result != FMOD_ERR_INVALID_HANDLE;
+    }
     struct sound_handle
     {
         detail::audio_handle* audio_handle;
@@ -14,8 +20,15 @@ namespace xd { namespace detail {
         FMOD::Sound* sound;
         FMOD::Channel* channel;
         std::string filename;
+        float volume;
+        float pitch;
         sound_handle(detail::audio_handle* audio_handle, bool is_music) :
-            audio_handle(audio_handle), is_music(is_music), sound(nullptr), channel(nullptr) {}
+            audio_handle(audio_handle),
+            is_music(is_music),
+            sound(nullptr),
+            channel(nullptr),
+            volume(1.0f),
+            pitch(1.0f) {}
         int get_loop_tag(const char* name) {
             if (!sound)
                 return -1;
@@ -48,15 +61,19 @@ xd::sound::sound(audio& audio, const std::string& filename, unsigned int flags)
     m_handle = std::make_unique<detail::sound_handle>(audio_handle, is_music);
     auto result = audio_handle->system->createSound(filename.c_str(),
         flags, nullptr,  &m_handle->sound);
-    if (result != FMOD_OK) throw audio_file_load_failed(filename);
+    if (result != FMOD_OK) {
+        throw audio_file_load_failed(filename, static_cast<int>(result));
+    }
     m_handle->filename = filename;
-
     // Set loop points if specified in tags
     if (flags & FMOD_LOOP_NORMAL) {
         int loop_start = m_handle->get_loop_tag("LOOPSTART");
         int loop_end = m_handle->get_loop_tag("LOOPLENGTH");
         unsigned int u_length = 0;
-        m_handle->sound->getLength(&u_length, detail::time_unit);
+        result = m_handle->sound->getLength(&u_length, detail::time_unit);
+        if (result != FMOD_OK) {
+            LOGGER_W << "Unable to get length of sound " << m_handle->filename << " - FMOD result: " << result;
+        }
         int length = static_cast<int>(u_length);
         // Make sure loop start and end are within acceptable bounds
         if (loop_start < 0 || loop_start >= length)
@@ -68,8 +85,9 @@ xd::sound::sound(audio& audio, const std::string& filename, unsigned int flags)
         if (loop_end < 0 || loop_end >= length)
             loop_end = length - 1;
         // Set loop points if needed
-        if (loop_start != 0 || loop_end != length - 1)
+        if (loop_start != 0 || loop_end != length - 1) {
             set_loop_points(loop_start, loop_end);
+        }
     }
 }
 
@@ -77,47 +95,69 @@ xd::sound::~sound()
 {
 }
 
+void xd::sound::create_channel() {
+    auto audio_handle = m_handle->audio_handle;
+    auto result = audio_handle->system->playSound(m_handle->sound, nullptr, true, &m_handle->channel);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Playback of sound file " << m_handle->filename << " failed - FMOD result: " << result;
+    }
+    result = m_handle->channel->setChannelGroup(m_handle->is_music ?
+        audio_handle->music_channel_group : audio_handle->sound_channel_group);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Unable to set channel group for " << m_handle->filename << " - FMOD result: " << result;
+    }
+    set_volume(m_handle->volume);
+    set_pitch(m_handle->pitch);
+}
+
 void xd::sound::play()
 {
-    if (m_handle->channel && playing() && !paused()) return;
-
-    if (!m_handle->channel || !paused()) {
-        auto audio_handle = m_handle->audio_handle;
-        auto result = audio_handle->system->playSound(m_handle->sound, nullptr, true, &m_handle->channel);
-        if (result != FMOD_OK) {
-            LOGGER_W << "Playback of sound file " << m_handle->filename << " failed - FMOD result: " << result;
-        }
-        result = m_handle->channel->setChannelGroup(m_handle->is_music ?
-            audio_handle->music_channel_group : audio_handle->sound_channel_group);
-        if (result != FMOD_OK) {
-            LOGGER_W << "Unable to set channel group for " << m_handle->filename << " - FMOD result: " << result;
-        }
+    if (!paused()) {
+        if (playing()) return;
+        create_channel();
     }
-    m_handle->channel->setPaused(false);
+    auto result = m_handle->channel->setPaused(false);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to play sound " << m_handle->filename << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::pause()
 {
-    m_handle->channel->setPaused(true);
+    auto result = m_handle->channel->setPaused(true);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to pause sound " << m_handle->filename << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::stop()
 {
-    m_handle->channel->stop();
+    auto result = m_handle->channel->stop();
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to stop sound " << m_handle->filename << " - FMOD result: " << result;
+    }
 }
 
 
 bool xd::sound::playing() const
 {
+    if (!m_handle->channel) return false;
     bool playing = false;
-    m_handle->channel->isPlaying(&playing);
+    auto result = m_handle->channel->isPlaying(&playing);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to check if sound " << m_handle->filename << " is playing - FMOD result: " << result;
+    }
     return playing;
 }
 
 bool xd::sound::paused() const
 {
+    if (!m_handle->channel) return false;
     bool paused = false;
-    m_handle->channel->getPaused(&paused);
+    auto result = m_handle->channel->getPaused(&paused);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to check if sound " << m_handle->filename << " is paused - FMOD result: " << result;
+    }
     return paused;
 }
 
@@ -128,65 +168,100 @@ bool xd::sound::stopped() const
 
 void xd::sound::set_offset(unsigned int offset)
 {
-    m_handle->channel->setPosition(offset, detail::time_unit);
+    auto result = m_handle->channel->setPosition(offset, detail::time_unit);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to set offset of sound " << m_handle->filename << " to " << offset << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::set_volume(float volume)
 {
-    m_handle->channel->setVolume(volume);
+    m_handle->volume = volume;
+    auto result = m_handle->channel->setVolume(volume);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to set volume of sound " << m_handle->filename << " to " << volume << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::set_pitch(float pitch)
 {
-    m_handle->channel->setPitch(pitch);
+    m_handle->pitch = pitch;
+    auto result = m_handle->channel->setPitch(pitch);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to set pitch of sound " << m_handle->filename << " to " << pitch << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::set_looping(bool looping)
 {
-    m_handle->sound->setLoopCount(looping ? -1 : 0);
+    auto result = m_handle->sound->setLoopCount(looping ? -1 : 0);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Unable to set looping of sound " << m_handle->filename << " to " << looping << " - FMOD result: " << result;
+    }
 }
 
 void xd::sound::set_loop_points(unsigned int start, unsigned int end)
 {
-    if (end == 0) {
-        m_handle->sound->getLength(&end, detail::time_unit);
+    if (end == 0u) {
+        auto result = m_handle->sound->getLength(&end, detail::time_unit);
+        if (result != FMOD_OK) {
+            LOGGER_W << "Unable to get length of sound " << m_handle->filename << " - FMOD result: " << result;
+        }
         end--;
     }
-    m_handle->sound->setLoopPoints(start, detail::time_unit, end, detail::time_unit);
+    auto result = m_handle->sound->setLoopPoints(start, detail::time_unit, end, detail::time_unit);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Unable to set loop points of sound " << m_handle->filename << " to " << start << ", " << end << " - FMOD result: " << result;
+    }
 }
 
 unsigned int xd::sound::get_offset() const
 {
     unsigned int pos = 0;
-    m_handle->channel->getPosition(&pos, detail::time_unit);
+    auto result = m_handle->channel->getPosition(&pos, detail::time_unit);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to get offset of sound " << m_handle->filename << " - FMOD result: " << result;
+    }
     return pos;
 }
 
 float xd::sound::get_volume() const
 {
-    float volume = 0.0f;
-    m_handle->channel->getVolume(&volume);
+    float volume = m_handle->volume;
+    auto result = m_handle->channel->getVolume(&volume);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to get volume of sound " << m_handle->filename << " - FMOD result: " << result;
+    }
     return volume;
 }
 
 float xd::sound::get_pitch() const
 {
-    float pitch = 0.0f;
-    m_handle->channel->getPitch(&pitch);
+    float pitch = m_handle->pitch;
+    auto result = m_handle->channel->getPitch(&pitch);
+    if (detail::invalid_result(result)) {
+        LOGGER_W << "Unable to get pitch of sound " << m_handle->filename << " - FMOD result: " << result;
+    }
     return pitch;
 }
 
 bool xd::sound::get_looping() const
 {
     int loop = 0;
-    m_handle->sound->getLoopCount(&loop);
+    auto result = m_handle->sound->getLoopCount(&loop);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Unable to get looping of sound " << m_handle->filename << " - FMOD result: " << result;
+    }
     return loop != 0;
 }
 
 std::pair<unsigned int, unsigned int> xd::sound::get_loop_points() const
 {
-    unsigned int start = 0, end = 0;
-    m_handle->sound->getLoopPoints(&start, detail::time_unit, &end, detail::time_unit);
+    auto start = 0u, end = 0u;
+    auto result = m_handle->sound->getLoopPoints(&start, detail::time_unit, &end, detail::time_unit);
+    if (result != FMOD_OK) {
+        LOGGER_W << "Unable to get loop points of sound " << m_handle->filename << " - FMOD result: " << result;
+    }
     return std::make_pair(start, end);
 }
 

@@ -166,28 +166,36 @@ elseif c.selected == 4 then
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
 elseif c.selected == 5 then
     -- Audio
+    local music = game.playing_music
+    text(o, "Pausing music " .. music.filename):wait()
+    music:pause()
     local sound_file = 'data/as3sfxr_menu_select.wav'
     text(o, 'Playing sound effect ' .. sound_file):wait()
     Sound(sound_file):play()
+    text(o, 'Playing sound effect with half volume and pitch'):wait()
+    local sound = Sound(sound_file)
+    sound.volume = 0.5
+    sound.pitch = 0.5
+    print('Volume: ' .. sound.volume .. ', pitch: ' .. sound.pitch)
+    sound:play()
     text(o, 'Changing global sound volume then playing again'):wait()
     local old_sound_volume = game.global_sound_volume
     game.global_sound_volume = 0.5
     Sound(sound_file):play()
+    text(o, 'Playing sound effect again with half volume and pitch'):wait()
+    sound:play()
     text(o, 'Changing global sound volume via configuration'):wait()
     game:set_float_config('audio.sound-volume', 0.25)
     wait(1)
     Sound(sound_file):play()
+    text(o, 'Resuming music'):wait()
+    music:play()
     text(o, 'Changing global music volume'):wait()
     local old_music_volume = game.global_music_volume
     game.global_music_volume = 0.3
-    local music = game.playing_music
-    text(o, "Pausing music " .. music.filename):wait()
-    music:pause()
-    text(o, "Waiting 1000 ms then resuming music"):wait()
-    wait(1000)
+    text(o, "Resetting music volume"):wait()
     game.global_sound_volume = old_sound_volume
     game.global_music_volume = old_music_volume
-    music:play()
 elseif c.selected == 6 then
     -- Other
     local files = filesystem.list_directory('.')

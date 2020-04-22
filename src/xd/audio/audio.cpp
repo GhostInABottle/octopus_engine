@@ -8,16 +8,16 @@ xd::audio::audio() {
     m_audio_handle = std::make_unique<detail::audio_handle>();
     auto result = FMOD::System_Create(&m_audio_handle->system);
     if (result != FMOD_OK)
-        throw audio_system_init_failed("System creation failed");
+        throw audio_system_init_failed("System creation failed", static_cast<int>(result));
     result = m_audio_handle->system->init(512, FMOD_INIT_NORMAL, 0);
     if (result != FMOD_OK)
-        throw audio_system_init_failed("System initialization failed");
+        throw audio_system_init_failed("System initialization failed", static_cast<int>(result));
     result = m_audio_handle->system->createChannelGroup("music", &m_audio_handle->music_channel_group);
     if (result != FMOD_OK)
-        throw audio_system_init_failed("Unable to create music channel group");
+        throw audio_system_init_failed("Unable to create music channel group", static_cast<int>(result));
     result = m_audio_handle->system->createChannelGroup("sound", &m_audio_handle->sound_channel_group);
     if (result != FMOD_OK)
-        throw audio_system_init_failed("Unable to create sound channel group");
+        throw audio_system_init_failed("Unable to create sound channel group", static_cast<int>(result));
 }
 
 xd::audio::~audio() {}

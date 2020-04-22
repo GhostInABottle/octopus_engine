@@ -46,6 +46,7 @@ namespace xd
 
     private:
         std::unique_ptr<detail::sound_handle> m_handle;
+        void create_channel();
     };
 }
 
