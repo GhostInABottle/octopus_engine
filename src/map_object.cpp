@@ -24,6 +24,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         stopped(false),
         frozen(false),
         passthrough(false),
+        passthrough_type(Passthrough_Type::BOTH),
         override_tile_collision(false),
         speed(1.0f),
         name(name),
@@ -329,9 +330,14 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_walk_state(properties["walk-state"]);
 
     if (properties.has_property("script-context")) {
-        auto context = properties["script-context"];
-        capitalize(context);
-        object_ptr->set_script_context(context == "GLOBAL" ? Script_Context::GLOBAL : Script_Context::MAP);
+        auto context_string = properties["script-context"];
+        capitalize(context_string);
+        auto context = Script_Context::MAP;
+        if (context_string == "GLOBAL")
+            context = Script_Context::GLOBAL;
+        else if (context_string != "MAP")
+            LOGGER_W << "Unknown object script context '" << context_string << "' - defaulting to MAP";
+        object_ptr->set_script_context(context);
     }
 
     if (properties.has_property("script"))
@@ -349,6 +355,18 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_player_facing(properties["player-facing"] == "true");
     if (properties.has_property("passthrough"))
         object_ptr->set_passthrough(properties["passthrough"] == "true");
+    if (properties.has_property("passthrough-type")) {
+        auto type_string = properties["passthrough-type"];
+        capitalize(type_string);
+        auto type = Passthrough_Type::BOTH;
+        if (type_string == "INITIATOR")
+            type = Passthrough_Type::INITIATOR;
+        else if (type_string == "RECEIVER")
+            type = Passthrough_Type::RECEIVER;
+        else if (type_string != "BOTH")
+            LOGGER_W << "Unknown object passthrough type '" << type_string << "' - defaulting to BOTH";
+        object_ptr->set_passthrough_type(type);
+    }
     if (properties.has_property("override-tile-collision"))
         object_ptr->set_passthrough(properties["override-tile-collision"] == "true");
     if (properties.has_property("outlined"))

@@ -25,6 +25,7 @@ class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public E
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
+    enum class Passthrough_Type { INITIATOR = 1, RECEIVER, BOTH };
     // Map object onstructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
@@ -141,6 +142,20 @@ public:
     }
     void set_passthrough(bool new_passthrough) {
         passthrough = new_passthrough;
+    }
+    Passthrough_Type get_passthrough_type() const {
+        return passthrough_type;
+    }
+    void set_passthrough_type(Passthrough_Type type) {
+        passthrough_type = type;
+    }
+    bool initiates_passthrough() const {
+        return passthrough
+            && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::INITIATOR)) != 0;
+    }
+    bool receives_passthrough() const {
+        return passthrough
+            && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::RECEIVER)) != 0;
     }
     bool overrides_tile_collision() const {
         return override_tile_collision;
@@ -358,6 +373,9 @@ private:
     bool frozen;
     // Can object pass through obstaces?
     bool passthrough;
+    // How does passthrough work? INITIATOR can pass through others,
+    // RECEIVER can be passed through. Defaults to BOTH 
+    Passthrough_Type passthrough_type;
     // Does this object override tile collision?
     bool override_tile_collision;
     // Object direction

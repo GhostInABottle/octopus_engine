@@ -62,21 +62,6 @@ void Scripting_Interface::set_globals() {
     vm.globals()["LEFT"] = static_cast<int>(Direction::LEFT);
     vm.globals()["FORWARD"] = static_cast<int>(Direction::FORWARD);
     vm.globals()["BACKWARD"] = static_cast<int>(Direction::BACKWARD);
-    // Object draw order
-    vm.globals()["DRAW_BELOW"] = static_cast<int>(Map_Object::Draw_Order::BELOW);
-    vm.globals()["DRAW_NORMAL"] = static_cast<int>(Map_Object::Draw_Order::NORMAL);
-    vm.globals()["DRAW_ABOVE"] = static_cast<int>(Map_Object::Draw_Order::ABOVE);
-    // Text positioning
-    vm.globals()["TEXT_POSITION_NONE"] = static_cast<int>(Text_Position_Type::NONE);
-    vm.globals()["TEXT_POSITION_EXACT_X"] = static_cast<int>(Text_Position_Type::EXACT_X);
-    vm.globals()["TEXT_POSITION_CENTERED_X"] = static_cast<int>(Text_Position_Type::CENTERED_X);
-    vm.globals()["TEXT_POSITION_EXACT_Y"] = static_cast<int>(Text_Position_Type::EXACT_Y);
-    vm.globals()["TEXT_POSITION_BOTTOM_Y"] = static_cast<int>(Text_Position_Type::BOTTOM_Y);
-    vm.globals()["TEXT_POSITION_CAMERA"] = static_cast<int>(Text_Position_Type::CAMERA_RELATIVE);
-    vm.globals()["TEXT_POSITION_ALWAYS_VISIBLE"] = static_cast<int>(Text_Position_Type::ALWAYS_VISIBLE);
-    // Script context
-    vm.globals()["SCRIPT_CONTEXT_GLOBAL"] = static_cast<int>(Map_Object::Script_Context::GLOBAL);
-    vm.globals()["SCRIPT_CONTEXT_MAP"] = static_cast<int>(Map_Object::Script_Context::MAP);
 }
 
 sol::state& Scripting_Interface::lua_state() {
@@ -248,6 +233,18 @@ void Scripting_Interface::setup_scripts() {
             object, pose, state, direction));
     };
 
+    // Text positioning
+    lua.new_enum<Text_Position_Type>("Text_Position_Type",
+        {
+            {"none", Text_Position_Type::NONE},
+            {"exact_x", Text_Position_Type::EXACT_X},
+            {"centered_x", Text_Position_Type::CENTERED_X},
+            {"exact_y", Text_Position_Type::EXACT_Y},
+            {"bottom_y", Text_Position_Type::BOTTOM_Y},
+            {"camera_relative", Text_Position_Type::CAMERA_RELATIVE},
+            {"always_visible", Text_Position_Type::ALWAYS_VISIBLE}
+        });
+
     // Options for displaying text
     auto options_type = lua.new_usertype<Text_Options>("Text_Options",
         sol::call_constructor, sol::constructors<Text_Options(), Text_Options(Map_Object*), Text_Options(xd::vec2)>());
@@ -282,9 +279,7 @@ void Scripting_Interface::setup_scripts() {
         }
         return options.set_choices(choices);
     };
-    options_type["set_position_type"] = [&](Text_Options& options, int type) -> Text_Options& {
-        return options.set_position_type(static_cast<Text_Position_Type>(type));
-    };
+    options_type["set_position_type"] = &Text_Options::set_position_type;
 
     // Show text
     lua["text"] = sol::overload(
@@ -473,6 +468,27 @@ void Scripting_Interface::setup_scripts() {
         }
     );
 
+    // Object draw order
+    lua.new_enum<Map_Object::Draw_Order>("Draw_Order",
+        {
+            {"below", Map_Object::Draw_Order::BELOW},
+            {"normal", Map_Object::Draw_Order::NORMAL},
+            {"above", Map_Object::Draw_Order::ABOVE}
+        });
+    // Script context
+    lua.new_enum<Map_Object::Script_Context>("Script_Context",
+        {
+            {"global", Map_Object::Script_Context::GLOBAL},
+            {"map", Map_Object::Script_Context::MAP}
+        });
+    // Passthrough type
+    lua.new_enum<Map_Object::Passthrough_Type>("Passthrough_Type",
+        {
+            {"initiator", Map_Object::Passthrough_Type::INITIATOR},
+            {"receiver", Map_Object::Passthrough_Type::RECEIVER},
+            {"both", Map_Object::Passthrough_Type::BOTH}
+        });
+
     // Map object
     auto object_type = lua.new_usertype<Map_Object>("Map_Object",
         sol::base_classes, sol::bases<Sprite_Holder>());
@@ -489,6 +505,7 @@ void Scripting_Interface::setup_scripts() {
     object_type["stopped"] = sol::property(&Map_Object::is_stopped, &Map_Object::set_stopped);
     object_type["frozen"] = sol::property(&Map_Object::is_frozen, &Map_Object::set_frozen);
     object_type["passthrough"] = sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough);
+    object_type["passthrough_type"] = sol::property(&Map_Object::get_passthrough_type, &Map_Object::set_passthrough_type);
     object_type["pose_name"] = sol::property(&Map_Object::get_pose_name);
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::update_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);

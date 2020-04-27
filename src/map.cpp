@@ -85,7 +85,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
         xd::vec2 position, float speed, Collision_Check_Types check_type) {
     Collision_Record result;
-    if (object.is_passthrough())
+    if (object.initiates_passthrough())
         return result;
     auto bounding_box = object.get_bounding_box();
     if (bounding_box.w < 1 || bounding_box.h < 1)
@@ -112,7 +112,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             auto other_id = object_pair.first;
             auto other_object = object_pair.second.get();
             auto visible = other_object->is_visible();
-            auto passthrough = other_object->is_passthrough();
+            auto passthrough = other_object->receives_passthrough();
 
             // Skip objects with no bounding box
             auto box = other_object->get_bounding_box();
