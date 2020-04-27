@@ -149,7 +149,9 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         }
         update_state(walk_state);
         map->set_objects_moved(true);
-        return collision;
+        for (auto obj : linked_objects) {
+            obj->move(move_dir, pixels, check_type, change_facing);
+        }
     }
     return collision;
 }
@@ -240,15 +242,13 @@ void Map_Object::face(const Map_Object& other) {
 }
 
 void Map_Object::face(xd::vec2 other_position) {
-    direction = facing_direction(get_real_position(), other_position);
-    update_pose();
+    set_pose("", "", facing_direction(get_real_position(), other_position));
 }
 
 void Map_Object::face(Direction dir) {
     if (dir == Direction::FORWARD || dir == Direction::BACKWARD)
         return;
-    direction = static_cast<Direction>(dir);
-    update_pose();
+    set_pose("", "", static_cast<Direction>(dir));
 }
 
 void Map_Object::run_script(const std::string& script) {
@@ -354,7 +354,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("outlined"))
         object_ptr->set_outlined(properties["outlined"] == "true");
 
-    object_ptr->update_pose();
+    object_ptr->set_pose();
 
     return object_ptr;
 }

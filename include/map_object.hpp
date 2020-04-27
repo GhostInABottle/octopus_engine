@@ -4,6 +4,8 @@
 #include <string>
 #include <memory>
 #include <optional>
+#include <algorithm>
+#include <vector>
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
@@ -224,6 +226,16 @@ public:
     void set_triggered_object(Map_Object* obj) {
         triggered_object = obj;
     }
+    void add_linked_object(Map_Object* obj) {
+        if (obj == this) return;
+        linked_objects.push_back(obj);
+    }
+    void remove_linked_object(Map_Object* obj) {
+        linked_objects.erase(
+            std::remove_if(linked_objects.begin(), linked_objects.end(),
+                [obj](const Map_Object* o) { return o == obj; }),
+            linked_objects.end());
+    }
     bool is_outlined() const;
     void set_outlined(std::optional<bool> new_outlined) {
         outlined = new_outlined;
@@ -253,10 +265,8 @@ public:
     void set_speed(float speed);
     // Update object's state
     void update_state(const std::string& new_state) {
-        if (!frozen) {
-            state = new_state;
-            update_pose();
-        }
+        if (frozen) return;
+        set_pose("", new_state);
     }
     // Get bounding box
     xd::rect get_bounding_box() const {
@@ -284,6 +294,9 @@ public:
         if (new_direction != Direction::NONE)
             direction = new_direction;
         Sprite_Holder::set_pose(pose_name, state, direction);
+        for (auto obj : linked_objects) {
+            obj->set_pose(new_pose_name, new_state, new_direction);
+        }
     }
     // Face another object
     void face(const Map_Object& other);
@@ -373,6 +386,8 @@ private:
     Map_Object* collision_area;
     // Last object activated by player
     Map_Object* triggered_object;
+    // Objects that move whenever this object moves
+    std::vector<Map_Object*> linked_objects;
     // Object properties
     Tmx_Properties properties;
     // How object is drawn relative to other objects in layer
@@ -381,10 +396,6 @@ private:
     std::shared_ptr<Sprite> sprite;
     // Object speed
     float speed;
-    // Update current pose
-    void update_pose() {
-        Sprite_Holder::set_pose(pose_name, state, direction);
-    }
     // Run a script
     void run_script(const std::string& script);
 };

@@ -576,6 +576,8 @@ void Scripting_Interface::setup_scripts() {
     object_type["run_trigger_script"] = &Map_Object::run_trigger_script;
     object_type["run_touch_script"] = &Map_Object::run_touch_script;
     object_type["run_leave_script"] = &Map_Object::run_leave_script;
+    object_type["add_linked_object"] = &Map_Object::add_linked_object;
+    object_type["remove_linked_object"] = &Map_Object::remove_linked_object;
 
     // Sound effect
     auto sound = lua.new_usertype<xd::sound>("Sound",
