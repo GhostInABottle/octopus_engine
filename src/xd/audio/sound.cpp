@@ -34,13 +34,40 @@ namespace xd { namespace detail {
                 return -1;
             FMOD_TAG tag;
             int value = -1;
-            if (sound->getTag(name, 0, &tag) == FMOD_OK) {
-                if (tag.datatype == FMOD_TAGDATATYPE_STRING) {
-                    std::string data = static_cast<const char*>(tag.data);
+            if (sound->getTag(name, 0, &tag) != FMOD_OK) return value;
+            std::string data;
+            unsigned char offset = 0;
+            try {
+                switch (tag.datatype) {
+                case FMOD_TAGDATATYPE_INT:
+                    value = *static_cast<int*>(tag.data);
+                    break;
+                case FMOD_TAGDATATYPE_FLOAT:
+                    value = static_cast<int>(*static_cast<float*>(tag.data));
+                    break;
+                case FMOD_TAGDATATYPE_STRING:
+                    data = std::string{static_cast<const char*>(tag.data), tag.datalen};
                     value = std::stoi(data);
-                } else {
+                    break;
+                case FMOD_TAGDATATYPE_STRING_UTF8:
+                    // Skip byte order mark
+                    if (tag.datalen > 3 && ((unsigned char*)tag.data)[0] == 0xEF
+                            && ((unsigned char*)tag.data)[1] == 0xBB
+                            && ((unsigned char*)tag.data)[2] == 0xBF) {
+                        offset = 3;
+                    }
+                    data = std::string{static_cast<const char*>(tag.data) + offset,
+                        tag.datalen - offset};
+                    value = std::stoi(data);
+                    break;
+                default:
+                    LOGGER_W << "Unexpected audio tag type " << tag.datatype << " for " << name;
                     value = -1;
                 }
+            } catch (const std::invalid_argument& ex) {
+                LOGGER_W << "Error in converting value of tag " << name
+                    << " to int - tag value was: " << data << " - " << ex.what();
+                value = -1;
             }
             return value;
         }
@@ -78,14 +105,18 @@ xd::sound::sound(audio& audio, const std::string& filename, unsigned int flags)
         // Make sure loop start and end are within acceptable bounds
         if (loop_start < 0 || loop_start >= length)
             loop_start = 0;
+
         if (loop_end < 0)
             loop_end = m_handle->get_loop_tag("LOOPEND");
         else
             loop_end = loop_start + loop_end;
+
         if (loop_end < 0 || loop_end >= length)
             loop_end = length - 1;
+
         // Set loop points if needed
         if (loop_start != 0 || loop_end != length - 1) {
+            LOGGER_I << "Setting loop points for " << filename << " to " << loop_start << ", " << loop_end;
             set_loop_points(loop_start, loop_end);
         }
     }
