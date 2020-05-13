@@ -81,14 +81,6 @@ struct Sprite::Impl {
         Frame* current_frame = &pose->frames[frame_index];
         int frame_time = get_frame_time(*current_frame);
 
-        // If the number of repeats is reached then animation is finished
-        if (finished_repeating()) {
-            // Make sure the last frame is complete before finishing
-            if (game.ticks() - old_time > frame_time)
-                finished = true;
-            return;
-        }
-
         auto audio = game.get_audio();
         if (audio && !current_frame->sound_file.empty() && last_sound_frame != frame_index) {
             auto sound = std::make_shared<xd::sound>(*audio, current_frame->sound_file);
@@ -99,19 +91,17 @@ struct Sprite::Impl {
 
         if (game.ticks() - old_time > frame_time) {
             old_time = game.ticks();
-            if (tweening)
-                tweening = false;
+            if (tweening) tweening = false;
 
-            frame_index++;
-            if (frame_index >= frame_count) {
+            if (frame_index + 1 >= frame_count) {
                 repeat_count++;
                 last_sound_frame = -1;
                 if (finished_repeating()) {
-                    frame_index--;
+                    finished = true;
                     return;
                 }
             }
-            frame_index %= frame_count;
+            frame_index = (frame_index + 1) % frame_count;
         }
 
         current_frame = &pose->frames[frame_index];
