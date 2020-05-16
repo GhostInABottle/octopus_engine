@@ -447,6 +447,7 @@ void Scripting_Interface::setup_scripts() {
 
     // Sprite holders: map object, image layer, canvas, etc.
     auto holder_type = lua.new_usertype<Sprite_Holder>("Sprite_Holder");
+    holder_type["sprite_filename"] = sol::property(&Sprite_Holder::get_sprite_filename);
     holder_type["reset"] = &Sprite_Holder::reset;
     holder_type["set_sprite"] = sol::overload(
         [&](Sprite_Holder* holder, const std::string& filename) {

@@ -34,3 +34,9 @@ std::string Sprite_Holder::get_pose_tag(const std::string& tag) {
     else
         return "";
 }
+
+std::string Sprite_Holder::get_sprite_filename() {
+    auto sprite = get_sprite();
+    if (!sprite) return "";
+    return sprite->get_filename();
+}
