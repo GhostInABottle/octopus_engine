@@ -447,7 +447,11 @@ void Scripting_Interface::setup_scripts() {
 
     // Sprite holders: map object, image layer, canvas, etc.
     auto holder_type = lua.new_usertype<Sprite_Holder>("Sprite_Holder");
-    holder_type["sprite_filename"] = sol::property(&Sprite_Holder::get_sprite_filename);
+    holder_type["sprite"] = sol::property(
+            &Sprite_Holder::get_sprite_filename,
+            [&](Sprite_Holder* holder, const std::string& filename) {
+                holder->set_sprite(*game, filename);
+            });
     holder_type["reset"] = &Sprite_Holder::reset;
     holder_type["set_sprite"] = sol::overload(
         [&](Sprite_Holder* holder, const std::string& filename) {
@@ -507,8 +511,8 @@ void Scripting_Interface::setup_scripts() {
     object_type["frozen"] = sol::property(&Map_Object::is_frozen, &Map_Object::set_frozen);
     object_type["passthrough"] = sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough);
     object_type["passthrough_type"] = sol::property(&Map_Object::get_passthrough_type, &Map_Object::set_passthrough_type);
-    object_type["pose_name"] = sol::property(&Map_Object::get_pose_name);
-    object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::update_state);
+    object_type["pose"] = sol::property(&Map_Object::get_pose_name, &Map_Object::set_pose_name);
+    object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
     object_type["face_state"] = sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state);
     object_type["visible"] = sol::property(&Map_Object::is_visible, &Map_Object::set_visible);

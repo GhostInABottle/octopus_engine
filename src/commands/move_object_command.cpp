@@ -26,7 +26,7 @@ void Move_Object_Command::execute() {
 
     complete = stopped || object.is_stopped() || pixels <= 0.01f;
     if (complete) {
-        object.update_state(old_state);
+        object.set_state(old_state);
     }
 }
 

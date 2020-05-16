@@ -122,8 +122,8 @@ public:
     }
     void set_disabled(bool new_disabled) {
         disabled = new_disabled;
-        if (state == walk_state)
-            update_state(face_state);
+        if (state != walk_state) return;
+        set_state(face_state);
     }
     bool is_stopped() const {
         return stopped;
@@ -172,8 +172,15 @@ public:
     std::string get_pose_name() const {
         return pose_name;
     }
+    void set_pose_name(const std::string& new_pose_name) {
+        set_pose(new_pose_name);
+    }
     std::string get_state() const {
         return state;
+    }
+    void set_state(const std::string& new_state) {
+        if (frozen) return;
+        set_pose("", new_state);
     }
     std::string get_face_state() const {
         return face_state;
@@ -278,11 +285,6 @@ public:
         return speed;
     }
     void set_speed(float speed);
-    // Update object's state
-    void update_state(const std::string& new_state) {
-        if (frozen) return;
-        set_pose("", new_state);
-    }
     // Get bounding box
     xd::rect get_bounding_box() const {
         if (sprite)

@@ -60,7 +60,7 @@ struct Move_Object_To_Command::Impl {
     // Called every frame
     void execute(bool stopped) {
         if ((blocked || !path_found) && keep_trying) {
-            object.update_state(old_state);
+            object.set_state(old_state);
             int time_passed = map.get_game().ticks() - last_attempt_time;
             if ((map.get_objects_moved() && time_passed > 1000) || time_passed > 5000) {
                 init();
@@ -91,7 +91,7 @@ struct Move_Object_To_Command::Impl {
                 blocked = true;
 
             if (complete = check_completion(stopped)) {
-                object.update_state(old_state);
+                object.set_state(old_state);
             }
 
             return;
@@ -112,7 +112,7 @@ struct Move_Object_To_Command::Impl {
         }
 
         if (complete = check_completion(stopped)) {
-            object.update_state(old_state);
+            object.set_state(old_state);
         }
     }
     // Is movement complete

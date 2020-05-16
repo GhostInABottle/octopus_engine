@@ -63,7 +63,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     bool movement = x_changed || y_changed;
 
     if (!movement) {
-        update_state(face_state);
+        set_state(face_state);
         // If there was no movement there's no need to check tile collision,
         // but maybe we want to check object collision to trigger scripts
         if (check_type & Collision_Check_Types::OBJECT) {
@@ -122,9 +122,8 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
             position += change;
             move_dir = vector_to_direction(change);
         } else {
-            if (movement && change_facing)
-                direction = move_dir;
-            update_state(face_state);
+            if (movement && change_facing) direction = move_dir;
+            set_state(face_state);
             return collision;
         }
     }
@@ -144,11 +143,11 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
                 direction = Direction::RIGHT;
             } else {
                 direction = move_dir;
-                update_state(face_state);
+                set_state(face_state);
                 return collision;
             }
         }
-        update_state(walk_state);
+        set_state(walk_state);
         map->set_objects_moved(true);
         for (auto obj : linked_objects) {
             obj->move(move_dir, pixels, check_type, change_facing);
