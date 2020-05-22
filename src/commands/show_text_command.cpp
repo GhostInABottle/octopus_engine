@@ -6,6 +6,7 @@
 #include "../../include/canvas.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"
+#include "../../include/utility/color.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/configurations.hpp"
 #include <utility>
@@ -33,6 +34,9 @@ struct Show_Text_Command::Impl {
         if (audio && !confirm_sound_file.empty()) {
             confirm_sound = std::make_unique<xd::sound>(*audio, confirm_sound_file);
         }
+
+        selected_choice_color = "{color=" + color_to_rgba_string(hex_to_color(
+            Configurations::get<std::string>("text.choice-selected-color"))) + "}";
 
         // Estimate text size by stripping out tags
         auto full = full_text();
@@ -95,18 +99,23 @@ struct Show_Text_Command::Impl {
         // Create the text canvas and show it
         canvas = std::make_shared<Canvas>(game, pos, full, camera_relative || always_visible);
         canvas->set_opacity(0.0f);
+        if (options.background_visible) {
+            canvas->set_background_visible(true);
+            canvas->set_background_rect(xd::rect{pos.x, pos.y - char_height,
+                text_width, text_height + char_height});
+        }
         game.add_canvas(canvas);
 
         // Show text above other images
         int priority = canvas->get_priority();
         priority += options.canvas_priority == -1 ?
-            Configurations::get<int>("debug.text-canvas-priority") :
+            Configurations::get<int>("text.canvas-priority") :
             options.canvas_priority;
         canvas->set_priority(priority);
         canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
         canvas_updater->set_new_opacity(1.0f);
         int duration = options.fade_in_duration == -1 ?
-            Configurations::get<int>("game.text-fade-in-duration") :
+            Configurations::get<int>("text.fade-in-duration") :
             options.fade_in_duration;
         canvas_updater->set_duration(duration);
         if (options.duration == -1) {
@@ -133,13 +142,13 @@ struct Show_Text_Command::Impl {
             // Add color for selected choice
             if (i == current_choice) {
                 auto start = choice_text.find(color_prefix);
-                // Strip existing outermost color, we want green to take precedence
+                // Strip existing outermost color, selected color takes precedence
                 if (start == 0) {
                     auto end = choice_text.find("}");
                     choice_text.replace(0, end + 1, "");
                     replaced_color = true;
                 }
-                result += "{color=green}";
+                result += selected_choice_color;
             }
 
             // Add padding before choices if header text was specified
@@ -170,7 +179,7 @@ struct Show_Text_Command::Impl {
 
         if (pressed_dir != Direction::NONE) {
             if (pressed_dir == pressed_direction) {
-                static int delay = Configurations::get<int>("game.choice-press-delay");
+                static int delay = Configurations::get<int>("text.choice-press-delay");
                 if (game.ticks() - press_start > delay) {
                     pressed_direction = Direction::NONE;
                     press_start = 0;
@@ -245,7 +254,7 @@ struct Show_Text_Command::Impl {
             selected_choice = current_choice;
             canvas_updater->reset();
             int duration = options.fade_out_duration == -1 ?
-                Configurations::get<int>("game.text-fade-out-duration") :
+                Configurations::get<int>("text.fade-out-duration") :
                 options.fade_out_duration;
             canvas_updater->set_duration(duration);
             canvas_updater->set_new_opacity(0.0f);
@@ -264,6 +273,7 @@ struct Show_Text_Command::Impl {
     long start_time;
     Direction pressed_direction;
     long press_start;
+    std::string selected_choice_color;
     // Choice navigation sound effect
     std::unique_ptr<xd::sound> select_sound;
     // Choice confirmation sound effect

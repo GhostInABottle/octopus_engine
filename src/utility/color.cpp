@@ -43,3 +43,12 @@ std::string color_to_hex(const xd::vec4& color) {
     ss << std::hex << value;
     return ss.str();
 }
+
+std::string color_to_rgba_string(const xd::vec4& color) {
+    std::stringstream ss;
+    ss << static_cast<int>(color.r * 255) << ','
+        << static_cast<int>(color.g * 255) << ','
+        << static_cast<int>(color.b * 255) << ','
+        << static_cast<int>(color.a * 255);
+    return ss.str();
+}

@@ -382,6 +382,24 @@ public:
         redraw_needed = true;
     }
     void mark_as_drawn(int time);
+    bool has_background() const {
+        return background_visible;
+    }
+    void set_background_visible(bool visible) {
+        background_visible = visible;
+    }
+    xd::rect get_background_rect() const {
+        return background_rect;
+    }
+    void set_background_rect(xd::rect new_rect) {
+        background_rect = new_rect;
+    }
+    xd::vec4 get_background_color() const {
+        return background_color;
+    }
+    void set_background_color(xd::vec4 new_color) {
+        background_color = new_color;
+    }
 private:
     // Sets shared default values
     Canvas(Game& game, xd::vec2 position);
@@ -444,6 +462,11 @@ private:
     bool use_outline_shader;
     // Color of image outline
     xd::vec4 outline_color;
+    // Opaque background to draw behind canvas
+    bool background_visible;
+    xd::rect background_rect;
+    xd::vec4 background_color;
+
 };
 
 #endif

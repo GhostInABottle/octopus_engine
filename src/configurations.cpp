@@ -10,11 +10,19 @@ void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
     defaults["game.pause-unfocused"] = true;
     defaults["game.data-folder"] = std::string();
-    defaults["game.text-fade-in-duration"] = 250;
-    defaults["game.text-fade-out-duration"] = 250;
-    defaults["game.choice-press-delay"] = 250;
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
     defaults["game.map-loaded-script"] = std::string();
+
+    defaults["text.fade-in-duration"] = 250;
+    defaults["text.fade-out-duration"] = 250;
+    defaults["text.choice-press-delay"] = 250;
+    defaults["text.choice-selected-color"] = std::string("#FF00FF00");
+    defaults["text.canvas-priority"] = 1000;
+    defaults["text.background-color"] = std::string("#7F000000");
+    defaults["text.background-margin-left"] = 5.0f;
+    defaults["text.background-margin-top"] = 5.0f;
+    defaults["text.background-margin-right"] = 5.0f;
+    defaults["text.background-margin-bottom"] = 5.0f;
 
     defaults["graphics.screen-width"] = 640;
     defaults["graphics.screen-height"] = 480;
@@ -65,7 +73,6 @@ void Configurations::load_defaults() {
     defaults["debug.use-fbo"] = true;
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
-    defaults["debug.text-canvas-priority"] = 1000;
     defaults["debug.update-config-file"] = true;
 
     defaults["startup.map"] = std::string();

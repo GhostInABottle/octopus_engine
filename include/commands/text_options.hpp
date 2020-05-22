@@ -46,6 +46,7 @@ struct Text_Options
     int canvas_priority;
     int fade_in_duration;
     int fade_out_duration;
+    bool background_visible;
 
     Text_Options() :
         object(nullptr),
@@ -58,7 +59,8 @@ struct Text_Options
         choice_indent(2),
         canvas_priority(-1),
         fade_in_duration(-1),
-        fade_out_duration(-1) {}
+        fade_out_duration(-1),
+        background_visible(true) {}
 
 
     Text_Options(Map_Object* object) : Text_Options() {
@@ -132,6 +134,11 @@ struct Text_Options
 
     Text_Options& set_fade_out_duration(int fade_out_duration) {
         this->fade_out_duration = fade_out_duration;
+        return *this;
+    }
+
+    Text_Options& set_background_visible(bool background_visible) {
+        this->background_visible = background_visible;
         return *this;
     }
 };

@@ -261,6 +261,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["canvas_priority"] = sol::readonly(&Text_Options::canvas_priority);
     options_type["fade_in_duration"] = sol::readonly(&Text_Options::fade_in_duration);
     options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
+    options_type["background_visible"] = sol::readonly(&Text_Options::background_visible);
     options_type["set_text"] = &Text_Options::set_text;
     options_type["set_object"] = &Text_Options::set_object;
     options_type["set_position"] = &Text_Options::set_position;
@@ -272,6 +273,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["set_canvas_priority"] = &Text_Options::set_canvas_priority;
     options_type["set_fade_in_duration"] = &Text_Options::set_fade_in_duration;
     options_type["set_fade_out_duration"] = &Text_Options::set_fade_out_duration;
+    options_type["set_background_visible"] = &Text_Options::set_background_visible;
     options_type["set_choices"] = [&](Text_Options& options, const sol::table& table) -> Text_Options& {
         std::vector<std::string> choices;
         for (auto& kv : table) {
@@ -959,6 +961,9 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["has_image_outline"] = sol::property(&Canvas::has_image_outline, &Canvas::set_image_outline);
     canvas_type["image_outline_color"] = sol::property(&Canvas::get_image_outline_color, &Canvas::set_image_outline_color);
     canvas_type["visible"] = sol::property(&Canvas::is_visible, &Canvas::set_visible);
+    canvas_type["has_background"] = sol::property(&Canvas::has_background, &Canvas::set_background_visible);
+    canvas_type["background_color"] = sol::property(&Canvas::get_background_color, &Canvas::set_background_color);
+    canvas_type["background_rect"] = sol::property(&Canvas::get_background_rect, &Canvas::set_background_rect);
     canvas_type["reset_text_outline"] = &Canvas::reset_text_outline;
     canvas_type["reset_text_shadow"] = &Canvas::reset_text_shadow;
     canvas_type["reset_text_type"] = &Canvas::reset_text_type;

@@ -12,5 +12,7 @@ unsigned int color_to_int(const xd::vec4& color);
 xd::vec4 hex_to_color(std::string hex);
 // Convert a vec4 color to a hex string
 std::string color_to_hex(const xd::vec4& color);
+// Convert a vec4 color to an RGBA string
+std::string color_to_rgba_string(const xd::vec4& color);
 
 #endif

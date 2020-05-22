@@ -14,12 +14,23 @@
 #include "../include/log.hpp"
 
 Canvas::Canvas(Game& game, xd::vec2 position) :
-        game(game), priority(0), type(Canvas::Type::IMAGE), position(position),
-        origin(0.5f, 0.5f), magnification(1.0f, 1.0f), angle(0.0f), color(1.0f),
-        visible(false), camera_relative(false), redraw_needed(true),
-        last_drawn_time(0),  children_type(Canvas::Type::IMAGE),
-        permissive_tag_parsing(false), use_outline_shader(false),
-        outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))) {}
+    game(game),
+    priority(0),
+    type(Canvas::Type::IMAGE),
+    position(position),
+    origin(0.5f, 0.5f),
+    magnification(1.0f, 1.0f),
+    angle(0.0f), color(1.0f),
+    visible(false),
+    camera_relative(false),
+    redraw_needed(true),
+    last_drawn_time(0), 
+    children_type(Canvas::Type::IMAGE),
+    permissive_tag_parsing(false),
+    use_outline_shader(false),
+    outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))),
+    background_visible(false),
+    background_color{hex_to_color(Configurations::get<std::string>("text.background-color"))} {}
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(game, position) {
     camera_relative = false;

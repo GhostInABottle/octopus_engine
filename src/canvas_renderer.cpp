@@ -5,12 +5,18 @@
 #include "../include/camera.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/configurations.hpp"
+#include "../include/utility/math.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
-    : game(game), camera(camera) {
-    fbo_supported = Configurations::get<bool>("debug.use-fbo")
-        && xd::framebuffer::extension_supported();
-}
+    : game(game),
+    camera(camera),
+    fbo_supported(Configurations::get<bool>("debug.use-fbo") && xd::framebuffer::extension_supported()),
+    background_margins(
+        Configurations::get<float>("text.background-margin-left"),
+        Configurations::get<float>("text.background-margin-top"),
+        Configurations::get<float>("text.background-margin-right"),
+        Configurations::get<float>("text.background-margin-bottom"))
+{}
 
 void Canvas_Renderer::render(Map& map) {
     auto& canvases = map.get_canvases();
@@ -78,10 +84,12 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
 }
 
 void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root) {
-    if (!canvas.is_visible() || canvas.get_opacity() == 0.0f) {
+    if (!canvas.is_visible() || check_close(canvas.get_opacity(), 0.0f)) {
         canvas.mark_as_drawn(game.ticks());
         return;
     }
+    // Draw text background
+    render_background(canvas, parent);
 
     // Drawing to a framebuffer that updates less frequently improves performance,
     // especially for text. For sprites/images the improvement isn't as significant.
@@ -170,6 +178,31 @@ void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
     }
 }
 
+void Canvas_Renderer::render_background(Canvas& canvas, Canvas* parent) {
+    if (!canvas.has_background()) return;
+    auto rect = canvas.get_background_rect();
+    rect.x -= background_margins.x;
+    rect.y -= background_margins.y;
+    rect.w += background_margins.w;
+    rect.h += background_margins.h;
+
+    if (parent) {
+        auto parent_pos = parent->get_position();
+        rect.x += parent_pos.x;
+        rect.y += parent_pos.y;
+    }
+
+    if (canvas.is_camera_relative()) {
+        auto camera_pos = camera.get_position();
+        rect.x += camera_pos.x;
+        rect.y += camera_pos.y;
+    }
+
+    auto color = canvas.get_background_color();
+    color.a *= canvas.get_opacity();
+    if (check_close(color.a, 0.0f)) return;
+    camera.draw_rect(rect, color);
+}
 bool Canvas_Renderer::should_redraw(const Canvas& canvas) {
     return canvas.should_redraw(game.ticks()) || !fbo_supported;
 }
