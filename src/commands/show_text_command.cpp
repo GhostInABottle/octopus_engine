@@ -52,17 +52,17 @@ struct Show_Text_Command::Impl {
         if (text_lines.empty())
             text_lines.push_back("");
 
-        // Find longest line to center the text at the right position
-        auto longest_line = text_lines[0];
+        // Find text width based on widest line
+        auto& font_style = game.get_font_style();
+        auto text_width = 0.0f;
         for (auto& line : text_lines) {
-            if (line.size() > longest_line.size())
-                longest_line = line;
+            auto width = game.get_font()->get_width(line, font_style);
+            if (width > text_width)
+                text_width = width;
         }
 
         // Set text position based on size estimation
-        auto& font_style = game.get_font_style();
         float char_height = font_style.line_height();
-        float text_width = game.get_font()->get_width(longest_line, font_style);
         float text_height = char_height * (text_lines.size() - 1);
         auto pos = options.position;
         bool camera_relative = (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
