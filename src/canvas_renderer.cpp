@@ -34,7 +34,7 @@ void Canvas_Renderer::render(Map& map) {
 
             render_canvas(*canvas);
 
-            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             if (has_scissor_box) {
                 camera.disable_scissor_test();
             }
@@ -57,6 +57,7 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glPopAttrib();
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     auto [complete, error] = framebuffer->check_complete();
     if (!complete)
         throw std::exception(error.c_str());
@@ -68,7 +69,7 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
         // Scissor test was already applied when drawing to FBO
         camera.disable_scissor_test();
     }
-    glDisable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     batch.add(canvas.get_fbo_texture(), 0, 0, xd::vec4(1.0f));
     camera.update_viewport();
     xd::transform_geometry geometry;
