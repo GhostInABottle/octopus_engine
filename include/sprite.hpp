@@ -32,6 +32,8 @@ public:
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags);
     // Get the current pose
     Pose& get_pose();
+    // Get the default pose name
+    std::string get_default_pose() const;
     // Get bounding box
     xd::rect get_bounding_box() const;
     // Get size of first frame

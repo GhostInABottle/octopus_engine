@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<Sprite Image="data/player.png" Transparent-Color="#FF00FF" Base-Dir="../">
+<Sprite Image="data/player.png" Transparent-Color="#FF00FF" Base-Dir="../" Default-Pose="Default">
   <Pose Duration="180">
     <Bounding-Box X="2" Y="32" Width="16" Height="8" />
     <Tag Key="Direction" Value="Up" />

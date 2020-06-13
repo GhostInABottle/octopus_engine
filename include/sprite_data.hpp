@@ -63,13 +63,15 @@ struct Pose {
 struct Sprite_Data {
     // Sprite file name
     std::string filename;
-    // Sprite image
+    // Sprite texture
     std::shared_ptr<xd::texture> image;
-    // Transparent color
+    // Transparent color for image
     xd::vec4 transparent_color;
+    // Default pose when no pose is specified or matches
+    std::string default_pose;
     // List of poses
     std::vector<Pose> poses;
-    // Asset manager
+    // Asset manager for caching the textures
     xd::asset_manager& asset_manager;
 
     explicit Sprite_Data(xd::asset_manager& manager);

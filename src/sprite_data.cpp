@@ -5,6 +5,7 @@
 #include "../include/utility/string.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
+#include "../include/log.hpp"
 #include <iostream>
 
 Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager) {}
@@ -30,7 +31,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     doc.parse<0>(content);
     auto sprite_node = doc.first_node("Sprite");
     if (!sprite_node)
-        throw xml_exception("Invalid sprite data file. Missing spritedata node");
+        throw xml_exception("Invalid sprite data file. Missing Sprite node.");
     auto sprite_data = load(manager, *sprite_node);
     sprite_data->filename = filename;
     normalize_slashes(sprite_data->filename);
@@ -57,6 +58,13 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
     }
 
+    // Default sprite pose
+    if (auto default_attr = node.first_attribute("Default-Pose")) {
+        sprite_ptr->default_pose = default_attr->value();
+        capitalize(sprite_ptr->default_pose);
+    }
+
+    bool default_pose_found = false;
     // Poses
     for (auto pose_node = node.first_node("Pose");
             pose_node; pose_node = pose_node->next_sibling("Pose")) {
@@ -173,10 +181,20 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             capitalize(key);
             capitalize(value);
             sprite_ptr->poses[pose_index].tags[key] = value;
+            if (key == "NAME" && value == sprite_ptr->default_pose) {
+                default_pose_found = true;
+            }
         }
     }
+
+    if (!default_pose_found && sprite_ptr->default_pose != "") {
+        LOGGER_W << "Could not find default pose " << sprite_ptr->default_pose << " when loading " << sprite_ptr->filename;
+        sprite_ptr->default_pose = "";
+    }
+
     if (sprite_ptr->poses.empty())
         throw xml_exception("Invalid sprite data file. Missing poses.");
+
     if (!image_loaded && !pose_images_loaded && !frame_images_loaded)
         throw xml_exception("Invalid sprite data file. Missing image.");
 

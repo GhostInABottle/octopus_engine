@@ -306,10 +306,15 @@ public:
             Direction new_direction = Direction::NONE) {
         if (!new_pose_name.empty())
             pose_name = new_pose_name;
+        else if (pose_name.empty() && sprite)
+            pose_name = sprite->get_default_pose();
+
         if (!new_state.empty())
             state = new_state;
+
         if (new_direction != Direction::NONE)
             direction = new_direction;
+
         Sprite_Holder::set_pose(pose_name, state, direction);
         for (auto obj : linked_objects) {
             obj->set_pose(new_pose_name, new_state, new_direction);

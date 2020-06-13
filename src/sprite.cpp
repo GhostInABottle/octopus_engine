@@ -64,7 +64,7 @@ struct Sprite::Impl {
         last_sound_frame(-1),
         speed(1.0f)
     {
-        pose = &this->data->poses[0];
+        set_default_pose();
     }
 
     void update() {
@@ -173,31 +173,34 @@ struct Sprite::Impl {
         } else {
             // Map of pose IDs to their tag match count
             std::unordered_map<int, unsigned int> matches;
+            int default_pose = -1;
             // Loop over tags incrementing poses that match
             for (auto& [key, value] : tags) {
                 for (unsigned int i = 0; i < data->poses.size(); ++i) {
                     auto& pose_tags = data->poses[i].tags;
-                    if (pose_tags.find(key) != pose_tags.end() &&
-                            pose_tags[key] == value) {
-                        matches[i]++;
-                        // Update best match
-                        if (matched_pose == -1 ||
-                                matches[i] > matches[matched_pose] ||
-                                (matches[i] == matches[matched_pose] &&
-                                key == "NAME")) {
-                            matched_pose = i;
-                            // If all tags are matched, exit loops
-                            if (matches[i] == tags.size())
-                                break;
-                        }
+                    if (pose_tags.find(key) == pose_tags.end() || pose_tags[key] != value) continue;
+                    matches[i]++;
+                    // Update best default pose
+                    if (data->default_pose != "" && key == "NAME"
+                            && pose_tags[key] == data->default_pose
+                            && is_better_match(default_pose, i, matches, key)) {
+                        default_pose = i;
+                    }
+                    // Update best match
+                    if (is_better_match(matched_pose, i, matches, key)) {
+                        matched_pose = i;
+                        // If all tags are matched, exit loops
+                        if (matches[i] == tags.size())
+                            break;
                     }
                 }
                 if (matches[matched_pose] == tags.size())
                     break;
             }
-            // If no tags, use first pose
-            if (matched_pose == -1)
-                matched_pose = 0;
+
+            // Prefer default pose to any other
+            if (matched_pose == -1 || matches[matched_pose] == matches[default_pose])
+                matched_pose = default_pose == -1 ? 0 : default_pose;
             // Update pose cache
             tag_map[tag_string] = matched_pose;
         }
@@ -205,6 +208,29 @@ struct Sprite::Impl {
         if (pose != &data->poses[matched_pose] || finished) {
             pose = &data->poses[matched_pose];
             reset();
+        }
+    }
+
+    // A pose is a better match than current best if there is no best yet, if it
+    // matches more tags, or if it has the same matches including a match on name
+    bool is_better_match(int best_index, int candidate_index,
+            std::unordered_map<int, unsigned int>& matches, const std::string& key) {
+        return best_index == -1 ||
+            matches[candidate_index] > matches[best_index] ||
+            (matches[candidate_index] == matches[best_index] &&
+                key == "NAME");
+    }
+
+    void set_default_pose() {
+        if (data->default_pose.empty()) {
+            pose = &data->poses[0];
+            return;
+        }
+        for (auto& p : data->poses) {
+            if (p.tags.find("NAME") != p.tags.end() && p.tags["NAME"] == data->default_pose) {
+                pose = &p;
+                return;
+            }
         }
     }
 };
@@ -275,6 +301,10 @@ Pose& Sprite::get_pose() {
 
 xd::rect Sprite::get_bounding_box() const {
     return pimpl->pose->bounding_box;
+}
+
+std::string Sprite::get_default_pose() const {
+    return pimpl->data->default_pose;
 }
 
 xd::vec2 Sprite::get_size() const {
