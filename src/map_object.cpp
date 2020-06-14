@@ -7,8 +7,19 @@
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/xml.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
+
+Map_Object::Outline_Conditions operator|(Map_Object::Outline_Conditions a, Map_Object::Outline_Conditions b)
+{
+    return static_cast<Map_Object::Outline_Conditions>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+Map_Object::Outline_Conditions operator&(Map_Object::Outline_Conditions a, Map_Object::Outline_Conditions b)
+{
+    return static_cast<Map_Object::Outline_Conditions>(static_cast<int>(a) & static_cast<int>(b));
+}
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
@@ -17,6 +28,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         id(-1),
         color(1.0f),
         magnification(1.0f),
+        outline_conditions(get_default_outline_conditions()),
         gid(0),
         opacity(1.0f),
         visible(true),
@@ -184,16 +196,37 @@ xd::vec2 Map_Object::get_sprite_magnification() const {
         return xd::vec2(1.0f, 1.0f);
 }
 
-bool Map_Object::is_outlined() const {
-    if (outlined.has_value()) {
-        return outlined.value();
+void Map_Object::set_outlined(std::optional<bool> new_outlined) {
+    if (!new_outlined.has_value()) {
+        outline_conditions = get_default_outline_conditions();
+    } else if (new_outlined.value()) {
+        outline_conditions = Outline_Conditions::NONE;
+    } else {
+        outline_conditions = Outline_Conditions::NEVER;
     }
 
-    auto player = game.get_player();
-    return player
-        && player->get_collision_object() == this
-        && !passthrough
-        && !trigger_script.empty();
+}
+
+
+bool Map_Object::is_outlined() const {
+    if ((outline_conditions & Outline_Conditions::NEVER) != Outline_Conditions::NONE) return false;
+    auto result = true;
+    if ((outline_conditions & Outline_Conditions::TOUCHED) != Outline_Conditions::NONE) {
+        auto player = game.get_player();
+        result = player && (player->get_collision_object() == this ||
+            player->get_collision_area() == this);
+    }
+    if ((outline_conditions & Outline_Conditions::SOLID) != Outline_Conditions::NONE) {
+        result = result && !passthrough;
+    }
+    if ((outline_conditions & Outline_Conditions::SCRIPT) != Outline_Conditions::NONE) {
+        result = result && !trigger_script.empty();
+    }
+    return result;
+}
+
+Map_Object::Outline_Conditions Map_Object::get_default_outline_conditions() const {
+    return Outline_Conditions::TOUCHED | Outline_Conditions::SOLID | Outline_Conditions::SCRIPT;
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
@@ -306,7 +339,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->gid = std::stoi(gid_node->value());
 
     if (auto visible_node = node.first_attribute("visible"))
-        object_ptr->visible = visible_node->value() == std::string{"1"};
+        object_ptr->visible = string_to_bool(visible_node->value());
 
     auto& properties = object_ptr->properties;
     properties.read(node);
@@ -351,9 +384,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_leave_script (properties["leave-script"]);
 
     if (properties.has_property("player-facing"))
-        object_ptr->set_player_facing(properties["player-facing"] == "true");
+        object_ptr->set_player_facing(string_to_bool(properties["player-facing"]));
     if (properties.has_property("passthrough"))
-        object_ptr->set_passthrough(properties["passthrough"] == "true");
+        object_ptr->set_passthrough(string_to_bool(properties["passthrough"]));
     if (properties.has_property("passthrough-type")) {
         auto type_string = properties["passthrough-type"];
         capitalize(type_string);
@@ -367,9 +400,47 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_passthrough_type(type);
     }
     if (properties.has_property("override-tile-collision"))
-        object_ptr->set_passthrough(properties["override-tile-collision"] == "true");
-    if (properties.has_property("outlined"))
-        object_ptr->set_outlined(properties["outlined"] == "true");
+        object_ptr->set_passthrough(string_to_bool(properties["override-tile-collision"]));
+    if (properties.has_property("outlined")) {
+        auto outlined = properties["outlined"];
+        capitalize(outlined);
+        if (outlined == "TRUE") {
+            object_ptr->set_outlined(true);
+        } else if (outlined == "FALSE") {
+            object_ptr->set_outlined(false);
+        } else {
+            auto parts = split(outlined, ",");
+            if (parts.empty()) {
+                LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
+            } else {
+                auto conditions = Outline_Conditions::NONE;
+                for (auto& part : parts) {
+                    if (part == "TOUCHED") {
+                        conditions = conditions | Outline_Conditions::TOUCHED;
+                    } else if (part == "SOLID") {
+                        conditions = conditions | Outline_Conditions::SOLID;
+                    } else if (part == "SCRIPT") {
+                        conditions = conditions | Outline_Conditions::SCRIPT;
+                    } else {
+                        LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
+                        conditions = object_ptr->get_default_outline_conditions();
+                        break;
+                    }
+                }
+                object_ptr->set_outline_conditions(conditions);
+            }
+        }
+    }
+    if (properties.has_property("draw-order")) {
+        auto order = properties["draw-order"];
+        capitalize(order);
+        if (order == "BELOW")
+            object_ptr->set_draw_order(Draw_Order::BELOW);
+        else if (order == "ABOVE")
+            object_ptr->set_draw_order(Draw_Order::ABOVE);
+        else if (order != "NORMAL") 
+            LOGGER_W << "Unknown object draw order '" << order << "' - defaulting to NORMAL";
+    }
 
     object_ptr->set_pose();
 

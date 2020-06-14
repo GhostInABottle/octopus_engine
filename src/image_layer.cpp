@@ -6,6 +6,7 @@
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/xml.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/log.hpp"
@@ -61,7 +62,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     if (properties.has_property("yspeed"))
         layer_ptr->velocity.y = std::stof(properties["yspeed"]);
     if (properties.has_property("fixed"))
-        layer_ptr->fixed = properties["fixed"] == "1";
+        layer_ptr->fixed = string_to_bool(properties["fixed"]);
     if (properties.has_property("sprite"))
         sprite = properties["sprite"];
     std::string pose;

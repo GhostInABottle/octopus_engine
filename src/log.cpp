@@ -1,6 +1,7 @@
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/file.hpp"
+#include "../include/utility/string.hpp"
 
 Log_Level Log::reporting_level = Log_Level::debug;
 std::ofstream Log::log_file;

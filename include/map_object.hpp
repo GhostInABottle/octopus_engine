@@ -26,6 +26,7 @@ public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
     enum class Passthrough_Type { INITIATOR = 1, RECEIVER, BOTH };
+    enum class Outline_Conditions { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
     // Map object onstructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
@@ -259,9 +260,14 @@ public:
             linked_objects.end());
     }
     bool is_outlined() const;
-    void set_outlined(std::optional<bool> new_outlined) {
-        outlined = new_outlined;
+    void set_outlined(std::optional<bool> new_outlined);
+    void set_outline_conditions(Outline_Conditions conditions) {
+        outline_conditions = conditions;
     }
+    Outline_Conditions get_outline_conditions() const {
+        return outline_conditions;
+    }
+    Outline_Conditions get_default_outline_conditions() const;
     std::optional<xd::vec4> get_outline_color() const {
         return outline_color;
     }
@@ -365,7 +371,7 @@ private:
     // Outline color
     std::optional<xd::vec4> outline_color;
     // Is the object outlined?
-    std::optional<bool> outlined;
+    Outline_Conditions outline_conditions;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity

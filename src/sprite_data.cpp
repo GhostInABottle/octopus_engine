@@ -87,7 +87,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             pose.repeats = std::stoi(attr->value());
 
         if (auto attr = pose_node->first_attribute("Require-Completion"))
-            pose.require_completion = attr->value() == std::string("true");
+            pose.require_completion = string_to_bool(attr->value());
 
         if (auto attr = pose_node->first_attribute("X-Origin"))
             pose.origin.x = std::stof(attr->value());
@@ -138,7 +138,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                 frame.opacity = std::stof(attr->value());
 
             if (auto attr = frame_node->first_attribute("Tween"))
-                frame.tween_frame = attr->value() == std::string("true");
+                frame.tween_frame = string_to_bool(attr->value());
 
             // Frame image and transparent color
             if (auto attr = frame_node->first_attribute("Transparent-Color"))

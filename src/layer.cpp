@@ -2,6 +2,7 @@
 #include "../include/layer_renderer.hpp"
 #include "../include/layer_updater.hpp"
 #include "../include/utility/math.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
@@ -40,7 +41,7 @@ void Layer::load(rapidxml::xml_node<>& node) {
     if (auto opacity_node = node.first_attribute("opacity"))
         opacity = std::stof(opacity_node->value());
     if (auto visible_node = node.first_attribute("visible"))
-        visible = visible_node->value() == std::string{"1"};
+        visible = string_to_bool(visible_node->value());
 
     properties.read(node);
 
