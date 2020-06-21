@@ -664,6 +664,9 @@ void Scripting_Interface::setup_scripts() {
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
     game_type["triggered"] = [](Game* game, const std::string& key) { return game->triggered(key); };
     game_type["triggered_once"] = [](Game* game, const std::string& key) { return game->triggered_once(key); };
+    game_type["bind_key"] = sol::resolve<void(const std::string&, const std::string&)>(&Game::bind_key);
+    game_type["unbind_physical_key"] = sol::resolve<void(const std::string&)>(&Game::unbind_physical_key);
+    game_type["unbind_virtual_key"] = &Game::unbind_virtual_key;
     game_type["run_script"] = &Game::run_script;
     game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };

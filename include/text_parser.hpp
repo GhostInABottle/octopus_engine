@@ -9,9 +9,9 @@ struct Token {
     std::string type;
     std::string tag;
     std::string value;
-    bool unmatched;
-    int start_index;
-    int end_index;
+    bool unmatched = false;
+    int start_index = 0;
+    int end_index = 0;
 };
 
 // Thrown when text being parsed is invalid

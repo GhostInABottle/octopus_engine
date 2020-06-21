@@ -327,6 +327,9 @@
     <ClCompile Include="..\..\src\utility\xml.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\key_binder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -684,6 +687,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\exceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\key_binder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

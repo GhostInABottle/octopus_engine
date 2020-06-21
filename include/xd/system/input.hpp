@@ -123,6 +123,12 @@ namespace xd
     extern const key KEY_ENTER;
     extern const key KEY_SPACE;
     extern const key KEY_ESC;
+    extern const key KEY_LCTRL;
+    extern const key KEY_RCTRL;
+    extern const key KEY_LALT;
+    extern const key KEY_RALT;
+    extern const key KEY_LSHIFT;
+    extern const key KEY_RSHIFT;
     extern const key KEY_A;
     extern const key KEY_B;
     extern const key KEY_C;

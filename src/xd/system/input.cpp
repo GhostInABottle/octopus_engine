@@ -11,6 +11,12 @@ namespace xd
     const key KEY_ENTER = KEY(GLFW_KEY_ENTER);
     const key KEY_SPACE = KEY(GLFW_KEY_SPACE);
     const key KEY_ESC = KEY(GLFW_KEY_ESCAPE);
+    const key KEY_LCTRL = KEY(GLFW_KEY_LEFT_CONTROL);
+    const key KEY_RCTRL = KEY(GLFW_KEY_RIGHT_CONTROL);
+    const key KEY_LALT = KEY(GLFW_KEY_LEFT_ALT);
+    const key KEY_RALT = KEY(GLFW_KEY_RIGHT_ALT);
+    const key KEY_LSHIFT = KEY(GLFW_KEY_LEFT_SHIFT);
+    const key KEY_RSHIFT = KEY(GLFW_KEY_RIGHT_SHIFT);
     const key KEY_A = KEY(GLFW_KEY_A);
     const key KEY_B = KEY(GLFW_KEY_B);
     const key KEY_C = KEY(GLFW_KEY_C);

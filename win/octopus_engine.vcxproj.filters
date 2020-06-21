@@ -303,6 +303,9 @@
     <ClCompile Include="..\src\utility\file.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\key_binder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -661,6 +664,9 @@
     </ClInclude>
     <ClInclude Include="..\include\utility\direction.hpp">
       <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\key_binder.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

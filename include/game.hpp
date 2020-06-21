@@ -104,6 +104,17 @@ public:
     bool triggered_once(const std::string& key) {
         return window->triggered_once(key, get_gamepad_id());
     }
+    void bind_key(const std::string& physical_name, const std::string& virtual_name);
+    void bind_key(const xd::key& physical_key, const std::string& virtual_key) {
+        window->bind_key(physical_key, virtual_key);
+    }
+    void unbind_physical_key(const xd::key& physical_key) {
+        window->unbind_key(physical_key);
+    }
+    void unbind_physical_key(const std::string& physical_key);
+    void unbind_virtual_key(const std::string& virtual_key) {
+        window->unbind_key(virtual_key);
+    }
     // Run a script
     void run_script(const std::string& script);
     // Set or get the current scripting interface
@@ -172,8 +183,6 @@ public:
     std::unique_ptr<Save_File> load(std::string filename);
     // Get current gamepad ID
     int get_gamepad_id() const;
-    // Process key-mapping string
-    void process_keymap();
 private:
     std::unique_ptr<xd::window> window;
     float magnification;

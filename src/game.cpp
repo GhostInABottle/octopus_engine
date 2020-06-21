@@ -13,6 +13,7 @@
 #include "../include/utility/file.hpp"
 #include "../include/save_file.hpp"
 #include "../include/shake_decorator.hpp"
+#include "../include/key_binder.hpp"
 #include "../include/log.hpp"
 #include "../include/vendor/platform_folders.hpp"
 #include "../include/xd/audio.hpp"
@@ -91,6 +92,47 @@ struct Game::Impl {
             filename = get_save_directory() + filename;
         }
     }
+    // Process key-mapping string
+    void process_keymap(Game& game, xd::window* window) {
+        int gamepad_id = game.get_gamepad_id();
+        bool bind_gamepad = window->joystick_present(gamepad_id) && gamepad_enabled;
+        if (!key_binder) {
+            key_binder = std::make_unique<Key_Binder>(game, bind_gamepad);
+        }
+        if (!key_binder->process_keymap_file()) {
+            // Default mapping
+            window->bind_key(xd::KEY_ESC, "pause");
+            window->bind_key(xd::KEY_LEFT, "left");
+            window->bind_key(xd::KEY_A, "left");
+            window->bind_key(xd::KEY_RIGHT, "right");
+            window->bind_key(xd::KEY_D, "right");
+            window->bind_key(xd::KEY_UP, "up");
+            window->bind_key(xd::KEY_W, "up");
+            window->bind_key(xd::KEY_DOWN, "down");
+            window->bind_key(xd::KEY_S, "down");
+            window->bind_key(xd::KEY_ENTER, "a");
+            window->bind_key(xd::KEY_SPACE, "a");
+            window->bind_key(xd::KEY_Z, "a");
+            window->bind_key(xd::KEY_J, "a");
+            window->bind_key(xd::KEY_X, "b");
+            window->bind_key(xd::KEY_K, "b");
+            window->bind_key(xd::KEY_C, "x");
+            window->bind_key(xd::KEY_L, "x");
+            window->bind_key(xd::KEY_V, "y");
+            window->bind_key(xd::KEY_I, "y");
+            if (bind_gamepad) {
+                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
+                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
+                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
+                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
+                window->bind_key(xd::GAMEPAD_BUTTON_A, "a");
+                window->bind_key(xd::GAMEPAD_BUTTON_B, "b");
+                window->bind_key(xd::GAMEPAD_BUTTON_X, "x");
+                window->bind_key(xd::GAMEPAD_BUTTON_Y, "y");
+                window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
+            }
+        }
+    }
     // Audio system
     xd::audio* audio;
     // Was game started in editor mode?
@@ -138,6 +180,8 @@ struct Game::Impl {
     std::unordered_set<std::string> config_changes;
     // Calculated save folder path
     std::string save_path;
+    // Keymap file reader and binder
+    std::unique_ptr<Key_Binder> key_binder;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -240,7 +284,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     // Track player by camera
     camera->set_object(player.get());
     // Bind game keys
-    process_keymap();
+    pimpl->process_keymap(*this, window.get());
     // Setup Lua scripts
     pimpl->scripting_interface = std::make_unique<Scripting_Interface>(*this);
     pimpl->scripting_interface->set_globals();
@@ -398,6 +442,14 @@ void Game::set_magnification(float mag) {
     camera->update_viewport();
 }
 
+void Game::bind_key(const std::string& physical_name, const std::string& virtual_name) {
+    pimpl->key_binder->bind_key(physical_name, virtual_name);
+}
+
+void Game::unbind_physical_key(const std::string& physical_name) {
+    pimpl->key_binder->unbind_key(physical_name);
+}
+
 void Game::run_script(const std::string& script) {
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->run_script(script);
@@ -485,6 +537,7 @@ void Game::save(std::string filename, Save_File& save_file) const {
         ofs << save_file;
         LOGGER_I << "Saved file " << filename;
         save_config("config.ini");
+        // TODO: save keymap
     } catch (const std::ios_base::failure & e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
     } catch (const config_exception& e) {
@@ -562,111 +615,4 @@ int Game::get_gamepad_id() const {
         }
     }
     return pimpl->gamepad_id;
-}
-
-void Game::process_keymap() {
-    int gamepad_id = get_gamepad_id();
-    bool gamepad_enabled = window->joystick_present(gamepad_id) && pimpl->gamepad_enabled;
-    std::string map_file = Configurations::get<std::string>("controls.mapping-file");
-    std::ifstream input(map_file);
-    if (input) {
-        // Map key names to XD keys
-        std::unordered_map<std::string, xd::key> key_names;
-        key_names["LEFT"] = xd::KEY_LEFT;
-        key_names["RIGHT"] = xd::KEY_RIGHT;
-        key_names["UP"] = xd::KEY_UP;
-        key_names["DOWN"] = xd::KEY_DOWN;
-        key_names["ENTER"] = xd::KEY_ENTER;
-        key_names["SPACE"] = xd::KEY_SPACE;
-        key_names["ESC"] = xd::KEY_ESC;
-        // Assumes ASCII layout
-        for (int i = xd::KEY_A.code; i <= xd::KEY_Z.code; ++i) {
-            key_names[std::string(1, i)] = xd::KEY(i);
-        }
-        for (int i = xd::KEY_0.code; i <= xd::KEY_9.code; ++i) {
-            key_names[std::string(1, i)] = xd::KEY(i);
-        }
-        if (gamepad_enabled) {
-            key_names["GAMEPAD-A"] = xd::GAMEPAD_BUTTON_A;
-            key_names["GAMEPAD-B"] = xd::GAMEPAD_BUTTON_B;
-            key_names["GAMEPAD-X"] = xd::GAMEPAD_BUTTON_X;
-            key_names["GAMEPAD-Y"] = xd::GAMEPAD_BUTTON_Y;
-            key_names["GAMEPAD-LB"] = xd::GAMEPAD_BUTTON_LEFT_BUMPER;
-            key_names["GAMEPAD-RB"] = xd::GAMEPAD_BUTTON_RIGHT_BUMPER;
-            key_names["GAMEPAD-BACK"] = xd::GAMEPAD_BUTTON_BACK;
-            key_names["GAMEPAD-START"] = xd::GAMEPAD_BUTTON_START;
-            key_names["GAMEPAD-GUIDE"] = xd::GAMEPAD_BUTTON_GUIDE;
-            key_names["GAMEPAD-LT"] = xd::GAMEPAD_BUTTON_LEFT_THUMB;
-            key_names["GAMEPAD-RT"] = xd::GAMEPAD_BUTTON_RIGHT_THUMB;
-            key_names["GAMEPAD-UP"] = xd::GAMEPAD_BUTTON_DPAD_UP;
-            key_names["GAMEPAD-RIGHT"] = xd::GAMEPAD_BUTTON_DPAD_RIGHT;
-            key_names["GAMEPAD-DOWN"] = xd::GAMEPAD_BUTTON_DPAD_DOWN;
-            key_names["GAMEPAD-LEFT"] = xd::GAMEPAD_BUTTON_DPAD_LEFT;
-        }
-        // Read keymap file and bind keys based on name
-        std::string line;
-        int counter = 0;
-        while(std::getline(input, line))
-        {
-            ++counter;
-            trim(line);
-            if (line.empty() || line[0] == '#')
-                continue;
-            auto parts = split(line, "=");
-            if (parts.size() < 2) {
-                LOGGER_W << "Error processing key mapping file \"" << map_file <<
-                    " at line " << counter << ", missing = sign.";
-                continue;
-            }
-            trim(parts[0]);
-            auto keys = split(parts[1], ",");
-            if (keys.empty())
-                LOGGER_W << "Error processing key mapping file \"" << map_file <<
-                    " at line " << counter << ", no keys specified.";
-            for (auto key : keys) {
-                trim(key);
-                capitalize(key);
-                if (key_names.find(key) != key_names.end()) {
-                    window->bind_key(key_names[key], parts[0]);
-                } else if (gamepad_enabled || key.find("GAMEPAD") == std::string::npos) {
-                    LOGGER_W << "Error processing key mapping file \"" << map_file <<
-                    " at line " << counter << ", key \"" << key << "\" not found." ;
-                    continue;
-                }
-            }
-        }
-    } else {
-        // Default mapping
-        LOGGER_W << "Couldn't read key mapping file \"" << map_file << "\", using default key mapping.";
-        window->bind_key(xd::KEY_ESC, "pause");
-        window->bind_key(xd::KEY_LEFT, "left");
-        window->bind_key(xd::KEY_A, "left");
-        window->bind_key(xd::KEY_RIGHT, "right");
-        window->bind_key(xd::KEY_D, "right");
-        window->bind_key(xd::KEY_UP, "up");
-        window->bind_key(xd::KEY_W, "up");
-        window->bind_key(xd::KEY_DOWN, "down");
-        window->bind_key(xd::KEY_S, "down");
-        window->bind_key(xd::KEY_ENTER, "a");
-        window->bind_key(xd::KEY_SPACE, "a");
-        window->bind_key(xd::KEY_Z, "a");
-        window->bind_key(xd::KEY_J, "a");
-        window->bind_key(xd::KEY_X, "b");
-        window->bind_key(xd::KEY_K, "b");
-        window->bind_key(xd::KEY_C, "x");
-        window->bind_key(xd::KEY_L, "x");
-        window->bind_key(xd::KEY_V, "y");
-        window->bind_key(xd::KEY_I, "y");
-        if (gamepad_enabled) {
-            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
-            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
-            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
-            window->bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
-            window->bind_key(xd::GAMEPAD_BUTTON_A, "a");
-            window->bind_key(xd::GAMEPAD_BUTTON_B, "b");
-            window->bind_key(xd::GAMEPAD_BUTTON_X, "x");
-            window->bind_key(xd::GAMEPAD_BUTTON_Y, "y");
-            window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
-        }
-    }
 }
