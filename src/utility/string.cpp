@@ -28,13 +28,12 @@ bool equal_strings(const std::string& str1, const std::string& str2) {
 
 std::vector<std::string> split(const std::string& original, const std::string& delims, bool compress) {
     std::vector<std::string> elements;
+    if (original.empty()) return elements;
     auto token_compress = compress ? boost::token_compress_on : boost::token_compress_off;
-    if (!original.empty()) {
-        // Ignore unsafe function warning
-#pragma warning(push)
-#pragma warning(disable: 4996)
-        boost::split(elements, original, boost::is_any_of(delims), token_compress);
-#pragma warning(pop)
-    }
+    boost::split(elements, original, boost::is_any_of(delims), token_compress);
     return elements;
+}
+
+std::string join(const std::vector<std::string>& strings, const std::string& separator) {
+    return boost::join(strings, separator);
 }

@@ -112,9 +112,7 @@ public:
         window->unbind_key(physical_key);
     }
     void unbind_physical_key(const std::string& physical_key);
-    void unbind_virtual_key(const std::string& virtual_key) {
-        window->unbind_key(virtual_key);
-    }
+    void unbind_virtual_key(const std::string& virtual_key);
     // Run a script
     void run_script(const std::string& script);
     // Set or get the current scripting interface

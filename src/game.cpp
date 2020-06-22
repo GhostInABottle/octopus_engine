@@ -450,6 +450,11 @@ void Game::unbind_physical_key(const std::string& physical_name) {
     pimpl->key_binder->unbind_key(physical_name);
 }
 
+void Game::unbind_virtual_key(const std::string& virtual_name) {
+    window->unbind_key(virtual_name);
+    pimpl->key_binder->remove_virtual_name(virtual_name);
+}
+
 void Game::run_script(const std::string& script) {
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->run_script(script);
@@ -537,7 +542,7 @@ void Game::save(std::string filename, Save_File& save_file) const {
         ofs << save_file;
         LOGGER_I << "Saved file " << filename;
         save_config("config.ini");
-        // TODO: save keymap
+        pimpl->key_binder->save_keymap_file();
     } catch (const std::ios_base::failure & e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
     } catch (const config_exception& e) {

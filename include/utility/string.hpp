@@ -15,6 +15,8 @@ std::string capitalize(const std::string& original);
 bool equal_strings(const std::string& str1, const std::string& str2);
 // Split a string to a vector
 std::vector<std::string> split(const std::string& original, const std::string& delims, bool compress = true);
+// Join vector elements into a string
+std::string join(const std::vector<std::string>& strings, const std::string& separator);
 // Convert "true"/"TRUE"/"1" to true and "false"/"FALSE"/"0" to false
 inline bool string_to_bool(const std::string& original) {
     auto capitalized = capitalize(original);

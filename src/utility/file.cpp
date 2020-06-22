@@ -60,7 +60,8 @@ std::string get_data_directory(bool log_errors) {
     if (add_game_folder) {
         auto title = Configurations::get<std::string>("game.title");
         if (title.empty()) title = "OctopusEngine";
-        default_folder += title + "/";
+        auto data_dir_version = Configurations::get<std::string>("game.data-folder-version");
+        default_folder += title + "/" + data_dir_version + "/";
     }
 
     // Create the folder if needed
@@ -102,7 +103,7 @@ void parse_config(const std::string& filename) {
 }
 
 void save_config(const std::string& filename) {
-    if (!Configurations::changed() || !Configurations::get<bool>("debug.update-config-file")) {
+    if (!Configurations::changed() || !Configurations::get<bool>("debug.update-config-files")) {
         return;
     }
     auto data_dir = get_data_directory();
@@ -150,4 +151,13 @@ bool remove_file(std::string filename) {
         LOGGER_E << "Error deleting file " << filename << ": " << e.what();
         return false;
     }
+}
+
+// Check if a path is absolute
+bool is_absolute_path(const std::string& path) {
+    return std::filesystem::path(path).is_absolute();
+}
+
+std::string get_filename_component(const std::string& path) {
+    return std::filesystem::path(path).filename().string();
 }

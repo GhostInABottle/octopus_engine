@@ -22,6 +22,9 @@ std::vector<std::string> list_directory_files(std::string path);
 bool copy_file(std::string source, std::string destination);
 // Remove a file, returns a boolean indicating success
 bool remove_file(std::string filename);
-
+// Check if a path is absolute
+bool is_absolute_path(const std::string& path);
+// Get filename component of a path (with extension)
+std::string get_filename_component(const std::string& path);
 
 #endif

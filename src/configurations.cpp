@@ -10,6 +10,7 @@ void Configurations::load_defaults() {
     defaults["game.title"] = std::string("Untitled");
     defaults["game.pause-unfocused"] = true;
     defaults["game.data-folder"] = std::string();
+    defaults["game.data-folder-version"] = std::string("v0_1");
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
     defaults["game.map-loaded-script"] = std::string();
 
@@ -73,7 +74,7 @@ void Configurations::load_defaults() {
     defaults["debug.use-fbo"] = true;
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
-    defaults["debug.update-config-file"] = true;
+    defaults["debug.update-config-files"] = true;
 
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();
