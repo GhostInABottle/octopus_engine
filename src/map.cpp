@@ -160,8 +160,8 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         }
         int min_x = static_cast<int>(tile_pos.x);
         int min_y = static_cast<int>(tile_pos.y);
-        int max_x = static_cast<int>((this_box.x + this_box.w) / tile_width);
-        int max_y = static_cast<int>((this_box.y + this_box.h) / tile_height);
+        int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
+        int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
         for (int y = min_y; y <= max_y; ++y) {
             for (int x = min_x; x <= max_x; ++x) {
                 // Maximum map bounds check (taking collision box into account)
