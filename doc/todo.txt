@@ -3,4 +3,3 @@
 - Editor: Handle object name change.
 - Implement smarter corner/edge correction.
 - Update GLFW when https://github.com/glfw/glfw/issues/1295 is fixed.
-- Fix std::iterator deprecation warning in utf8 header.
