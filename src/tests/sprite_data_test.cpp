@@ -31,9 +31,9 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
             </Frame> \
           </Pose> \
         </Sprite>";
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(text);
-    rapidxml::xml_node<>* node = doc.first_node("Sprite");
+    auto doc = std::make_unique<rapidxml::xml_document<>>();
+    doc->parse<0>(text);
+    auto node = doc->first_node("Sprite");
     BOOST_CHECK(node);
     xd::asset_manager manager;
     auto sprite_data = Sprite_Data::load(manager, *node);

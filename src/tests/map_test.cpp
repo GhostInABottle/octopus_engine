@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE(map_load) {
             </objectgroup> \
         </map>";
 
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(text);
-    rapidxml::xml_node<>* node = doc.first_node("map");
+    auto doc = std::make_unique<rapidxml::xml_document<>>();
+    doc->parse<0>(text);
+    auto node = doc->first_node("map");
     BOOST_CHECK(node);
     auto map = Map::load(*game, *node);
     detail::check_map(*map);

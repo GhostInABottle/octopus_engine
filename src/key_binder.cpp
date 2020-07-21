@@ -11,49 +11,55 @@
 Key_Binder::Key_Binder(Game& game, bool gamepad_enabled)
         : game(game), gamepad_enabled(gamepad_enabled), changed_since_save(false) {
     // Map key names to XD keys
-    key_names["LEFT"] = { xd::KEY_LEFT };
-    key_names["RIGHT"] = { xd::KEY_RIGHT };
-    key_names["UP"] = { xd::KEY_UP };
-    key_names["DOWN"] = { xd::KEY_DOWN };
-    key_names["ENTER"] = { xd::KEY_ENTER };
-    key_names["SPACE"] = { xd::KEY_SPACE };
-    key_names["ESC"] = { xd::KEY_ESC };
-    key_names["LEFT_CTRL"] = { xd::KEY_LCTRL };
-    key_names["RIGHT_CTRL"] = { xd::KEY_RCTRL };
-    key_names["CTRL"] = { xd::KEY_LCTRL, xd::KEY_RCTRL };
-    key_names["LEFT_ALT"] = { xd::KEY_LALT };
-    key_names["RIGHT_ALT"] = { xd::KEY_RALT };
-    key_names["ALT"] = { xd::KEY_LALT, xd::KEY_RALT };
-    key_names["LEFT_SHIFT"] = { xd::KEY_LSHIFT };
-    key_names["RIGHT_SHIFT"] = { xd::KEY_RSHIFT };
-    key_names["SHIFT"] = { xd::KEY_LSHIFT, xd::KEY_RSHIFT };
+    keys_for_name["LEFT"] = { xd::KEY_LEFT };
+    keys_for_name["RIGHT"] = { xd::KEY_RIGHT };
+    keys_for_name["UP"] = { xd::KEY_UP };
+    keys_for_name["DOWN"] = { xd::KEY_DOWN };
+    keys_for_name["ENTER"] = { xd::KEY_ENTER };
+    keys_for_name["SPACE"] = { xd::KEY_SPACE };
+    keys_for_name["ESC"] = { xd::KEY_ESC };
+    keys_for_name["LEFT_CTRL"] = { xd::KEY_LCTRL };
+    keys_for_name["RIGHT_CTRL"] = { xd::KEY_RCTRL };
+    keys_for_name["CTRL"] = { xd::KEY_LCTRL, xd::KEY_RCTRL };
+    keys_for_name["LEFT_ALT"] = { xd::KEY_LALT };
+    keys_for_name["RIGHT_ALT"] = { xd::KEY_RALT };
+    keys_for_name["ALT"] = { xd::KEY_LALT, xd::KEY_RALT };
+    keys_for_name["LEFT_SHIFT"] = { xd::KEY_LSHIFT };
+    keys_for_name["RIGHT_SHIFT"] = { xd::KEY_RSHIFT };
+    keys_for_name["SHIFT"] = { xd::KEY_LSHIFT, xd::KEY_RSHIFT };
     // Assumes ASCII layout
     for (int i = xd::KEY_A.code; i <= xd::KEY_Z.code; ++i) {
-        key_names[std::string(1, i)] = { xd::KEY(i) };
+        keys_for_name[std::string(1, i)] = { xd::KEY(i) };
     }
     for (int i = xd::KEY_0.code; i <= xd::KEY_9.code; ++i) {
-        key_names[std::string(1, i)] = { xd::KEY(i) };
+        keys_for_name[std::string(1, i)] = { xd::KEY(i) };
     }
-    key_names["GAMEPAD-A"] = { xd::GAMEPAD_BUTTON_A };
-    key_names["GAMEPAD-B"] = { xd::GAMEPAD_BUTTON_B };
-    key_names["GAMEPAD-X"] = { xd::GAMEPAD_BUTTON_X };
-    key_names["GAMEPAD-Y"] = { xd::GAMEPAD_BUTTON_Y };
-    key_names["GAMEPAD-LB"] = { xd::GAMEPAD_BUTTON_LEFT_BUMPER };
-    key_names["GAMEPAD-RB"] = {xd::GAMEPAD_BUTTON_RIGHT_BUMPER };
-    key_names["GAMEPAD-BACK"] = { xd::GAMEPAD_BUTTON_BACK };
-    key_names["GAMEPAD-START"] = { xd::GAMEPAD_BUTTON_START };
-    key_names["GAMEPAD-GUIDE"] = { xd::GAMEPAD_BUTTON_GUIDE };
-    key_names["GAMEPAD-LT"] = { xd::GAMEPAD_BUTTON_LEFT_THUMB };
-    key_names["GAMEPAD-RT"] = { xd::GAMEPAD_BUTTON_RIGHT_THUMB };
-    key_names["GAMEPAD-UP"] = { xd::GAMEPAD_BUTTON_DPAD_UP };
-    key_names["GAMEPAD-RIGHT"] = { xd::GAMEPAD_BUTTON_DPAD_RIGHT };
-    key_names["GAMEPAD-DOWN"] = { xd::GAMEPAD_BUTTON_DPAD_DOWN };
-    key_names["GAMEPAD-LEFT"] = { xd::GAMEPAD_BUTTON_DPAD_LEFT };
+    keys_for_name["GAMEPAD-A"] = { xd::GAMEPAD_BUTTON_A };
+    keys_for_name["GAMEPAD-B"] = { xd::GAMEPAD_BUTTON_B };
+    keys_for_name["GAMEPAD-X"] = { xd::GAMEPAD_BUTTON_X };
+    keys_for_name["GAMEPAD-Y"] = { xd::GAMEPAD_BUTTON_Y };
+    keys_for_name["GAMEPAD-LB"] = { xd::GAMEPAD_BUTTON_LEFT_BUMPER };
+    keys_for_name["GAMEPAD-RB"] = {xd::GAMEPAD_BUTTON_RIGHT_BUMPER };
+    keys_for_name["GAMEPAD-BACK"] = { xd::GAMEPAD_BUTTON_BACK };
+    keys_for_name["GAMEPAD-START"] = { xd::GAMEPAD_BUTTON_START };
+    keys_for_name["GAMEPAD-GUIDE"] = { xd::GAMEPAD_BUTTON_GUIDE };
+    keys_for_name["GAMEPAD-LT"] = { xd::GAMEPAD_BUTTON_LEFT_THUMB };
+    keys_for_name["GAMEPAD-RT"] = { xd::GAMEPAD_BUTTON_RIGHT_THUMB };
+    keys_for_name["GAMEPAD-UP"] = { xd::GAMEPAD_BUTTON_DPAD_UP };
+    keys_for_name["GAMEPAD-RIGHT"] = { xd::GAMEPAD_BUTTON_DPAD_RIGHT };
+    keys_for_name["GAMEPAD-DOWN"] = { xd::GAMEPAD_BUTTON_DPAD_DOWN };
+    keys_for_name["GAMEPAD-LEFT"] = { xd::GAMEPAD_BUTTON_DPAD_LEFT };
+    // Map the other side of the relationship
+    for (auto& [name, keys] : keys_for_name) {
+        for (auto& key : keys) {
+            name_for_key[key] = name;
+        }
+    }
 }
 void Key_Binder::bind_key(const std::string& physical_name, const std::string& virtual_name) {
     auto key = capitalize(physical_name);
-    if (key_names.find(key) != key_names.end()) {
-        for (auto& xd_key : key_names[key]) {
+    if (keys_for_name.find(key) != keys_for_name.end()) {
+        for (auto& xd_key : keys_for_name[key]) {
             game.bind_key(xd_key, virtual_name);
         }
         auto& values = bound_keys[virtual_name];
@@ -67,6 +73,49 @@ void Key_Binder::bind_key(const std::string& physical_name, const std::string& v
     }
 }
 
+void Key_Binder::bind_key(const xd::key& key, const std::string& virtual_name) {
+    if (name_for_key.find(key) != name_for_key.end()) {
+        bind_key(name_for_key[key], virtual_name);
+    } else {
+        LOGGER_W << "Name of key with code " << key.code <<
+            " was not found while trying to bind key " << virtual_name;
+    }
+}
+
+void Key_Binder::bind_defaults(bool bind_gamepad) {
+    // Default mapping
+    bind_key(xd::KEY_ESC, "pause");
+    bind_key(xd::KEY_LEFT, "left");
+    bind_key(xd::KEY_A, "left");
+    bind_key(xd::KEY_RIGHT, "right");
+    bind_key(xd::KEY_D, "right");
+    bind_key(xd::KEY_UP, "up");
+    bind_key(xd::KEY_W, "up");
+    bind_key(xd::KEY_DOWN, "down");
+    bind_key(xd::KEY_S, "down");
+    bind_key(xd::KEY_ENTER, "a");
+    bind_key(xd::KEY_SPACE, "a");
+    bind_key(xd::KEY_Z, "a");
+    bind_key(xd::KEY_J, "a");
+    bind_key(xd::KEY_X, "b");
+    bind_key(xd::KEY_K, "b");
+    bind_key(xd::KEY_C, "x");
+    bind_key(xd::KEY_L, "x");
+    bind_key(xd::KEY_V, "y");
+    bind_key(xd::KEY_I, "y");
+    if (bind_gamepad) {
+        bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
+        bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
+        bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
+        bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
+        bind_key(xd::GAMEPAD_BUTTON_A, "a");
+        bind_key(xd::GAMEPAD_BUTTON_B, "b");
+        bind_key(xd::GAMEPAD_BUTTON_X, "x");
+        bind_key(xd::GAMEPAD_BUTTON_Y, "y");
+        bind_key(xd::GAMEPAD_BUTTON_START, "pause");
+    }
+}
+
 void Key_Binder::remove_virtual_name(const std::string& virtual_name) {
     bound_keys.erase(virtual_name);
     changed_since_save = true;
@@ -74,8 +123,8 @@ void Key_Binder::remove_virtual_name(const std::string& virtual_name) {
 
 void Key_Binder::unbind_key(const std::string& physical_name) {
     auto key = capitalize(physical_name);
-    if (key_names.find(key) != key_names.end()) {
-        for (auto& xd_key : key_names[key]) {
+    if (keys_for_name.find(key) != keys_for_name.end()) {
+        for (auto& xd_key : keys_for_name[key]) {
             game.unbind_physical_key(xd_key);
         }
         for (auto& [key_name, values] : bound_keys) {
@@ -84,6 +133,15 @@ void Key_Binder::unbind_key(const std::string& physical_name) {
         changed_since_save = true;
     } else {
         LOGGER_W << "Physical key name " << physical_name <<
+            " was not found while trying unbind it";
+    }
+}
+
+void Key_Binder::unbind_key(const xd::key& key) {
+    if (name_for_key.find(key) != name_for_key.end()) {
+        unbind_key(name_for_key[key]);
+    } else {
+        LOGGER_W << "Name of key with code" << key.code <<
             " was not found while trying unbind it";
     }
 }
@@ -122,8 +180,8 @@ bool Key_Binder::process_keymap_file() {
         for (auto key : keys) {
             trim(key);
             capitalize(key);
-            if (key_names.find(key) != key_names.end()) {
-                for (auto& xd_key : key_names[key]) {
+            if (keys_for_name.find(key) != keys_for_name.end()) {
+                for (auto& xd_key : keys_for_name[key]) {
                     game.bind_key(xd_key, parts[0]);
                 }
                 bound_keys[parts[0]].push_back(key);
@@ -174,4 +232,12 @@ std::string Key_Binder::get_keymap_filename() const {
     auto data_directory = get_data_directory();
     if (data_directory.empty()) return filename;
     return data_directory + get_filename_component(filename);
+}
+
+std::vector<xd::key> Key_Binder::get_keys(const std::string& physical_name) const {
+    auto key_name = capitalize(physical_name);
+    if (keys_for_name.find(key_name) != keys_for_name.end())
+        return keys_for_name.at(key_name);
+    else
+        return {};
 }

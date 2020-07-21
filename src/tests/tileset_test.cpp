@@ -23,9 +23,9 @@ BOOST_AUTO_TEST_CASE(tileset_load) {
                 </properties> \
             </tile> \
         </tileset>";
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(text);
-    rapidxml::xml_node<>* node = doc.first_node("tileset");
+    auto doc = std::make_unique<rapidxml::xml_document<>>();
+    doc->parse<0>(text);
+    auto node = doc->first_node("tileset");
     BOOST_CHECK(node);
     auto tileset = Tileset::load(*node);
     BOOST_CHECK_EQUAL(tileset->first_id, 1);

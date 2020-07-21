@@ -100,37 +100,7 @@ struct Game::Impl {
             key_binder = std::make_unique<Key_Binder>(game, bind_gamepad);
         }
         if (!key_binder->process_keymap_file()) {
-            // Default mapping
-            window->bind_key(xd::KEY_ESC, "pause");
-            window->bind_key(xd::KEY_LEFT, "left");
-            window->bind_key(xd::KEY_A, "left");
-            window->bind_key(xd::KEY_RIGHT, "right");
-            window->bind_key(xd::KEY_D, "right");
-            window->bind_key(xd::KEY_UP, "up");
-            window->bind_key(xd::KEY_W, "up");
-            window->bind_key(xd::KEY_DOWN, "down");
-            window->bind_key(xd::KEY_S, "down");
-            window->bind_key(xd::KEY_ENTER, "a");
-            window->bind_key(xd::KEY_SPACE, "a");
-            window->bind_key(xd::KEY_Z, "a");
-            window->bind_key(xd::KEY_J, "a");
-            window->bind_key(xd::KEY_X, "b");
-            window->bind_key(xd::KEY_K, "b");
-            window->bind_key(xd::KEY_C, "x");
-            window->bind_key(xd::KEY_L, "x");
-            window->bind_key(xd::KEY_V, "y");
-            window->bind_key(xd::KEY_I, "y");
-            if (bind_gamepad) {
-                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
-                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
-                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
-                window->bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
-                window->bind_key(xd::GAMEPAD_BUTTON_A, "a");
-                window->bind_key(xd::GAMEPAD_BUTTON_B, "b");
-                window->bind_key(xd::GAMEPAD_BUTTON_X, "x");
-                window->bind_key(xd::GAMEPAD_BUTTON_Y, "y");
-                window->bind_key(xd::GAMEPAD_BUTTON_START, "pause");
-            }
+            key_binder->bind_defaults(bind_gamepad);
         }
     }
     // Audio system
