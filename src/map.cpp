@@ -426,13 +426,13 @@ void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
 }
 
 void Map::save(std::string save_filename) {
-    rapidxml::xml_document<> doc;
-    auto decl_node = xml_node(doc, "", "", rapidxml::node_declaration);
-    decl_node->append_attribute(xml_attribute(doc, "version", "1.0"));
-    decl_node->append_attribute(xml_attribute(doc, "encoding", "UTF-8"));
-    doc.append_node(decl_node);
-    auto map_node = save(doc);
-    doc.append_node(map_node);
+    auto doc = std::make_unique< rapidxml::xml_document<>>();
+    auto decl_node = xml_node(*doc, "", "", rapidxml::node_declaration);
+    decl_node->append_attribute(xml_attribute(*doc, "version", "1.0"));
+    decl_node->append_attribute(xml_attribute(*doc, "encoding", "UTF-8"));
+    doc->append_node(decl_node);
+    auto map_node = save(*doc);
+    doc->append_node(map_node);
     std::ofstream out;
     out.open(save_filename.c_str(), std::ios_base::out | std::ios_base::trunc);
     out << doc;
@@ -462,10 +462,10 @@ rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
 
 std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
     LOGGER_I << "Loading map " << filename;
-    rapidxml::xml_document<> doc;
-    char* content = doc.allocate_string(read_file(filename).c_str());
-    doc.parse<0>(content);
-    auto map_node = doc.first_node("map");
+    auto doc = std::make_unique< rapidxml::xml_document<>>();
+    char* content = doc->allocate_string(read_file(filename).c_str());
+    doc->parse<0>(content);
+    auto map_node = doc->first_node("map");
     if (!map_node)
         throw tmx_exception("Invalid TMX file. Missing map node");
     auto map = load(game, *map_node);

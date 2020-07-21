@@ -36,11 +36,10 @@ rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
 }
 
 std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
-    rapidxml::memory_pool<> pool;
-    char* content = pool.allocate_string(read_file(filename).c_str());
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(content);
-    auto tileset_node = doc.first_node("tileset");
+    auto doc = std::make_unique<rapidxml::xml_document<>>();
+    auto content = doc->allocate_string(read_file(filename).c_str());
+    doc->parse<0>(content);
+    auto tileset_node = doc->first_node("tileset");
     if (!tileset_node)
         throw tmx_exception("Invalid external tileset TMX file. Missing tileset node");
     auto tileset = load(*tileset_node);

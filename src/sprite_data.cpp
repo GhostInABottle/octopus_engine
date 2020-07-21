@@ -25,11 +25,10 @@ Sprite_Data::~Sprite_Data() {
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename) {
-    rapidxml::memory_pool<> pool;
-    char* content = pool.allocate_string(read_file(filename).c_str());
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(content);
-    auto sprite_node = doc.first_node("Sprite");
+    auto doc = std::make_unique<rapidxml::xml_document<>>();
+    auto content = doc->allocate_string(read_file(filename).c_str());
+    doc->parse<0>(content);
+    auto sprite_node = doc->first_node("Sprite");
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing Sprite node.");
     auto sprite_data = load(manager, *sprite_node);
