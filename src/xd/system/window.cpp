@@ -32,6 +32,8 @@ xd::window::window(const std::string& title, int width, int height, const window
     : m_width(width)
     , m_height(height)
     , m_in_update(false)
+    , m_tick_handler_counter(0)
+    , m_tick_handler_interval(0)
 {
     // check if there's already a window alive
     if (window_instance) {
@@ -105,6 +107,10 @@ xd::window::~window()
     glfwDestroyWindow(m_window);
     glfwTerminate();
     window_instance = nullptr;
+}
+
+bool xd::window::joystick_is_gamepad(int id) const {
+    return glfwJoystickIsGamepad(id) != 0;
 }
 
 void xd::window::add_joystick(int id) {
@@ -334,43 +340,6 @@ std::vector<xd::vec2> xd::window::get_sizes() const
     return sizes;
 }
 
-int xd::window::ticks() const
-{
-    return m_current_ticks;
-}
-
-int xd::window::delta_ticks() const
-{
-    return m_current_ticks - m_last_ticks;
-}
-
-float xd::window::delta_time() const
-{
-    return static_cast<float>(delta_ticks()) / 1000.0f;
-}
-
-void xd::window::register_tick_handler(tick_callback_t callback, std::uint32_t interval)
-{
-    m_tick_handler = callback;
-    m_tick_handler_interval = interval;
-    m_tick_handler_counter = 0;
-}
-
-void xd::window::unregister_tick_handler()
-{
-    m_tick_handler = nullptr;
-}
-
-int xd::window::fps() const
-{
-    return m_fps;
-}
-
-int xd::window::frame_count() const
-{
-    return m_frame_count;
-}
-
 void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key)
 {
     // find if the physical key is bound
@@ -408,7 +377,7 @@ void xd::window::unbind_key(const std::string& virtual_key)
     }
 }
 
-bool xd::window::pressed(const xd::key& key, int joystick_id)
+bool xd::window::pressed(const xd::key& key, int joystick_id) const
 {
     switch (key.type) {
     case xd::input_type::INPUT_KEYBOARD:
@@ -416,14 +385,20 @@ bool xd::window::pressed(const xd::key& key, int joystick_id)
     case xd::input_type::INPUT_MOUSE:
         return  glfwGetMouseButton(m_window, key.code) == GLFW_PRESS;
     case xd::input_type::INPUT_GAMEPAD:
+        if (joystick_id == -1 && first_joystick_id() != -1) {
+            for (auto& [id, state] : m_joystick_states) {
+                if (state.buttons[key.code] == GLFW_PRESS)
+                    return true;
+            }
+        }
         return joystick_present(joystick_id) &&
-            m_joystick_states[joystick_id].buttons[key.code] == GLFW_PRESS;
+            m_joystick_states.at(joystick_id).buttons[key.code] == GLFW_PRESS;
     default:
         return false;
     }
 }
 
-bool xd::window::pressed(const std::string& key, int joystick_id)
+bool xd::window::pressed(const std::string& key, int joystick_id) const
 {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
@@ -437,19 +412,25 @@ bool xd::window::pressed(const std::string& key, int joystick_id)
     return false;
 }
 
-bool xd::window::triggered(const xd::key& key, int joystick_id)
+bool xd::window::triggered(const xd::key& key, int joystick_id) const
 {
+    auto& key_set = m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
+    if (key_set.empty()) return false;
     auto key_copy = key;
     if (key_copy.type == input_type::INPUT_GAMEPAD) {
-        key_copy.device_id = joystick_id;
+        if (joystick_id == -1 && first_joystick_id() != -1) {
+            for (auto& candidate : key_set) {
+                if (candidate.type == key.type && candidate.code == key.code)
+                    key_copy.device_id = candidate.device_id;
+            }
+        } else {
+            key_copy.device_id = joystick_id;
+        }
     }
-    if (m_in_update)
-        return m_tick_handler_triggered_keys.find(key_copy) != m_tick_handler_triggered_keys.end();
-    else
-        return m_triggered_keys.find(key_copy) != m_triggered_keys.end();
+    return key_set.find(key_copy) != key_set.end();
 }
 
-bool xd::window::triggered(const std::string& key, int joystick_id)
+bool xd::window::triggered(const std::string& key, int joystick_id) const
 {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
@@ -465,15 +446,21 @@ bool xd::window::triggered(const std::string& key, int joystick_id)
 
 bool xd::window::triggered_once(const xd::key& key, int joystick_id)
 {
+    auto& key_set = m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
+    if (key_set.empty()) return false;
     auto key_copy = key;
     if (key_copy.type == input_type::INPUT_GAMEPAD) {
-        key_copy.device_id = joystick_id;
+        if (joystick_id == -1 && first_joystick_id() != -1) {
+            for (auto& candidate : key_set) {
+                if (candidate.type == key.type && candidate.code == key.code)
+                    key_copy.device_id = candidate.device_id;
+            }
+        } else {
+            key_copy.device_id = joystick_id;
+        }
     }
     if (triggered(key, joystick_id)) {
-        if (m_in_update)
-            m_tick_handler_triggered_keys.erase(key_copy);
-        else
-            m_triggered_keys.erase(key_copy);
+        key_set.erase(key_copy);
         return true;
     }
     return false;
@@ -493,9 +480,14 @@ bool xd::window::triggered_once(const std::string& key, int joystick_id)
 
 float xd::window::axis_value(const xd::key& key, int joystick_id)
 {
-    if (key.type != input_type::INPUT_GAMEPAD || !joystick_present(joystick_id)) {
-        return 0.0f;
+    if (key.type != input_type::INPUT_GAMEPAD) return 0.0f;
+    if (joystick_id == -1 && first_joystick_id() != -1) {
+        for (auto& [id, state] : m_joystick_states) {
+            if (state.axes[key.code] != 0.0f)
+                joystick_id = id;
+        }
     }
+    if (!joystick_present(joystick_id)) return 0.0f;
 
     return m_joystick_states[joystick_id].axes[key.code];
 }
@@ -513,16 +505,6 @@ float xd::window::axis_value(const std::string& key, int joystick_id)
     return 0.0f;
 }
 
-bool xd::window::joystick_present(int id) const
-{
-    return m_joystick_states.find(id) != m_joystick_states.end();
-}
-
-bool xd::window::joystick_is_gamepad(int id) const
-{
-    return glfwJoystickIsGamepad(id) != 0;
-}
-
 int xd::window::first_joystick_id() const {
     if (!m_joystick_states.empty()) {
         for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
@@ -533,13 +515,3 @@ int xd::window::first_joystick_id() const {
     return -1;
 }
 
-xd::event_link xd::window::bind_input_event(const std::string& event_name, input_event_callback_t callback,
-    const input_filter& filter, event_placement place)
-{
-    return m_input_events[event_name].add(callback, filter, place);
-}
-
-void xd::window::unbind_input_event(const std::string& event_name, event_link link)
-{
-    m_input_events[event_name].remove(link);
-}

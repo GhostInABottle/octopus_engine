@@ -44,38 +44,59 @@ namespace xd
         std::vector<xd::vec2> get_sizes() const;
 
         // ticks stuff
-        int ticks() const;
-        int delta_ticks() const;
-        float delta_time() const;
-        void register_tick_handler(tick_callback_t callback, std::uint32_t interval);
-        void unregister_tick_handler();
-        int fps() const;
-        int frame_count() const;
+        int ticks() const { return m_current_ticks; }
+        int delta_ticks() const { return m_current_ticks - m_last_ticks; }
+        float delta_time() const {
+            return static_cast<float>(delta_ticks()) / 1000.0f;
+        }
+        void register_tick_handler(tick_callback_t callback, std::uint32_t interval) {
+            m_tick_handler = callback;
+            m_tick_handler_interval = interval;
+            m_tick_handler_counter = 0;
+        }
+        void unregister_tick_handler() {
+            m_tick_handler = nullptr;
+        }
+        int fps() const { return m_fps; }
+        int frame_count() const { return m_frame_count; }
 
         void bind_key(const key& physical_key, const std::string& virtual_key);
         void unbind_key(const key& key);
         void unbind_key(const std::string& key);
 
-        bool pressed(const key& key, int joystick_id = 0);
-        bool pressed(const std::string& key, int joystick_id = 0);
+        bool pressed(const key& key, int joystick_id = -1) const;
+        bool pressed(const std::string& key, int joystick_id = -1) const;
 
-        bool triggered(const key& key, int joystick_id = 0);
-        bool triggered(const std::string& key, int joystick_id = 0);
-        bool triggered_once(const key& key, int joystick_id = 0);
-        bool triggered_once(const std::string& key, int joystick_id = 0);
+        bool triggered() const {
+            auto& key_set = m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
+            return !key_set.empty();
+        }
+        bool triggered(const key& key, int joystick_id = -1) const;
+        bool triggered(const std::string& key, int joystick_id = -1) const;
+        bool triggered_once(const key& key, int joystick_id = -1);
+        bool triggered_once(const std::string& key, int joystick_id = -1);
+        std::unordered_set<xd::key> triggered_keys() const {
+            return m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
+        }
 
-        float axis_value(const key& key, int joystick_id = 0);
-        float axis_value(const std::string& key, int joystick_id = 0);
+        float axis_value(const key& key, int joystick_id = -1);
+        float axis_value(const std::string& key, int joystick_id = -1);
 
-        bool joystick_present(int id) const;
+        bool joystick_present(int id) const {
+            return m_joystick_states.find(id) != m_joystick_states.end();
+        }
         bool joystick_is_gamepad(int id) const;
         void add_joystick(int id);
         void remove_joystick(int id);
         int first_joystick_id() const;
 
         event_link bind_input_event(const std::string& event_name, input_event_callback_t callback,
-            const input_filter& filter = input_filter(), event_placement place = EVENT_PREPEND);
-        void unbind_input_event(const std::string& event_name, event_link link);
+                const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND) {
+            return m_input_events[event_name].add(callback, filter, place);
+        }
+        void unbind_input_event(const std::string& event_name, event_link link) {
+            m_input_events[event_name].remove(link);
+        }
 
         // an utility template function for member function callbacks, so user doesn't have to use std::bind directly
         template <typename T>

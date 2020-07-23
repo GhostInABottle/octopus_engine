@@ -23,7 +23,7 @@ namespace xd
             scheduler& operator=(const scheduler&) = delete;
             scheduler(virtual_machine&  vm);
             virtual ~scheduler() = default;
-            void start(const std::string_view& code);
+            void start(std::string_view code);
             void run();
             void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();

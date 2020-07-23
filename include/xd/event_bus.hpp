@@ -10,7 +10,7 @@
 namespace xd
 {
     // where to place the event
-    enum event_placement
+    enum class event_placement
     {
         EVENT_PREPEND,
         EVENT_APPEND
@@ -63,20 +63,20 @@ namespace xd
         {
         }
 
-        event_link add(typename event_callback_t::callback_t callback, event_placement placement = EVENT_PREPEND)
+        event_link add(typename event_callback_t::callback_t callback, event_placement placement = event_placement::EVENT_PREPEND)
         {
             std::size_t link = m_counter++;
-            if (placement == EVENT_PREPEND)
+            if (placement == event_placement::EVENT_PREPEND)
                 m_callbacks.push_front(std::make_pair(link, event_callback_t(callback)));
             else
                 m_callbacks.push_back(std::make_pair(link, event_callback_t(callback)));
             return link;
         }
 
-        event_link add(typename event_callback_t::callback_t callback, typename event_callback_t::filter_t filter, event_placement placement = EVENT_PREPEND)
+        event_link add(typename event_callback_t::callback_t callback, typename event_callback_t::filter_t filter, event_placement placement = event_placement::EVENT_PREPEND)
         {
             std::size_t link = m_counter++;
-            if (placement == EVENT_PREPEND)
+            if (placement == event_placement::EVENT_PREPEND)
                 m_callbacks.push_front(std::make_pair(link, event_callback_t(callback, filter)));
             else
                 m_callbacks.push_back(std::make_pair(link, event_callback_t(callback, filter)));

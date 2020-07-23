@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Other', 'Nothing' })
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Other', 'Nothing' })
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -197,6 +197,34 @@ elseif c.selected == 5 then
     game.global_sound_volume = old_sound_volume
     game.global_music_volume = old_music_volume
 elseif c.selected == 6 then
+    -- Input
+    text(o, "Waiting for action key to be pressed"):wait()
+    game:wait_for_input('a')
+    text(o, 'Waiting for any key to be pressed'):wait()
+    game:wait_for_input()
+    text(o, "Printing out triggered keys. Press SHIFT to stop"):wait()
+    local done = false
+    while not done do
+        local triggered_keys = game.triggered_keys
+        if #triggered_keys > 0 then
+            local keys = ''
+            for i, key in ipairs(triggered_keys) do
+                if key == '' then
+                    keys = keys .. ' ' .. 'Unknown'
+                elseif key == 'SHIFT' then
+                    done = true
+                    break
+                else
+                    keys = keys .. ' ' .. key
+                end
+            end
+            if not done then
+                text(o, 'Triggered keys:' .. keys):wait()
+            end
+        end
+        wait(1)
+    end
+elseif c.selected == 7 then
     -- Other
     local files = filesystem.list_directory('.')
     print('Files in current folder:')

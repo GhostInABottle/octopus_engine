@@ -412,6 +412,15 @@ void Game::set_magnification(float mag) {
     camera->update_viewport();
 }
 
+std::vector<std::string> Game::triggered_keys() const {
+    std::vector<std::string> results;
+    auto keys = window->triggered_keys();
+    for (auto& key : keys) {
+        results.push_back(pimpl->key_binder->get_key_name(key));
+    }
+    return results;
+}
+
 void Game::bind_key(const std::string& physical_name, const std::string& virtual_name) {
     pimpl->key_binder->bind_key(physical_name, virtual_name);
 }

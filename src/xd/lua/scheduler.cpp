@@ -9,7 +9,7 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 {
 }
 
-void xd::lua::scheduler::start(const std::string_view& code)
+void xd::lua::scheduler::start(std::string_view code)
 {
     // set the current thread
     m_thread_stack.push(std::make_shared<scheduler_cothread>(state, code));

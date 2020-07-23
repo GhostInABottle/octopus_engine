@@ -38,7 +38,7 @@ public:
     }
     // Get list of keys with the given physical name
     std::vector<xd::key> get_keys(const std::string& physical_name) const;
-    // Get list of bound keys for a virtual name
+    // Get list of bound physical key names for a virtual name
     std::vector<std::string> get_bound_keys(const std::string& virtual_name) const {
         if (bound_keys.find(virtual_name) != bound_keys.end())
             return bound_keys.at(virtual_name);

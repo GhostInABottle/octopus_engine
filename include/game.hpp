@@ -90,6 +90,10 @@ public:
     bool pressed(const std::string& key) const {
         return window->pressed(key, get_gamepad_id());
     }
+    // Was any key triggered since last update?
+    bool triggered() const {
+        return window->triggered();
+    }
     // Was key triggered since last update?
     bool triggered(const xd::key& key) const {
         return window->triggered(key, get_gamepad_id());
@@ -104,14 +108,19 @@ public:
     bool triggered_once(const std::string& key) {
         return window->triggered_once(key, get_gamepad_id());
     }
+    // Get physical names of triggered keys
+    std::vector<std::string> triggered_keys() const;
+    // Bind physical key to virtual key name
     void bind_key(const std::string& physical_name, const std::string& virtual_name);
     void bind_key(const xd::key& physical_key, const std::string& virtual_key) {
         window->bind_key(physical_key, virtual_key);
     }
+    // Unbind physical key
     void unbind_physical_key(const xd::key& physical_key) {
         window->unbind_key(physical_key);
     }
     void unbind_physical_key(const std::string& physical_key);
+    // Unbind virtual key
     void unbind_virtual_key(const std::string& virtual_key);
     // Run a script
     void run_script(const std::string& script);

@@ -81,27 +81,17 @@ void Scripting_Interface::setup_scripts() {
     auto wait = [](Game& game, int duration) {
         int old_time = game.ticks();
         auto& scheduler = game.get_current_scripting_interface()->scheduler;
-        scheduler.yield([&game, old_time, duration]() -> bool {
+        scheduler.yield([&game, old_time, duration]() {
             return game.ticks() - old_time >= duration;
-        });
-    };
-    auto wait_press = [](Game& game, const std::string& key) {
-        auto& scheduler = game.get_current_scripting_interface()->scheduler;
-        scheduler.yield([&game, key]() -> bool {
-            return game.triggered(key);
         });
     };
 
     auto& lua = vm.lua_state();
 
-    lua["wait"] = sol::yielding(sol::overload(
-        [&](int duration) {
-            wait(*game, duration);
-        },
-        [&](const std::string& key) {
-            wait_press(*game, key);
+    lua["wait"] = sol::yielding([&](int duration) {
+        wait(*game, duration);
         }
-    ));
+    );
 
     auto filesystem = lua["filesystem"].get_or_create<sol::table>();
     filesystem["exists"] = &file_exists;
@@ -407,8 +397,7 @@ void Scripting_Interface::setup_scripts() {
                 auto clear = hex_to_color(
                     Configurations::get<std::string>("startup.clear-color"));
                 return std::make_unique<xd::vec4>(clear);
-            }
-            else if (name == "none")
+            } else if (name == "none")
                 return std::make_unique<xd::vec4>();
             else if (name == "black")
                 return std::make_unique<xd::vec4>(0.0f, 0.0f, 0.0f, 1.0f);
@@ -426,8 +415,7 @@ void Scripting_Interface::setup_scripts() {
                 try {
                     auto color = hex_to_color(name);
                     return std::make_unique<xd::vec4>(color);
-                }
-                catch (std::runtime_error&) {}
+                } catch (std::runtime_error&) {}
             }
             return std::make_unique<xd::vec4>();
         }
@@ -659,10 +647,19 @@ void Scripting_Interface::setup_scripts() {
     game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
     game_type["is_debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
+    game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
+    game_type["sizes"] = sol::property(
+        [&](Game& game) {
+            return sol::as_table(game.get_sizes());
+        }
+    );
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
-    game_type["triggered"] = [](Game* game, const std::string& key) { return game->triggered(key); };
+    game_type["triggered"] = sol::overload(
+        [](Game* game) { return game->triggered(); },
+        [](Game* game, const std::string& key) { return game->triggered(key); }
+    );
     game_type["triggered_once"] = [](Game* game, const std::string& key) { return game->triggered_once(key); };
     game_type["bind_key"] = sol::resolve<void(const std::string&, const std::string&)>(&Game::bind_key);
     game_type["unbind_physical_key"] = sol::resolve<void(const std::string&)>(&Game::unbind_physical_key);
@@ -670,16 +667,6 @@ void Scripting_Interface::setup_scripts() {
     game_type["run_script"] = &Game::run_script;
     game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };
-    game_type["sizes"] = sol::property(
-        [&](Game& game) {
-            sol::table objects(vm.lua_state(), sol::create);
-            auto sizes = game.get_sizes();
-            for (auto i = 0u; i < sizes.size(); ++i) {
-                objects[i + 1] = sizes[i];
-            }
-            return objects;
-        }
-    );
     game_type["load_map"] = sol::overload(
         [](Game* game, const std::string& filename) {
             game->set_next_map(filename, Direction::NONE);
@@ -730,6 +717,20 @@ void Scripting_Interface::setup_scripts() {
         game->load_music(filename);
         game->playing_music()->play();
     };
+    game_type["wait_for_input"] = sol::yielding(sol::overload(
+        [](Game* game, const std::string& key) {
+            auto& scheduler = game->get_current_scripting_interface()->scheduler;
+            scheduler.yield([game, key]() {
+                return game->triggered(key);
+            });
+        },
+        [](Game* game) {
+            auto& scheduler = game->get_current_scripting_interface()->scheduler;
+            scheduler.yield([game]() {
+                return game->triggered();
+            });
+        }
+    ));
 
     // Map layer
     auto layer_type = lua.new_usertype<Layer>("Layer");
