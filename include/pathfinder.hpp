@@ -101,7 +101,7 @@ public:
     };
     Pathfinder(Map& map, Map_Object& object,
         xd::vec2 dest, int range = 0, bool close = false,
-        Collision_Check_Types check_type = Collision_Check_Types::BOTH);
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     // The actual pathfinding step, call each frame
     void calculate_path();
     // Generate final path
@@ -151,7 +151,7 @@ private:
     // Nearest node found
     Node nearest_node;
     // Collision checking type
-    Collision_Check_Types check_type;
+    Collision_Check_Type check_type;
 };
 
 

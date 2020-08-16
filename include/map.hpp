@@ -56,10 +56,10 @@ public:
     void run_startup_scripts();
     // Check if object can move in given direction
     Collision_Record passable(const Map_Object& object, Direction direction,
-        Collision_Check_Types check_type = Collision_Check_Types::BOTH);
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     Collision_Record passable(const Map_Object& object, Direction direction,
         xd::vec2 position, float speed,
-        Collision_Check_Types check_type = Collision_Check_Types::BOTH);
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     // Check if a particular tile is passable
     bool tile_passable(int x, int y);
     // Get number of objects
@@ -93,7 +93,7 @@ public:
     // Get image layer by name
     Image_Layer* get_image_layer(const std::string& name) const;
     // Add a new layer
-    void add_layer(Layer_Types type);
+    void add_layer(Layer_Type type);
     // Delete layer with given name
     void delete_layer(std::string name);
     // Add a canvas to the map

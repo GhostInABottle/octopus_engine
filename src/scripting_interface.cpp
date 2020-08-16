@@ -190,7 +190,7 @@ void Scripting_Interface::setup_scripts() {
             *obj,
             x,
             y,
-            tile_only ? Collision_Check_Types::TILE : Collision_Check_Types::BOTH,
+            tile_only ? Collision_Check_Type::TILE : Collision_Check_Type::BOTH,
             keep_trying));
     };
     // A command for showing text (used in NPC scheduling)
@@ -549,13 +549,13 @@ void Scripting_Interface::setup_scripts() {
             auto si = game->get_current_scripting_interface();
             return si->register_command<Move_Object_To_Command>(
                     *game->get_map(), *obj, x, y,
-                    Collision_Check_Types::BOTH, keep_trying);
+                    Collision_Check_Type::BOTH, keep_trying);
         },
         [&](Map_Object* obj, xd::vec2 pos, bool keep_trying) {
             auto si = game->get_current_scripting_interface();
             return si->register_command<Move_Object_To_Command>(
                     *game->get_map(), *obj, pos.x, pos.y,
-                    Collision_Check_Types::BOTH, keep_trying);
+                    Collision_Check_Type::BOTH, keep_trying);
         }
     );
     object_type["move"] = sol::overload(
@@ -794,8 +794,8 @@ void Scripting_Interface::setup_scripts() {
     };
     map_type["colliding_object"] = [&](Map& map, const Map_Object& object) -> Map_Object* {
         auto c = map.passable(object, object.get_direction(),
-            Collision_Check_Types::OBJECT);
-        if (c.type == Collision_Types::OBJECT)
+            Collision_Check_Type::OBJECT);
+        if (c.type == Collision_Type::OBJECT)
             return c.other_object;
         else
             return nullptr;
@@ -857,6 +857,14 @@ void Scripting_Interface::setup_scripts() {
         auto si = game->get_current_scripting_interface();
         return si->register_command<Shake_Screen_Command>(*game, strength, speed, duration);
     };
+
+    // Parsed token types
+    lua.new_enum<Token_Type>("Token_Type",
+        {
+            {"text", Token_Type::TEXT},
+            {"opening_tag", Token_Type::OPENING_TAG},
+            {"closing_tag", Token_Type::CLOSING_TAG}
+        });
 
     // Parsed text token
     auto token_type = lua.new_usertype<Token>("Token");

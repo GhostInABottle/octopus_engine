@@ -11,14 +11,14 @@
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
 
-Map_Object::Outline_Conditions operator|(Map_Object::Outline_Conditions a, Map_Object::Outline_Conditions b)
+Map_Object::Outline_Condition operator|(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
 {
-    return static_cast<Map_Object::Outline_Conditions>(static_cast<int>(a) | static_cast<int>(b));
+    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-Map_Object::Outline_Conditions operator&(Map_Object::Outline_Conditions a, Map_Object::Outline_Conditions b)
+Map_Object::Outline_Condition operator&(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
 {
-    return static_cast<Map_Object::Outline_Conditions>(static_cast<int>(a) & static_cast<int>(b));
+    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) & static_cast<int>(b));
 }
 
 Map_Object::Map_Object(Game& game, const std::string& name,
@@ -60,7 +60,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
 }
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
-        Collision_Check_Types check_type, bool change_facing) {
+        Collision_Check_Type check_type, bool change_facing) {
     // Map relative directions
     if (move_dir == Direction::FORWARD)
         move_dir = direction;
@@ -78,10 +78,10 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         set_state(face_state);
         // If there was no movement there's no need to check tile collision,
         // but maybe we want to check object collision to trigger scripts
-        if (check_type & Collision_Check_Types::OBJECT) {
-            check_type = Collision_Check_Types::OBJECT;
+        if (check_type & Collision_Check_Type::OBJECT) {
+            check_type = Collision_Check_Type::OBJECT;
         } else {
-            return Collision_Record(Collision_Types::NO_MOVE);
+            return Collision_Record(Collision_Type::NO_MOVE);
         }
     }
 
@@ -200,33 +200,33 @@ void Map_Object::set_outlined(std::optional<bool> new_outlined) {
     if (!new_outlined.has_value()) {
         outline_conditions = get_default_outline_conditions();
     } else if (new_outlined.value()) {
-        outline_conditions = Outline_Conditions::NONE;
+        outline_conditions = Outline_Condition::NONE;
     } else {
-        outline_conditions = Outline_Conditions::NEVER;
+        outline_conditions = Outline_Condition::NEVER;
     }
 
 }
 
 
 bool Map_Object::is_outlined() const {
-    if ((outline_conditions & Outline_Conditions::NEVER) != Outline_Conditions::NONE) return false;
+    if ((outline_conditions & Outline_Condition::NEVER) != Outline_Condition::NONE) return false;
     auto result = true;
-    if ((outline_conditions & Outline_Conditions::TOUCHED) != Outline_Conditions::NONE) {
+    if ((outline_conditions & Outline_Condition::TOUCHED) != Outline_Condition::NONE) {
         auto player = game.get_player();
         result = player && (player->get_collision_object() == this ||
             player->get_collision_area() == this);
     }
-    if ((outline_conditions & Outline_Conditions::SOLID) != Outline_Conditions::NONE) {
+    if ((outline_conditions & Outline_Condition::SOLID) != Outline_Condition::NONE) {
         result = result && !passthrough;
     }
-    if ((outline_conditions & Outline_Conditions::SCRIPT) != Outline_Conditions::NONE) {
+    if ((outline_conditions & Outline_Condition::SCRIPT) != Outline_Condition::NONE) {
         result = result && !trigger_script.empty();
     }
     return result;
 }
 
-Map_Object::Outline_Conditions Map_Object::get_default_outline_conditions() const {
-    return Outline_Conditions::TOUCHED | Outline_Conditions::SOLID | Outline_Conditions::SCRIPT;
+Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const {
+    return Outline_Condition::TOUCHED | Outline_Condition::SOLID | Outline_Condition::SCRIPT;
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
@@ -413,14 +413,14 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             if (parts.empty()) {
                 LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
             } else {
-                auto conditions = Outline_Conditions::NONE;
+                auto conditions = Outline_Condition::NONE;
                 for (auto& part : parts) {
                     if (part == "TOUCHED") {
-                        conditions = conditions | Outline_Conditions::TOUCHED;
+                        conditions = conditions | Outline_Condition::TOUCHED;
                     } else if (part == "SOLID") {
-                        conditions = conditions | Outline_Conditions::SOLID;
+                        conditions = conditions | Outline_Condition::SOLID;
                     } else if (part == "SCRIPT") {
-                        conditions = conditions | Outline_Conditions::SCRIPT;
+                        conditions = conditions | Outline_Condition::SCRIPT;
                     } else {
                         LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
                         conditions = object_ptr->get_default_outline_conditions();

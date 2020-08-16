@@ -11,7 +11,7 @@ class Map;
 class Move_Object_To_Command : public Command {
 public:
     Move_Object_To_Command(Map& map, Map_Object& object, float x, float y,
-        Collision_Check_Types check_type = Collision_Check_Types::BOTH,
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH,
         bool keep_trying = false);
     ~Move_Object_To_Command();
     void execute() override;

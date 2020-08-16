@@ -173,11 +173,11 @@ void Main_Window::show_layer_menu(const QPoint &pos) {
     QMenu new_menu;
     new_menu.setTitle("New");
     auto action = new_menu.addAction("Object Layer");
-    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Types::OBJECT); });
+    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Type::OBJECT); });
     action = new_menu.addAction("Image Layer");
-    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Types::IMAGE); });
+    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Type::IMAGE); });
     action = new_menu.addAction("Collision Layer");
-    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Types::TILE); });
+    connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Type::TILE); });
     menu.addMenu(&new_menu);
     action = menu.addAction("Delete");
     connect(action, &QAction::triggered, this, &Main_Window::delete_layer);
@@ -191,7 +191,7 @@ void Main_Window::show_object_menu(const QPoint &pos) {
     menu.exec(ui->object_list->mapToGlobal(pos));
 }
 
-void Main_Window::add_layer(Layer_Types type) {
+void Main_Window::add_layer(Layer_Type type) {
     map_view->add_layer(type);
     detail::update_layers(map_view, ui->layer_list);
 }

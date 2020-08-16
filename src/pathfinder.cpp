@@ -21,7 +21,7 @@ namespace detail {
 }
 
 Pathfinder::Pathfinder(Map& map, Map_Object& object,
-    xd::vec2 dest, int range, bool close, Collision_Check_Types check_type) :
+    xd::vec2 dest, int range, bool close, Collision_Check_Type check_type) :
         map(map),
         object(object),
         goal_node(map.get_tile_width(), map.get_tile_height(), dest),

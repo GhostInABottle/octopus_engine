@@ -25,7 +25,7 @@ public:
     Map* get_map();
     Map_Object* get_object(const std::string& name);
     Layer* get_layer(const std::string& name);
-    void add_layer(Layer_Types type);
+    void add_layer(Layer_Type type);
     void delete_layer(const std::string& name);
     void add_object();
     std::vector<std::string> get_layer_names();

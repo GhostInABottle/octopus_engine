@@ -161,15 +161,10 @@ void Canvas::set_text(const std::string& new_text) {
 
             for (auto i = line_tokens.rbegin(); i != line_tokens.rend(); i++) {
                 auto& token = *i;
-                if (token.unmatched && token.type == "opening_tag") {
+                if (token.unmatched && token.type == Token_Type::OPENING_TAG) {
                     // Close open tag and remember it for following lines
-                    line += "{/" + token.tag + "}";
-                    auto tag = "{" + token.tag;
-                    if (!token.value.empty()) {
-                        tag += "=" + token.value;
-                    }
-                    tag += "}";
-                    open_tags = tag + open_tags;
+                    line += token.to_closing_token().to_string();
+                    open_tags = token.to_string() + open_tags;
                 }
             }
         }

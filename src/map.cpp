@@ -77,13 +77,13 @@ void Map::run_startup_scripts() {
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        Collision_Check_Types check_type) {
+        Collision_Check_Type check_type) {
     return passable(object, direction, object.get_position(),
         object.get_speed(), check_type);
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed, Collision_Check_Types check_type) {
+        xd::vec2 position, float speed, Collision_Check_Type check_type) {
     Collision_Record result;
     if (object.initiates_passthrough())
         return result;
@@ -104,10 +104,10 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         bounding_box.h
     );
 
-    bool check_tile_collision = check_type & Collision_Check_Types::TILE;
+    bool check_tile_collision = check_type & Collision_Check_Type::TILE;
 
     // Check object collisions
-    if (check_type & Collision_Check_Types::OBJECT) {
+    if (check_type & Collision_Check_Type::OBJECT) {
         for (auto& object_pair : objects) {
             auto other_id = object_pair.first;
             auto other_object = object_pair.second.get();
@@ -133,12 +133,12 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
             if (intersects) {
                 if (is_area) {
-                    if (result.type == Collision_Types::NONE)
-                        result.type = Collision_Types::AREA;
+                    if (result.type == Collision_Type::NONE)
+                        result.type = Collision_Type::AREA;
                     result.other_area = other_object;
                     result.other_areas[other_object->get_name()] = other_object;
                 } else {
-                    result.type = Collision_Types::OBJECT;
+                    result.type = Collision_Type::OBJECT;
                     // Prefer objects with scripts
                     if (!result.other_object || other_object->has_any_script()) {
                         result.other_object = other_object;
@@ -155,7 +155,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
         // Minimum map bounds check (before small negatives are cast to 0)
         if (tile_pos.x < 0.0f || tile_pos.y < 0.0f) {
-            result.type = Collision_Types::TILE;
+            result.type = Collision_Type::TILE;
             return result;
         }
         int min_x = static_cast<int>(tile_pos.x);
@@ -166,7 +166,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             for (int x = min_x; x <= max_x; ++x) {
                 // Maximum map bounds check (taking collision box into account)
                 if (x >= width || y >= height) {
-                    result.type = Collision_Types::TILE;
+                    result.type = Collision_Type::TILE;
                     return result;
                 }
                 // Check if tile is blocking
@@ -174,7 +174,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     int tile = collision_layer->tiles[x + y * width] -
                         collision_tileset->first_id;
                     if (tile >= 2) {
-                        result.type = Collision_Types::TILE;
+                        result.type = Collision_Type::TILE;
                         if (tile >= 3 && tile <= 6) {
                             result.edge_direction = static_cast<Direction>((tile - 2) * 3);
                         }
@@ -323,16 +323,16 @@ Image_Layer* Map::get_image_layer(const std::string& name) const {
     return dynamic_cast<Image_Layer*>(get_layer(name));
 }
 
-void Map::add_layer(Layer_Types layer_type) {
+void Map::add_layer(Layer_Type layer_type) {
     std::shared_ptr<Layer> new_layer;
     switch (layer_type) {
-    case Layer_Types::OBJECT:
+    case Layer_Type::OBJECT:
         new_layer = std::make_shared<Object_Layer>();
         break;
-    case Layer_Types::IMAGE:
+    case Layer_Type::IMAGE:
         new_layer = std::make_shared<Image_Layer>();
         break;
-    case Layer_Types::TILE:
+    case Layer_Type::TILE:
         new_layer = std::make_shared<Tile_Layer>();
         break;
     default:
@@ -344,7 +344,7 @@ void Map::add_layer(Layer_Types layer_type) {
     }
     new_layer->name = detail::generate_unique_name(names);
     layers.push_back(new_layer);
-    if (layer_type == Layer_Types::OBJECT)
+    if (layer_type == Layer_Type::OBJECT)
         object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));
 }
 

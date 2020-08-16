@@ -97,7 +97,7 @@ Layer* Map_View::get_layer(const std::string& name) {
     return get_map()->get_layer(name);
 }
 
-void Map_View::add_layer(Layer_Types type) {
+void Map_View::add_layer(Layer_Type type) {
     get_map()->add_layer(type);
 }
 

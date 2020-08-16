@@ -6,8 +6,40 @@
 #include "../include/log.hpp"
 #include "../include/xd/vendor/utf8.h"
 
-std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) const
-{
+std::string Token::to_string() const {
+    if (type == Token_Type::TEXT) return value;
+
+    std::string str = "{";
+    if (type == Token_Type::CLOSING_TAG) {
+        str += "/";
+    }
+    str += tag;
+    if (type == Token_Type::OPENING_TAG && !value.empty()) {
+        str += "=" + value;
+    }
+    str += "}";
+
+    return str;
+}
+
+Token Token::to_opening_token(const std::string& val) const {
+    if (type != Token_Type::CLOSING_TAG) return *this;
+
+    Token opening_token = *this;
+    if (!val.empty()) opening_token.value = val;
+    opening_token.type = Token_Type::OPENING_TAG;
+    return opening_token;
+}
+
+Token Token::to_closing_token() const {
+    if (type != Token_Type::OPENING_TAG) return *this;
+
+    Token closing_token = *this;
+    closing_token.type = Token_Type::CLOSING_TAG;
+    return closing_token;
+}
+
+std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) const {
     std::vector<Token> tokens;
 
     auto start = text.begin(), end = text.end();
@@ -41,12 +73,12 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                 break;
 
             if (*start == '/') {
-                tag_token.type = "closing_tag";
+                tag_token.type = Token_Type::CLOSING_TAG;
                 start++;
                 if (validate_condition(start == end, "close brace at the end"))
                     break;
             } else {
-                tag_token.type = "opening_tag";
+                tag_token.type = Token_Type::OPENING_TAG;
             }
             std::string tag_name;
             std::string value;
@@ -61,7 +93,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                         value += *start;
                 } else {
                     if (*start == '=') {
-                        if (tag_token.type == "opening_tag") {
+                        if (tag_token.type == Token_Type::OPENING_TAG) {
                             tag_token.tag = tag_name;
                             has_value = true;
                         } else {
@@ -85,7 +117,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                             tag_token.value = value;
                         }
 
-                        if (tag_token.type == "opening_tag") {
+                        if (tag_token.type == Token_Type::OPENING_TAG) {
                             unmatched_tokens[tag_token.tag].push_back(tokens.size());
                             tag_token.unmatched = true;
                         } else {
@@ -120,7 +152,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             Token text_token;
             text_token.unmatched = false;
             text_token.start_index = utf8::distance(text.begin(), start);
-            text_token.type = "text";
+            text_token.type = Token_Type::TEXT;
             std::string parsed_text;
             while (start != end)
             {

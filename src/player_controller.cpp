@@ -35,7 +35,7 @@ void Player_Controller::update(Map_Object& object) {
     }
     auto collision = object.move(direction, object.get_speed());
     // Check if stuck inside another object
-    if (moved && collision.type == Collision_Types::OBJECT) {
+    if (moved && collision.type == Collision_Type::OBJECT) {
         bool passable = false;
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
@@ -50,24 +50,24 @@ void Player_Controller::update(Map_Object& object) {
         // If surrounded by object in all directions, ignore object collisions
         if (!passable)
             collision = object.move(direction, object.get_speed(),
-                Collision_Check_Types::TILE);
+                Collision_Check_Type::TILE);
     }
 
-    process_collision(object, collision, Collision_Types::OBJECT, action_pressed);
-    process_collision(object, collision, Collision_Types::AREA, action_pressed);
+    process_collision(object, collision, Collision_Type::OBJECT, action_pressed);
+    process_collision(object, collision, Collision_Type::AREA, action_pressed);
 
     // Check collision one more time to outline any touched objects
     if (object.get_collision_object()) return;
-    auto touching = game.get_map()->passable(object, object.get_direction(), Collision_Check_Types::OBJECT);
-    if (touching.type == Collision_Types::OBJECT) {
-        process_collision(object, touching, Collision_Types::OBJECT, false);
+    auto touching = game.get_map()->passable(object, object.get_direction(), Collision_Check_Type::OBJECT);
+    if (touching.type == Collision_Type::OBJECT) {
+        process_collision(object, touching, Collision_Type::OBJECT, false);
     }
 }
 
-void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Types type, bool action_pressed) {
+void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool action_pressed) {
     Map_Object* old_object = nullptr;
     Map_Object* other = nullptr;
-    if (type == Collision_Types::OBJECT) {
+    if (type == Collision_Type::OBJECT) {
         old_object = object.get_collision_object();
         other = collision.other_object;
         if (other)
@@ -95,7 +95,7 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
         if (old_object && old_object->has_leave_script()) {
             old_object->run_leave_script();
         }
-        if (type == Collision_Types::OBJECT) {
+        if (type == Collision_Type::OBJECT) {
             object.set_collision_object(nullptr);
         } else {
             object.set_collision_area(nullptr);

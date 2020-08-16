@@ -13,7 +13,7 @@
 
 struct Move_Object_To_Command::Impl {
     Impl(Map& map, Map_Object& object, float x, float y,
-        Collision_Check_Types check_type, bool keep_trying)
+        Collision_Check_Type check_type, bool keep_trying)
         : map(map), object(object), destination(x, y), path_found(false), pixels(0.0f),
         check_type(check_type), keep_trying(keep_trying), last_attempt_time(0),
         blocked(false), complete(false), nearest(nullptr), old_state(object.get_state()) {}
@@ -27,7 +27,7 @@ struct Move_Object_To_Command::Impl {
     int last_attempt_time;
     bool blocked;
     bool complete;
-    Collision_Check_Types check_type;
+    Collision_Check_Type check_type;
     std::unique_ptr<Pathfinder::Node> nearest;
     std::string old_state;
     // Setup the pathfinder
@@ -50,10 +50,10 @@ struct Move_Object_To_Command::Impl {
     }
     // Move object in direction
     Collision_Record move_object(Direction dir) {
-        if (check_type == Collision_Check_Types::TILE)
+        if (check_type == Collision_Check_Type::TILE)
             object.set_passthrough(true);
         auto collision = object.move(dir, object.get_speed(), check_type);
-        if (check_type == Collision_Check_Types::TILE)
+        if (check_type == Collision_Check_Type::TILE)
             object.set_passthrough(false);
         return collision;
     }
@@ -122,7 +122,7 @@ struct Move_Object_To_Command::Impl {
 };
 
 Move_Object_To_Command::Move_Object_To_Command(Map& map, Map_Object& object,
-    float x, float y, Collision_Check_Types check_type, bool keep_trying)
+    float x, float y, Collision_Check_Type check_type, bool keep_trying)
     :  pimpl(std::make_unique<Impl>(map, object, x, y, check_type, keep_trying)) {}
 
 Move_Object_To_Command::~Move_Object_To_Command() {}

@@ -1,6 +1,6 @@
 #include "../include/collision_record.hpp"
 
-Collision_Record::Collision_Record(Collision_Types type,
+Collision_Record::Collision_Record(Collision_Type type,
     const Map_Object* this_object, Map_Object* other_object,
     Map_Object* other_area) :
         type(type), this_object(this_object),

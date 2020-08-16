@@ -5,13 +5,22 @@
 #include <vector>
 #include <stdexcept>
 
+enum class Token_Type {
+    TEXT,
+    OPENING_TAG,
+    CLOSING_TAG
+};
+
 struct Token {
-    std::string type;
+    Token_Type type;
     std::string tag;
     std::string value;
     bool unmatched = false;
     int start_index = 0;
     int end_index = 0;
+    std::string to_string() const;
+    Token to_opening_token(const std::string& val = "") const;
+    Token to_closing_token() const;
 };
 
 // Thrown when text being parsed is invalid

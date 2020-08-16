@@ -8,7 +8,7 @@
 class Map_Object;
 
 // Types of collision events
-enum class Collision_Types {
+enum class Collision_Type {
     NONE,           // No collisions found
     NO_MOVE,        // No collisions because this object didn't move
     TILE,           // Tile collision
@@ -19,7 +19,7 @@ enum class Collision_Types {
 // Structure returned after collision detection
 struct Collision_Record {
     // What triggered this collision
-    Collision_Types type;
+    Collision_Type type;
     // The object that triggered it (usually the player)
     const Map_Object* this_object;
     // The first other object, if any
@@ -34,9 +34,9 @@ struct Collision_Record {
     Direction edge_direction;
     // Does collision type allow passing through?
     bool passable() const {
-        return type == Collision_Types::NONE || type == Collision_Types::AREA;
+        return type == Collision_Type::NONE || type == Collision_Type::AREA;
     }
-    Collision_Record(Collision_Types type = Collision_Types::NONE,
+    Collision_Record(Collision_Type type = Collision_Type::NONE,
         const Map_Object* this_object = nullptr,
         Map_Object* other_object = nullptr,
         Map_Object* other_area = nullptr);

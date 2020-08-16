@@ -26,13 +26,13 @@ public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
     enum class Passthrough_Type { INITIATOR = 1, RECEIVER, BOTH };
-    enum class Outline_Conditions { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
+    enum class Outline_Condition { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
     // Map object onstructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
-        Collision_Check_Types check_type = Collision_Check_Types::BOTH,
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH,
         bool change_facing = true);
     // Getters and setters
     Object_Layer* get_layer() const {
@@ -261,13 +261,13 @@ public:
     }
     bool is_outlined() const;
     void set_outlined(std::optional<bool> new_outlined);
-    void set_outline_conditions(Outline_Conditions conditions) {
+    void set_outline_conditions(Outline_Condition conditions) {
         outline_conditions = conditions;
     }
-    Outline_Conditions get_outline_conditions() const {
+    Outline_Condition get_outline_conditions() const {
         return outline_conditions;
     }
-    Outline_Conditions get_default_outline_conditions() const;
+    Outline_Condition get_default_outline_conditions() const;
     std::optional<xd::vec4> get_outline_color() const {
         return outline_color;
     }
@@ -371,7 +371,7 @@ private:
     // Outline color
     std::optional<xd::vec4> outline_color;
     // Is the object outlined?
-    Outline_Conditions outline_conditions;
+    Outline_Condition outline_conditions;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity
