@@ -41,6 +41,7 @@ namespace xd
         int framebuffer_width() const;
         int framebuffer_height() const;
         void set_size(int width, int height) const;
+        xd::vec2 get_size() const;
         std::vector<xd::vec2> get_sizes() const;
 
         // ticks stuff

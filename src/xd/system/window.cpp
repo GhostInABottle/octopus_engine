@@ -1,5 +1,6 @@
 #include "../../../include/xd/system/window.hpp"
 #include "../../../include/xd/system/exceptions.hpp"
+#include "../../../include/xd/vendor/glm/gtx/hash.hpp"
 #include <GL/glew.h>
 #include <GL/glfw3.h>
 #include <cstdlib>
@@ -325,15 +326,25 @@ void xd::window::set_size(int width, int height) const
     glfwSetWindowSize(m_window, width, height);
 }
 
+xd::vec2 xd::window::get_size() const     {
+    auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    return mode ? xd::vec2{ mode->width, mode->height } : xd::vec2{ 0.0f, 0.0f };
+}
+
 std::vector<xd::vec2> xd::window::get_sizes() const
 {
     std::vector<xd::vec2> sizes;
+    std::unordered_set<xd::vec2> size_map;
 
     int count;
     const auto modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
     if (modes) {
         for (int i = 0; i < count; ++i) {
-            sizes.emplace_back(modes[i].width, modes[i].height);
+            xd::vec2 size{modes[i].width, modes[i].height};
+            if (size_map.find(size) == size_map.end()) {
+                sizes.push_back(size);
+                size_map.insert(size);
+            }
         }
     }
 

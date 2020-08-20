@@ -60,7 +60,7 @@ struct Game::Impl {
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
-        if (config_changed("graphics.screen-width") && config_changed("graphics.screen-width")) {
+        if (config_changed("graphics.screen-width") || config_changed("graphics.screen-height")) {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
         }
@@ -384,6 +384,7 @@ void Game::exit() {
 }
 
 void Game::set_size(int width, int height) {
+    LOGGER_I << "Setting screen size to " << width << ", " << height;
     if (pimpl->editor_mode) {
         editor_size = xd::ivec2(width, height);
         pimpl->game_width = map->get_pixel_width() * magnification;
@@ -392,6 +393,10 @@ void Game::set_size(int width, int height) {
         window->set_size(width, height);
     }
     camera->set_size(width, height);
+}
+
+xd::vec2 Game::get_monitor_size() const {
+    return window ? window->get_size() : xd::vec2{0.0f, 0.0f};
 }
 
 std::vector<xd::vec2> Game::get_sizes() const {

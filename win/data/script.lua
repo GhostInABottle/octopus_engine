@@ -142,9 +142,11 @@ elseif c.selected == 4 then
     camera:zoom(2, 3000):wait()
     text(o, "...and out"):wait()
     camera:zoom(old_mag, 3000):wait()
-    print('List of supported sizes: ')
-    for i, size in ipairs(game.sizes) do
-        print(i .. ' - ' .. size.x .. ' x ' .. size.y)
+    local res = game.monitor_resolution
+    print('Monitor resolution: ' .. res.x .. 'x' .. res.y)
+    print('List of supported resolutions: ')
+    for i, res in ipairs(game.monitor_resolutions) do
+        print(i .. ' - ' .. res.x .. 'x' .. res.y)
     end
     local bounds = camera.position_bounds
     print('Camera bounds: ' .. bounds.x .. ', ' .. bounds.y .. ', ' .. bounds.w .. ', ' .. bounds.h)

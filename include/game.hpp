@@ -64,6 +64,8 @@ public:
     }
     // Manually set window resolution
     void set_size(int width, int height);
+    // Returns the current supported resolutions
+    xd::vec2 get_monitor_size() const;
     // Returns list of supported resolutions
     std::vector<xd::vec2> get_sizes() const;
     // Game dimensions
