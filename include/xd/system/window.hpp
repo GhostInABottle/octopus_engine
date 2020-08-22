@@ -40,9 +40,11 @@ namespace xd
         int height() const;
         int framebuffer_width() const;
         int framebuffer_height() const;
-        void set_size(int width, int height) const;
+        void set_size(int width, int height);
         xd::vec2 get_size() const;
         std::vector<xd::vec2> get_sizes() const;
+        bool is_fullscreen() const;
+        void set_fullscreen(bool fullscreen);
 
         // ticks stuff
         int ticks() const { return m_current_ticks; }
@@ -115,6 +117,10 @@ namespace xd
         // window width/height
         int m_width;
         int m_height;
+        // windowed mode position
+        xd::ivec2 m_windowed_pos;
+        // windowed mode content size
+        xd::ivec2 m_windowed_size;
 
         bool m_gamepad_detection;
         bool m_axis_as_dpad;

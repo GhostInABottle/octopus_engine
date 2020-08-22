@@ -139,9 +139,9 @@ elseif c.selected == 4 then
     game.magnification = old_mag
     wait(500)
     text(o, "Gradually zooming in"):wait()
-    camera:zoom(2, 3000):wait()
+    camera:zoom(2, 1000):wait()
     text(o, "...and out"):wait()
-    camera:zoom(old_mag, 3000):wait()
+    camera:zoom(old_mag, 1000):wait()
     local res = game.monitor_resolution
     print('Monitor resolution: ' .. res.x .. 'x' .. res.y)
     print('List of supported resolutions: ')
@@ -160,6 +160,15 @@ elseif c.selected == 4 then
     text(o, "Changing it back to " .. w .. ", " .. h):wait()
     game:set_size(w, h)
     wait(500)
+    text(o, 'Going to fullscreen mode'):wait()
+    game.fullscreen = true
+    local old_mode = game:get_config('graphics.scale-mode')
+    text(o, 'Setting scale mode from ' .. old_mode .. ' to stretch'):wait()
+    game:set_string_config('graphics.scale-mode', 'stretch')
+    text(o, 'And reverting it back to ' .. old_mode .. ' scale mode'):wait()
+    game:set_string_config('graphics.scale-mode', old_mode)
+    text(o, 'Going back to windowed mode'):wait()
+    game.fullscreen = false
     text(o, "Moving camera"):wait()
     camera:move(UP, 120, 1):wait()
     camera:move_to(player, 1):wait()

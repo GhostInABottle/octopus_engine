@@ -32,6 +32,8 @@ namespace
 xd::window::window(const std::string& title, int width, int height, const window_options& options)
     : m_width(width)
     , m_height(height)
+    , m_windowed_pos(0, 0)
+    , m_windowed_size(0, 0)
     , m_in_update(false)
     , m_tick_handler_counter(0)
     , m_tick_handler_interval(0)
@@ -321,12 +323,15 @@ int xd::window::framebuffer_height() const
     return height;
 }
 
-void xd::window::set_size(int width, int height) const
+void xd::window::set_size(int width, int height)
 {
+    m_width = width;
+    m_height = height;
     glfwSetWindowSize(m_window, width, height);
 }
 
-xd::vec2 xd::window::get_size() const     {
+xd::vec2 xd::window::get_size() const
+{
     auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     return mode ? xd::vec2{ mode->width, mode->height } : xd::vec2{ 0.0f, 0.0f };
 }
@@ -349,6 +354,25 @@ std::vector<xd::vec2> xd::window::get_sizes() const
     }
 
     return sizes;
+}
+
+bool xd::window::is_fullscreen() const {
+    return glfwGetWindowMonitor(m_window) != nullptr;
+}
+
+void xd::window::set_fullscreen(bool fullscreen) {
+    if (is_fullscreen() == fullscreen) return;
+
+    if (fullscreen) {
+        glfwGetWindowPos(m_window, &m_windowed_pos.x, &m_windowed_pos.y);
+        glfwGetWindowSize(m_window, &m_windowed_size.x, &m_windowed_size.y);
+        auto res = get_size();
+        glfwSetWindowMonitor(m_window, glfwGetPrimaryMonitor(), 0, 0,
+            static_cast<int>(res.x), static_cast<int>(res.y), GLFW_DONT_CARE);
+    } else {
+        glfwSetWindowMonitor(m_window, nullptr, m_windowed_pos.x, m_windowed_pos.y,
+            m_windowed_size.x, m_windowed_size.y, GLFW_DONT_CARE);
+    }
 }
 
 void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key)

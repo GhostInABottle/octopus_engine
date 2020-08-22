@@ -64,6 +64,12 @@ struct Game::Impl {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
         }
+        if (config_changed("graphics.fullscreen")) {
+            game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
+        }
+        if (config_changed("graphics.scale-mode")) {
+            game.get_camera()->set_size(game.width(), game.height());
+        }
         if (config_changed("graphics.brightness")) {
             game.get_camera()->set_brightness(Configurations::get<float>("graphics.brightness"));
         }
@@ -401,6 +407,12 @@ xd::vec2 Game::get_monitor_size() const {
 
 std::vector<xd::vec2> Game::get_sizes() const {
     return window ? window->get_sizes() : std::vector<xd::vec2>{};
+}
+
+void Game::set_fullscreen(bool fullscreen) {
+    if (!window || fullscreen == is_fullscreen()) return;
+    window->set_fullscreen(fullscreen);
+    camera->set_size(width(), height());
 }
 
 float Game::game_width(bool magnified) const {

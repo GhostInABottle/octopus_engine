@@ -654,6 +654,7 @@ void Scripting_Interface::setup_scripts() {
             return sol::as_table(game.get_sizes());
         }
     );
+    game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };

@@ -149,6 +149,8 @@ void Camera::calculate_viewport(int width, int height) {
     auto game_height = static_cast<float>(game.game_height(false));
 
     if (scale_mode == "stretch") {
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
         viewport.w = screen_width;
         viewport.h = screen_height;
     } else {

@@ -64,10 +64,16 @@ public:
     }
     // Manually set window resolution
     void set_size(int width, int height);
-    // Returns the current supported resolutions
+    // Returns the current resolution
     xd::vec2 get_monitor_size() const;
     // Returns list of supported resolutions
     std::vector<xd::vec2> get_sizes() const;
+    // Is game in fullscreen mode?
+    bool is_fullscreen() const {
+        return window ? window->is_fullscreen() : false;
+    }
+    // Toggle fullscreen mode
+    void set_fullscreen(bool fullscreen);
     // Game dimensions
     float game_width(bool magnified = true) const;
     float game_height(bool magnified = true) const;
