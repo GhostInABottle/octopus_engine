@@ -252,6 +252,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["fade_in_duration"] = sol::readonly(&Text_Options::fade_in_duration);
     options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
     options_type["background_visible"] = sol::readonly(&Text_Options::background_visible);
+    options_type["background_color"] = sol::readonly(&Text_Options::background_color);
     options_type["set_text"] = &Text_Options::set_text;
     options_type["set_object"] = &Text_Options::set_object;
     options_type["set_position"] = &Text_Options::set_position;
@@ -264,6 +265,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["set_fade_in_duration"] = &Text_Options::set_fade_in_duration;
     options_type["set_fade_out_duration"] = &Text_Options::set_fade_out_duration;
     options_type["set_background_visible"] = &Text_Options::set_background_visible;
+    options_type["set_background_color"] = &Text_Options::set_background_color;
     options_type["set_choices"] = [&](Text_Options& options, const sol::table& table) -> Text_Options& {
         std::vector<std::string> choices;
         for (auto& kv : table) {

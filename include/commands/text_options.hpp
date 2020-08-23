@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include "../xd/graphics/types.hpp"
+#include "../configurations.hpp"
+#include "../utility/color.hpp"
 
 enum class Text_Position_Type {
     NONE = 0,
@@ -47,6 +49,7 @@ struct Text_Options
     int fade_in_duration;
     int fade_out_duration;
     bool background_visible;
+    xd::vec4 background_color;
 
     Text_Options() :
         object(nullptr),
@@ -60,7 +63,8 @@ struct Text_Options
         canvas_priority(-1),
         fade_in_duration(-1),
         fade_out_duration(-1),
-        background_visible(true) {}
+        background_visible(Configurations::get<bool>("text.show-background")),
+        background_color(hex_to_color(Configurations::get<std::string>("text.background-color"))) {}
 
 
     Text_Options(Map_Object* object) : Text_Options() {
@@ -139,6 +143,11 @@ struct Text_Options
 
     Text_Options& set_background_visible(bool background_visible) {
         this->background_visible = background_visible;
+        return *this;
+    }
+
+    Text_Options& set_background_color(xd::vec4 background_color) {
+        this->background_color = background_color;
         return *this;
     }
 };

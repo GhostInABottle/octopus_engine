@@ -19,6 +19,7 @@ void Configurations::load_defaults() {
     defaults["text.choice-press-delay"] = 250;
     defaults["text.choice-selected-color"] = std::string("#FF00FF00");
     defaults["text.canvas-priority"] = 1000;
+    defaults["text.show-background"] = true;
     defaults["text.background-color"] = std::string("#7F000000");
     defaults["text.background-margin-left"] = 5.0f;
     defaults["text.background-margin-top"] = 5.0f;

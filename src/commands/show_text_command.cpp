@@ -101,6 +101,7 @@ struct Show_Text_Command::Impl {
         canvas->set_opacity(0.0f);
         if (options.background_visible) {
             canvas->set_background_visible(true);
+            canvas->set_background_color(options.background_color);
             canvas->set_background_rect(xd::rect{pos.x, pos.y - char_height,
                 text_width, text_height + char_height});
         }
