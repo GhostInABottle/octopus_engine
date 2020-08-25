@@ -451,6 +451,10 @@ void Game::unbind_virtual_key(const std::string& virtual_name) {
     pimpl->key_binder->remove_virtual_name(virtual_name);
 }
 
+std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) const {
+    return pimpl->key_binder->get_bound_keys(virtual_name);
+}
+
 void Game::run_script(const std::string& script) {
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->run_script(script);

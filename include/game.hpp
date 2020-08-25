@@ -130,6 +130,8 @@ public:
     void unbind_physical_key(const std::string& physical_key);
     // Unbind virtual key
     void unbind_virtual_key(const std::string& virtual_key);
+    // Get bound physical key names for a virtual key
+    std::vector<std::string> get_bound_keys(const std::string& virtual_name) const;
     // Run a script
     void run_script(const std::string& script);
     // Set or get the current scripting interface
