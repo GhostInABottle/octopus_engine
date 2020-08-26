@@ -39,7 +39,7 @@ Key_Binder::Key_Binder(Game& game, bool gamepad_enabled)
     keys_for_name["GAMEPAD-X"] = { xd::GAMEPAD_BUTTON_X };
     keys_for_name["GAMEPAD-Y"] = { xd::GAMEPAD_BUTTON_Y };
     keys_for_name["GAMEPAD-LB"] = { xd::GAMEPAD_BUTTON_LEFT_BUMPER };
-    keys_for_name["GAMEPAD-RB"] = {xd::GAMEPAD_BUTTON_RIGHT_BUMPER };
+    keys_for_name["GAMEPAD-RB"] = { xd::GAMEPAD_BUTTON_RIGHT_BUMPER };
     keys_for_name["GAMEPAD-BACK"] = { xd::GAMEPAD_BUTTON_BACK };
     keys_for_name["GAMEPAD-START"] = { xd::GAMEPAD_BUTTON_START };
     keys_for_name["GAMEPAD-GUIDE"] = { xd::GAMEPAD_BUTTON_GUIDE };

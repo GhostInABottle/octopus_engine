@@ -432,7 +432,8 @@ void Game::set_magnification(float mag) {
 std::vector<std::string> Game::triggered_keys() const {
     std::vector<std::string> results;
     auto keys = window->triggered_keys();
-    for (auto& key : keys) {
+    for (auto key : keys) {
+        key.device_id = -1;
         results.push_back(pimpl->key_binder->get_key_name(key));
     }
     return results;
