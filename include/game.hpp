@@ -200,6 +200,10 @@ public:
     std::unique_ptr<Save_File> load(std::string filename);
     // Get current gamepad ID
     int get_gamepad_id() const;
+    // Get connected gamepad IDs and their display names
+    std::unordered_map<int, std::string> gamepad_names() const {
+        return window->joystick_names();
+    }
 private:
     std::unique_ptr<xd::window> window;
     float magnification;

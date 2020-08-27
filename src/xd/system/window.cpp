@@ -540,13 +540,34 @@ float xd::window::axis_value(const std::string& key, int joystick_id)
     return 0.0f;
 }
 
-int xd::window::first_joystick_id() const {
+int xd::window::first_joystick_id() const
+{
     if (!m_joystick_states.empty()) {
+        // We iterate over GLFW_JOYSTICK_X instead of states to make sure we pick smallest ID
         for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
             if (joystick_present(joystick))
                 return joystick;
         }
     }
     return -1;
+}
+
+std::unordered_map<int, std::string> xd::window::joystick_names() const
+{
+    std::unordered_map<int, std::string> names;
+
+    for (auto& [id, state] : m_joystick_states) {
+        const char* name = nullptr;
+        if (joystick_is_gamepad(id)) {
+            name = glfwGetGamepadName(id);
+        } else {
+            name = glfwGetJoystickName(id);
+        }
+        if (name) {
+            names[id] = name;
+        }
+    }
+
+    return names;
 }
 

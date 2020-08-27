@@ -56,7 +56,7 @@ struct Game::Impl {
         return config_changes.find(config_key) != config_changes.end();
     }
     // Process configuration changes
-    void process_config_changes(Game& game) {
+    void process_config_changes(Game& game, xd::window* window) {
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
@@ -81,6 +81,10 @@ struct Game::Impl {
         }
         if (config_changed("audio.sound-volume")) {
             game.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
+        }
+        if (config_changed("controls.gamepad-number") && window) {
+            gamepad_id = -1;
+            get_gamepad_id(*window);
         }
         config_changes.clear();
     }
@@ -108,6 +112,17 @@ struct Game::Impl {
         if (!key_binder->process_keymap_file()) {
             key_binder->bind_defaults(bind_gamepad);
         }
+    }
+    int get_gamepad_id(xd::window& window) {
+        if (gamepad_id == -1 || !window.joystick_present(gamepad_id)) {
+            int preferred_id = Configurations::get<int>("controls.gamepad-number");
+            if (gamepad_id != preferred_id && preferred_id != -1 && window.joystick_present(preferred_id)) {
+                gamepad_id = preferred_id;
+            } else {
+                gamepad_id = window.first_joystick_id();
+            }
+        }
+        return gamepad_id;
     }
     // Audio system
     xd::audio* audio;
@@ -335,7 +350,7 @@ void Game::frame_update() {
     pimpl->scripting_interface->update();
     camera->update();
     map->update();
-    pimpl->process_config_changes(*this);
+    pimpl->process_config_changes(*this, window.get());
     // Switch map if needed
     if (!pimpl->next_map.empty())
         load_map(pimpl->next_map);
@@ -433,6 +448,7 @@ std::vector<std::string> Game::triggered_keys() const {
     std::vector<std::string> results;
     auto keys = window->triggered_keys();
     for (auto key : keys) {
+        if (key.type == xd::input_type::INPUT_GAMEPAD && key.device_id != get_gamepad_id()) continue;
         key.device_id = -1;
         results.push_back(pimpl->key_binder->get_key_name(key));
     }
@@ -612,13 +628,6 @@ void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
 }
 
 int Game::get_gamepad_id() const {
-    if (pimpl->gamepad_id == -1 || !window->joystick_present(pimpl->gamepad_id)) {
-        int preferred_id = Configurations::get<int>("controls.gamepad-number");
-        if (pimpl->gamepad_id != preferred_id && preferred_id != -1 && window->joystick_present(preferred_id)) {
-            pimpl->gamepad_id = preferred_id;
-        } else {
-            pimpl->gamepad_id = window->first_joystick_id();
-        }
-    }
-    return pimpl->gamepad_id;
+    if (!window) return -1;
+    return pimpl->get_gamepad_id(*window);
 }

@@ -92,6 +92,7 @@ namespace xd
         void add_joystick(int id);
         void remove_joystick(int id);
         int first_joystick_id() const;
+        std::unordered_map<int, std::string> joystick_names() const;
 
         event_link bind_input_event(const std::string& event_name, input_event_callback_t callback,
                 const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND) {

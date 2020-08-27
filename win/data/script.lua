@@ -209,6 +209,10 @@ elseif c.selected == 5 then
     game.global_music_volume = old_music_volume
 elseif c.selected == 6 then
     -- Input
+    print('Controller names: ')
+    for id, name in pairs(game.gamepad_names) do
+        print(id .. ' - ' .. name)
+    end
     text(o, "Waiting for action key to be pressed"):wait()
     game:wait_for_input('a')
     text(o, 'Waiting for any key to be pressed'):wait()
