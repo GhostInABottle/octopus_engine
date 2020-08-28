@@ -650,6 +650,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["is_debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
+    game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
     game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
     game_type["monitor_resolutions"] = sol::property(

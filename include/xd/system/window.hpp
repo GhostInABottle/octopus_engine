@@ -85,6 +85,12 @@ namespace xd
         float axis_value(const key& key, int joystick_id = -1);
         float axis_value(const std::string& key, int joystick_id = -1);
 
+        bool is_joystick_enabled() const {
+            return m_joystick_enabled;
+        }
+        void set_joystick_enabled(bool enabled) {
+            m_joystick_enabled = enabled;
+        }
         bool joystick_present(int id) const {
             return m_joystick_states.find(id) != m_joystick_states.end();
         }
@@ -123,6 +129,7 @@ namespace xd
         // windowed mode content size
         xd::ivec2 m_windowed_size;
 
+        bool m_joystick_enabled;
         bool m_gamepad_detection;
         bool m_axis_as_dpad;
         float m_axis_sensitivity;

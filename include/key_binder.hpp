@@ -10,13 +10,13 @@ class Game;
 // Binds physical keys to virtual names and processes the keymap file
 class Key_Binder {
 public:
-    Key_Binder(Game& game, bool gamepad_enabled);
+    Key_Binder(Game& game);
     // Bind a key by physical name to a virtual name
     void bind_key(const std::string& physical_name, const std::string& virtual_name);
     // Bind a physical key
     void bind_key(const xd::key& key, const std::string& virtual_name);
     // Bind some default values
-    void bind_defaults(bool bind_gamepad);
+    void bind_defaults();
     // Remove a virtual name and its bindings
     void remove_virtual_name(const std::string& virtual_name);
     // Remove binding for a key by physical name
@@ -47,7 +47,6 @@ public:
     }
 private:
     Game& game;
-    bool gamepad_enabled;
     bool changed_since_save;
     std::unordered_map<std::string, std::vector<xd::key>> keys_for_name;
     std::unordered_map<xd::key, std::string> name_for_key;

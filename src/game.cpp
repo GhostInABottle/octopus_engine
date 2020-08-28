@@ -45,7 +45,6 @@ struct Game::Impl {
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
-            gamepad_enabled(Configurations::get<bool>("controls.gamepad-enabled")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             save_path("not set") {}
     // Called when a configuration changes
@@ -82,6 +81,9 @@ struct Game::Impl {
         if (config_changed("audio.sound-volume")) {
             game.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
         }
+        if (config_changed("controls.gamepad-enabled") && window) {
+            window->set_joystick_enabled(Configurations::get<bool>("controls.gamepad-enabled"));
+        }
         if (config_changed("controls.gamepad-number") && window) {
             gamepad_id = -1;
             get_gamepad_id(*window);
@@ -103,16 +105,15 @@ struct Game::Impl {
         }
     }
     // Process key-mapping string
-    void process_keymap(Game& game, xd::window* window) {
-        int gamepad_id = game.get_gamepad_id();
-        bool bind_gamepad = window->joystick_present(gamepad_id) && gamepad_enabled;
+    void process_keymap(Game& game, xd::window* window, bool gamepad_only = false) {
         if (!key_binder) {
-            key_binder = std::make_unique<Key_Binder>(game, bind_gamepad);
+            key_binder = std::make_unique<Key_Binder>(game);
         }
         if (!key_binder->process_keymap_file()) {
-            key_binder->bind_defaults(bind_gamepad);
+            key_binder->bind_defaults();
         }
     }
+    // Get preferred gamepad ID (or first one)
     int get_gamepad_id(xd::window& window) {
         if (gamepad_id == -1 || !window.joystick_present(gamepad_id)) {
             int preferred_id = Configurations::get<int>("controls.gamepad-number");
@@ -163,8 +164,6 @@ struct Game::Impl {
     float game_width;
     // Game height
     float game_height;
-    // Enable joystick/gamepad?
-    bool gamepad_enabled;
     // Active gamepad id
     int gamepad_id;
     // Unapplied config changes
@@ -186,6 +185,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
                 false, // allow resize
                 false, // display_cursor
                 false, // vsync
+                Configurations::get<bool>("controls.gamepad-enabled"),
                 Configurations::get<bool>("controls.gamepad-detection"),
                 Configurations::get<bool>("controls.axis-as-dpad"),
                 Configurations::get<float>("controls.axis-sensitivity"),
@@ -625,6 +625,11 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
     map->add_canvas(canvas);
+}
+
+bool Game::gamepad_enabled() const {
+    int gamepad_id = get_gamepad_id();
+    return Configurations::get<bool>("controls.gamepad-enabled") && window->joystick_present(gamepad_id);
 }
 
 int Game::get_gamepad_id() const {

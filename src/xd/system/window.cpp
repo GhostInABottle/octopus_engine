@@ -96,6 +96,7 @@ xd::window::window(const std::string& title, int width, int height, const window
 
     window_instance = this;
 
+    m_joystick_enabled = options.enable_joystick;
     m_gamepad_detection = options.gamepad_detection;
     m_axis_as_dpad = options.axis_as_dpad;
     m_axis_sensitivity = options.axis_sensitivity;
@@ -207,6 +208,8 @@ void xd::window::update()
 
 void xd::window::update_joysticks()
 {
+    if (!m_joystick_enabled) return;
+
     for (auto& pair : m_joystick_states) {
         int joystick_id = pair.first;
         auto& joystick_state = pair.second;

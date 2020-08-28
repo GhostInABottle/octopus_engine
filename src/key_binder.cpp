@@ -8,8 +8,8 @@
 #include <fstream>
 #include <algorithm>
 
-Key_Binder::Key_Binder(Game& game, bool gamepad_enabled)
-        : game(game), gamepad_enabled(gamepad_enabled), changed_since_save(false) {
+Key_Binder::Key_Binder(Game& game)
+        : game(game), changed_since_save(false) {
     // Map key names to XD keys
     keys_for_name["LEFT"] = { xd::KEY_LEFT };
     keys_for_name["RIGHT"] = { xd::KEY_RIGHT };
@@ -82,8 +82,9 @@ void Key_Binder::bind_key(const xd::key& key, const std::string& virtual_name) {
     }
 }
 
-void Key_Binder::bind_defaults(bool bind_gamepad) {
+void Key_Binder::bind_defaults() {
     // Default mapping
+    bound_keys.clear();
     bind_key(xd::KEY_ESC, "pause");
     bind_key(xd::KEY_LEFT, "left");
     bind_key(xd::KEY_A, "left");
@@ -103,17 +104,15 @@ void Key_Binder::bind_defaults(bool bind_gamepad) {
     bind_key(xd::KEY_L, "x");
     bind_key(xd::KEY_V, "y");
     bind_key(xd::KEY_I, "y");
-    if (bind_gamepad) {
-        bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
-        bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
-        bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
-        bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
-        bind_key(xd::GAMEPAD_BUTTON_A, "a");
-        bind_key(xd::GAMEPAD_BUTTON_B, "b");
-        bind_key(xd::GAMEPAD_BUTTON_X, "x");
-        bind_key(xd::GAMEPAD_BUTTON_Y, "y");
-        bind_key(xd::GAMEPAD_BUTTON_START, "pause");
-    }
+    bind_key(xd::GAMEPAD_BUTTON_DPAD_UP, "up");
+    bind_key(xd::GAMEPAD_BUTTON_DPAD_DOWN, "down");
+    bind_key(xd::GAMEPAD_BUTTON_DPAD_LEFT, "left");
+    bind_key(xd::GAMEPAD_BUTTON_DPAD_RIGHT, "right");
+    bind_key(xd::GAMEPAD_BUTTON_A, "a");
+    bind_key(xd::GAMEPAD_BUTTON_B, "b");
+    bind_key(xd::GAMEPAD_BUTTON_X, "x");
+    bind_key(xd::GAMEPAD_BUTTON_Y, "y");
+    bind_key(xd::GAMEPAD_BUTTON_START, "pause");
 }
 
 void Key_Binder::remove_virtual_name(const std::string& virtual_name) {
@@ -157,6 +156,7 @@ bool Key_Binder::process_keymap_file() {
         return false;
     }
     LOGGER_I << "Processing keymap file " << filename;
+    bound_keys.clear();
     // Read keymap file and bind keys based on name
     std::string line;
     int counter = 0;
@@ -172,7 +172,11 @@ bool Key_Binder::process_keymap_file() {
                 " at line " << counter << ", missing = sign.";
             continue;
         }
-        trim(parts[0]);
+        auto virtual_name = parts[0];
+        trim(virtual_name);
+        if (virtual_name.empty())
+            LOGGER_E << "Error processing key mapping file \"" << filename <<
+            " at line " << counter << ", virtual name is missing.";
         auto keys = split(parts[1], ",");
         if (keys.empty())
             LOGGER_W << "Error processing key mapping file \"" << filename <<
@@ -181,14 +185,10 @@ bool Key_Binder::process_keymap_file() {
             trim(key);
             capitalize(key);
             if (keys_for_name.find(key) != keys_for_name.end()) {
-                for (auto& xd_key : keys_for_name[key]) {
-                    game.bind_key(xd_key, parts[0]);
-                }
-                bound_keys[parts[0]].push_back(key);
-            } else if (gamepad_enabled || key.find("GAMEPAD") == std::string::npos) {
+                bind_key(key, virtual_name);
+            } else {
                 LOGGER_W << "Error processing key mapping file \"" << filename <<
                     " at line " << counter << ", key \"" << key << "\" not found.";
-                continue;
             }
         }
     }
