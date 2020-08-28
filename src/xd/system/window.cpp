@@ -574,3 +574,14 @@ std::unordered_map<int, std::string> xd::window::joystick_names() const
     return names;
 }
 
+void xd::window::reset_joystick_states()
+{
+    for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
+        if (glfwJoystickPresent(joystick)) {
+            add_joystick(joystick);
+        } else {
+            remove_joystick(joystick);
+        }
+    }
+}
+

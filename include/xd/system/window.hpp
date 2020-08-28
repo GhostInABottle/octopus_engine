@@ -90,6 +90,7 @@ namespace xd
         }
         void set_joystick_enabled(bool enabled) {
             m_joystick_enabled = enabled;
+            reset_joystick_states();
         }
         bool joystick_present(int id) const {
             return m_joystick_states.find(id) != m_joystick_states.end();
@@ -99,6 +100,7 @@ namespace xd
         void remove_joystick(int id);
         int first_joystick_id() const;
         std::unordered_map<int, std::string> joystick_names() const;
+        void reset_joystick_states();
 
         event_link bind_input_event(const std::string& event_name, input_event_callback_t callback,
                 const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND) {
