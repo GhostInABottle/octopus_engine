@@ -718,6 +718,8 @@ void Scripting_Interface::setup_scripts() {
         else
             return sol::object(sol::nil);
     };
+    game_type["save_config_file"] = &Game::save_config_file;
+    game_type["save_keymap_file"] = &Game::save_keymap_file;
     game_type["load_music"] = [&](Game* game, const std::string& filename) {
         game->load_music(filename);
         return game->playing_music();

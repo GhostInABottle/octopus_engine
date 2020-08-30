@@ -563,8 +563,6 @@ void Game::save(std::string filename, Save_File& save_file) const {
         ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         ofs << save_file;
         LOGGER_I << "Saved file " << filename;
-        save_config("config.ini");
-        pimpl->key_binder->save_keymap_file();
     } catch (const std::ios_base::failure & e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
     } catch (const config_exception& e) {
@@ -592,6 +590,22 @@ std::unique_ptr<Save_File> Game::load(std::string filename) {
         LOGGER_E << "Error loading file " << filename << " - message: " << e.what();
     }
     return file;
+}
+
+bool Game::save_config_file() const {
+    try {
+        save_config("config.ini");
+        return true;
+    } catch (const config_exception& e) {
+        LOGGER_E << "Error while saving config file - message: " << e.what();
+    } catch (const std::runtime_error& e) {
+        LOGGER_E << "Error saving config file - message: " << e.what();
+    }
+    return false;
+}
+
+bool Game::save_keymap_file() const {
+    return pimpl->key_binder->save_keymap_file();
 }
 
 void Game::load_map(const std::string& filename) {

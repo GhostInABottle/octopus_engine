@@ -198,6 +198,10 @@ public:
     void save(std::string filename, Save_File& save_file) const;
     // Load game
     std::unique_ptr<Save_File> load(std::string filename);
+    // Save configurations file
+    bool save_config_file() const;
+    // Save key binding file
+    bool save_keymap_file() const;
     // Check if gamepad config is enabled and at least one gamepad exists
     bool gamepad_enabled() const;
     // Get current gamepad ID
