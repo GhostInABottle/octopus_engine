@@ -75,6 +75,9 @@ struct Game::Impl {
         if (config_changed("graphics.contrast")) {
             game.get_camera()->set_contrast(Configurations::get<float>("graphics.contrast"));
         }
+        if (config_changed("graphics.gamma") && window) {
+            window->set_gamma(Configurations::get<float>("graphics.gamma"));
+        }
         if (config_changed("audio.music-volume")) {
             game.set_global_music_volume(Configurations::get<float>("audio.music-volume"));
         }
@@ -246,6 +249,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
 
     if (editor_mode)
         return;
+
+    window->set_gamma(Configurations::get<float>("graphics.gamma"));
     map = Map::load(*this, Configurations::get<std::string>("startup.map"));
     auto start_pos = map->get_starting_position();
     if (Configurations::has_value("startup.player-position-x")) {

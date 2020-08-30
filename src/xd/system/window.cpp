@@ -378,6 +378,11 @@ void xd::window::set_fullscreen(bool fullscreen) {
     }
 }
 
+void xd::window::set_gamma(float gamma) {
+    if (gamma < 0.01f) gamma = 0.01f;
+    glfwSetGamma(glfwGetPrimaryMonitor(), gamma);
+}
+
 void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key)
 {
     // find if the physical key is bound
