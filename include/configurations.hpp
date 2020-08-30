@@ -74,6 +74,7 @@ private:
     inline static std::unordered_map<std::string, value_type> values;
     inline static std::unordered_map<std::string, value_type> defaults;
     inline static std::unordered_map<std::string, callback> observers;
+    inline static std::unordered_map<std::string, std::string> comment_lines;
 };
 
 #endif

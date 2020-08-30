@@ -100,12 +100,16 @@ std::vector<std::string> Configurations::parse(std::string filename) {
     std::vector<std::string> errors;
     std::string current_section;
     std::string line;
+    std::string comments;
     int line_number = -1;
     while (std::getline(stream, line)) {
         line_number++;
         trim(line);
         // Empty line and comments
         if (line.empty() || line[0] == '#' || line[0] == ';') {
+            if (!line.empty()) {
+                comments = comments + line + "\n";
+            }
             continue;
         }
 
@@ -118,6 +122,10 @@ std::vector<std::string> Configurations::parse(std::string filename) {
             } else {
                 current_section = line.substr(1, end - 1);
                 trim(current_section);
+            }
+            if (!comments.empty()) {
+                comment_lines[current_section] = comments;
+                comments = "";
             }
 
             continue;
@@ -142,6 +150,10 @@ std::vector<std::string> Configurations::parse(std::string filename) {
             if (has_value(key)) {
                 errors.push_back(filename + " contains duplicate key '" + key + "' at line "
                     + std::to_string(line_number) + ", line content: " + line);
+            }
+            if (!comments.empty()) {
+                comment_lines[key] = comments;
+                comments = "";
             }
             auto value_string = line.substr(eq + 1);
             trim(value_string);
@@ -186,8 +198,18 @@ void Configurations::save(std::string filename) {
             sections[section].emplace_back(key, value);
         }
     }
+
+    bool first_section = true;
     for (auto& [section, section_values] : sections) {
         if (section != "global") {
+            if (comment_lines.find(section) != comment_lines.end()) {
+                stream << comment_lines[section];
+            }
+            if (first_section) {
+                first_section = false;
+            } else {
+                stream << "\n";
+            }
             stream << "[" << section << "]\n";
         }
         if (!stream) {
@@ -196,6 +218,9 @@ void Configurations::save(std::string filename) {
         for (auto& [key, val] : section_values) {
             auto full_key = section == "global" ? key : section + "." + key;
             if (!has_value(full_key)) continue;
+            if (comment_lines.find(full_key) != comment_lines.end()) {
+                stream << comment_lines[full_key];
+            }
             stream << key << " = " << get_string(full_key) << "\n";
             if (!stream) {
                 throw config_exception("Error writing key " + full_key + " to config file " + filename);
