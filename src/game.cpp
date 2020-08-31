@@ -66,6 +66,9 @@ struct Game::Impl {
         if (config_changed("graphics.fullscreen")) {
             game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
         }
+        if (config_changed("graphics.vsync") && window) {
+            window->set_vsync(Configurations::get<bool>("graphics.vsync"));
+        }
         if (config_changed("graphics.scale-mode")) {
             game.get_camera()->set_size(game.width(), game.height());
         }
@@ -90,6 +93,9 @@ struct Game::Impl {
         if (config_changed("controls.gamepad-number") && window) {
             gamepad_id = -1;
             get_gamepad_id(*window);
+        }
+        if (config_changed("debug.show-fps")) {
+            show_fps = Configurations::get<bool>("debug.show-fps");
         }
         config_changes.clear();
     }
@@ -187,7 +193,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
                 Configurations::get<bool>("graphics.fullscreen"),
                 false, // allow resize
                 false, // display_cursor
-                false, // vsync
+                Configurations::get<bool>("graphics.vsync"),
                 Configurations::get<bool>("controls.gamepad-enabled"),
                 Configurations::get<bool>("controls.gamepad-detection"),
                 Configurations::get<bool>("controls.axis-as-dpad"),

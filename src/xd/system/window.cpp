@@ -80,7 +80,7 @@ xd::window::window(const std::string& title, int width, int height, const window
         throw xd::window_creation_failed();
     }
 
-    glfwSwapInterval(options.vsync);
+    set_vsync(options.vsync);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1.0f);
@@ -378,7 +378,11 @@ void xd::window::set_fullscreen(bool fullscreen) {
     }
 }
 
-void xd::window::set_gamma(float gamma) {
+void xd::window::set_vsync(bool vsync) const {
+    glfwSwapInterval(vsync ? 1 : 0);
+}
+
+void xd::window::set_gamma(float gamma) const {
     if (gamma < 0.01f) gamma = 0.01f;
     glfwSetGamma(glfwGetPrimaryMonitor(), gamma);
 }

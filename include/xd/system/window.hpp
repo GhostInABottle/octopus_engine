@@ -45,7 +45,8 @@ namespace xd
         std::vector<xd::vec2> get_sizes() const;
         bool is_fullscreen() const;
         void set_fullscreen(bool fullscreen);
-        void set_gamma(float gamma);
+        void set_vsync(bool vsync) const;
+        void set_gamma(float gamma) const;
 
         // ticks stuff
         int ticks() const { return m_current_ticks; }

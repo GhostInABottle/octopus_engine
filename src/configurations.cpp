@@ -29,6 +29,7 @@ void Configurations::load_defaults() {
     defaults["graphics.screen-width"] = 640;
     defaults["graphics.screen-height"] = 480;
     defaults["graphics.fullscreen"] = false;
+    defaults["graphics.vsync"] = false;
     // Scaling modes: aspect, window, stretch
     defaults["graphics.scale-mode"] = std::string("window");
     defaults["graphics.vertex-shader"] = std::string();
