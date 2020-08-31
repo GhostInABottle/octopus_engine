@@ -10,6 +10,7 @@
 #include "../include/map.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/shake_decorator.hpp"
+#include "../include/xd/asset_manager.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 
@@ -181,7 +182,7 @@ void Canvas::set_font(const std::string& font_file) {
         return;
     if (!file_exists(font_file))
         throw std::runtime_error("Couldn't read font file " + font_file);
-    font = std::make_shared<xd::font>(font_file);
+    font = game.get_asset_manager().load<xd::font>(font_file);
     redraw_needed = true;
 }
 

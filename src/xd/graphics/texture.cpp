@@ -40,6 +40,7 @@ void xd::texture::init()
     m_width = 0;
     m_height = 0;
     m_color_key = xd::vec4(0);
+    m_unit = GL_TEXTURE0;
 
     glGenTextures(1, &m_texture_id);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
@@ -57,7 +58,10 @@ void xd::texture::bind() const
 
 void xd::texture::bind(int unit) const
 {
-    glActiveTexture(unit);
+    if (unit != m_unit) {
+        glActiveTexture(unit);
+        m_unit = unit;
+    }
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 }
 

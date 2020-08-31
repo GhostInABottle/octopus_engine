@@ -37,14 +37,26 @@ namespace xd
         {}
 
         // check if two rects intersect
-        bool intersects(const rect& other)
-        {
+        bool intersects(const rect& other) {
             return (
-                    x < (other.x+other.w) &&
+                    x < (other.x + other.w) &&
                 (x+w) > other.x           &&
-                    y < (other.y+other.h) &&
+                    y < (other.y + other.h) &&
                 (y+h) > other.y
             );
+        }
+
+        // Check if two rects are equal
+        bool operator==(const rect& other) const {
+            return xd::abs(x - other.x) < 0.0001f
+                && xd::abs(y - other.y) < 0.0001f
+                && xd::abs(w - other.w) < 0.0001f
+                && xd::abs(h - other.h) < 0.0001f;
+        }
+
+        // Check if two rects are not equal
+        bool operator!=(const rect& other) const {
+            return !(*this == other);
         }
 
         float x, y, w, h;

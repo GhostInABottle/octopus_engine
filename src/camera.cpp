@@ -18,7 +18,9 @@
 #include <algorithm>
 
 struct Camera::Impl {
-    explicit Impl() : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled")) {}
+    explicit Impl()
+        : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled"))
+        , clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color"))) {}
     // Update OpenGL viewport
     void update_viewport(xd::rect viewport, float shake_offset = 0.0f) const {
         glViewport(static_cast<int>(viewport.x + shake_offset),
@@ -30,6 +32,8 @@ struct Camera::Impl {
     bool postprocessing_enabled;
     xd::sprite_batch full_screen_batch;
     std::shared_ptr<xd::texture> full_screen_texture;
+    // Screen clearing color
+    xd::vec4 clear_color;
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
@@ -91,9 +95,12 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
         )
     );
     geometry.model_view().push(xd::mat4());
-    glViewport(0, 0, w, h);
+    auto same_viewport = viewport == xd::rect{0, 0, w, h};
+    if (!same_viewport)
+        glViewport(0, 0, w, h);
     full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(), brightness, contrast});
-    update_viewport(viewport);
+    if (!same_viewport)
+        update_viewport(viewport);
     geometry.model_view().pop();
     geometry.projection().pop();
 }
@@ -190,13 +197,16 @@ void Camera::update_viewport(float shake_offset) const {
 
 void Camera::setup_opengl() const {
     // Setup OpenGL state
+    set_clear_color();
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTexture(GL_TEXTURE0);
 }
 
-void Camera::set_clear_color(xd::vec4 color) const {
+void Camera::set_clear_color() const {
+    auto& color = pimpl->clear_color;
     glClearColor(color.r, color.g, color.b, color.a);
 }
 

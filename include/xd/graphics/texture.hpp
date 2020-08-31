@@ -47,6 +47,7 @@ namespace xd
         int m_width;
         int m_height;
         vec4 m_color_key;
+        mutable int m_unit;
 
         void init();
     };

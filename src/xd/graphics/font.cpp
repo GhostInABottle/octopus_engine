@@ -251,9 +251,6 @@ void xd::font::render(const std::string& text, const font_style& style,
     FT_Bool kerning = FT_HAS_KERNING(m_face->handle);
 
     if (actual_rendering) {
-        // bind to first texture unit
-        glActiveTexture(GL_TEXTURE0);
-
         // setup the shader
         shader->use();
         shader->bind_uniform(m_mvp_uniform, mvp);

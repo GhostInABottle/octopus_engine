@@ -34,7 +34,6 @@ void Canvas_Renderer::render(Map& map) {
 
             render_canvas(*canvas);
 
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             if (has_scissor_box) {
                 camera.disable_scissor_test();
             }
@@ -53,10 +52,9 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
     framebuffer->attach_color_texture(*canvas.get_fbo_texture(), 0);
     framebuffer->bind();
     glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
-    glPushAttrib(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glPopAttrib();
+    camera.set_clear_color();
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     auto [complete, error] = framebuffer->check_complete();
     if (!complete)
@@ -82,6 +80,7 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
     );
     geometry.model_view().push(xd::mat4());
     draw(geometry.mvp(), root);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root) {

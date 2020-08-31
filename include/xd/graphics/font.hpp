@@ -10,6 +10,7 @@
 #include "shader_program.hpp"
 #include "transform_geometry.hpp"
 #include "../vendor/utf8.h"
+#include "../asset_serializer.hpp"
 #include <memory>
 #include <unordered_map>
 
@@ -68,6 +69,17 @@ namespace xd
         std::string m_position_uniform;
         std::string m_color_uniform;
         std::string m_texture_uniform;
+    };
+
+    template <>
+    struct asset_serializer<xd::font> {
+        typedef std::string key_type;
+        key_type operator()(const std::string& filename) const {
+            return filename;
+        }
+        key_type operator()(const xd::font& font) const {
+            return font.filename();
+        }
     };
 }
 

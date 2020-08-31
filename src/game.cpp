@@ -228,24 +228,21 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     if (!file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
-    font = std::make_shared<xd::font>(font_file);
+    font = pimpl->asset_manager.load<xd::font>(font_file);
     if (!bold_font_file.empty()) {
         if (file_exists(bold_font_file)) {
-            font->link_font("bold", std::make_shared<xd::font>(bold_font_file));
+            font->link_font("bold", pimpl->asset_manager.load<xd::font>(bold_font_file));
         } else {
             LOGGER_W << "Couldn't read bold font file " << bold_font_file;
         }
     }
     if (!italic_font_file.empty()) {
         if (file_exists(italic_font_file)) {
-            font->link_font("italic", std::make_shared<xd::font>(italic_font_file));
+            font->link_font("italic", pimpl->asset_manager.load<xd::font>(italic_font_file));
         } else {
             LOGGER_W << "Couldn't read italic font file " << bold_font_file;
         }
     }
-
-    auto clear_color = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
-    camera->set_clear_color(clear_color);
 
     if (editor_mode)
         return;

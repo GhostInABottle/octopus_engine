@@ -24,7 +24,7 @@ public:
     // Setup initial OpenGL state
     void setup_opengl() const;
     // Set OpenGL clear color
-    void set_clear_color(xd::vec4 color) const;
+    void set_clear_color() const;
     // Center camera at position
     void center_at(xd::vec2 pos);
     // Center camera at object
