@@ -69,7 +69,7 @@ void Map::run_startup_scripts() {
     scripting_interface->set_globals();
     auto map_loaded_script = Configurations::get<std::string>("game.map-loaded-script");
     if (!map_loaded_script.empty()) {
-        run_script(read_file(map_loaded_script));
+        run_script(file_utilities::read_file(map_loaded_script));
     }
     for (auto& script : start_scripts) {
         run_script(script);
@@ -463,14 +463,14 @@ rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
 std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
     LOGGER_I << "Loading map " << filename;
     auto doc = std::make_unique< rapidxml::xml_document<>>();
-    char* content = doc->allocate_string(read_file(filename).c_str());
+    char* content = doc->allocate_string(file_utilities::read_file(filename).c_str());
     doc->parse<0>(content);
     auto map_node = doc->first_node("map");
     if (!map_node)
         throw tmx_exception("Invalid TMX file. Missing map node");
     auto map = load(game, *map_node);
     map->filename = filename;
-    normalize_slashes(map->filename);
+    file_utilities::normalize_slashes(map->filename);
     return map;
 }
 
@@ -497,7 +497,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         auto filenames = split(map_ptr->properties["scripts"], ",");
         for (auto filename : filenames) {
             trim(filename);
-            map_ptr->start_scripts.push_back(read_file(filename));
+            map_ptr->start_scripts.push_back(file_utilities::read_file(filename));
         }
     }
 

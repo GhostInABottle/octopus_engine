@@ -22,7 +22,7 @@ int main() {
             throw std::runtime_error("Unable to get OSX resources folder");
         }
 #endif
-        parse_config("config.ini");
+        file_utilities::parse_config("config.ini");
 
         xd::audio audio;
         LOGGER_I << "Reticulating Splines";

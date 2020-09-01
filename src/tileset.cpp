@@ -37,14 +37,14 @@ rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
 
 std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
     auto doc = std::make_unique<rapidxml::xml_document<>>();
-    auto content = doc->allocate_string(read_file(filename).c_str());
+    auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
     doc->parse<0>(content);
     auto tileset_node = doc->first_node("tileset");
     if (!tileset_node)
         throw tmx_exception("Invalid external tileset TMX file. Missing tileset node");
     auto tileset = load(*tileset_node);
     tileset->filename = filename;
-    normalize_slashes(tileset->filename);
+    file_utilities::normalize_slashes(tileset->filename);
     return tileset;
 }
 
@@ -64,7 +64,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
     // Image
     if (auto image_node = node.first_node("image")) {
         tileset_ptr->image_source = image_node->first_attribute("source")->value();
-        normalize_slashes(tileset_ptr->image_source);
+        file_utilities::normalize_slashes(tileset_ptr->image_source);
         if (auto trans_attr = image_node->first_attribute("trans")) {
             tileset_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }

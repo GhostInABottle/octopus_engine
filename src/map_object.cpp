@@ -175,17 +175,17 @@ void Map_Object::set_name(const std::string& new_name) {
 
 void  Map_Object::set_trigger_script(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
-    trigger_script = extension == "lua" ? read_file(script) : script;
+    trigger_script = extension == "lua" ? file_utilities::read_file(script) : script;
 }
 
 void  Map_Object::set_touch_script(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
-    touch_script = extension == "lua" ? read_file(script) : script;
+    touch_script = extension == "lua" ? file_utilities::read_file(script) : script;
 }
 
 void  Map_Object::set_leave_script(const std::string& script) {
     auto extension = script.substr(script.find_last_of(".") + 1);
-    leave_script = extension == "lua" ? read_file(script) : script;
+    leave_script = extension == "lua" ? file_utilities::read_file(script) : script;
 }
 
 xd::vec2 Map_Object::get_sprite_magnification() const {
@@ -230,14 +230,14 @@ Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
-    if (!file_exists(filename)) {
+    if (!file_utilities::file_exists(filename)) {
         LOGGER_W << "Tried to set sprite for map object " << name <<
                     " to nonexistent file " << filename;
         return;
     }
     if (sprite) {
         auto normalized_filename = filename;
-        normalize_slashes(normalized_filename);
+        file_utilities::normalize_slashes(normalized_filename);
         if (sprite->get_filename() == normalized_filename)
             return;
         del_component(sprite);

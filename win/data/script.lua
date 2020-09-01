@@ -244,7 +244,8 @@ elseif c.selected == 7 then
     local files = filesystem.list_directory('.')
     print('Files in current folder:')
     for _, file in ipairs(files) do
-        print('\t- ' .. file)
+        local file_type = filesystem.is_directory(file) and 'directory' or 'file'
+        print('\t- ' .. file .. ' - ' .. file_type)
     end
     text(o, "Are we in debug mode? " .. (game.is_debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')

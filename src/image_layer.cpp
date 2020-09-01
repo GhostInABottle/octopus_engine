@@ -14,7 +14,7 @@
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
-    if (!file_exists(filename)) {
+    if (!file_utilities::file_exists(filename)) {
         LOGGER_W << "Tried to set sprite for layer " << name <<
                     " to nonexistent file " << filename;
         return;
@@ -24,13 +24,13 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
 }
 
 void Image_Layer::set_image(const std::string& filename) {
-    if (!file_exists(filename)) {
+    if (!file_utilities::file_exists(filename)) {
         LOGGER_W << "Tried to set image for layer " << name <<
                     " to nonexistent file " << filename;
         return;
     }
     image_source = filename;
-    normalize_slashes(image_source);
+    file_utilities::normalize_slashes(image_source);
     image_texture = std::make_shared<xd::texture>(
         image_source, image_trans_color, GL_REPEAT, GL_REPEAT,
         GL_NEAREST, GL_NEAREST);
@@ -74,7 +74,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
         layer_ptr->set_sprite(game, sprite, pose);
     } else if (auto image_node = node.first_node("image")) {
         layer_ptr->image_source = image_node->first_attribute("source")->value();
-        normalize_slashes(layer_ptr->image_source);
+        file_utilities::normalize_slashes(layer_ptr->image_source);
         if (auto trans_attr = image_node->first_attribute("trans")) {
             layer_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }

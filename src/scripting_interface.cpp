@@ -94,10 +94,14 @@ void Scripting_Interface::setup_scripts() {
     );
 
     auto filesystem = lua["filesystem"].get_or_create<sol::table>();
-    filesystem["exists"] = &file_exists;
-    filesystem["list_directory"] = &list_directory_files;
-    filesystem["copy"] = &copy_file;
-    filesystem["remove"] = &remove_file;
+    filesystem["exists"] = &file_utilities::file_exists;
+    filesystem["is_regular_file"] = &file_utilities::is_regular_file;
+    filesystem["is_directory"] = &file_utilities::is_directory;
+    filesystem["list_directory"] = &file_utilities::list_directory_files;
+    filesystem["copy"] = &file_utilities::copy_file;
+    filesystem["remove"] = &file_utilities::remove_file;
+    filesystem["is_absolute"] = &file_utilities::is_absolute_path;
+    filesystem["filename_component"] = &file_utilities::get_filename_component;
 
     lua["text_width"] = [&](const std::string& text) {
         return game->get_font()->get_width(text,

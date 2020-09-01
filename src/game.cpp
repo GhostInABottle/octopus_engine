@@ -101,14 +101,14 @@ struct Game::Impl {
     }
     // Get default save folder
     std::string get_save_directory() {
-        if (!save_path.empty() && (save_path == "not set" || !file_exists(save_path))) {
-            save_path = get_data_directory();
+        if (!save_path.empty() && (save_path == "not set" || !file_utilities::file_exists(save_path))) {
+            save_path = file_utilities::get_data_directory();
         }
         return save_path;
     }
     // Add directory to save filename
     void cleanup_save_filename(std::string& filename) {
-        normalize_slashes(filename);
+        file_utilities::normalize_slashes(filename);
         if (filename.find('/') == std::string::npos) {
             filename = get_save_directory() + filename;
         }
@@ -231,19 +231,19 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     auto font_file = Configurations::get<std::string>("font.default");
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     auto italic_font_file = Configurations::get<std::string>("font.italic");
-    if (!file_exists(font_file)) {
+    if (!file_utilities::file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
     font = pimpl->asset_manager.load<xd::font>(font_file);
     if (!bold_font_file.empty()) {
-        if (file_exists(bold_font_file)) {
+        if (file_utilities::file_exists(bold_font_file)) {
             font->link_font("bold", pimpl->asset_manager.load<xd::font>(bold_font_file));
         } else {
             LOGGER_W << "Couldn't read bold font file " << bold_font_file;
         }
     }
     if (!italic_font_file.empty()) {
-        if (file_exists(italic_font_file)) {
+        if (file_utilities::file_exists(italic_font_file)) {
             font->link_font("italic", pimpl->asset_manager.load<xd::font>(italic_font_file));
         } else {
             LOGGER_W << "Couldn't read italic font file " << bold_font_file;
@@ -291,13 +291,13 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     LOGGER_I << "Running game startup scripts";
     std::string scripts_list =
         Configurations::get<std::string>("startup.scripts-list");
-    normalize_slashes(scripts_list);
+    file_utilities::normalize_slashes(scripts_list);
     if (!scripts_list.empty()) {
         std::ifstream scripts_file(scripts_list);
         if (scripts_file) {
             std::string filename;
             while (std::getline(scripts_file, filename)) {
-                run_script(read_file(filename));
+                run_script(file_utilities::read_file(filename));
             }
         } else {
             throw std::runtime_error("Couldn't read file " + scripts_list);
@@ -597,7 +597,7 @@ std::unique_ptr<Save_File> Game::load(std::string filename) {
 
 bool Game::save_config_file() const {
     try {
-        save_config("config.ini");
+        file_utilities::save_config("config.ini");
         return true;
     } catch (const config_exception& e) {
         LOGGER_E << "Error while saving config file - message: " << e.what();

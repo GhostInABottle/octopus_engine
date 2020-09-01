@@ -15,8 +15,8 @@ void Log::open_log_file() {
         return;
     auto filename = Configurations::get<std::string>("logging.filename");
     if (filename.empty()) filename = "game.log";
-    normalize_slashes(filename);
-    auto data_dir = get_data_directory(false);
+    file_utilities::normalize_slashes(filename);
+    auto data_dir = file_utilities::get_data_directory(false);
     if (filename.find("/") == std::string::npos) {
         filename = data_dir + filename;
     }

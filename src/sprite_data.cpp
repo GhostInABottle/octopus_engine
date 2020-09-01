@@ -26,14 +26,14 @@ Sprite_Data::~Sprite_Data() {
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename) {
     auto doc = std::make_unique<rapidxml::xml_document<>>();
-    auto content = doc->allocate_string(read_file(filename).c_str());
+    auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
     doc->parse<0>(content);
     auto sprite_node = doc->first_node("Sprite");
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing Sprite node.");
     auto sprite_data = load(manager, *sprite_node);
     sprite_data->filename = filename;
-    normalize_slashes(sprite_data->filename);
+    file_utilities::normalize_slashes(sprite_data->filename);
     return sprite_data;
 }
 
@@ -51,7 +51,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     if (auto attr = node.first_attribute("Image")) {
         image_loaded = true;
         std::string image_file = attr->value();
-        normalize_slashes(image_file);
+        file_utilities::normalize_slashes(image_file);
         sprite_ptr->image = manager.load_persistent<xd::texture>(
             image_file, sprite_ptr->transparent_color,
             GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
@@ -102,7 +102,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
-            normalize_slashes(pose_image_file);
+            file_utilities::normalize_slashes(pose_image_file);
             pose.image = manager.load_persistent<xd::texture>(
                 pose_image_file,
                 pose.transparent_color,
@@ -147,7 +147,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
-                normalize_slashes(frame_image_file);
+                file_utilities::normalize_slashes(frame_image_file);
                 frame.image = manager.load_persistent<xd::texture>(
                     frame_image_file,
                     frame.transparent_color,

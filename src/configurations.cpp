@@ -92,7 +92,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
     if (defaults.size() == 0) {
         load_defaults();
     }
-    normalize_slashes(filename);
+    file_utilities::normalize_slashes(filename);
     std::ifstream stream(filename);
     if (!stream) {
         throw config_exception("Couldn't read file " + filename);
@@ -182,7 +182,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
 }
 
 void Configurations::save(std::string filename) {
-    normalize_slashes(filename);
+    file_utilities::normalize_slashes(filename);
     std::ofstream stream(filename);
     if (!stream) {
         throw config_exception("Couldn't open config file for saving " + filename);

@@ -9,12 +9,11 @@
 #include <streambuf>
 #include <boost/algorithm/string.hpp>
 
-bool file_exists(std::string filename) {
-    normalize_slashes(filename);
+bool file_utilities::file_exists(const std::string& filename) {
     return std::filesystem::exists(filename);
 }
 
-std::string read_file(std::string filename) {
+std::string file_utilities::read_file(std::string filename) {
     normalize_slashes(filename);
     std::ifstream stream(filename);
     if (!stream)
@@ -23,11 +22,11 @@ std::string read_file(std::string filename) {
         std::istreambuf_iterator<char>());
 }
 
-void normalize_slashes(std::string& filename) {
+void file_utilities::normalize_slashes(std::string& filename) {
     boost::replace_all(filename, "\\", "/");
 }
 
-std::string get_data_directory(bool log_errors) {
+std::string file_utilities::get_data_directory(bool log_errors) {
     std::string default_folder;
     auto add_game_folder = false;
     auto config_folder = Configurations::get<std::string>("game.data-folder");
@@ -79,7 +78,7 @@ std::string get_data_directory(bool log_errors) {
     return default_folder;
 }
 
-void parse_config(const std::string& filename) {
+void file_utilities::parse_config(const std::string& filename) {
     auto warnings = Configurations::parse(filename);
     for (auto& warning : warnings) {
         LOGGER_W << warning;
@@ -102,7 +101,7 @@ void parse_config(const std::string& filename) {
     }
 }
 
-void save_config(const std::string& filename) {
+void file_utilities::save_config(const std::string& filename) {
     if (!Configurations::changed() || !Configurations::get<bool>("debug.update-config-files")) {
         return;
     }
@@ -112,8 +111,25 @@ void save_config(const std::string& filename) {
     LOGGER_I << "Saved config file " << config_path;
 }
 
-std::vector<std::string> list_directory_files(std::string path) {
-    normalize_slashes(path);
+bool file_utilities::is_regular_file(const std::string& path) {
+    try {
+        return std::filesystem::is_regular_file(path);
+    } catch (std::filesystem::filesystem_error& e) {
+        LOGGER_E << "Error while trying to check if path is a regular file:" << path << ", assuming it isn't - " << e.what();
+    }
+    return false;
+}
+
+bool file_utilities::is_directory(const std::string& path) {
+    try {
+        return std::filesystem::is_directory(path);
+    } catch (std::filesystem::filesystem_error& e) {
+        LOGGER_E << "Error while trying to check if path is a directory:" << path << ", assuming it isn't - " << e.what();
+    }
+    return false;
+}
+
+std::vector<std::string> file_utilities::list_directory_files(const std::string& path) {
     std::vector<std::string> result;
     try {
         if (!std::filesystem::is_directory(path)) {
@@ -121,7 +137,7 @@ std::vector<std::string> list_directory_files(std::string path) {
             return result;
         }
         for (auto& p : std::filesystem::directory_iterator(path)) {
-            if (p.is_regular_file()) {
+            if (p.is_regular_file() || p.is_directory()) {
                 result.push_back(p.path().filename().string());
             }
         }
@@ -131,9 +147,7 @@ std::vector<std::string> list_directory_files(std::string path) {
     return result;
 }
 
-bool copy_file(std::string source, std::string destination) {
-    normalize_slashes(source);
-    normalize_slashes(destination);
+bool file_utilities::copy_file(const std::string& source, const std::string& destination) {
     try {
         std::filesystem::copy(source, destination, std::filesystem::copy_options::overwrite_existing);
         return true;
@@ -143,8 +157,7 @@ bool copy_file(std::string source, std::string destination) {
     }
 }
 
-bool remove_file(std::string filename) {
-    normalize_slashes(filename);
+bool file_utilities::remove_file(const std::string& filename) {
     try {
         return std::filesystem::remove(filename);
     } catch (std::filesystem::filesystem_error & e) {
@@ -153,11 +166,10 @@ bool remove_file(std::string filename) {
     }
 }
 
-// Check if a path is absolute
-bool is_absolute_path(const std::string& path) {
+bool file_utilities::is_absolute_path(const std::string& path) {
     return std::filesystem::path(path).is_absolute();
 }
 
-std::string get_filename_component(const std::string& path) {
+std::string file_utilities::get_filename_component(const std::string& path) {
     return std::filesystem::path(path).filename().string();
 }

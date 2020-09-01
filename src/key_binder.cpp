@@ -147,7 +147,7 @@ void Key_Binder::unbind_key(const xd::key& key) {
 
 bool Key_Binder::process_keymap_file() {
     std::string filename = get_keymap_filename();
-    if (!file_exists(filename)) {
+    if (!file_utilities::file_exists(filename)) {
         filename = Configurations::get<std::string>("controls.mapping-file");
     }
     std::ifstream input(filename);
@@ -228,10 +228,10 @@ bool Key_Binder::save_keymap_file() {
 
 std::string Key_Binder::get_keymap_filename() const {
     std::string filename = Configurations::get<std::string>("controls.mapping-file");
-    if (is_absolute_path(filename)) return filename;
-    auto data_directory = get_data_directory();
+    if (file_utilities::is_absolute_path(filename)) return filename;
+    auto data_directory = file_utilities::get_data_directory();
     if (data_directory.empty()) return filename;
-    return data_directory + get_filename_component(filename);
+    return data_directory + file_utilities::get_filename_component(filename);
 }
 
 std::vector<xd::key> Key_Binder::get_keys(const std::string& physical_name) const {
