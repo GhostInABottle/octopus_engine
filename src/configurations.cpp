@@ -45,6 +45,7 @@ void Configurations::load_defaults() {
     defaults["audio.sound-volume"] = 1.0f;
     defaults["audio.choice-select-sfx"] = std::string();
     defaults["audio.choice-confirm-sfx"] = std::string();
+    defaults["audio.mute-on-pause"] = true;
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();

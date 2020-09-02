@@ -34,7 +34,6 @@ struct Game::Impl {
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
             next_direction(Direction::DOWN),
-            pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
             paused(false),
             focus_pause(false),
             music_was_paused(false),
@@ -56,9 +55,6 @@ struct Game::Impl {
     }
     // Process configuration changes
     void process_config_changes(Game& game, xd::window* window) {
-        if (config_changed("game.pause-unfocused")) {
-            pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
-        }
         if (config_changed("graphics.screen-width") || config_changed("graphics.screen-height")) {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
@@ -158,8 +154,6 @@ struct Game::Impl {
     bool focus_pause;
     // was music already paused when game got paused?
     bool music_was_paused;
-    // Is pausing when screen is unfocused enabled?
-    bool pause_unfocused;
     // Was time stopped when game got paused?
     bool was_stopped;
     // Keep track of paused time
@@ -346,7 +340,7 @@ void Game::frame_update() {
     } else {
         if (triggered_pause)
             pause();
-        else if (pimpl->pause_unfocused && !window->focused()) {
+        else if (Configurations::get<bool>("game.pause-unfocused") && !window->focused()) {
             pause();
             pimpl->focus_pause = true;
         }
@@ -388,7 +382,7 @@ void Game::pause() {
     pimpl->pause_start_time = window->ticks();
     pimpl->was_stopped = clock->stopped();
     clock->stop_time();
-    if (music) {
+    if (music && Configurations::get<bool>("audio.mute-on-pause")) {
         pimpl->music_was_paused = music->paused();
         if (!pimpl->music_was_paused)
             music->pause();
@@ -402,7 +396,7 @@ void Game::resume() {
     pimpl->total_paused_time += window->ticks() - pimpl->pause_start_time;
     if (!pimpl->was_stopped)
         clock->resume_time();
-    if (music && !pimpl->music_was_paused)
+    if (music && !pimpl->music_was_paused && Configurations::get<bool>("audio.mute-on-pause"))
         music->play();
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
