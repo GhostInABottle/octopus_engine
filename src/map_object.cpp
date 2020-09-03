@@ -170,7 +170,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
 
 void Map_Object::set_name(const std::string& new_name) {
     name = new_name;
-    capitalize(name);
+    string_utilities::capitalize(name);
 }
 
 void  Map_Object::set_trigger_script(const std::string& script) {
@@ -339,7 +339,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->gid = std::stoi(gid_node->value());
 
     if (auto visible_node = node.first_attribute("visible"))
-        object_ptr->visible = string_to_bool(visible_node->value());
+        object_ptr->visible = string_utilities::string_to_bool(visible_node->value());
 
     auto& properties = object_ptr->properties;
     properties.read(node);
@@ -363,7 +363,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (properties.has_property("script-context")) {
         auto context_string = properties["script-context"];
-        capitalize(context_string);
+        string_utilities::capitalize(context_string);
         auto context = Script_Context::MAP;
         if (context_string == "GLOBAL")
             context = Script_Context::GLOBAL;
@@ -384,12 +384,12 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_leave_script (properties["leave-script"]);
 
     if (properties.has_property("player-facing"))
-        object_ptr->set_player_facing(string_to_bool(properties["player-facing"]));
+        object_ptr->set_player_facing(string_utilities::string_to_bool(properties["player-facing"]));
     if (properties.has_property("passthrough"))
-        object_ptr->set_passthrough(string_to_bool(properties["passthrough"]));
+        object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));
     if (properties.has_property("passthrough-type")) {
         auto type_string = properties["passthrough-type"];
-        capitalize(type_string);
+        string_utilities::capitalize(type_string);
         auto type = Passthrough_Type::BOTH;
         if (type_string == "INITIATOR")
             type = Passthrough_Type::INITIATOR;
@@ -400,16 +400,16 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_passthrough_type(type);
     }
     if (properties.has_property("override-tile-collision"))
-        object_ptr->set_passthrough(string_to_bool(properties["override-tile-collision"]));
+        object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
     if (properties.has_property("outlined")) {
         auto outlined = properties["outlined"];
-        capitalize(outlined);
+        string_utilities::capitalize(outlined);
         if (outlined == "TRUE") {
             object_ptr->set_outlined(true);
         } else if (outlined == "FALSE") {
             object_ptr->set_outlined(false);
         } else {
-            auto parts = split(outlined, ",");
+            auto parts = string_utilities::split(outlined, ",");
             if (parts.empty()) {
                 LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
             } else {
@@ -433,7 +433,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     }
     if (properties.has_property("draw-order")) {
         auto order = properties["draw-order"];
-        capitalize(order);
+        string_utilities::capitalize(order);
         if (order == "BELOW")
             object_ptr->set_draw_order(Draw_Order::BELOW);
         else if (order == "ABOVE")

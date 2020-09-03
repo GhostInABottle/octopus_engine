@@ -60,7 +60,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
     // Default sprite pose
     if (auto default_attr = node.first_attribute("Default-Pose")) {
         sprite_ptr->default_pose = default_attr->value();
-        capitalize(sprite_ptr->default_pose);
+        string_utilities::capitalize(sprite_ptr->default_pose);
     }
 
     bool default_pose_found = false;
@@ -86,7 +86,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             pose.repeats = std::stoi(attr->value());
 
         if (auto attr = pose_node->first_attribute("Require-Completion"))
-            pose.require_completion = string_to_bool(attr->value());
+            pose.require_completion = string_utilities::string_to_bool(attr->value());
 
         if (auto attr = pose_node->first_attribute("X-Origin"))
             pose.origin.x = std::stof(attr->value());
@@ -137,7 +137,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                 frame.opacity = std::stof(attr->value());
 
             if (auto attr = frame_node->first_attribute("Tween"))
-                frame.tween_frame = string_to_bool(attr->value());
+                frame.tween_frame = string_utilities::string_to_bool(attr->value());
 
             // Frame image and transparent color
             if (auto attr = frame_node->first_attribute("Transparent-Color"))
@@ -177,8 +177,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                 tag_node; tag_node = tag_node->next_sibling("Tag")) {
             std::string key = tag_node->first_attribute("Key")->value();
             std::string value = tag_node->first_attribute("Value")->value();
-            capitalize(key);
-            capitalize(value);
+            string_utilities::capitalize(key);
+            string_utilities::capitalize(value);
             sprite_ptr->poses[pose_index].tags[key] = value;
             if (key == "NAME" && value == sprite_ptr->default_pose) {
                 default_pose_found = true;

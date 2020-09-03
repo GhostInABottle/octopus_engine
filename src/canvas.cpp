@@ -151,7 +151,7 @@ void Canvas::set_text(const std::string& new_text) {
     redraw_needed = true;
     // Split tags across multiple lines
     // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
-    text_lines = split(new_text, "\n", false);
+    text_lines = string_utilities::split(new_text, "\n", false);
     if (text_lines.size() > 1 || permissive_tag_parsing) {
         std::string open_tags;
         for (auto& line : text_lines) {

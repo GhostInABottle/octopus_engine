@@ -30,7 +30,7 @@ std::string file_utilities::get_data_directory(bool log_errors) {
     std::string default_folder;
     auto add_game_folder = false;
     auto config_folder = Configurations::get<std::string>("game.data-folder");
-    trim(config_folder);
+    string_utilities::trim(config_folder);
     if (config_folder.empty()) {
         try {
             default_folder = sago::getSaveGamesFolder1();

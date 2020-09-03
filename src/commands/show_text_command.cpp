@@ -48,7 +48,7 @@ struct Show_Text_Command::Impl {
                 clean_text.erase(start, end - start + 1);
             }
         }
-        auto text_lines = split(clean_text, "\n");
+        auto text_lines = string_utilities::split(clean_text, "\n");
         if (text_lines.empty())
             text_lines.push_back("");
 
@@ -134,7 +134,6 @@ struct Show_Text_Command::Impl {
 
     std::string full_text() const {
         std::string result = options.text;
-        std::string color_prefix = "{color=";
         for (unsigned int i = 0; i < options.choices.size(); ++i) {
             if (!result.empty())
                 result += "\n";
@@ -142,9 +141,9 @@ struct Show_Text_Command::Impl {
             bool replaced_color = false;
             // Add color for selected choice
             if (i == current_choice) {
-                auto start = choice_text.find(color_prefix);
+                auto start = choice_text.find("{color=");
                 // Strip existing outermost color, selected color takes precedence
-                if (start == 0) {
+                if (start == 0 && string_utilities::ends_with(choice_text, "{/color}")) {
                     auto end = choice_text.find("}");
                     choice_text.replace(0, end + 1, "");
                     replaced_color = true;

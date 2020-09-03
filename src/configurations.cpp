@@ -106,7 +106,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
     int line_number = -1;
     while (std::getline(stream, line)) {
         line_number++;
-        trim(line);
+        string_utilities::trim(line);
         // Empty line and comments
         if (line.empty() || line[0] == '#' || line[0] == ';') {
             if (!line.empty()) {
@@ -123,7 +123,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                     + std::to_string(line_number) + ", line content: " + line);
             } else {
                 current_section = line.substr(1, end - 1);
-                trim(current_section);
+                string_utilities::trim(current_section);
             }
             if (!comments.empty()) {
                 comment_lines[current_section] = comments;
@@ -140,7 +140,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                 + std::to_string(line_number) + ", line content: " + line);
         } else {
             auto key = line.substr(0, eq);
-            trim(key);
+            string_utilities::trim(key);
             if (key.empty()) {
                 errors.push_back(filename + " is missing configuration key at line "
                     + std::to_string(line_number) + ", line content: " + line);
@@ -158,7 +158,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                 comments = "";
             }
             auto value_string = line.substr(eq + 1);
-            trim(value_string);
+            string_utilities::trim(value_string);
             if (has_default(key)) {
                 if (value_string == "true") value_string = "1";
                 if (value_string == "false") value_string = "0";

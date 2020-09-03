@@ -385,14 +385,15 @@ void Scripting_Interface::setup_scripts() {
     vec4_type["g"] = &xd::vec4::g;
     vec4_type["b"] = &xd::vec4::b;
     vec4_type["a"] = &xd::vec4::a;
-    vec4_type["length"] = [](xd::vec4& v) { return xd::length(v); };
-    vec4_type["normal"] = [](xd::vec4& v) { return xd::normalize(v); };
+    vec4_type["length"] = [](const xd::vec4& v) { return xd::length(v); };
+    vec4_type["normal"] = [](const xd::vec4& v) { return xd::normalize(v); };
     vec4_type[sol::meta_function::addition] = [](const xd::vec4& v1, const xd::vec4& v2) { return v1 + v2; };
     vec4_type[sol::meta_function::subtraction] = [](const xd::vec4& v1, const xd::vec4& v2) { return v1 - v2; };
     vec4_type[sol::meta_function::multiplication] = sol::overload(
         [](const xd::vec4& v1, float f) { return v1 * f; },
         [](float f, const xd::vec4& v1) { return f * v1; }
     );
+    vec4_type["to_hex"] = [](const xd::vec4& color) { return color_to_hex(color); };
 
     // Aliases for creating a color
     lua["Color"] = sol::overload(

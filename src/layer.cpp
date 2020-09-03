@@ -41,7 +41,7 @@ void Layer::load(rapidxml::xml_node<>& node) {
     if (auto opacity_node = node.first_attribute("opacity"))
         opacity = std::stof(opacity_node->value());
     if (auto visible_node = node.first_attribute("visible"))
-        visible = string_to_bool(visible_node->value());
+        visible = string_utilities::string_to_bool(visible_node->value());
 
     properties.read(node);
 

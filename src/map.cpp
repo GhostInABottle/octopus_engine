@@ -29,7 +29,7 @@ namespace detail {
     std::string generate_unique_name(std::unordered_set<std::string> names,
             std::string base_name = "UNTITLED") {
         int i = 1;
-        capitalize(base_name);
+        string_utilities::capitalize(base_name);
         std::string name = base_name;
         while (names.find(name) != names.end()) {
             name = base_name + std::to_string(i++);
@@ -248,7 +248,7 @@ Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
 }
 
 Map_Object* Map::get_object(std::string name) const {
-    capitalize(name);
+    string_utilities::capitalize(name);
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
         int id = object_name_to_id.find(name)->second;
         return get_object(id);
@@ -285,7 +285,7 @@ void Map::delete_object(Map_Object* object) {
 
 void Map::erase_object_references(Map_Object* object) {
     auto name = object->get_name();
-    capitalize(name);
+    string_utilities::capitalize(name);
     object_name_to_id.erase(name);
     objects.erase(object->get_id());
 }
@@ -302,11 +302,11 @@ Layer* Map::get_layer(int id) const {
 }
 
 Layer* Map::get_layer(std::string name) const {
-    capitalize(name);
+    string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
             auto layer_name = layer->name;
-            capitalize(layer_name);
+            string_utilities::capitalize(layer_name);
             return layer_name == name;
     });
     if (layer != layers.end())
@@ -349,12 +349,12 @@ void Map::add_layer(Layer_Type layer_type) {
 }
 
 void Map::delete_layer(std::string name) {
-    capitalize(name);
+    string_utilities::capitalize(name);
     // Delete any matching object layer and its object
     for (auto layer = object_layers.begin(); layer != object_layers.end();)
     {
         auto layer_name = (*layer)->name;
-        capitalize(layer_name);
+        string_utilities::capitalize(layer_name);
         if (layer_name != name)
         {
             layer++;
@@ -370,7 +370,7 @@ void Map::delete_layer(std::string name) {
     // Clear the collision object if necessary
     if (collision_layer) {
         auto collision_layer_name = collision_layer->name;
-        capitalize(collision_layer_name);
+        string_utilities::capitalize(collision_layer_name);
         if (collision_layer_name == name) {
             collision_layer = nullptr;
         }
@@ -379,7 +379,7 @@ void Map::delete_layer(std::string name) {
     layers.erase(std::remove_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
             auto layer_name = layer->name;
-            capitalize(layer_name);
+            string_utilities::capitalize(layer_name);
             return layer_name == name;
         }
     ), layers.end());
@@ -494,9 +494,9 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
 
     // Startup scripts
     if (map_ptr->properties.has_property("scripts")) {
-        auto filenames = split(map_ptr->properties["scripts"], ",");
+        auto filenames = string_utilities::split(map_ptr->properties["scripts"], ",");
         for (auto filename : filenames) {
-            trim(filename);
+            string_utilities::trim(filename);
             map_ptr->start_scripts.push_back(file_utilities::read_file(filename));
         }
     }

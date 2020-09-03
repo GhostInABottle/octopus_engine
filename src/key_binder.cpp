@@ -57,7 +57,7 @@ Key_Binder::Key_Binder(Game& game)
     }
 }
 void Key_Binder::bind_key(const std::string& physical_name, const std::string& virtual_name) {
-    auto key = capitalize(physical_name);
+    auto key = string_utilities::capitalize(physical_name);
     if (keys_for_name.find(key) != keys_for_name.end()) {
         for (auto& xd_key : keys_for_name[key]) {
             game.bind_key(xd_key, virtual_name);
@@ -121,7 +121,7 @@ void Key_Binder::remove_virtual_name(const std::string& virtual_name) {
 }
 
 void Key_Binder::unbind_key(const std::string& physical_name) {
-    auto key = capitalize(physical_name);
+    auto key = string_utilities::capitalize(physical_name);
     if (keys_for_name.find(key) != keys_for_name.end()) {
         for (auto& xd_key : keys_for_name[key]) {
             game.unbind_physical_key(xd_key);
@@ -163,27 +163,27 @@ bool Key_Binder::process_keymap_file() {
     while (std::getline(input, line))
     {
         ++counter;
-        trim(line);
+        string_utilities::trim(line);
         if (line.empty() || line[0] == '#')
             continue;
-        auto parts = split(line, "=");
+        auto parts = string_utilities::split(line, "=");
         if (parts.size() < 2) {
             LOGGER_W << "Error processing key mapping file \"" << filename <<
                 " at line " << counter << ", missing = sign.";
             continue;
         }
         auto virtual_name = parts[0];
-        trim(virtual_name);
+        string_utilities::trim(virtual_name);
         if (virtual_name.empty())
             LOGGER_E << "Error processing key mapping file \"" << filename <<
             " at line " << counter << ", virtual name is missing.";
-        auto keys = split(parts[1], ",");
+        auto keys = string_utilities::split(parts[1], ",");
         if (keys.empty())
             LOGGER_W << "Error processing key mapping file \"" << filename <<
             " at line " << counter << ", no keys specified.";
         for (auto key : keys) {
-            trim(key);
-            capitalize(key);
+            string_utilities::trim(key);
+            string_utilities::capitalize(key);
             if (keys_for_name.find(key) != keys_for_name.end()) {
                 bind_key(key, virtual_name);
             } else {
@@ -212,7 +212,7 @@ bool Key_Binder::save_keymap_file() {
         return false;
     }
     for (auto& [virtual_name, physical_names] : bound_keys) {
-        auto values = join(physical_names, ", ");
+        auto values = string_utilities::join(physical_names, ", ");
         if (values.empty()) continue;
         output << virtual_name << " = " <<values << "\n";
         if (!output) {
@@ -235,7 +235,7 @@ std::string Key_Binder::get_keymap_filename() const {
 }
 
 std::vector<xd::key> Key_Binder::get_keys(const std::string& physical_name) const {
-    auto key_name = capitalize(physical_name);
+    auto key_name = string_utilities::capitalize(physical_name);
     if (keys_for_name.find(key_name) != keys_for_name.end())
         return keys_for_name.at(key_name);
     else

@@ -10,11 +10,11 @@ void Sprite_Holder::set_pose(const std::string& pose_name,
     if (get_sprite()) {
         std::unordered_map<std::string, std::string> tags;
         if (!pose_name.empty())
-            tags["NAME"] = capitalize(pose_name);
+            tags["NAME"] = string_utilities::capitalize(pose_name);
         if (!state.empty())
-            tags["STATE"] = capitalize(state);
+            tags["STATE"] = string_utilities::capitalize(state);
         if (direction != Direction::NONE)
-            tags["DIRECTION"] = capitalize(direction_to_string(direction));
+            tags["DIRECTION"] = string_utilities::capitalize(direction_to_string(direction));
         get_sprite()->set_pose(tags);
     }
 }

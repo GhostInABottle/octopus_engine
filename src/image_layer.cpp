@@ -62,7 +62,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     if (properties.has_property("yspeed"))
         layer_ptr->velocity.y = std::stof(properties["yspeed"]);
     if (properties.has_property("fixed"))
-        layer_ptr->fixed = string_to_bool(properties["fixed"]);
+        layer_ptr->fixed = string_utilities::string_to_bool(properties["fixed"]);
     if (properties.has_property("sprite"))
         sprite = properties["sprite"];
     std::string pose;
