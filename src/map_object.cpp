@@ -10,6 +10,7 @@
 #include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
+#include "../include/configurations.hpp"
 
 Map_Object::Outline_Condition operator|(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
 {
@@ -57,6 +58,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
     auto bounding_box = get_bounding_box();
     position.x -= bounding_box.x;
     position.y -= bounding_box.y;
+    set_speed(1.0f);
 }
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
@@ -260,8 +262,12 @@ void Map_Object::set_angle(int angle) {
         get_sprite()->get_frame().angle = angle;
 }
 
+float Map_Object::get_speed() const {
+    return speed * Configurations::get<int>("debug.logic-fps") / 60.0f;
+}
+
 void Map_Object::set_speed(float new_speed) {
-    speed = new_speed;
+    speed = new_speed * 60.0f / Configurations::get<int>("debug.logic-fps");
     if (sprite)
         sprite->set_speed(new_speed);
 }

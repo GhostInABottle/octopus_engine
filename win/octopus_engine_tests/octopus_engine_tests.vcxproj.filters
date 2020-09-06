@@ -656,9 +656,6 @@
     <ClInclude Include="..\..\include\lua_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua\sol.hpp">
-      <Filter>Header Files\xd\lua</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\vendor\platform_folders.hpp">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>

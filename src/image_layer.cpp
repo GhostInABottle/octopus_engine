@@ -10,6 +10,7 @@
 #include "../include/exceptions.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/log.hpp"
+#include "../include/configurations.hpp"
 #include "../include/xd/system.hpp"
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
@@ -58,9 +59,9 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     auto& properties = layer_ptr->properties;
     std::string sprite;
     if (properties.has_property("xspeed"))
-        layer_ptr->velocity.x = std::stof(properties["xspeed"]);
+        layer_ptr->velocity.x = std::stof(properties["xspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
     if (properties.has_property("yspeed"))
-        layer_ptr->velocity.y = std::stof(properties["yspeed"]);
+        layer_ptr->velocity.y = std::stof(properties["yspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
     if (properties.has_property("fixed"))
         layer_ptr->fixed = string_utilities::string_to_bool(properties["fixed"]);
     if (properties.has_property("sprite"))

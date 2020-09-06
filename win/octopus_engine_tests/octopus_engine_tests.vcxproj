@@ -285,7 +285,6 @@
     <ClInclude Include="..\..\include\xd\lua\exceptions.hpp" />
     <ClInclude Include="..\..\include\xd\lua\scheduler.hpp" />
     <ClInclude Include="..\..\include\xd\lua\scheduler_task.hpp" />
-    <ClInclude Include="..\..\include\xd\lua\sol.hpp" />
     <ClInclude Include="..\..\include\xd\lua\virtual_machine.hpp" />
     <ClInclude Include="..\..\include\xd\system.hpp" />
     <ClInclude Include="..\..\include\xd\system\exceptions.hpp" />

@@ -17,10 +17,10 @@ Move_Object_Command::Move_Object_Command(Map_Object& object, Direction dir,
 }
 
 void Move_Object_Command::execute() {
-    auto collision = object.move(direction, object.get_speed(),
+    auto collision = object.move(direction, object.get_fps_independent_speed(),
         Collision_Check_Type::BOTH, change_facing);
     if (collision.passable())
-        pixels -= object.get_speed();
+        pixels -= object.get_fps_independent_speed();
     else if (skip_blocking)
         pixels = 0.0f;
 

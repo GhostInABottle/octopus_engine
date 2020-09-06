@@ -79,7 +79,7 @@ void Map::run_startup_scripts() {
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
         Collision_Check_Type check_type) {
     return passable(object, direction, object.get_position(),
-        object.get_speed(), check_type);
+        object.get_fps_independent_speed(), check_type);
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,

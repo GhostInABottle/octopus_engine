@@ -33,7 +33,7 @@ void Player_Controller::update(Map_Object& object) {
             object.set_state(object.get_face_state());
         return;
     }
-    auto collision = object.move(direction, object.get_speed());
+    auto collision = object.move(direction, object.get_fps_independent_speed());
     // Check if stuck inside another object
     if (moved && collision.type == Collision_Type::OBJECT) {
         bool passable = false;
@@ -49,7 +49,7 @@ void Player_Controller::update(Map_Object& object) {
         }
         // If surrounded by object in all directions, ignore object collisions
         if (!passable)
-            collision = object.move(direction, object.get_speed(),
+            collision = object.move(direction, object.get_fps_independent_speed(),
                 Collision_Check_Type::TILE);
     }
 

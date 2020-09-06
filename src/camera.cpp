@@ -333,6 +333,12 @@ void Object_Tracker::update(Camera& camera) {
     camera.center_at(*obj);
 }
 
+Screen_Shaker::Screen_Shaker(float strength, float speed)
+    : strength(strength)
+    , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps"))
+    , direction(1)
+    , offset(0) {}
+
 void Screen_Shaker::update(Camera&) {
     offset += (strength * speed * direction) / 10.0f;
     if (offset > strength * 2)

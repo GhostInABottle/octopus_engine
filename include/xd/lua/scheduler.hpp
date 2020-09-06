@@ -2,7 +2,7 @@
 #define H_XD_LUA_SCHEDULER
 
 #include "scheduler_task.hpp"
-#include "sol.hpp"
+#include "../vendor/sol/sol.hpp"
 #include <list>
 #include <stack>
 #include <type_traits>

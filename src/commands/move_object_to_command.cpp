@@ -52,7 +52,7 @@ struct Move_Object_To_Command::Impl {
     Collision_Record move_object(Direction dir) {
         if (check_type == Collision_Check_Type::TILE)
             object.set_passthrough(true);
-        auto collision = object.move(dir, object.get_speed(), check_type);
+        auto collision = object.move(dir, object.get_fps_independent_speed(), check_type);
         if (check_type == Collision_Check_Type::TILE)
             object.set_passthrough(false);
         return collision;
@@ -86,7 +86,7 @@ struct Move_Object_To_Command::Impl {
         if (index <= max_index) {
             auto collision = move_object(path[index]);
             if (collision.passable())
-                pixels += object.get_speed();
+                pixels += object.get_fps_independent_speed();
             else
                 blocked = true;
 

@@ -71,7 +71,7 @@ void Configurations::load_defaults() {
     defaults["debug.magnification"] = 1.0f;
     defaults["debug.show-fps"] = true;
     defaults["debug.show-time"] = false;
-    defaults["debug.logic-fps"] = 40;
+    defaults["debug.logic-fps"] = 60;
     defaults["debug.time-multiplier"] = 0.5f;
     defaults["debug.pathfinding-sprite"] = std::string();
     defaults["debug.canvas-fps"] = 40;

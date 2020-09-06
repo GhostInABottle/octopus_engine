@@ -3,10 +3,13 @@
 #include "../../include/map_object.hpp"
 #include "../../include/utility/direction.hpp"
 #include "../../include/utility/math.hpp"
+#include "../../include/configurations.hpp"
 
 
 Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float speed)
-    : camera(camera), camera_object(camera.get_object()), speed(speed) {
+        : camera(camera)
+        , camera_object(camera.get_object())
+        , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps")) {
     camera.set_object(nullptr);
     xd::vec2 displacement = camera.get_bounded_position(xd::vec2(x, y)) - camera.get_position();
     pixels = static_cast<float>(xd::length(displacement));
@@ -14,7 +17,10 @@ Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float
 }
 
 Move_Camera_Command::Move_Camera_Command(Camera& camera, Direction dir, float pixels, float speed)
-    : camera(camera), camera_object(camera.get_object()), pixels(pixels), speed(speed) {
+    : camera(camera)
+    , camera_object(camera.get_object())
+    , pixels(pixels)
+    , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps")) {
     camera.set_object(nullptr);
     direction = direction_to_vector(dir);
 }

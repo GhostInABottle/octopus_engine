@@ -1,7 +1,7 @@
 #ifndef H_XD_LUA_VIRTUAL_MACHINE
 #define H_XD_LUA_VIRTUAL_MACHINE
 
-#include "sol.hpp"
+#include "../vendor/sol/sol.hpp"
 #include <string>
 
 namespace xd

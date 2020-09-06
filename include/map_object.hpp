@@ -287,10 +287,11 @@ public:
         return sprite.get();
     }
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
-    float get_speed() const {
+    float get_speed() const;
+    void set_speed(float speed);
+    float get_fps_independent_speed() const {
         return speed;
     }
-    void set_speed(float speed);
     // Get bounding box
     xd::rect get_bounding_box() const {
         if (sprite)
