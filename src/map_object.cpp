@@ -163,8 +163,9 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         }
         set_state(walk_state);
         map->set_objects_moved(true);
+        auto linked_direction = corrected_dir != Direction::NONE ? corrected_dir : move_dir;
         for (auto obj : linked_objects) {
-            obj->move(move_dir, pixels, check_type, change_facing);
+            obj->move(linked_direction, pixels, check_type, change_facing);
         }
     }
     return collision;
