@@ -134,6 +134,7 @@ struct Sprite::Impl {
         frame_index = 0;
         old_time = game.ticks();
         repeat_count = 0;
+        last_sound_frame = -1;
         if (pose)
             frame_count = pose->frames.size();
         finished = false;
