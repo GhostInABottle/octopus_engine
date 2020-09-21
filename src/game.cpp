@@ -369,7 +369,7 @@ void Game::render() {
             "FPS: " + std::to_string(fps()));
     }
     // Draw game time
-    if (pimpl->show_time || pimpl->paused) {
+    if (pimpl->show_time) {
         auto seconds = std::to_string(clock->seconds());
         text_renderer.render(*font, pimpl->debug_style,
             camera->get_geometry().projection().get(), 5, 20, seconds);
