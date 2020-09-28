@@ -58,7 +58,7 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     auto [complete, error] = framebuffer->check_complete();
     if (!complete)
-        throw std::exception(error.c_str());
+        throw std::runtime_error(error.c_str());
 }
 
 void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {

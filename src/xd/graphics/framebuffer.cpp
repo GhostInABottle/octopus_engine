@@ -41,7 +41,7 @@ void xd::framebuffer::attach_color_texture(const xd::texture& texture, int slot)
 
     GLenum error = glGetError();
     if (error == GL_INVALID_OPERATION) {
-        throw std::exception("Could not attach texture to framebuffer object");
+        throw std::runtime_error("Could not attach texture to framebuffer object");
     }
 
     GLenum draw_buffers[1] = { attachment };
@@ -60,7 +60,7 @@ void xd::framebuffer::attach_depth_buffer(unsigned int id) const
 
     GLenum error = glGetError();
     if (error == GL_INVALID_OPERATION) {
-        throw std::exception("Could not attach depth buffer to framebuffer object");
+        throw std::runtime_error("Could not attach depth buffer to framebuffer object");
     }
 }
 

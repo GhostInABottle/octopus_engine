@@ -7,6 +7,7 @@
 #include <stack>
 #include <type_traits>
 #include <string_view>
+#include <utility>
 
 namespace xd
 {
@@ -69,7 +70,7 @@ namespace xd
             template <typename Task, typename... Args>
             void yield(Args&& ... args)
             {
-                yield(std::std::make_shared<xd::lua::scheduler_task>(Task(std::forward<Args>(args)...)));
+                yield(std::make_shared<xd::lua::scheduler_task>(Task(std::forward<Args>(args)...)));
             }
 
             // a convenience function for registering a yielding, optionally stateful, C++ function to lua.

@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/font.hpp"

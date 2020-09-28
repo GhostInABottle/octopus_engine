@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <cstddef>
 #include <memory>
+#include <utility>
 
 namespace xd
 {

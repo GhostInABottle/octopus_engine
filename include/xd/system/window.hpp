@@ -115,7 +115,7 @@ namespace xd
         // an utility template function for member function callbacks, so user doesn't have to use std::bind directly
         template <typename T>
         event_link bind_input_event(const std::string& event_name, bool (T::*callback)(const input_args&), T* instance,
-            const input_filter& filter = input_filter(), event_placement place = EVENT_PREPEND)
+            const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND)
         {
             return bind_input_event(event_name, std::bind(callback, instance, std::placeholders::_1), filter, place);
         }

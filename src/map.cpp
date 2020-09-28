@@ -359,8 +359,7 @@ void Map::delete_layer(std::string name) {
         {
             layer++;
         } else {
-            auto obj_layer = static_cast<Object_Layer*>(*layer);
-            for (auto& obj : obj_layer->objects)
+            for (auto& obj : (*layer)->objects)
             {
                 erase_object_references(obj);
             }
