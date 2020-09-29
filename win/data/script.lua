@@ -101,9 +101,8 @@ elseif c.selected == 2 then
 elseif c.selected == 3 then
     -- Object
     print("Objects:")
-    local objects = current_map:get_objects()
-    for i,v in ipairs(objects) do
-        print(i,": ", v.name)
+    for i,v in pairs(current_map.objects) do
+        print(i, ': ', v.name)
     end
     text(o, "Moving object"):wait()
     o:move(UP, 32, true, false):wait()

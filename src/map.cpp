@@ -188,7 +188,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     return result;
 }
 
-bool Map::tile_passable(int x, int y) {
+bool Map::tile_passable(int x, int y) const {
     if (x < 0 || x >= width || y < 0 || y >= height)
         return false;
     if (!collision_layer || !collision_tileset) return true;
@@ -196,7 +196,7 @@ bool Map::tile_passable(int x, int y) {
     return collision_layer->tiles[tile_index] - collision_tileset->first_id <= 1;
 }
 
-int Map::object_count() {
+int Map::object_count() const {
     return objects.size();
 }
 
@@ -433,7 +433,7 @@ void Map::save(std::string save_filename) {
     auto map_node = save(*doc);
     doc->append_node(map_node);
     std::ofstream out;
-    out.open(save_filename.c_str(), std::ios_base::out | std::ios_base::trunc);
+    out.open(save_filename, std::ios_base::out | std::ios_base::trunc);
     out << doc;
 }
 

@@ -61,9 +61,9 @@ public:
         xd::vec2 position, float speed,
         Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     // Check if a particular tile is passable
-    bool tile_passable(int x, int y);
+    bool tile_passable(int x, int y) const;
     // Get number of objects
-    int object_count();
+    int object_count() const;
     // Add an object to object layer at index (or center object layer if -1)
     Map_Object* add_object(const std::shared_ptr<Map_Object>& object,
         int layer_index = -1, Object_Layer* layer = nullptr);

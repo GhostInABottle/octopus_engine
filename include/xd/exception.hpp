@@ -18,11 +18,11 @@ namespace xd
         {
         }
 
-        virtual ~exception() throw()
+        virtual ~exception() noexcept
         {
         }
 
-        virtual const char *what() const throw()
+        virtual const char *what() const noexcept
         {
             if (m_message.length() != 0)
                 return m_message.c_str();

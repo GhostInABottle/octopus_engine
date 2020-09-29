@@ -650,7 +650,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["frame_count"] = sol::property(&Game::frame_count);
     game_type["stopped"] = sol::property(&Game::stopped);
     game_type["seconds"] = sol::property(&Game::seconds);
-    game_type["playing_music"] = sol::property([](Game* game) { return game->playing_music().get(); });
+    game_type["playing_music"] = sol::readonly_property(&Game::playing_music);
     game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
     game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
     game_type["is_debug"] = sol::property(&Game::is_debug);
@@ -659,11 +659,9 @@ void Scripting_Interface::setup_scripts() {
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
     game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
-    game_type["monitor_resolutions"] = sol::property(
-        [&](Game& game) {
-            return sol::as_table(game.get_sizes());
-        }
-    );
+    game_type["monitor_resolutions"] = sol::property([&](Game& game) {
+        return sol::as_table(game.get_sizes());
+    });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
@@ -777,16 +775,19 @@ void Scripting_Interface::setup_scripts() {
     map_type["tile_height"] = sol::property(&Map::get_tile_height);
     map_type["filename"] = sol::property(&Map::get_filename);
     map_type["name"] = sol::property(&Map::get_name);
+    map_type["objects"] = sol::property([&](Map* map) {
+        return sol::as_table(map->get_objects());
+    });
+    map_type["layer_count"] = sol::property(&Map::layer_count);
+    map_type["object_count"] = sol::property(&Map::object_count);
     map_type["get_property"] = &Map::get_property;
     map_type["set_property"] = &Map::set_property;
-    map_type["object_count"] = &Map::object_count;
     map_type["get_object"] = sol::overload(
         (Map_Object* (Map::*)(int) const) &Map::get_object,
         (Map_Object* (Map::*)(std::string) const) &Map::get_object
     );
     map_type["add_new_object"] = &Map::add_new_object;
     map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;
-    map_type["layer_count"] = &Map::layer_count;
     map_type["get_layer"] = sol::overload(
         (Layer* (Map::*)(int) const) &Map::get_layer,
         (Layer* (Map::*)(std::string) const) &Map::get_layer
@@ -795,15 +796,6 @@ void Scripting_Interface::setup_scripts() {
         (Image_Layer* (Map::*)(int) const) &Map::get_image_layer,
         (Image_Layer* (Map::*)(const std::string&) const) &Map::get_image_layer
     );
-    map_type["get_objects"] = [&](Map* map) {
-        sol::table objects(vm.lua_state(), sol::create);
-        int i = 1;
-        auto& map_objects = map->get_objects();
-        for (auto pair : map_objects) {
-            objects[i++] = pair.second.get();
-        }
-        return objects;
-    };
     map_type["run_script"] = &Map::run_script;
     map_type["passable"] = [&](Map& map, const Map_Object& object, int dir) {
         auto c = map.passable(object, static_cast<Direction>(dir));
@@ -896,12 +888,7 @@ void Scripting_Interface::setup_scripts() {
     auto parser_type = lua.new_usertype<Text_Parser>("Text_Parser",
         sol::call_constructor, sol::constructors<Text_Parser()>());
     parser_type["parse"] = [&](Text_Parser& parser, const std::string& text, bool permissive) {
-        sol::table objects(vm.lua_state(), sol::create);
-        auto tokens = parser.parse(text, permissive);
-        for (size_t i = 1; i <= tokens.size(); ++i) {
-            objects[i] = tokens[i - 1];
-        }
-        return objects;
+        return sol::as_table(parser.parse(text, permissive));
     };
 
     // A drawing canvas

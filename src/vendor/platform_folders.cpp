@@ -103,8 +103,7 @@ namespace sago {
             }
             if (actualSize == 0) {
                 // WideCharToMultiByte return 0 for errors.
-                const std::string errorMsg = "UTF16 to UTF8 failed with error code: " + GetLastError();
-                throw std::runtime_error(errorMsg.c_str());
+                throw std::runtime_error("UTF16 to UTF8 failed with error code: " + std::to_string(GetLastError()));
             }
             return res;
         }

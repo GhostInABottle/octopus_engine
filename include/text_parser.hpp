@@ -26,7 +26,7 @@ struct Token {
 // Thrown when text being parsed is invalid
 class parsing_exception : public std::runtime_error {
 public:
-    parsing_exception(const std::string& error) : std::runtime_error(error.c_str()) {}
+    parsing_exception(const std::string& error) : std::runtime_error(error) {}
 };
 
 // Analyzes text and returns list of tokens

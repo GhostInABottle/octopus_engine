@@ -48,6 +48,7 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
         xd::rect viewport = xd::rect(0, 0, game.game_width(), game.game_height());
         camera.enable_scissor_test(scissor_box, viewport);
     }
+
     auto framebuffer = canvas.get_framebuffer();
     framebuffer->attach_color_texture(*canvas.get_fbo_texture(), 0);
     framebuffer->bind();
@@ -56,9 +57,9 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
     glClear(GL_COLOR_BUFFER_BIT);
     camera.set_clear_color();
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     auto [complete, error] = framebuffer->check_complete();
-    if (!complete)
-        throw std::runtime_error(error.c_str());
+    if (!complete) throw std::runtime_error(error);
 }
 
 void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {

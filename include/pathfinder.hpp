@@ -16,7 +16,7 @@ namespace std {
     struct hash<xd::ivec2> {
        std::hash<int> xh;
        std::hash<int> yh;
-        size_t operator()(xd::ivec2 v) const throw() {
+        size_t operator()(xd::ivec2 v) const noexcept {
                 return xh(v.x) ^ yh(v.y);
         }
     };
