@@ -2,7 +2,11 @@
 #include "../../../include/xd/system/exceptions.hpp"
 #include "../../../include/xd/vendor/glm/gtx/hash.hpp"
 #include <GL/glew.h>
-#include <GL/glfw3.h>
+#ifdef _WIN32
+    #include <GL/glfw3.h>
+#else
+    #include <GLFW/glfw3.h>
+#endif
 #include <cstdlib>
 
 // detail stuff, hidden from user

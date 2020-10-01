@@ -1,5 +1,9 @@
 #include "../../../include/xd/system/input.hpp"
-#include <GL/glfw3.h>
+#ifdef _WIN32
+    #include <GL/glfw3.h>
+#else
+    #include <GLFW/glfw3.h>
+#endif
 
 namespace xd
 {

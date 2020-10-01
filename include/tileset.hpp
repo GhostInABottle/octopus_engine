@@ -38,7 +38,7 @@ struct Tileset {
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Tileset> load(const std::string& filename);
     static std::unique_ptr<Tileset> load(rapidxml::xml_node<>& node);
-    std::string set_property(const std::string& name, const std::string& value) {
+    void set_property(const std::string& name, const std::string& value) {
         properties[name] = value;
     }
     std::string get_property(const std::string& name) const {

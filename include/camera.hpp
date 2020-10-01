@@ -15,6 +15,7 @@ public:
     Camera(const Camera&) = delete;
     Camera& operator=(const Camera&) = delete;
     explicit Camera(Game& game);
+    ~Camera();
     // Called when game window size is changed
     void set_size(int width, int height);
     // Calculate viewport rectangle based on screen width and height

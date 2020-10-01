@@ -434,7 +434,7 @@ void Map::save(std::string save_filename) {
     doc->append_node(map_node);
     std::ofstream out;
     out.open(save_filename, std::ios_base::out | std::ios_base::trunc);
-    out << doc;
+    out << *doc;
 }
 
 rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {

@@ -244,6 +244,8 @@ Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
     pimpl->reset();
 }
 
+Sprite::~Sprite() {}
+
 void Sprite::render(Map_Object& object) {
     if (!object.is_visible())
         return;

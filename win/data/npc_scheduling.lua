@@ -30,7 +30,7 @@ function time_without_days(seconds)
     return seconds - (time_to_days(seconds) - 1) * 43200
 end
 
-local class = require 'data/middleClass'
+local class = require 'data/middleclass'
 local NPC = class('NPC')
 
 function NPC:initialize(name, data)

@@ -141,6 +141,8 @@ Camera::Camera(Game& game)
     update_viewport();
 }
 
+Camera::~Camera() {}
+
 void Camera::set_size(int width, int height) {
     pimpl->full_screen_texture.reset();
     calculate_viewport(width, height);

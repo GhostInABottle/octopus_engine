@@ -16,6 +16,7 @@ class Map_Object;
 class Sprite : public xd::component<Map_Object> {
 public:
     Sprite(Game& game, std::unique_ptr<Sprite_Data> data);
+    ~Sprite();
     // Render a frame
     void render(Map_Object& object);
     void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,

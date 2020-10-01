@@ -12,6 +12,7 @@ class Game;
 class Show_Text_Command : public Command {
 public:
     Show_Text_Command(Game& game, Text_Options options);
+    ~Show_Text_Command();
     void execute() override;
     void execute(int ticks) override;
     bool is_complete() const override;
