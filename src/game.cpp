@@ -269,7 +269,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     // Add player to the map
     map->add_object(player);
     // Play background music
-    if (pimpl->audio && !map->get_bg_music_filename().empty()) {
+    auto bg_music = map->get_bg_music_filename();
+    if (pimpl->audio && !bg_music.empty() && bg_music != "false") {
         load_music(map->get_bg_music_filename());
         music->set_looping(true);
         music->play();
@@ -610,6 +611,10 @@ void Game::load_map(const std::string& filename) {
     if (pimpl->editor_mode) return;
     // Add player to the map
     player->set_id(-1);
+    player->set_triggered_object(nullptr);
+    player->set_collision_object(nullptr);
+    player->set_collision_area(nullptr);
+    player->clear_linked_objects();
     auto start_pos = pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position();
     auto bounding_box = player->get_bounding_box();
     start_pos.x -= bounding_box.x;
@@ -618,13 +623,12 @@ void Game::load_map(const std::string& filename) {
     player->face(pimpl->next_direction);
     map->add_object(player);
     camera->set_object(player.get());
-    player->set_triggered_object(nullptr);
-    player->set_collision_object(nullptr);
-    player->set_collision_area(nullptr);
     // Play background music
     auto bg_music = map->get_bg_music_filename();
     auto playing_music = music ? music->get_filename() : "";
-    if (!bg_music.empty() && bg_music != playing_music) {
+    if (bg_music == "false") {
+        music.reset();
+    } else if (!bg_music.empty() && bg_music != playing_music) {
         load_music(bg_music);
         music->set_looping(true);
         music->play();
