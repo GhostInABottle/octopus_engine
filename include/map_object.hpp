@@ -259,6 +259,9 @@ public:
                 [obj](const Map_Object* o) { return o == obj; }),
             linked_objects.end());
     }
+    void clear_linked_objects() {
+        linked_objects.clear();
+    }
     bool is_outlined() const;
     void set_outlined(std::optional<bool> new_outlined);
     void set_outline_conditions(Outline_Condition conditions) {
