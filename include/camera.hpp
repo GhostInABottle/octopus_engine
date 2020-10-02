@@ -17,7 +17,7 @@ public:
     explicit Camera(Game& game);
     ~Camera();
     // Called when game window size is changed
-    void set_size(int width, int height);
+    void set_size(int width, int height, bool force = false);
     // Calculate viewport rectangle based on screen width and height
     void calculate_viewport(int width, int height);
     // Setup viewport for rendering

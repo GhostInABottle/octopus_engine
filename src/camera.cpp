@@ -34,6 +34,8 @@ struct Camera::Impl {
     std::shared_ptr<xd::texture> full_screen_texture;
     // Screen clearing color
     xd::vec4 clear_color;
+    // Last screen size
+    xd::ivec2 screen_size;
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
@@ -143,10 +145,14 @@ Camera::Camera(Game& game)
 
 Camera::~Camera() {}
 
-void Camera::set_size(int width, int height) {
+void Camera::set_size(int width, int height, bool force) {
+    if (!force && width == pimpl->screen_size.x && height == pimpl->screen_size.y) return;
+    LOGGER_I << "Setting camera size to " << width << "x" << height;
     pimpl->full_screen_texture.reset();
     calculate_viewport(width, height);
     update_viewport();
+    pimpl->screen_size.x = width;
+    pimpl->screen_size.y = height;
 }
 
 void Camera::calculate_viewport(int width, int height) {
