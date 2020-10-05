@@ -11,9 +11,11 @@ file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false src/commands/*.cpp src/utility/*.
 
 file(GLOB XD_SOURCES LIST_DIRECTORIES false src/xd/audio/*.cpp src/xd/graphics/*.cpp src/xd/lua/*.cpp src/xd/system/*.cpp)
 
+set(OpenGL_GL_PREFERENCE "GLVND")
+
 find_package(Boost REQUIRED)
 find_package(Freetype REQUIRED)
-find_package(Harfbuzz REQUIRED)
+find_package(HarfBuzz REQUIRED)
 find_package(Lua 5.2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
