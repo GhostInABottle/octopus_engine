@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.10)
 project(octopus_engine)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
@@ -30,7 +30,8 @@ add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
 
 target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
+
 target_link_libraries(octopus_engine ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} 
 				 ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES} 
 				 ${HARFBUZZ_LIBRARIES} ${LUA_LIBRARIES}
-				 ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES} glfw harfbuzz::harfbuzz)
+				 ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES} glfw ${HarfBuzz_LIBRARIES})

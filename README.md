@@ -28,9 +28,10 @@ Dependencies:
   * [Lua 5.2](http://www.lua.org/)
   * [Boost](http://www.boost.org/) - lexical cast, string algorithms and unit testing
   * [FMOD Studio Programmer's API](http://www.fmod.org/download/)
-  * [GLFW3](http://www.glfw.org/)
+  * [GLFW 3.3](http://www.glfw.org/)
   * [GLEW](http://glew.sourceforge.net/)
-  * [Qt 5.6](https://www.qt.io/) - For the editor
+  * [Qt 5.6](https://www.qt.io/) - Optional, only needed for the editor
   
-There are project files for Visual Studio 2015 and Xcode, although I never tested them on another machine. There's a basic Makefile in the linux/ directory for GCC. You can test the executable by placing it in the win/ directory.
- 
+There are project files for Visual Studio 2019. You'll need to download and build the dependencies and make sure they're visible for VS.
+
+On Linux you can use CMake 3.10 and g++ 9 or later. In addition to the other dependencies, you'ĺl have to download FMOD API and copy the contents of the api/core/inc folder to /usr/local/include/FMOD and the correct library for your system from the api/core/lib folder to /usr/local/lib.

@@ -292,6 +292,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         if (scripts_file) {
             std::string filename;
             while (std::getline(scripts_file, filename)) {
+                if (string_utilities::ends_with(filename, "\r"))
+                    filename = filename.substr(0, filename.size() - 1);
                 run_script(file_utilities::read_file(filename));
             }
         } else {
