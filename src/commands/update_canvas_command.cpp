@@ -39,7 +39,7 @@ void Update_Canvas_Command::reset(bool reset_new) {
 }
 
 void Update_Canvas_Command::execute() {
-    complete = stopped || game.ticks() - start_time > duration;
+    complete = stopped || game.is_paused() || game.ticks() - start_time > duration;
     float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
     update_canvas(alpha);
 }

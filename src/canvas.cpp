@@ -31,7 +31,8 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     use_outline_shader(false),
     outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))),
     background_visible(false),
-    background_color{hex_to_color(Configurations::get<std::string>("text.background-color"))} {}
+    background_color{hex_to_color(Configurations::get<std::string>("text.background-color"))},
+    paused_game_canvas(game.is_paused()) {}
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(game, position) {
     camera_relative = false;
@@ -192,6 +193,11 @@ void Canvas::link_font(const std::string& font_type, const std::string& font_fil
     } else {
         LOGGER_W << "Couldn't read '" << font_type << "' font file " << font_file;
     }
+}
+
+bool Canvas::should_update() const {
+    if (!visible) return false;
+    return game.is_paused() == paused_game_canvas;
 }
 
 bool Canvas::should_redraw(int time) const {

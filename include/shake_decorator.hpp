@@ -22,7 +22,9 @@ private:
     struct State {
         long last_shake{0};
         bool shake{false};
+        bool game_paused{false};
         std::vector<xd::ivec2> displacements;
+        int ticks(Game& game) const;
     };
     std::unordered_map<std::string, State> states;
 };

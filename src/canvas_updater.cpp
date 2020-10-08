@@ -7,7 +7,7 @@ void Canvas_Updater::update(Map& map) {
         [](const std::weak_ptr<Canvas>& weak_canvas) {
             auto canvas = weak_canvas.lock();
             if (canvas) {
-                if (canvas->is_visible() && canvas->get_sprite()) {
+                if (canvas->should_update() && canvas->get_sprite()) {
                     canvas->get_sprite()->update();
                 }
             }

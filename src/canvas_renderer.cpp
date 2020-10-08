@@ -22,21 +22,20 @@ void Canvas_Renderer::render(Map& map) {
     auto& canvases = map.get_canvases();
     for (auto& weak_canvas : canvases) {
         auto canvas = weak_canvas.lock();
-        if (!canvas)
+        if (!canvas || !canvas->is_visible())
             continue;
-        if (canvas->is_visible()) {
-            // Limit drawing to scissor rectangle, if specified
-            xd::rect scissor = canvas->get_scissor_box();
-            bool has_scissor_box = scissor.w > 0;
-            if (has_scissor_box) {
-                camera.enable_scissor_test(scissor);
-            }
 
-            render_canvas(*canvas);
+        // Limit drawing to scissor rectangle, if specified
+        xd::rect scissor = canvas->get_scissor_box();
+        bool has_scissor_box = scissor.w > 0;
+        if (has_scissor_box) {
+            camera.enable_scissor_test(scissor);
+        }
 
-            if (has_scissor_box) {
-                camera.disable_scissor_test();
-            }
+        render_canvas(*canvas);
+
+        if (has_scissor_box) {
+            camera.disable_scissor_test();
         }
     }
 }
@@ -86,7 +85,7 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
 
 void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root) {
     if (!canvas.is_visible() || check_close(canvas.get_opacity(), 0.0f)) {
-        canvas.mark_as_drawn(game.ticks());
+        canvas.mark_as_drawn(game.window_ticks());
         return;
     }
     // Draw text background
@@ -123,10 +122,10 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
         // Mark children and parent as drawn. Children are marked separately
         // to avoid changing parent's should_draw while iterating children
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
-            canvas.get_child(i)->mark_as_drawn(game.ticks());
+            canvas.get_child(i)->mark_as_drawn(game.window_ticks());
         }
         if (!parent) {
-            canvas.mark_as_drawn(game.ticks());
+            canvas.mark_as_drawn(game.window_ticks());
             if (!batch.empty()) {
                 draw(camera.get_mvp(), root_parent);
             }
@@ -205,7 +204,7 @@ void Canvas_Renderer::render_background(Canvas& canvas, Canvas* parent) {
     camera.draw_rect(rect, color);
 }
 bool Canvas_Renderer::should_redraw(const Canvas& canvas) {
-    return canvas.should_redraw(game.ticks()) || !fbo_supported;
+    return canvas.should_redraw(game.window_ticks()) || !fbo_supported;
 }
 
 void Canvas_Renderer::draw(const xd::mat4 mvp, const Canvas& root) {

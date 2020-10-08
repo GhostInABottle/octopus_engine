@@ -18,6 +18,7 @@ struct Show_Text_Command::Impl {
             complete(false),
             text_complete(false),
             was_disabled(false),
+            cancelable(false),
             selected_choice(0),
             current_choice(0),
             start_time(game.ticks()),
@@ -33,6 +34,10 @@ struct Show_Text_Command::Impl {
         auto confirm_sound_file = Configurations::get<std::string>("audio.choice-confirm-sfx");
         if (audio && !confirm_sound_file.empty()) {
             confirm_sound = std::make_unique<xd::sound>(*audio, confirm_sound_file);
+        }
+        auto cancel_sound_file = Configurations::get<std::string>("audio.choice-cancel-sfx");
+        if (audio && !cancel_sound_file.empty()) {
+            cancel_sound = std::make_unique<xd::sound>(*audio, cancel_sound_file);
         }
 
         selected_choice_color = "{color=" + color_to_rgba_string(hex_to_color(
@@ -123,13 +128,9 @@ struct Show_Text_Command::Impl {
             was_disabled = game.get_player()->is_disabled();
             game.get_player()->set_disabled(true);
         }
+        cancelable = options.cancelable;
 
         canvas->set_visible(true);
-    }
-
-    void play_sound(bool is_confirm) {
-        auto& sound = is_confirm ? confirm_sound : select_sound;
-        sound->play();
     }
 
     std::string full_text() const {
@@ -207,9 +208,19 @@ struct Show_Text_Command::Impl {
         if (dir == Direction::UP)
             current_choice = (current_choice + choice_count - 1) % choice_count;
         if (old_choice != current_choice) {
-            play_sound(false);
+            if (select_sound) select_sound->play();
             canvas->set_text(full_text());
         }
+    }
+
+    std::string cancel_action() {
+        static std::string cancel_button = Configurations::get<std::string>("controls.cancel-button");
+        if (cancelable && game.triggered_once(cancel_button)) return "cancel";
+
+        static std::string pause_button = Configurations::get<std::string>("controls.pause-button");
+        if (game.is_paused() && game.triggered_once(pause_button)) return "pause";
+
+        return "";
     }
 
     void execute(int ticks, bool stopped) {
@@ -237,21 +248,24 @@ struct Show_Text_Command::Impl {
             text_complete = ticks > start_time + options.duration;
         }
         else {
-            static std::string action_button =
-                Configurations::get<std::string>("controls.action-button");
+            static std::string action_button = Configurations::get<std::string>("controls.action-button");
+            
             text_complete = game.triggered_once(action_button);
             if (!options.choices.empty()) {
                 if (text_complete) {
-                    play_sound(true);
-                }
-                else {
+                    if (confirm_sound) confirm_sound->play();
+                    selected_choice = static_cast<int>(current_choice);
+                } else if (auto cancel = cancel_action(); !cancel.empty()) {
+                    if (cancel != "pause" && cancel_sound) cancel_sound->play();
+                    text_complete = true;
+                    selected_choice = -1;
+                } else {
                     update_choice();
                 }
             }
         }
 
         if (text_complete) {
-            selected_choice = current_choice;
             canvas_updater->reset();
             int duration = options.fade_out_duration == -1 ?
                 Configurations::get<int>("text.fade-out-duration") :
@@ -268,7 +282,8 @@ struct Show_Text_Command::Impl {
     bool complete;
     bool text_complete;
     bool was_disabled;
-    unsigned int  selected_choice;
+    bool cancelable;
+    int selected_choice;
     unsigned int current_choice;
     long start_time;
     Direction pressed_direction;
@@ -278,6 +293,8 @@ struct Show_Text_Command::Impl {
     std::unique_ptr<xd::sound> select_sound;
     // Choice confirmation sound effect
     std::unique_ptr<xd::sound> confirm_sound;
+    // Choice cancel sound effect
+    std::unique_ptr<xd::sound> cancel_sound;
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :

@@ -13,6 +13,7 @@ void Configurations::load_defaults() {
     defaults["game.data-folder-version"] = std::string("v0_1");
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
     defaults["game.map-loaded-script"] = std::string();
+    defaults["game.pause-script"] = std::string();
 
     defaults["text.fade-in-duration"] = 250;
     defaults["text.fade-out-duration"] = 250;
@@ -45,6 +46,7 @@ void Configurations::load_defaults() {
     defaults["audio.sound-volume"] = 1.0f;
     defaults["audio.choice-select-sfx"] = std::string();
     defaults["audio.choice-confirm-sfx"] = std::string();
+    defaults["audio.choice-cancel-sfx"] = std::string();
     defaults["audio.mute-on-pause"] = true;
 
     defaults["font.default"] = std::string();
@@ -59,6 +61,8 @@ void Configurations::load_defaults() {
     defaults["controls.axis-as-dpad"] = true;
     defaults["controls.axis-sensitivity"] = 0.5f;
     defaults["controls.action-button"] = std::string("a");
+    defaults["controls.cancel-button"] = std::string("b");
+    defaults["controls.pause-button"] = std::string("pause");
     defaults["controls.mapping-file"] = std::string("keymap.ini");
 
     defaults["logging.enabled"] = true;

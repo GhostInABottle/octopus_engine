@@ -18,6 +18,7 @@ class Canvas;
 class Clock;
 class Save_File;
 class Shake_Decorator;
+
 namespace xd {
     class asset_manager;
     class music;
@@ -41,10 +42,16 @@ public:
     void frame_update();
     // Render the scene
     void render();
+    // Is the game currently paused?
+    bool is_paused() const { return paused; }
+    // Check if pausing is possible
+    bool is_pausing_enabled() const { return pausing_enabled; }
+    // Set whether the game will pause on button press or unfocus
+    void set_pausing_enabled(bool value) { pausing_enabled = value; }
     // Pause game
     void pause();
     // Resume game
-    void resume();
+    void resume(const std::string& script = "");
     // Exit game
     void exit();
     // Screen dimensions
@@ -143,6 +150,8 @@ public:
     }
     // Get the shared Lua virtual machine
     xd::lua::virtual_machine* get_lua_vm();
+    // Reset the scripting interface and run startup scripts again
+    void reset_scripting();
     // Play some music
     void load_music(const std::string& filename);
     // Get the music currently playing
@@ -186,12 +195,14 @@ public:
     bool stopped() const;
     // Total game time in seconds
     int seconds() const;
-    // Time elapsed since game started (in ms)
+    // Time elapsed since game started (in ms) not including pauses
     int ticks() const;
     // Manually set ticks
     void set_ticks(int ticks) {
         editor_ticks = ticks;
     }
+    // Total time elapsed since game started (in ms)
+    int window_ticks() { return window ? window->ticks() : editor_ticks; }
     // Get save file directory and creates it if needed
     std::string get_save_directory() const;
     // Save game
@@ -212,6 +223,8 @@ public:
     }
 private:
     std::unique_ptr<xd::window> window;
+    bool paused;
+    bool pausing_enabled;
     float magnification;
     struct Impl;
     friend struct Impl;

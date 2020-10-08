@@ -10,7 +10,7 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
     // Delete old states
     for(auto it = std::begin(states); it != std::end(states);)
     {
-      if (game.ticks() - it->second.last_shake > 1000)
+      if (it->second.ticks(game) - it->second.last_shake > 1000)
         it = states.erase(it);
       else
         ++it;
@@ -22,17 +22,18 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
 
     if (state.displacements.empty()) {
         state.displacements.resize(text.length());
+        state.game_paused = game.is_paused();
     }
 
     static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
-    bool time_to_update = game.ticks() - state.last_shake > ms_between_refresh;
+    bool time_to_update = state.ticks(game) - state.last_shake > ms_between_refresh;
 
     static std::mt19937 engine;
     static std::uniform_int_distribution<int> displacement(-1, 1);
     static std::uniform_int_distribution<int> shake_chance(1, 100);
 
     if (time_to_update) {
-        state.last_shake = game.ticks();
+        state.last_shake = state.ticks(game);
         state.shake = shake_chance(engine) > power;
     }
 
@@ -51,4 +52,9 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
             decorator.push_text(*i);
         }
     }
+}
+
+int Shake_Decorator::State::ticks(Game& game) const {
+    // We still want to shake texts created when game is paused
+    return game_paused ? game.window_ticks() : game.ticks();
 }

@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Other', 'Nothing' })
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Other', 'Nothing' }, true)
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -246,7 +246,7 @@ elseif c.selected == 7 then
         local file_type = filesystem.is_directory(file) and 'directory' or 'file'
         print('\t- ' .. file .. ' - ' .. file_type)
     end
-    text(o, "Are we in debug mode? " .. (game.is_debug and "Yes!" or "No!")):wait()
+    text(o, "Are we in debug mode? " .. (game.debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')
         .. '\nscreen width: ' .. game:get_config('graphics.screen-width')

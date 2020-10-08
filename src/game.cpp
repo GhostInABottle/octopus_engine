@@ -34,7 +34,6 @@ struct Game::Impl {
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
             next_direction(Direction::DOWN),
-            paused(false),
             focus_pause(false),
             music_was_paused(false),
             was_stopped(false),
@@ -45,7 +44,9 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
-            save_path("not set") {}
+            save_path("not set"),
+            pause_button(Configurations::get<std::string>("controls.pause-button")),
+            reset_scripting(false) {}
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
         config_changes.insert(config_key);
@@ -130,6 +131,29 @@ struct Game::Impl {
         }
         return gamepad_id;
     }
+    void reset_scripting_interface(Game& game) {
+        scripting_interface = std::make_unique<Scripting_Interface>(game);
+        scripting_interface->set_globals();
+        // Run game startup scripts
+        LOGGER_I << "Running game startup scripts";
+        std::string scripts_list =
+            Configurations::get<std::string>("startup.scripts-list");
+        file_utilities::normalize_slashes(scripts_list);
+        if (!scripts_list.empty()) {
+            std::ifstream scripts_file(scripts_list);
+            if (scripts_file) {
+                std::string filename;
+                while (std::getline(scripts_file, filename)) {
+                    if (string_utilities::ends_with(filename, "\r"))
+                        filename = filename.substr(0, filename.size() - 1);
+                    game.run_script(file_utilities::read_file(filename));
+                }
+            } else {
+                throw std::runtime_error("Couldn't read file " + scripts_list);
+            }
+        }
+        reset_scripting = false;
+    }
     // Audio system
     xd::audio* audio;
     // Was game started in editor mode?
@@ -140,6 +164,8 @@ struct Game::Impl {
     xd::lua::virtual_machine vm;
     // Game-specific scripting interface
     std::unique_ptr<Scripting_Interface> scripting_interface;
+    // Scripting interface used when the game is paused
+    std::unique_ptr<Scripting_Interface> pause_scripting_interface;
     // Show frames per second?
     bool show_fps;
     // Show current game-time in seconds?
@@ -148,8 +174,6 @@ struct Game::Impl {
     std::optional<xd::vec2> next_position;
     Direction next_direction;
     std::string next_map;
-    // Is the game paused?
-    bool paused;
     // Was it paused because screen got unfocused?
     bool focus_pause;
     // was music already paused when game got paused?
@@ -175,6 +199,10 @@ struct Game::Impl {
     std::string save_path;
     // Keymap file reader and binder
     std::unique_ptr<Key_Binder> key_binder;
+    // The button for pausing the game
+    std::string pause_button;
+    // Should the scripting interface be reset?
+    bool reset_scripting;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -197,6 +225,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
                 0, // antialiasing
                 2, // GL major version
                 0))), // GL minor version
+        paused(false),
+        pausing_enabled(true),
         magnification(Configurations::get<float>("debug.magnification")),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         current_scripting_interface(nullptr),
@@ -280,25 +310,12 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     // Bind game keys
     pimpl->process_keymap(*this, window.get());
     // Setup Lua scripts
-    pimpl->scripting_interface = std::make_unique<Scripting_Interface>(*this);
-    pimpl->scripting_interface->set_globals();
-    // Run game startup scripts
-    LOGGER_I << "Running game startup scripts";
-    std::string scripts_list =
-        Configurations::get<std::string>("startup.scripts-list");
-    file_utilities::normalize_slashes(scripts_list);
-    if (!scripts_list.empty()) {
-        std::ifstream scripts_file(scripts_list);
-        if (scripts_file) {
-            std::string filename;
-            while (std::getline(scripts_file, filename)) {
-                if (string_utilities::ends_with(filename, "\r"))
-                    filename = filename.substr(0, filename.size() - 1);
-                run_script(file_utilities::read_file(filename));
-            }
-        } else {
-            throw std::runtime_error("Couldn't read file " + scripts_list);
-        }
+    pimpl->reset_scripting_interface(*this);
+    // Script run when game is paused
+    auto pause_script = Configurations::get<std::string>("game.pause-script");
+    if (!pause_script.empty()) {
+        pimpl->pause_scripting_interface = std::make_unique<Scripting_Interface>(*this);
+        pimpl->pause_scripting_interface->set_globals();
     }
     // Run map startup scripts
     map->run_startup_scripts();
@@ -332,15 +349,16 @@ void Game::frame_update() {
         pimpl->audio->update();
 
     // Pause or resume game if needed
-    bool triggered_pause = triggered("pause");
-    if (pimpl->paused) {
+    bool triggered_pause = triggered(pimpl->pause_button);
+    // Only resume if there is no pause script, otherwise the script should do it
+    if (paused && !pimpl->pause_scripting_interface) {
         if (triggered_pause)
             resume();
         else if (pimpl->focus_pause && window->focused()) {
             resume();
             pimpl->focus_pause = false;
         }
-    } else {
+    } else if (!paused && pausing_enabled) {
         if (triggered_pause)
             pause();
         else if (Configurations::get<bool>("game.pause-unfocused") && !window->focused()) {
@@ -348,13 +366,29 @@ void Game::frame_update() {
             pimpl->focus_pause = true;
         }
     }
-    if (pimpl->paused)
+    if (paused) {
+        if (pimpl->pause_scripting_interface) {
+            set_current_scripting_interface(pimpl->pause_scripting_interface.get());
+            pimpl->pause_scripting_interface->update();
+            if (pimpl->reset_scripting) {
+                pimpl->reset_scripting_interface(*this);
+            }
+        }
+        // We still update map canvases, but not scripts
+        if (pimpl->next_map.empty())
+            map->update();
+        pimpl->process_config_changes(*this, window.get());
         return;
+    }
 
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->update();
+    if (pimpl->reset_scripting) {
+        pimpl->reset_scripting_interface(*this);
+    }
     camera->update();
-    map->update();
+    if (pimpl->next_map.empty())
+        map->update();
     pimpl->process_config_changes(*this, window.get());
     // Switch map if needed
     if (!pimpl->next_map.empty())
@@ -383,7 +417,7 @@ void Game::render() {
 }
 
 void Game::pause() {
-    pimpl->paused = true;
+    paused = true;
     pimpl->pause_start_time = window->ticks();
     pimpl->was_stopped = clock->stopped();
     clock->stop_time();
@@ -394,10 +428,14 @@ void Game::pause() {
     }
     camera->set_shader(Configurations::get<std::string>("graphics.pause-vertex-shader"),
         Configurations::get<std::string>("graphics.pause-fragment-shader"));
+    if (pimpl->pause_scripting_interface) {
+        auto pause_script = Configurations::get<std::string>("game.pause-script");
+        run_script(file_utilities::read_file(pause_script));
+    }
 }
 
-void Game::resume() {
-    pimpl->paused = false;
+void Game::resume(const std::string& script) {
+    paused = false;
     pimpl->total_paused_time += window->ticks() - pimpl->pause_start_time;
     if (!pimpl->was_stopped)
         clock->resume_time();
@@ -405,6 +443,9 @@ void Game::resume() {
         music->play();
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
+    if (!script.empty()) {
+        run_script(script);
+    }
 }
 
 void Game::exit() {
@@ -481,12 +522,17 @@ std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) c
 }
 
 void Game::run_script(const std::string& script) {
-    set_current_scripting_interface(pimpl->scripting_interface.get());
-    pimpl->scripting_interface->run_script(script);
+    auto& si = paused ? pimpl->pause_scripting_interface : pimpl->scripting_interface;
+    set_current_scripting_interface(si.get());
+    si->run_script(script);
 }
 
 xd::lua::virtual_machine* Game::get_lua_vm() {
     return &pimpl->vm;
+}
+
+void Game::reset_scripting() {
+    pimpl->reset_scripting = true;
 }
 
 void Game::load_music(const std::string& filename) {
@@ -547,7 +593,7 @@ int Game::seconds() const {
 int Game::ticks() const {
     if (!window)
         return editor_ticks;
-    int stopped_time = pimpl->total_paused_time + (pimpl->paused ?
+    int stopped_time = pimpl->total_paused_time + (paused ?
         window->ticks() - pimpl->pause_start_time : 0);
     return window->ticks() - stopped_time;
 }

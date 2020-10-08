@@ -178,7 +178,8 @@ void Scripting_Interface::setup_scripts() {
     // Like Command_Result but stores the index of selected choice
     auto choice_result_type = lua.new_usertype<Choice_Result>("Choice_Result",
         sol::base_classes, sol::bases<Command_Result>());
-    choice_result_type["selected"] = sol::property([](Choice_Result& cr) { return cr.choice_index() + 1; });
+    choice_result_type["selected"] = sol::property(
+        [](Choice_Result& cr) { return cr.choice_index() == -1 ? -1 : cr.choice_index() + 1; });
 
     // A generic command for waiting (used in NPC scheduling)
     lua["Wait_Command"] = [&](int duration, int start_time) {
@@ -250,6 +251,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["duration"] = sol::readonly(&Text_Options::duration);
     options_type["centered"] = sol::readonly(&Text_Options::centered);
     options_type["show_dashes"] = sol::readonly(&Text_Options::show_dashes);
+    options_type["cancelable"] = sol::readonly(&Text_Options::cancelable);
     options_type["choice_indent"] = sol::readonly(&Text_Options::choice_indent);
     options_type["translated"] = sol::readonly(&Text_Options::translated);
     options_type["canvas_priority"] = sol::readonly(&Text_Options::canvas_priority);
@@ -264,6 +266,7 @@ void Scripting_Interface::setup_scripts() {
     options_type["set_centered"] = &Text_Options::set_centered;
     options_type["set_show_dashes"] = &Text_Options::set_show_dashes;
     options_type["set_translated"] = &Text_Options::set_translated;
+    options_type["set_cancelable"] = &Text_Options::set_cancelable;
     options_type["set_choice_indent"] = &Text_Options::set_choice_indent;
     options_type["set_canvas_priority"] = &Text_Options::set_canvas_priority;
     options_type["set_fade_in_duration"] = &Text_Options::set_fade_in_duration;
@@ -320,28 +323,36 @@ void Scripting_Interface::setup_scripts() {
     );
 
     // Show some text followed by a list of choices
+    auto set_options = [](Text_Options& options, const std::vector<std::string>& choices,
+        const std::string& text, std::optional<bool> cancelable) {
+            options.set_choices(choices).set_text(text).set_cancelable(cancelable.value_or(false));
+    };
     lua["choices"] = sol::overload(
         [&](const Text_Options& options) {
             auto si = game->get_current_scripting_interface();
             return si->register_choice_command<Show_Text_Command>(*game, options);
         },
-        [&](Map_Object& obj, const std::string& text, const sol::table& table) {
+        [&](Map_Object& obj, const std::string& text, const sol::table& table, std::optional<bool> cancelable) {
             std::vector<std::string> choices;
             for (auto& kv : table) {
                 choices.push_back(kv.second.as<std::string>());
             }
+            Text_Options options{&obj};
+            set_options(options, choices, text, cancelable);
             auto si = game->get_current_scripting_interface();
             return si->register_choice_command<Show_Text_Command>(
-                *game, Text_Options{&obj}.set_choices(choices).set_text(text));
+                *game, std::move(options));
         },
-        [&](xd::vec2& position, const std::string& text, const sol::table& table) {
+        [&](xd::vec2& position, const std::string& text, const sol::table& table, std::optional<bool> cancelable) {
             std::vector<std::string> choices;
             for (auto& kv : table) {
                 choices.push_back(kv.second.as<std::string>());
             }
+            Text_Options options{position};
+            set_options(options, choices, text, cancelable);
             auto si = game->get_current_scripting_interface();
             return si->register_choice_command<Show_Text_Command>(
-                *game, Text_Options{position}.set_choices(choices).set_text(text));
+                *game, std::move(options));
         }
     );
 
@@ -646,14 +657,17 @@ void Scripting_Interface::setup_scripts() {
     game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
     game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);
     game_type["ticks"] = sol::property(&Game::ticks);
+    game_type["window_ticks"] = sol::property(&Game::window_ticks);
     game_type["fps"] = sol::property(&Game::fps);
     game_type["frame_count"] = sol::property(&Game::frame_count);
     game_type["stopped"] = sol::property(&Game::stopped);
     game_type["seconds"] = sol::property(&Game::seconds);
+    game_type["paused"] = sol::property(&Game::is_paused);
+    game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
     game_type["playing_music"] = sol::readonly_property(&Game::playing_music);
     game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
     game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
-    game_type["is_debug"] = sol::property(&Game::is_debug);
+    game_type["debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
@@ -665,6 +679,11 @@ void Scripting_Interface::setup_scripts() {
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
+    game_type["pause"] = &Game::pause;
+    game_type["resume"] = sol::overload(
+        [](Game* game) { return game->resume(); },
+        [](Game* game, const std::string& script) { return game->resume(script); }
+    );
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
     game_type["triggered"] = sol::overload(
         [](Game* game) { return game->triggered(); },
@@ -678,6 +697,7 @@ void Scripting_Interface::setup_scripts() {
         return sol::as_table(game->get_bound_keys(virtual_name));
     };
     game_type["run_script"] = &Game::run_script;
+    game_type["reset_scripting"] = &Game::reset_scripting;
     game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };
     game_type["load_map"] = sol::overload(
@@ -819,6 +839,7 @@ void Scripting_Interface::setup_scripts() {
     camera_type["get_centered_position"] = sol::overload(
             sol::resolve<xd::vec2(xd::vec2) const>(&Camera::get_centered_position),
             sol::resolve<xd::vec2(const Map_Object&) const>(&Camera::get_centered_position));
+    camera_type["set_shader"] = &Camera::set_shader;
     camera_type["move"] = [&](Camera& camera, int dir, float pixels, float speed) {
         auto si = game->get_current_scripting_interface();
         return si->register_command<Move_Camera_Command>(camera, static_cast<Direction>(dir), pixels, speed);

@@ -576,6 +576,7 @@ void Map_Renderer::render(Map& map) {
 }
 
 void Map_Updater::update(Map& map) {
+    if (map.get_game().is_paused()) return;
     map.game.set_current_scripting_interface(map.scripting_interface.get());
     map.scripting_interface->update();
     for (auto& layer : map.layers) {

@@ -218,6 +218,7 @@ public:
         visible = new_visible;
         redraw_needed = true;
     }
+    bool should_update() const;
     std::string get_filename() const {
         return filename;
     }
@@ -401,6 +402,9 @@ public:
     void set_background_color(xd::vec4 new_color) {
         background_color = new_color;
     }
+    bool is_paused_game_canvas() const {
+        return paused_game_canvas;
+    }
 private:
     // Sets shared default values
     Canvas(Game& game, xd::vec2 position);
@@ -467,7 +471,8 @@ private:
     bool background_visible;
     xd::rect background_rect;
     xd::vec4 background_color;
-
+    // Was canvas created when game was paused
+    bool paused_game_canvas;
 };
 
 #endif
