@@ -30,6 +30,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         color(1.0f),
         magnification(1.0f),
         outline_conditions(get_default_outline_conditions()),
+        outlined_object_id(-1),
+        outlining_object(nullptr),
         gid(0),
         opacity(1.0f),
         visible(true),
@@ -213,18 +215,25 @@ void Map_Object::set_outlined(std::optional<bool> new_outlined) {
 
 bool Map_Object::is_outlined() const {
     if ((outline_conditions & Outline_Condition::NEVER) != Outline_Condition::NONE) return false;
+
     auto result = true;
+
     if ((outline_conditions & Outline_Condition::TOUCHED) != Outline_Condition::NONE) {
         auto player = game.get_player();
         result = player && (player->get_collision_object() == this ||
             player->get_collision_area() == this);
     }
+
     if ((outline_conditions & Outline_Condition::SOLID) != Outline_Condition::NONE) {
         result = result && !passthrough;
     }
+
     if ((outline_conditions & Outline_Condition::SCRIPT) != Outline_Condition::NONE) {
         result = result && !trigger_script.empty();
     }
+
+    result = result || (outlining_object && outlining_object->is_outlined());
+
     return result;
 }
 
@@ -437,6 +446,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
                 object_ptr->set_outline_conditions(conditions);
             }
         }
+    }
+    if (properties.has_property("outlined-object")) {
+        object_ptr->set_outlined_object_id(std::stoi(properties["outlined-object"]));
     }
     if (properties.has_property("draw-order")) {
         auto order = properties["draw-order"];

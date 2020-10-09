@@ -277,6 +277,18 @@ public:
     void set_outline_color(std::optional<xd::vec4> new_color) {
         outline_color = new_color;
     }
+    int get_outlined_object_id() const {
+        return outlined_object_id;
+    }
+    void set_outlined_object_id(int id) {
+        outlined_object_id = id;
+    }
+    Map_Object* get_outlining_object() const {
+        return outlining_object;
+    }
+    void set_outlining_object(Map_Object* object) {
+        outlining_object = object;
+    }
     Draw_Order get_draw_order() const {
         return draw_order;
     }
@@ -374,8 +386,12 @@ private:
     xd::vec2 magnification;
     // Outline color
     std::optional<xd::vec4> outline_color;
-    // Is the object outlined?
+    // Conditions that cause the object to be outlined
     Outline_Condition outline_conditions;
+    // ID of other object that is outlined when this object is interacted with
+    int outlined_object_id;
+    // Object that causes this one to be outlined
+    Map_Object* outlining_object;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity

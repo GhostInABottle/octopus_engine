@@ -561,6 +561,15 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     if (map_ptr->object_layers.empty())
         throw tmx_exception("Must have at least one object layer in map");
 
+    // Set up chained outlining of objects
+    for (auto& object : map_ptr->get_objects()) {
+        auto target_id = object.second->get_outlined_object_id();
+        auto target = map_ptr->get_object(target_id);
+        if (!target) continue;
+
+        target->set_outlining_object(object.second.get());
+    }
+
     return map_ptr;
 }
 

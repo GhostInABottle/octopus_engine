@@ -536,6 +536,24 @@ void Scripting_Interface::setup_scripts() {
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
     object_type["outlined"] = sol::property(&Map_Object::is_outlined, &Map_Object::set_outlined);
     object_type["outline_color"] = sol::property(&Map_Object::get_outline_color, &Map_Object::set_outline_color);
+    object_type["outlined_object"] = sol::property(
+        [&](Map_Object* object) {
+            auto id = object->get_outlined_object_id();
+            return id > -1 ? game->get_map()->get_object(id) : nullptr;
+        },
+        [&](Map_Object* object, Map_Object* other) {
+            auto map = game->get_map();
+            if (!other) {
+                other = map->get_object(object->get_outlined_object_id());
+                if (other) other->set_outlining_object(nullptr);
+                object->set_outlined_object_id(-1);
+                return;
+            }
+            object->set_outlined_object_id(other->get_id());
+            other->set_outlining_object(object);
+        }
+    );
+    object_type["outlining_object"] = sol::property(&Map_Object::get_outlining_object);
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
     object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box);
