@@ -345,8 +345,12 @@ void Game::run() {
 }
 
 void Game::frame_update() {
-    if (pimpl->audio)
-        pimpl->audio->update();
+    if (pimpl->audio) pimpl->audio->update();
+
+    // Toggle fullscreen when ALT+Enter is pressed
+    if ((pressed(xd::KEY_RALT) || pressed(xd::KEY_LALT)) && triggered_once(xd::KEY_ENTER)) {
+        set_fullscreen(!is_fullscreen());
+    }
 
     // Pause or resume game if needed
     bool triggered_pause = triggered(pimpl->pause_button);
@@ -366,6 +370,7 @@ void Game::frame_update() {
             pimpl->focus_pause = true;
         }
     }
+
     if (paused) {
         if (pimpl->pause_scripting_interface) {
             set_current_scripting_interface(pimpl->pause_scripting_interface.get());
@@ -374,6 +379,7 @@ void Game::frame_update() {
                 pimpl->reset_scripting_interface(*this);
             }
         }
+
         // We still update map canvases, but not scripts
         if (pimpl->next_map.empty())
             map->update();
@@ -386,10 +392,12 @@ void Game::frame_update() {
     if (pimpl->reset_scripting) {
         pimpl->reset_scripting_interface(*this);
     }
+
     camera->update();
     if (pimpl->next_map.empty())
         map->update();
     pimpl->process_config_changes(*this, window.get());
+
     // Switch map if needed
     if (!pimpl->next_map.empty())
         load_map(pimpl->next_map);
@@ -399,7 +407,9 @@ void Game::render() {
     // Window size changes are asynchronous in X11 so we keep polling the size
     camera->set_size(width(), height());
     camera->render();
+
     if (pimpl->editor_mode) return;
+
     // Draw FPS
     auto height = static_cast<float>(game_height());
     if (pimpl->show_fps) {
@@ -407,12 +417,14 @@ void Game::render() {
             camera->get_geometry().projection().get(),5, 10,
             "FPS: " + std::to_string(fps()));
     }
+
     // Draw game time
     if (pimpl->show_time) {
         auto seconds = std::to_string(clock->seconds());
         text_renderer.render(*font, pimpl->debug_style,
             camera->get_geometry().projection().get(), 5, 20, seconds);
     }
+
     window->swap();
 }
 
@@ -421,13 +433,16 @@ void Game::pause() {
     pimpl->pause_start_time = window->ticks();
     pimpl->was_stopped = clock->stopped();
     clock->stop_time();
+
     if (music && Configurations::get<bool>("audio.mute-on-pause")) {
         pimpl->music_was_paused = music->paused();
         if (!pimpl->music_was_paused)
             music->pause();
     }
+
     camera->set_shader(Configurations::get<std::string>("graphics.pause-vertex-shader"),
         Configurations::get<std::string>("graphics.pause-fragment-shader"));
+
     if (pimpl->pause_scripting_interface) {
         auto pause_script = Configurations::get<std::string>("game.pause-script");
         run_script(file_utilities::read_file(pause_script));
@@ -437,15 +452,16 @@ void Game::pause() {
 void Game::resume(const std::string& script) {
     paused = false;
     pimpl->total_paused_time += window->ticks() - pimpl->pause_start_time;
-    if (!pimpl->was_stopped)
-        clock->resume_time();
+
+    if (!pimpl->was_stopped) clock->resume_time();
+
     if (music && !pimpl->music_was_paused && Configurations::get<bool>("audio.mute-on-pause"))
         music->play();
+
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
-    if (!script.empty()) {
-        run_script(script);
-    }
+
+    if (!script.empty()) run_script(script);
 }
 
 void Game::exit() {
