@@ -121,7 +121,6 @@
     <ClCompile Include="..\src\canvas_renderer.cpp" />
     <ClCompile Include="..\src\canvas_updater.cpp" />
     <ClCompile Include="..\src\clock.cpp" />
-    <ClCompile Include="..\src\collision_record.cpp" />
     <ClCompile Include="..\src\command.cpp" />
     <ClCompile Include="..\src\commands\fade_music_command.cpp" />
     <ClCompile Include="..\src\commands\move_camera_command.cpp" />

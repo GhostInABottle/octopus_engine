@@ -24,6 +24,7 @@
 #include <unordered_set>
 #include <fstream>
 #include <algorithm>
+#include <utility>
 
 namespace detail {
     std::string generate_unique_name(std::unordered_set<std::string> names,
@@ -77,14 +78,17 @@ void Map::run_startup_scripts() {
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        Collision_Check_Type check_type) {
+        Collision_Check_Type check_type, Collision_Record&& previous_record) {
     return passable(object, direction, object.get_position(),
-        object.get_fps_independent_speed(), check_type);
+        object.get_fps_independent_speed(), check_type, std::move(previous_record));
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed, Collision_Check_Type check_type) {
-    Collision_Record result;
+        xd::vec2 position, float speed, Collision_Check_Type check_type,
+        Collision_Record&& previous_record) {
+    Collision_Record result{std::move(previous_record)};
+    result.type = Collision_Type::NONE;
+
     if (object.initiates_passthrough())
         return result;
     auto bounding_box = object.get_bounding_box();

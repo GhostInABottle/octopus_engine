@@ -150,9 +150,6 @@
     <ClCompile Include="..\..\src\pathfinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\collision_record.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\custom_shaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

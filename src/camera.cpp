@@ -82,6 +82,9 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
 
     int w = game.width();
     int h = game.height();
+    // Width and height can be 0 in some debugging scenarios
+    if (w == 0 || h == 0) return;
+
     if (!full_screen_texture) {
         full_screen_texture = std::make_shared<xd::texture>(w, h, nullptr,
             xd::vec4(0), GL_CLAMP, GL_CLAMP);

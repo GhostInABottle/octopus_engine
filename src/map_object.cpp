@@ -11,6 +11,7 @@
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
+#include <utility>
 
 Map_Object::Outline_Condition operator|(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
 {
@@ -121,14 +122,14 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     } else {
         if (multiple_directions) {
             // Check if we can move in either direction
-            collision = map->passable(*this,
-                move_dir & (Direction::UP | Direction::DOWN), check_type);
+            collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN),
+                check_type, std::move(collision));
             if (collision.passable()) {
                 change.x = 0.0f;
             }
             else {
-                collision = map->passable(*this,
-                    move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
+                collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT),
+                    check_type, std::move(collision));
                 if (collision.passable()) {
                     change.y = 0.0f;
                 }
