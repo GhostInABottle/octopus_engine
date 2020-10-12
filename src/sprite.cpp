@@ -182,8 +182,7 @@ struct Sprite::Impl {
                     if (pose_tags.find(key) == pose_tags.end() || pose_tags[key] != value) continue;
                     matches[i]++;
                     // Update best default pose
-                    if (data->default_pose != "" && key == "NAME"
-                            && pose_tags[key] == data->default_pose
+                    if (data->default_pose != "" && pose_tags["NAME"] == data->default_pose
                             && compare_matches(i, default_pose, matches) > 0) {
                         default_pose = i;
                     }
