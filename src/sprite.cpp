@@ -184,11 +184,12 @@ struct Sprite::Impl {
                     // Update best default pose
                     if (data->default_pose != "" && key == "NAME"
                             && pose_tags[key] == data->default_pose
-                            && is_better_match(default_pose, i, matches, key)) {
+                            && compare_matches(i, default_pose, matches) > 0) {
                         default_pose = i;
                     }
                     // Update best match
-                    if (is_better_match(matched_pose, i, matches, key)) {
+                    auto comparison = compare_matches(i, matched_pose, matches);
+                    if (comparison > 0 || (comparison == 0 && tags["NAME"] == pose_tags["NAME"])) {
                         matched_pose = i;
                         // If all tags are matched, exit loops
                         if (matches[i] == tags.size())
@@ -199,8 +200,8 @@ struct Sprite::Impl {
                     break;
             }
 
-            // Prefer default pose to any other
-            if (matched_pose == -1 || matches[matched_pose] == matches[default_pose])
+            // Prefer default pose to other poses with same matches
+            if (matched_pose == -1 || compare_matches(matched_pose, default_pose, matches) == 0)
                 matched_pose = default_pose == -1 ? 0 : default_pose;
             // Update pose cache
             tag_map[tag_string] = matched_pose;
@@ -212,14 +213,14 @@ struct Sprite::Impl {
         }
     }
 
-    // A pose is a better match than current best if there is no best yet, if it
-    // matches more tags, or if it has the same matches including a match on name
-    bool is_better_match(int best_index, int candidate_index,
-            std::unordered_map<int, unsigned int>& matches, const std::string& key) {
-        return best_index == -1 ||
-            matches[candidate_index] > matches[best_index] ||
-            (matches[candidate_index] == matches[best_index] &&
-                key == "NAME");
+    // A pose is better than current best if there's no best yet or if it matches more tags
+    int compare_matches(int candidate_index, int best_index, 
+            std::unordered_map<int, unsigned int>& matches) {
+        auto candidate = matches[candidate_index];
+        auto best = best_index > -1 ? matches[best_index] : 0;
+        if (candidate > best) return 1;
+        if (best > candidate) return -1;
+        return 0;
     }
 
     void set_default_pose() {
