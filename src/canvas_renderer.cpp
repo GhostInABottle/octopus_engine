@@ -99,10 +99,10 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
     bool has_children = canvas.get_child_count() > 0;
     bool is_text = canvas.get_type() == Canvas::Type::TEXT;
     bool using_fbo = !parent && fbo_supported && (is_text || has_children);
-    bool individual = !(parent || has_children);
+    bool individual = !parent && !has_children;
     bool redraw = should_redraw(canvas)
-        || parent && should_redraw(*parent)
-        || !is_text && (individual || !fbo_supported);
+        || (parent && should_redraw(*parent))
+        || (!is_text && (individual || !fbo_supported));
 
     if (redraw) {
         // Setup framebuffer for top parent canvas

@@ -5,6 +5,8 @@
 #include "../include/utility/direction.hpp"
 #include "../include/utility/string.hpp"
 
+Sprite_Holder::~Sprite_Holder() {}
+
 void Sprite_Holder::set_pose(const std::string& pose_name,
         const std::string& state, Direction direction) {
     if (get_sprite()) {

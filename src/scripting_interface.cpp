@@ -758,7 +758,7 @@ void Scripting_Interface::setup_scripts() {
         if (file->is_valid())
             return file->lua_data();
         else
-            return sol::object(sol::nil);
+            return sol::object(sol::lua_nil);
     };
     game_type["save_config_file"] = &Game::save_config_file;
     game_type["save_keymap_file"] = &Game::save_keymap_file;

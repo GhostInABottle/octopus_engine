@@ -33,6 +33,8 @@
 #define SOL_ALL_SAFETIES_ON 1
 #define SOL_EXCEPTIONS_ALWAYS_UNSAFE 1
 
+#include <unordered_map>
+
 // end of sol/config.hpp
 
 #endif // SOL_SINGLE_CONFIG_HPP

@@ -490,7 +490,7 @@ std::vector<xd::vec2> Game::get_sizes() const {
 
 void Game::set_fullscreen(bool fullscreen) {
     if (!window || fullscreen == is_fullscreen()) return;
-    LOGGER_I << "Changing window display to " << (fullscreen) ? "fullscreen" : "windowed";
+    LOGGER_I << "Changing window display to " << (fullscreen ? "fullscreen" : "windowed");
     window->set_fullscreen(fullscreen);
     camera->set_size(width(), height());
 }

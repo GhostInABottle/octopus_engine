@@ -325,7 +325,7 @@ public:
     void set_angle(int angle);
     // Set pose
     void set_pose(const std::string& new_pose_name = "", const std::string& new_state = "",
-            Direction new_direction = Direction::NONE) {
+            Direction new_direction = Direction::NONE) override {
         if (!new_pose_name.empty())
             pose_name = new_pose_name;
         else if (pose_name.empty() && sprite)
