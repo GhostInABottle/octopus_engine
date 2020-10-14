@@ -67,7 +67,7 @@ struct Game::Impl {
             window->set_vsync(Configurations::get<bool>("graphics.vsync"));
         }
         if (config_changed("graphics.scale-mode")) {
-            game.get_camera()->set_size(game.width(), game.height(), true);
+            game.get_camera()->set_size(game.framebuffer_width(), game.framebuffer_height(), true);
         }
         if (config_changed("graphics.brightness")) {
             game.get_camera()->set_brightness(Configurations::get<float>("graphics.brightness"));
@@ -405,7 +405,7 @@ void Game::frame_update() {
 
 void Game::render() {
     // Window size changes are asynchronous in X11 so we keep polling the size
-    camera->set_size(width(), height());
+    camera->set_size(framebuffer_width(), framebuffer_height());
     camera->render();
 
     if (pimpl->editor_mode) return;
@@ -477,7 +477,6 @@ void Game::set_size(int width, int height) {
     } else {
         window->set_size(width, height);
     }
-    camera->set_size(width, height);
 }
 
 xd::vec2 Game::get_monitor_size() const {
@@ -492,7 +491,7 @@ void Game::set_fullscreen(bool fullscreen) {
     if (!window || fullscreen == is_fullscreen()) return;
     LOGGER_I << "Changing window display to " << (fullscreen ? "fullscreen" : "windowed");
     window->set_fullscreen(fullscreen);
-    camera->set_size(width(), height());
+    camera->set_size(framebuffer_width(), framebuffer_height());
 }
 
 float Game::game_width(bool magnified) const {
@@ -505,7 +504,7 @@ float Game::game_height(bool magnified) const {
 
 void Game::set_magnification(float mag) {
     magnification = mag;
-    camera->calculate_viewport(width(), height());
+    camera->calculate_viewport(framebuffer_width(), framebuffer_height());
     camera->update_viewport();
 }
 

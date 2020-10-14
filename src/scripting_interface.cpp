@@ -669,8 +669,10 @@ void Scripting_Interface::setup_scripts() {
 
     // Game object
     auto game_type = lua.new_usertype<Game>("Game");
-    game_type["width"] = sol::property(&Game::width);
-    game_type["height"] = sol::property(&Game::height);
+    game_type["width"] = sol::property(&Game::window_width);
+    game_type["height"] = sol::property(&Game::window_height);
+    game_type["framebuffer_width"] = sol::property(&Game::framebuffer_width);
+    game_type["framebuffer_height"] = sol::property(&Game::framebuffer_height);
     game_type["game_width"] = sol::property([](Game& game) { return game.game_width(); });
     game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
     game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);

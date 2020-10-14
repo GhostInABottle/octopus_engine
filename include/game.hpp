@@ -54,11 +54,18 @@ public:
     void resume(const std::string& script = "");
     // Exit game
     void exit();
-    // Screen dimensions
-    int width() const {
+    // Window dimensions in screen coordinates
+    int window_width() const {
+        return window ? window->width() : editor_size.x;
+    }
+    int window_height() const {
+        return window ? window->height() : editor_size.y;
+    }
+    // Framebuffer dimensions in pixels
+    int framebuffer_width() const {
         return window ? window->framebuffer_width() : editor_size.x;
     }
-    int height() const {
+    int framebuffer_height() const {
         return window ? window->framebuffer_height() : editor_size.y;
     }
     // Was the executable build in debug mode?

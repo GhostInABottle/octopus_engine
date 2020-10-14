@@ -80,8 +80,8 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
 void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry, float brightness, float contrast) {
     if (!postprocessing_enabled) return;
 
-    int w = game.width();
-    int h = game.height();
+    int w = game.framebuffer_width();
+    int h = game.framebuffer_height();
     // Width and height can be 0 in some debugging scenarios
     if (w == 0 || h == 0) return;
 
@@ -138,7 +138,7 @@ Camera::Camera(Game& game)
         shaker(nullptr),
         pimpl(std::make_unique<Impl>())
 {
-    calculate_viewport(game.width(), game.height());
+    calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
     // Add components
     add_component(std::make_shared<Camera_Renderer>(game));
     add_component(std::make_shared<Object_Tracker>());
