@@ -50,6 +50,8 @@ namespace detail {
             case sol::type::string:
                 write(stream, key.as<std::string>());
                 break;
+            default:
+                continue;
             }
             // Write value
             write(stream, val.get_type());

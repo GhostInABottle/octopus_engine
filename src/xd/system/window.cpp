@@ -456,8 +456,7 @@ bool xd::window::pressed(const std::string& key, int joystick_id) const
     if (i != m_virtual_to_key.end()) {
         // iterate through each physical key
         for (xd::window::key_set_t::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
-            if (pressed(*j, joystick_id))
-                    return true;
+            if (pressed(*j, joystick_id)) return true;
         }
     }
     return false;

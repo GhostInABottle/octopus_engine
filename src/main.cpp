@@ -3,25 +3,9 @@
 #include "../include/game.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
-#ifdef __APPLE__
-#include <unistd.h>
-#include "CoreFoundation/CoreFoundation.h"
-#endif
 
 int main() {
     try {
-#ifdef __APPLE__
-        // Set current working directory to resources folder in OSX
-        CFBundleRef mainBundle = CFBundleGetMainBundle();
-        CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-        char path[PATH_MAX];
-        if (CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8*)path, PATH_MAX)) {
-            CFRelease(resourcesURL);
-            chdir(path);
-        } else {
-            throw std::runtime_error("Unable to get OSX resources folder");
-        }
-#endif
         file_utilities::parse_config("config.ini");
 
         xd::audio audio;

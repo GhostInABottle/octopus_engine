@@ -56,6 +56,7 @@ struct Game::Impl {
     }
     // Process configuration changes
     void process_config_changes(Game& game, xd::window* window) {
+        if (config_changes.empty()) return;
         if (config_changed("graphics.screen-width") || config_changed("graphics.screen-height")) {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));

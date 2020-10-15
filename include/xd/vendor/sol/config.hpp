@@ -29,7 +29,9 @@
 
 // beginning of sol/config.hpp
 
-#define SOL_USING_CXX_LUA 1
+#ifndef OCB_USE_C_LUA
+    #define SOL_USING_CXX_LUA 1
+#endif
 #define SOL_ALL_SAFETIES_ON 1
 #define SOL_EXCEPTIONS_ALWAYS_UNSAFE 1
 

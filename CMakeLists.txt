@@ -13,7 +13,11 @@ file(GLOB XD_SOURCES LIST_DIRECTORIES false src/xd/audio/*.cpp src/xd/graphics/*
 
 set(OpenGL_GL_PREFERENCE "GLVND")
 
-find_package(Boost REQUIRED)
+if (APPLE)
+	find_package(Boost REQUIRED COMPONENTS filesystem)
+else()
+	find_package(Boost REQUIRED)
+endif()
 find_package(Freetype REQUIRED)
 find_package(HarfBuzz REQUIRED)
 find_package(Lua 5.2 REQUIRED)
@@ -23,17 +27,24 @@ find_package(GLEW REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(FMOD REQUIRED)
 
-include_directories("include/")
-include_directories("include/xd") 
+set(DEPENDENCIES ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES}
+${HARFBUZZ_LIBRARIES} ${LUA_LIBRARIES} ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES}
+${HarfBuzz_LIBRARIES} GLEW::glew glfw)
+
+if(APPLE)
+    find_library(COCOA_LIBRARY Cocoa)
+	find_library(IOKIT_LIBRARY IOKit)
+	LIST(APPEND DEPENDENCIES ${COCOA_LIBRARY} ${IOKIT_LIBRARY} ${Boost_LIBRARIES})
+
+	add_compile_definitions(OCB_USE_BOOST_FILESYSTEM OCB_USE_C_LUA)
+endif()
+
 include_directories(${LUA_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${FREETYPE_INCLUDE_DIR_ft2build})
 
 add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
 
 target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
-
-target_link_libraries(octopus_engine ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} 
-				 ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES} 
-				 ${HARFBUZZ_LIBRARIES} ${LUA_LIBRARIES}
-				 ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES} glfw ${HarfBuzz_LIBRARIES})
+target_link_libraries(octopus_engine ${DEPENDENCIES})

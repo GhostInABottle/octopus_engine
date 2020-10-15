@@ -4,8 +4,7 @@
 #include "../../include/log.hpp"
 #include "../../include/vendor/platform_folders.hpp"
 #include <stdexcept>
-#if __APPLE__
-    #define USE_BOOST_FILESYSTEM
+#ifdef OCB_USE_BOOST_FILESYSTEM
     #include <boost/filesystem.hpp>
     namespace fs = boost::filesystem;
 #else
@@ -156,7 +155,7 @@ std::vector<std::string> file_utilities::list_directory_files(const std::string&
 
 bool file_utilities::copy_file(const std::string& source, const std::string& destination) {
     try {
-        #ifdef USE_BOOST_FILESYSTEM
+        #ifdef OCB_USE_BOOST_FILESYSTEM
             fs::copy_file(source, destination, fs::copy_option::overwrite_if_exists);
         #else
             fs::copy(source, destination, fs::copy_options::overwrite_existing);
