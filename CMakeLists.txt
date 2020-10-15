@@ -3,7 +3,6 @@ project(octopus_engine)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-
 file(GLOB SOURCES LIST_DIRECTORIES false src/*.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/test_main.cpp)
 
@@ -14,9 +13,9 @@ file(GLOB XD_SOURCES LIST_DIRECTORIES false src/xd/audio/*.cpp src/xd/graphics/*
 set(OpenGL_GL_PREFERENCE "GLVND")
 
 if (APPLE)
-	find_package(Boost REQUIRED COMPONENTS filesystem)
+    find_package(Boost REQUIRED COMPONENTS filesystem)
 else()
-	find_package(Boost REQUIRED)
+    find_package(Boost REQUIRED)
 endif()
 find_package(Freetype REQUIRED)
 find_package(HarfBuzz REQUIRED)
@@ -29,14 +28,14 @@ find_package(FMOD REQUIRED)
 
 set(DEPENDENCIES ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES}
 ${HARFBUZZ_LIBRARIES} ${LUA_LIBRARIES} ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES}
-${HarfBuzz_LIBRARIES} GLEW::glew glfw)
+${HarfBuzz_LIBRARIES} GLEW::GLEW glfw)
 
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
-	find_library(IOKIT_LIBRARY IOKit)
-	LIST(APPEND DEPENDENCIES ${COCOA_LIBRARY} ${IOKIT_LIBRARY} ${Boost_LIBRARIES})
+    find_library(IOKIT_LIBRARY IOKit)
+    LIST(APPEND DEPENDENCIES ${COCOA_LIBRARY} ${IOKIT_LIBRARY} ${Boost_LIBRARIES})
 
-	add_compile_definitions(OCB_USE_BOOST_FILESYSTEM OCB_USE_C_LUA)
+    add_compile_definitions(OCB_USE_BOOST_FILESYSTEM OCB_USE_C_LUA)
 endif()
 
 include_directories(${LUA_INCLUDE_DIR})
