@@ -79,10 +79,12 @@ void Scripting_Interface::setup_scripts() {
         scheduler.yield(*cmd);
     };
     auto wait = [](Game& game, int duration) {
-        int old_time = game.ticks();
+        bool was_paused = game.is_paused();
+        int old_time = was_paused ? game.window_ticks() : game.ticks();
         auto& scheduler = game.get_current_scripting_interface()->scheduler;
-        scheduler.yield([&game, old_time, duration]() {
-            return game.ticks() - old_time >= duration;
+        scheduler.yield([&game, was_paused, old_time, duration]() {
+            int new_time = was_paused ? game.window_ticks() : game.ticks();
+            return new_time - old_time >= duration;
         });
     };
 
