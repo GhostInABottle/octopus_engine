@@ -36,6 +36,7 @@ if(APPLE)
     LIST(APPEND DEPENDENCIES ${COCOA_LIBRARY} ${IOKIT_LIBRARY} ${Boost_LIBRARIES})
 
     add_compile_definitions(OCB_USE_BOOST_FILESYSTEM OCB_USE_C_LUA)
+    string(APPEND CMAKE_EXE_LINKER_FLAGS "-headerpad_max_install_names")
 endif()
 
 include_directories(${LUA_INCLUDE_DIR})
