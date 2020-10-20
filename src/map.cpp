@@ -61,8 +61,10 @@ Map::Map(Game& game) :
 Map::~Map() {}
 
 void Map::run_script(const std::string& script) {
+    auto old_interface = game.get_current_scripting_interface();
     game.set_current_scripting_interface(scripting_interface.get());
     scripting_interface->run_script(script);
+    game.set_current_scripting_interface(old_interface);
 }
 
 void Map::run_startup_scripts() {
