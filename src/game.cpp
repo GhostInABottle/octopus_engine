@@ -539,8 +539,10 @@ std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) c
 
 void Game::run_script(const std::string& script) {
     auto& si = paused ? pimpl->pause_scripting_interface : pimpl->scripting_interface;
+    auto old_interface = get_current_scripting_interface();
     set_current_scripting_interface(si.get());
     si->run_script(script);
+    set_current_scripting_interface(old_interface);
 }
 
 xd::lua::virtual_machine* Game::get_lua_vm() {
