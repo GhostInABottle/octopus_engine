@@ -5,7 +5,7 @@
 #include "commands/move_object_to_command.hpp"
 #include "commands/show_pose_command.hpp"
 #include "commands/move_camera_command.hpp"
-#include "commands/tint_screen_command.hpp"
+#include "commands/tint_command.hpp"
 #include "commands/update_canvas_command.hpp"
 #include "commands/update_layer_command.hpp"
 #include "commands/fade_music_command.hpp"

@@ -854,7 +854,8 @@ void Scripting_Interface::setup_scripts() {
 
     // Camera tracking and effects
     auto camera_type = lua.new_usertype<Camera>("Camera");
-    camera_type["tint_color"] = sol::property(&Camera::get_tint_color, &Camera::set_tint_color);
+    camera_type["screen_tint"] = sol::property(&Camera::get_screen_tint, &Camera::set_screen_tint);
+    camera_type["map_tint"] = sol::property(&Camera::get_screen_tint, &Camera::set_screen_tint);
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
     camera_type["position_bounds"] = sol::readonly_property(&Camera::get_position_bounds);
     camera_type["tracked_object"] = sol::property(&Camera::get_object, &Camera::set_object);
@@ -884,14 +885,25 @@ void Scripting_Interface::setup_scripts() {
     camera_type["tint_screen"] = sol::overload(
         [&](Camera& camera, xd::vec4 color, long duration) {
             auto si = game->get_current_scripting_interface();
-            return si->register_command<Tint_Screen_Command>(*game, color, duration);
+            return si->register_command<Tint_Command>(Tint_Target::SCREEN, *game, color, duration);
         },
         [&](Camera& camera, const std::string& hex_color, long duration) {
             auto si = game->get_current_scripting_interface();
             auto color = hex_to_color(hex_color);
-            return si->register_command<Tint_Screen_Command>(*game, color, duration);
+            return si->register_command<Tint_Command>(Tint_Target::SCREEN, *game, color, duration);
         }
     );
+    camera_type["tint_map"] = sol::overload(
+        [&](Camera& camera, xd::vec4 color, long duration) {
+            auto si = game->get_current_scripting_interface();
+            return si->register_command<Tint_Command>(Tint_Target::MAP, *game, color, duration);
+        },
+        [&](Camera& camera, const std::string& hex_color, long duration) {
+            auto si = game->get_current_scripting_interface();
+            auto color = hex_to_color(hex_color);
+            return si->register_command<Tint_Command>(Tint_Target::MAP, *game, color, duration);
+        }
+        );
     camera_type["zoom"] = [&](Camera& camera, float scale, long duration) {
         auto si = game->get_current_scripting_interface();
         return si->register_command<Zoom_Command>(*game, scale, duration);

@@ -19,6 +19,8 @@ Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
 {}
 
 void Canvas_Renderer::render(Map& map) {
+    camera.draw_map_tint();
+
     auto& canvases = map.get_canvases();
     for (auto& weak_canvas : canvases) {
         auto canvas = weak_canvas.lock();

@@ -4,6 +4,7 @@
 #include "../include/map_object.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/math.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 #include "../include/custom_shaders.hpp"
@@ -131,7 +132,7 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
 Camera::Camera(Game& game)
         : game(game),
         position(xd::vec2(0.0f, 0.0f)),
-        tint_color(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
+        screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         brightness(Configurations::get<float>("graphics.brightness")),
         contrast(Configurations::get<float>("graphics.contrast")),
         object(nullptr),
@@ -259,7 +260,7 @@ void Camera::set_position(xd::vec2 pos) {
     position = get_bounded_position(pos);
 }
 
-void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) {
+void Camera::draw_rect(xd::rect rect, xd::vec4 color, bool fill) const {
     GLenum draw_mode = fill ? GL_QUADS :  GL_LINE_LOOP;
     pimpl->draw_quad(geometry.mvp(), rect, color, draw_mode);
 }
@@ -307,6 +308,16 @@ float Camera::shake_offset() const {
     return is_shaking() ? shaker->shake_offset() : 0.0f;
 }
 
+void Camera::draw_map_tint() const {
+    if (check_close(map_tint.a, 0.0f)) return;
+    auto width = static_cast<float>(game.game_width());
+    auto height = static_cast<float>(game.game_height());
+    if (map_tint.a > 0.0f) {
+        xd::rect rect{position.x, position.y, width, height};
+        draw_rect(rect, map_tint);
+    }
+}
+
 void Camera_Renderer::render(Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -327,8 +338,8 @@ void Camera_Renderer::render(Camera& camera) {
 
     game.get_map()->render();
 
-    auto tint_color = camera.get_tint_color();
-    if (tint_color.a > 0.0f) {
+    auto tint_color = camera.get_screen_tint();
+    if (!check_close(tint_color.a, 0.0f)) {
         auto pos = camera.get_position();
         xd::rect rect{pos.x, pos.y, width, height};
         camera.draw_rect(rect, tint_color);

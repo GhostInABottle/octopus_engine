@@ -41,7 +41,9 @@ public:
     // Update position within map bounds
     void set_position(xd::vec2 pos);
     // Draw a rectangle
-    void draw_rect(xd::rect rect, xd::vec4 color, bool fill = true);
+    void draw_rect(xd::rect rect, xd::vec4 color, bool fill = true) const;
+    // Tint the screen with the map tint color
+    void draw_map_tint() const;
     // Enable scissor test to limit drawing to a certain rectangle (game coords)
     void enable_scissor_test(xd::rect rect, xd::rect custom_viewport = xd::rect());
     // Disable scissor test
@@ -68,11 +70,17 @@ public:
     xd::mat4 get_mvp() const {
         return geometry.mvp();
     }
-    xd::vec4 get_tint_color() const {
-        return tint_color;
+    xd::vec4 get_screen_tint() const {
+        return screen_tint;
     }
-    void set_tint_color(xd::vec4 color) {
-        tint_color = color;
+    void set_screen_tint(xd::vec4 color) {
+        screen_tint = color;
+    }
+    xd::vec4 get_map_tint() const {
+        return map_tint;
+    }
+    void set_map_tint(xd::vec4 color) {
+        map_tint = color;
     }
     float get_brightness() const {
         return brightness;
@@ -107,8 +115,10 @@ private:
     xd::rect viewport;
     // Projection and model view matrices
     xd::transform_geometry geometry;
-    // Screen tint color
-    xd::vec4 tint_color;
+    // Screen tint color (affects everything)
+    xd::vec4 screen_tint;
+    // Map tint color (doesn't apply to canvases)
+    xd::vec4 map_tint;
     // Screen brightness
     float brightness;
     // Screen contrast

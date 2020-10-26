@@ -6,12 +6,18 @@
 
 class Game;
 
-class Tint_Screen_Command : public Command {
+enum class Tint_Target {
+    MAP,
+    SCREEN
+};
+
+class Tint_Command : public Command {
 public:
-    Tint_Screen_Command(Game& game, xd::vec4 color, long duration);
+    Tint_Command(Tint_Target target, Game& game, xd::vec4 color, long duration);
     void execute() override;
     bool is_complete() const override;
 private:
+    Tint_Target target;
     Game& game;
     xd::vec4 old_color;
     xd::vec4 new_color;
