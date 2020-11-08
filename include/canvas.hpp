@@ -234,6 +234,9 @@ public:
     std::vector<std::string>& get_text_lines() {
         return text_lines;
     }
+    float get_text_width(const std::string& text) {
+        return font->get_width(text, *style);
+    }
     xd::font_style* get_style() const {
         return style.get();
     }

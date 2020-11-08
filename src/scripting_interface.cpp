@@ -106,12 +106,6 @@ void Scripting_Interface::setup_scripts() {
     filesystem["get_basename"] = &file_utilities::get_filename_component;
     filesystem["get_stem"] = &file_utilities::get_stem_component;
 
-    lua["text_width"] = [&](const std::string& text) {
-        return game->get_font()->get_width(text,
-            xd::font_style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), 8)
-            .force_autohint(true));
-    };
-
     // Logging
     auto log = lua["logger"].get_or_create<sol::table>();
     log["info"] = [](const std::string& message) {
@@ -789,6 +783,9 @@ void Scripting_Interface::setup_scripts() {
             });
         }
     ));
+    game_type["text_width"] = [&](Game& game, const std::string& text) {
+        return game.get_font()->get_width(text, game.get_font_style());
+    };
 
     // Map layer
     auto layer_type = lua.new_usertype<Layer>("Layer");
@@ -1043,6 +1040,7 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["reset_text_outline"] = &Canvas::reset_text_outline;
     canvas_type["reset_text_shadow"] = &Canvas::reset_text_shadow;
     canvas_type["reset_text_type"] = &Canvas::reset_text_type;
+    canvas_type["text_width"] = &Canvas::get_text_width;
     canvas_type["set_font"] = &Canvas::set_font;
     canvas_type["link_font"] = &Canvas::link_font;
     canvas_type["remove_child"] = &Canvas::remove_child;
