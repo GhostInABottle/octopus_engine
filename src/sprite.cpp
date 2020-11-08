@@ -206,11 +206,8 @@ struct Sprite::Impl {
             }
 
             // Prefer default pose to other poses with same matches
-            if (matched_pose == -1) {
-                if (default_name_matched && compare_matches(matched_pose, default_pose, matches) == 0)
-                    matched_pose = default_pose;
-                else
-                    matched_pose = 0;
+            if (matched_pose == -1 || (default_name_matched && compare_matches(matched_pose, default_pose, matches) == 0)) {
+                matched_pose = default_pose == -1 ? 0 : default_pose;
             }
             // Update pose cache
             tag_map[tag_string] = matched_pose;
