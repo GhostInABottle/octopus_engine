@@ -147,13 +147,25 @@ struct Game::Impl {
                 while (std::getline(scripts_file, filename)) {
                     if (string_utilities::ends_with(filename, "\r"))
                         filename = filename.substr(0, filename.size() - 1);
-                    game.run_script(file_utilities::read_file(filename));
+                    run_script(game, filename, true);
                 }
             } else {
                 throw std::runtime_error("Couldn't read file " + scripts_list);
             }
         }
         reset_scripting = false;
+    }
+    void run_script(Game& game, const std::string script_or_filename, bool is_filename) {
+        auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
+        auto old_interface = game.get_current_scripting_interface();
+        game.set_current_scripting_interface(si.get());
+        if (is_filename) {
+            si->schedule_file(script_or_filename);
+        } else {
+            si->schedule(script_or_filename);
+        }
+        
+        game.set_current_scripting_interface(old_interface);
     }
     // Audio system
     xd::audio* audio;
@@ -446,7 +458,7 @@ void Game::pause() {
 
     if (pimpl->pause_scripting_interface) {
         auto pause_script = Configurations::get<std::string>("game.pause-script");
-        run_script(file_utilities::read_file(pause_script));
+        run_script_file(pause_script);
     }
 }
 
@@ -538,11 +550,11 @@ std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) c
 }
 
 void Game::run_script(const std::string& script) {
-    auto& si = paused ? pimpl->pause_scripting_interface : pimpl->scripting_interface;
-    auto old_interface = get_current_scripting_interface();
-    set_current_scripting_interface(si.get());
-    si->run_script(script);
-    set_current_scripting_interface(old_interface);
+    pimpl->run_script(*this, script, false);
+}
+
+void Game::run_script_file(const std::string& filename) {
+    pimpl->run_script(*this, filename, true);
 }
 
 xd::lua::virtual_machine* Game::get_lua_vm() {

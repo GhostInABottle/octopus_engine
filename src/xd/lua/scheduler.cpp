@@ -9,10 +9,10 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 {
 }
 
-void xd::lua::scheduler::start(std::string_view code)
+void xd::lua::scheduler::start(const std::string& code_or_filename, bool is_file)
 {
     // set the current thread
-    m_thread_stack.push(std::make_shared<scheduler_cothread>(state, code));
+    m_thread_stack.push(std::make_shared<scheduler_cothread>(state, code_or_filename, is_file));
     m_current_thread = m_thread_stack.top();
     // start the thread
     auto result = m_current_thread->coroutine();
@@ -79,9 +79,9 @@ int xd::lua::scheduler::pending_tasks()
     return m_tasks.size();
 }
 
-xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::string_view& code) {
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code, bool is_file) {
     thread = sol::thread::create(state);
-    auto load_result = thread.state().load(code);
+    auto load_result = is_file ? thread.state().load_file(code) : thread.state().load(code);
     if (!load_result.valid()) {
         sol::error err = load_result;
         throw panic_error(err.what());

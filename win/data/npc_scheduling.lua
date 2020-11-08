@@ -439,7 +439,7 @@ function NPC:move_to_keypoint(current_time)
                 -- Make player passable to prevent getting stuck at player position
                 player.passthrough = true
                 while simulated_ticks <= time_passed * 1000 do
-                    local simulated_time = current_time * 1000 + simulated_ticks
+                    local simulated_time = math.floor(current_time * 1000 + simulated_ticks)
                     self.script_command:execute(simulated_time)
                     if self.script_command:is_complete(simulated_time) then
                         self.script_command = nil
@@ -496,7 +496,7 @@ function NPC:simulate_commands(current_time, time_passed)
     local simulated_ticks = 0
     self:process_map_command(current_time)
     while self.script_command and simulated_ticks <= time_passed * 1000 do
-        local simulated_time = current_time * 1000 + simulated_ticks
+        local simulated_time = math.floor(current_time * 1000 + simulated_ticks)
         self.script_command:execute(simulated_time)
         if self.script_command:is_complete(simulated_time) then
             self.last_keypoint.command_index = self.last_keypoint.command_index + 1

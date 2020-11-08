@@ -6,7 +6,7 @@
 #include <list>
 #include <stack>
 #include <type_traits>
-#include <string_view>
+#include <string>
 #include <utility>
 
 namespace xd
@@ -24,7 +24,10 @@ namespace xd
             scheduler& operator=(const scheduler&) = delete;
             scheduler(virtual_machine&  vm);
             virtual ~scheduler() = default;
-            void start(std::string_view code);
+            void start(const std::string&, bool is_filename = false);
+            void start_file(const std::string& filename) {
+                start(filename, true);
+            }
             void run();
             void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();
@@ -85,7 +88,7 @@ namespace xd
             struct scheduler_cothread {
                 sol::thread thread;
                 sol::coroutine coroutine;
-                scheduler_cothread(sol::state& state, const sol::string_view& code);
+                scheduler_cothread(sol::state& state, const std::string& code, bool is_file);
             };
             struct scheduler_thread_task
             {

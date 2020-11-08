@@ -148,6 +148,8 @@ public:
     std::vector<std::string> get_bound_keys(const std::string& virtual_name) const;
     // Run a script
     void run_script(const std::string& script);
+    // Run a script file
+    void run_script_file(const std::string& filename);
     // Set or get the current scripting interface
     void set_current_scripting_interface(Scripting_Interface* si) {
         current_scripting_interface = si;

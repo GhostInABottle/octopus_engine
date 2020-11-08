@@ -18,7 +18,12 @@ public:
     Scripting_Interface& operator=(const Scripting_Interface&) = delete;
     explicit Scripting_Interface(Game& game);
     void update();
-    void run_script(const std::string& script);
+    void schedule(const std::string& script);
+    void schedule_file(const std::string& filename);
+    template <typename T>
+    T call(const std::string& script) {
+        return lua_state().script(script).get<T>();
+    }
     void set_globals();
     xd::lua::scheduler& get_scheduler() { return scheduler; }
     template<typename T, typename ... Args>

@@ -60,10 +60,14 @@ Map::Map(Game& game) :
 
 Map::~Map() {}
 
-void Map::run_script(const std::string& script) {
+void Map::run_script_impl(const std::string& script_or_filename, bool is_filename) {
     auto old_interface = game.get_current_scripting_interface();
     game.set_current_scripting_interface(scripting_interface.get());
-    scripting_interface->run_script(script);
+    if (is_filename) {
+        scripting_interface->schedule_file(script_or_filename);
+    } else {
+        scripting_interface->schedule(script_or_filename);
+    }
     game.set_current_scripting_interface(old_interface);
 }
 
@@ -72,10 +76,10 @@ void Map::run_startup_scripts() {
     scripting_interface->set_globals();
     auto map_loaded_script = Configurations::get<std::string>("game.map-loaded-script");
     if (!map_loaded_script.empty()) {
-        run_script(file_utilities::read_file(map_loaded_script));
+        run_script_file(map_loaded_script);
     }
     for (auto& script : start_scripts) {
-        run_script(script);
+        run_script_file(script);
     }
 }
 
@@ -494,15 +498,19 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     map_ptr->properties.read(node);
 
     // Background music
-    if (map_ptr->properties.has_property("music"))
+    if (map_ptr->properties.has_property("music")) {
         map_ptr->background_music = map_ptr->properties["music"];
+    } else if (map_ptr->properties.has_property("music-script")) {
+        auto si = game.get_current_scripting_interface();
+        map_ptr->background_music = si->call<std::string>(map_ptr->properties["music-script"]);
+    }
 
     // Startup scripts
     if (map_ptr->properties.has_property("scripts")) {
         auto filenames = string_utilities::split(map_ptr->properties["scripts"], ",");
         for (auto filename : filenames) {
             string_utilities::trim(filename);
-            map_ptr->start_scripts.push_back(file_utilities::read_file(filename));
+            map_ptr->start_scripts.push_back(filename);
         }
     }
 

@@ -169,6 +169,8 @@ struct Sprite::Impl {
             tag_string += key + ":" + value + " ";
         }
         int matched_pose = -1;
+        bool name_matched = false;
+        bool default_name_matched = false;
         if (tag_map.find(tag_string) != tag_map.end()) {
             matched_pose = tag_map[tag_string];
         } else {
@@ -181,14 +183,18 @@ struct Sprite::Impl {
                     auto& pose_tags = data->poses[i].tags;
                     if (pose_tags.find(key) == pose_tags.end() || pose_tags[key] != value) continue;
                     matches[i]++;
+                    auto& pose_name = pose_tags["NAME"];
                     // Update best default pose
-                    if (data->default_pose != "" && pose_tags["NAME"] == data->default_pose
+                    if (data->default_pose != "" && pose_name == data->default_pose
                             && compare_matches(i, default_pose, matches) > 0) {
                         default_pose = i;
+                        if (pose_name == tags["NAME"]) {
+                            default_name_matched = true;
+                        }
                     }
                     // Update best match
                     auto comparison = compare_matches(i, matched_pose, matches);
-                    if (comparison > 0 || (comparison == 0 && tags["NAME"] == pose_tags["NAME"])) {
+                    if (comparison > 0 || (comparison == 0 && pose_name == tags["NAME"])) {
                         matched_pose = i;
                         // If all tags are matched, exit loops
                         if (matches[i] == tags.size())
@@ -200,8 +206,12 @@ struct Sprite::Impl {
             }
 
             // Prefer default pose to other poses with same matches
-            if (matched_pose == -1 || compare_matches(matched_pose, default_pose, matches) == 0)
-                matched_pose = default_pose == -1 ? 0 : default_pose;
+            if (matched_pose == -1) {
+                if (default_name_matched && compare_matches(matched_pose, default_pose, matches) == 0)
+                    matched_pose = default_pose;
+                else
+                    matched_pose = 0;
+            }
             // Update pose cache
             tag_map[tag_string] = matched_pose;
         }

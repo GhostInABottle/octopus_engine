@@ -51,7 +51,13 @@ public:
         properties["name"] = name;
     }
     // Run a script (limited to this map)
-    void run_script(const std::string& script);
+    void run_script(const std::string& script) {
+        run_script_impl(script, false);
+    }
+    // Load and run a script file (limited to this map)
+    void run_script_file(const std::string& filename) {
+        run_script_impl(filename, true);
+    }
     // Run map's startup scripts
     void run_startup_scripts();
     // Check if object can move in given direction
@@ -215,7 +221,7 @@ private:
     std::vector<std::weak_ptr<Canvas>> canvases;
     // Background music
     std::string background_music;
-    // Startup script files
+    // Startup script filenames
     std::vector<std::string> start_scripts;
     // Do we need to redraw static elements?
     bool needs_redraw;
@@ -225,6 +231,7 @@ private:
     bool canvases_sorted;
     // Remove object from ID and name hash tables
     void erase_object_references(Map_Object* object);
+    void run_script_impl(const std::string& script_or_filename, bool is_filename);
 };
 
 class Map_Renderer : public xd::render_component<Map> {
