@@ -183,3 +183,7 @@ bool file_utilities::is_absolute_path(const std::string& path_str) {
 std::string file_utilities::get_filename_component(const std::string& path_str) {
     return fs::path{path_str}.filename().string();
 }
+
+std::string file_utilities::get_stem_component(const std::string& path_str) {
+    return fs::path{path_str}.stem().string();
+}

@@ -103,7 +103,8 @@ void Scripting_Interface::setup_scripts() {
     filesystem["copy"] = &file_utilities::copy_file;
     filesystem["remove"] = &file_utilities::remove_file;
     filesystem["is_absolute"] = &file_utilities::is_absolute_path;
-    filesystem["filename_component"] = &file_utilities::get_filename_component;
+    filesystem["get_basename"] = &file_utilities::get_filename_component;
+    filesystem["get_stem"] = &file_utilities::get_stem_component;
 
     lua["text_width"] = [&](const std::string& text) {
         return game->get_font()->get_width(text,
@@ -816,6 +817,9 @@ void Scripting_Interface::setup_scripts() {
     map_type["tile_width"] = sol::property(&Map::get_tile_width);
     map_type["tile_height"] = sol::property(&Map::get_tile_height);
     map_type["filename"] = sol::property(&Map::get_filename);
+    map_type["filename_stem"] = sol::property([](const Map& map) {
+        return file_utilities::get_stem_component(map.get_filename());
+    });
     map_type["name"] = sol::property(&Map::get_name);
     map_type["objects"] = sol::property([&](Map* map) {
         return sol::as_table(map->get_objects());

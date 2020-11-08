@@ -31,6 +31,8 @@ namespace file_utilities {
     bool is_absolute_path(const std::string& path);
     // Get filename component of a path (with extension)
     std::string get_filename_component(const std::string& path);
+    // Get stem component of a path (filename without extension)
+    std::string get_stem_component(const std::string& path);
 }
 
 #endif
