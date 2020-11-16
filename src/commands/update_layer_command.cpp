@@ -4,18 +4,15 @@
 #include "../../include/utility/math.hpp"
 
 Update_Layer_Command::Update_Layer_Command(Game& game, Layer& layer, float opacity, long duration) :
-    game(game),
+    Timed_Command(game, duration),
     layer(layer),
     old_opacity(layer.opacity),
     new_opacity(opacity),
-    start_time(game.ticks()),
-    duration(duration),
     complete(false) {}
 
 void Update_Layer_Command::execute() {
-    complete = stopped || game.ticks() - start_time > duration;
-    float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
-    layer.opacity = lerp(old_opacity, new_opacity, alpha);
+    complete = stopped || is_done();
+    layer.opacity = lerp(old_opacity, new_opacity, get_alpha(complete));
 }
 
 bool Update_Layer_Command::is_complete() const {

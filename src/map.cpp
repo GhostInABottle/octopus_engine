@@ -242,8 +242,10 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, int layer
     // Add to object map and to layer
     auto name = object->get_name();
     if (name.empty()) {
-        name+= "UNTITLED" + std::to_string(id);
+        name = "UNTITLED" + std::to_string(id);
+        object->set_name(name);
     }
+    string_utilities::capitalize(name);
     auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
     object_name_to_id.insert(mapping);
     objects[id] = object;
@@ -294,6 +296,19 @@ void Map::delete_object(Map_Object* object) {
 }
 
 void Map::erase_object_references(Map_Object* object) {
+    auto player = game.get_player();
+    if (object == player->get_triggered_object()) {
+        player->set_triggered_object(nullptr);
+    }
+    if (object == player->get_collision_object()) {
+        player->set_collision_object(nullptr);
+    }
+    if (object == player->get_collision_area()) {
+        player->set_collision_area(nullptr);
+    }
+    if (object == player->get_outlining_object()) {
+        player->set_outlining_object(nullptr);
+    }
     auto name = object->get_name();
     string_utilities::capitalize(name);
     object_name_to_id.erase(name);

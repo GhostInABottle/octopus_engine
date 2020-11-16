@@ -178,6 +178,10 @@ void Scripting_Interface::setup_scripts() {
     );
     cmd_result_type["wait"] = sol::yielding(result_wait);
     cmd_result_type["stop"] = &Command_Result::stop;
+    cmd_result_type["is_stopped"] = &Command_Result::is_stopped;
+    cmd_result_type["pause"] = &Command_Result::pause;
+    cmd_result_type["resume"] = &Command_Result::resume;
+    cmd_result_type["is_paused"] = &Command_Result::is_paused;
 
     // Like Command_Result but stores the index of selected choice
     auto choice_result_type = lua.new_usertype<Choice_Result>("Choice_Result",
@@ -603,18 +607,18 @@ void Scripting_Interface::setup_scripts() {
         [&](Map_Object* obj, int dir, float pixels, bool skip, bool change_facing) {
             auto si = game->get_current_scripting_interface();
             return si->register_command<Move_Object_Command>(
-                    *obj, static_cast<Direction>(dir),
+                    *game, *obj, static_cast<Direction>(dir),
                     pixels, skip, change_facing);
         },
         [&](Map_Object* obj, int dir, float pixels, bool skip) {
             auto si = game->get_current_scripting_interface();
             return si->register_command<Move_Object_Command>(
-                    *obj, static_cast<Direction>(dir), pixels, skip, true);
+                    *game, *obj, static_cast<Direction>(dir), pixels, skip, true);
         },
         [&](Map_Object* obj, int dir, float pixels) {
             auto si = game->get_current_scripting_interface();
             return si->register_command<Move_Object_Command>(
-                    *obj, static_cast<Direction>(dir), pixels, true, true);
+                    *game, *obj, static_cast<Direction>(dir), pixels, true, true);
         }
     );
     object_type["face"] = sol::overload(

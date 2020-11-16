@@ -16,8 +16,11 @@ public:
     void execute() override;
     void execute(int ticks) override;
     bool is_complete() const override;
+    void pause() override;
+    void pause(int ticks = -1) override;
+    void resume() override;
     int choice_index();
-    void set_start_time(long start);
+    void set_start_time(int start);
 private:
     struct Impl;
     friend struct Impl;

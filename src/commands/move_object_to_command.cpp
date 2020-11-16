@@ -58,7 +58,8 @@ struct Move_Object_To_Command::Impl {
         return collision;
     }
     // Called every frame
-    void execute(bool stopped) {
+    void execute(bool stopped, bool paused) {
+        if (paused) return;
         if ((blocked || !path_found) && keep_trying) {
             object.set_state(old_state);
             int time_passed = map.get_game().ticks() - last_attempt_time;
@@ -129,7 +130,7 @@ Move_Object_To_Command::~Move_Object_To_Command() {}
 
 
 void Move_Object_To_Command::execute() {
-    pimpl->execute(stopped);
+    pimpl->execute(stopped, paused);
 }
 
 bool Move_Object_To_Command::is_complete() const {

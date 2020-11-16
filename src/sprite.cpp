@@ -32,7 +32,7 @@ struct Sprite::Impl {
     // Current frame index
     int frame_index;
     // Used to check if enough time has passed since last frame
-    long int old_time;
+    long old_time;
     // Number of times the animation repeated so far
     int repeat_count;
     // Total number of frames
@@ -43,6 +43,10 @@ struct Sprite::Impl {
     const static xd::vec4 default_color;
     // Is the pose finished
     bool finished;
+    // Is the sprite paused
+    bool paused;
+    // Time when sprite got paused
+    long pause_start;
     // Last frame where sound was played
     int last_sound_frame;
     // Animation speed modifier (based on object speed)
@@ -61,6 +65,8 @@ struct Sprite::Impl {
         frame_count(0),
         tweening(false),
         finished(false),
+        paused(false),
+        pause_start(-1),
         last_sound_frame(-1),
         speed(1.0f)
     {
@@ -89,7 +95,7 @@ struct Sprite::Impl {
             last_sound_frame = frame_index;
         }
 
-        if (game.ticks() - old_time > frame_time) {
+        if (passed_time() > frame_time) {
             old_time = game.ticks();
             if (tweening) tweening = false;
 
@@ -117,7 +123,7 @@ struct Sprite::Impl {
         if (tweening) {
             Frame& prev_frame = pose->frames[frame_index - 1];
             Frame& next_frame = pose->frames[frame_index + 1];
-            const float time_diff = static_cast<float>(game.ticks() - old_time);
+            const float time_diff = static_cast<float>(passed_time());
             float alpha = time_diff / frame_time;
             alpha = std::min(std::max(alpha, 0.0f), 1.0f);
             current_frame->magnification = lerp(prev_frame.magnification,
@@ -154,10 +160,29 @@ struct Sprite::Impl {
         return pose->repeats != -1 && repeat_count >= pose->repeats;
     }
 
+    void pause() {
+        paused = true;
+        pause_start = game.ticks();
+    }
+
+    void resume() {
+        paused = false;
+        pause_start = -1;
+    }
+
+    long paused_time() const {
+        if (pause_start == -1) return 0;
+        return game.ticks() - pause_start;
+    }
+
+    long passed_time() const {
+        return game.ticks() - old_time - paused_time();
+    }
+
     bool is_completed() const {
         return frame_count > 0
             && frame_index == frame_count - 1
-            && game.ticks() - old_time >= get_frame_time(pose->frames[frame_index]);
+            && passed_time() >= get_frame_time(pose->frames[frame_index]);
     }
 
     void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
@@ -342,6 +367,18 @@ bool Sprite::is_stopped() const {
 
 void Sprite::stop() {
     pimpl->finished = true;
+}
+
+bool Sprite::is_paused() const {
+    return pimpl->paused;
+}
+
+void Sprite::pause() {
+    pimpl->pause();
+}
+
+void Sprite::resume() {
+    pimpl->resume();
 }
 
 bool Sprite::is_completed() const {

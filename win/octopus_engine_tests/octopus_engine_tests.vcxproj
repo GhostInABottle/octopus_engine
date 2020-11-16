@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\..\src\key_binder.cpp" />
     <ClCompile Include="..\..\src\lua_object.cpp" />
     <ClCompile Include="..\..\src\utility\color.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="..\..\src\xd\system\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\commands\timed_command.hpp" />
     <ClInclude Include="..\..\include\direction.hpp" />
     <ClInclude Include="..\..\include\exceptions.hpp" />
     <ClInclude Include="..\..\include\key_binder.hpp" />

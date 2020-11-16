@@ -18,3 +18,13 @@ bool Show_Pose_Command::is_complete() const {
         (!pose.require_completion || sprite->is_completed());
     return stopped || infinite_pose_complete || sprite->is_stopped();
 }
+
+void Show_Pose_Command::pause() {
+    Command::pause();
+    holder->get_sprite()->pause();
+}
+
+void Show_Pose_Command::resume() {
+    Command::resume();
+    holder->get_sprite()->resume();
+}

@@ -4,20 +4,18 @@
 #include "../../include/xd/audio.hpp"
 
 Fade_Music_Command::Fade_Music_Command(Game& game, float volume, long duration) :
-    game(game),
+    Timed_Command(game, duration),
     music(game.playing_music()),
     old_volume(game.playing_music()->get_volume()),
     new_volume(volume),
-    start_time(game.ticks()),
-    duration(duration),
     complete(false) {}
 
 void Fade_Music_Command::execute() {
     auto music_ptr = music.lock();
-    complete = stopped || !music_ptr || game.ticks() - start_time > duration;
+    complete = stopped || !music_ptr || is_done();
     if (!music_ptr) return;
 
-    float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
+    float alpha = get_alpha(complete);
     music_ptr->set_volume(lerp(old_volume, new_volume, alpha));
 }
 

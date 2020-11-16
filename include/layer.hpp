@@ -12,6 +12,8 @@ class Layer_Renderer;
 class Layer_Updater;
 
 struct Layer : public Editable {
+    // Layer ID
+    int id;
     // Layer name
     std::string name;
     // Layer width (same as map width)

@@ -1,6 +1,7 @@
-#include "../../include/xd/audio/sound.hpp"
 #include "../../include/commands/show_text_command.hpp"
+#include "../../include/commands/timed_command.hpp"
 #include "../../include/commands/update_canvas_command.hpp"
+#include "../../include/xd/audio/sound.hpp"
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/canvas.hpp"
@@ -11,9 +12,9 @@
 #include "../../include/configurations.hpp"
 #include <utility>
 
-struct Show_Text_Command::Impl {
+struct Show_Text_Command::Impl : Timed_Command {
     explicit Impl(Game& game, Text_Options options) :
-            game(game),
+            Timed_Command(game, options.duration),
             options(std::move(options)),
             complete(false),
             text_complete(false),
@@ -21,7 +22,6 @@ struct Show_Text_Command::Impl {
             cancelable(false),
             selected_choice(0),
             current_choice(0),
-            start_time(game.ticks()),
             pressed_direction(Direction::NONE),
             press_start(0) {
 
@@ -223,7 +223,14 @@ struct Show_Text_Command::Impl {
         return "";
     }
 
-    void execute(int ticks, bool stopped) {
+    void execute() override {}
+    bool is_complete() const override { return complete; };
+
+    void process(bool stopped) {
+        return process(game.ticks(), stopped);
+    }
+
+    void process(int ticks, bool stopped) {
         if (complete) {
             return;
         }
@@ -245,9 +252,8 @@ struct Show_Text_Command::Impl {
         }
 
         if (options.duration > -1) {
-            text_complete = ticks > start_time + options.duration;
-        }
-        else {
+            text_complete = is_done(ticks);
+        } else if (!paused) {
             static std::string action_button = Configurations::get<std::string>("controls.action-button");
             
             text_complete = game.triggered_once(action_button);
@@ -275,7 +281,10 @@ struct Show_Text_Command::Impl {
         }
     }
 
-    Game& game;
+    void set_start_time(int start) {
+        start_time = start;
+    }
+
     Text_Options options;
     std::shared_ptr<Canvas> canvas;
     std::unique_ptr<Update_Canvas_Command> canvas_updater;
@@ -285,7 +294,6 @@ struct Show_Text_Command::Impl {
     bool cancelable;
     int selected_choice;
     unsigned int current_choice;
-    long start_time;
     Direction pressed_direction;
     long press_start;
     std::string selected_choice_color;
@@ -303,19 +311,31 @@ Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :
 Show_Text_Command::~Show_Text_Command() {}
 
 void Show_Text_Command::execute() {
-    execute(pimpl->game.ticks());
+    pimpl->process(stopped);
 }
 
 void Show_Text_Command::execute(int ticks) {
-    pimpl->execute(ticks, stopped);
+    pimpl->process(ticks, stopped);
 }
 
 bool Show_Text_Command::is_complete() const {
-    return pimpl->complete;
+    return pimpl->is_complete();
 }
 int Show_Text_Command::choice_index() {
     return pimpl->selected_choice;
 }
-void Show_Text_Command::set_start_time(long start) {
-    pimpl->start_time = start;
+void Show_Text_Command::set_start_time(int start) {
+    pimpl->set_start_time(start);
+}
+
+void Show_Text_Command::pause() {
+    pimpl->pause();
+}
+
+void Show_Text_Command::pause(int ticks) {
+    pimpl->pause(ticks);
+}
+
+void Show_Text_Command::resume() {
+    pimpl->resume();
 }

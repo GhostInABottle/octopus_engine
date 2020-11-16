@@ -13,6 +13,8 @@ public:
         const std::string& state = "", Direction dir = Direction::NONE);
     void execute() override {}
     bool is_complete() const override;
+    void pause() override;
+    void resume() override;
 private:
     Sprite_Holder* holder;
 };

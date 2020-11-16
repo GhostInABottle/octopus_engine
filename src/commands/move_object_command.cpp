@@ -1,11 +1,13 @@
 #include "../../include/commands/move_object_command.hpp"
 #include "../../include/map_object.hpp"
+#include "../../include/game.hpp"
+#include "../../include/map.hpp"
 #include "../../include/utility/direction.hpp"
 
 
-Move_Object_Command::Move_Object_Command(Map_Object& object, Direction dir,
+Move_Object_Command::Move_Object_Command(Game& game, Map_Object& object, Direction dir,
     float pixels, bool skip_blocking, bool change_facing)
-    : object(object), direction(dir), pixels(pixels),
+    : game(game), object_id(object.get_id()), direction(dir), pixels(pixels),
     skip_blocking(skip_blocking), change_facing(change_facing),
     old_state(object.get_state()), complete(false) {
     if (direction == Direction::FORWARD)
@@ -17,16 +19,27 @@ Move_Object_Command::Move_Object_Command(Map_Object& object, Direction dir,
 }
 
 void Move_Object_Command::execute() {
-    auto collision = object.move(direction, object.get_fps_independent_speed(),
+    auto map = game.get_map();
+    auto object = map->get_object(object_id);
+    if (!object) {
+        complete = true;
+        object->set_state(old_state);
+        return;
+    }
+    if (paused) {
+        object->set_state(old_state);
+        return;
+    }
+    auto collision = object->move(direction, object->get_fps_independent_speed(),
         Collision_Check_Type::BOTH, change_facing);
     if (collision.passable())
-        pixels -= object.get_fps_independent_speed();
+        pixels -= object->get_fps_independent_speed();
     else if (skip_blocking)
         pixels = 0.0f;
 
-    complete = stopped || object.is_stopped() || pixels <= 0.01f;
+    complete = stopped || object->is_stopped() || pixels <= 0.01f;
     if (complete) {
-        object.set_state(old_state);
+        object->set_state(old_state);
     }
 }
 

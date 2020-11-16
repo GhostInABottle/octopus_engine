@@ -44,8 +44,14 @@ public:
     const Frame& get_frame() const;
     // Is the current animation done?
     bool is_stopped() const;
-    // Stop updating the sprite
+    // Mark the sprite as completed
     void stop();
+    // Is the sprite paused / not updating
+    bool is_paused() const;
+    // Stop updating the sprite
+    void pause();
+    // Resume updating the sprite
+    void resume();
     // Did we reach the last frame?
     bool is_completed() const;
     // Gets animation speed modifier;

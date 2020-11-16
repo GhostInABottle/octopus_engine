@@ -7,7 +7,7 @@
 #include "../include/exceptions.hpp"
 #include "../include/log.hpp"
 
-Layer::Layer() : width(0), height(0), opacity(1.0f), visible(true) {}
+Layer::Layer() : id(-1), width(0), height(0), opacity(1.0f), visible(true) {}
 
 void Layer::resize(xd::ivec2 new_size) {
     this->width = new_size.x;
@@ -17,6 +17,8 @@ void Layer::resize(xd::ivec2 new_size) {
 rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
             const std::string& node_name) {
     auto node = xml_node(doc, node_name);
+    if (id != -1)
+        node->append_attribute(xml_attribute(doc, "id", std::to_string(id)));
     if (!name.empty())
         node->append_attribute(xml_attribute(doc, "name", name));
     if (width != 0)
@@ -34,6 +36,8 @@ rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
 
 void Layer::load(rapidxml::xml_node<>& node) {
     name = node.first_attribute("name")->value();
+    if (node.first_attribute("id"))
+        id = std::stoi(node.first_attribute("id")->value());
     if (node.first_attribute("width"))
         width = std::stoi(node.first_attribute("width")->value());
     if (node.first_attribute("height"))

@@ -4,21 +4,18 @@
 #include "../../include/utility/math.hpp"
 
 Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas) :
-        game(game),
-        canvas(canvas),
-        duration(0) {
+        Timed_Command(game, 0), canvas(canvas) {
     reset();
 }
 
 Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas,
         long duration, xd::vec2 pos, xd::vec2 mag, float angle, float opacity) :
-        game(game),
+        Timed_Command(game, duration),
         canvas(canvas),
         new_position(pos),
         new_magnification(mag),
         new_angle(angle),
-        new_opacity(opacity),
-        duration(duration) {
+        new_opacity(opacity) {
     reset(false);
 }
 
@@ -38,10 +35,13 @@ void Update_Canvas_Command::reset(bool reset_new) {
     complete = false;
 }
 
+void Update_Canvas_Command::set_duration(int ms) {
+    duration = ms;
+}
+
 void Update_Canvas_Command::execute() {
-    complete = stopped || game.is_paused() || game.ticks() - start_time > duration;
-    float alpha = complete ? 1.0f : calculate_alpha(game.ticks(), start_time, duration);
-    update_canvas(alpha);
+    complete = stopped || game.is_paused() || is_done();
+    update_canvas(get_alpha(complete));
 }
 
 bool Update_Canvas_Command::is_complete() const {

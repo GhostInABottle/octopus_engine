@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\commands\text_options.cpp" />
+    <ClCompile Include="..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\src\key_binder.cpp" />
     <ClCompile Include="..\src\lua_object.cpp" />
     <ClCompile Include="..\src\tmx_properties.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\commands\text_options.hpp" />
+    <ClInclude Include="..\include\commands\timed_command.hpp" />
     <ClInclude Include="..\include\key_binder.hpp" />
     <ClInclude Include="..\include\lua_object.hpp" />
     <ClInclude Include="..\include\utility\color.hpp" />

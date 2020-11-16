@@ -13,6 +13,10 @@ public:
     void execute() { command->execute(); }
     void execute(int ticks) { command->execute(ticks); }
 	void stop() { command->stop(); }
+    bool is_stopped() const { return command->is_stopped(); }
+    void pause() { command->pause(); }
+    void resume() { command->resume(); }
+    bool is_paused() const { return command->is_paused(); }
 protected:
     std::shared_ptr<Command> command;
 };
