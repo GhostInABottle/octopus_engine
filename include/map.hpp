@@ -9,6 +9,7 @@
 #include "xd/entity.hpp"
 #include "xd/graphics/sprite_batch.hpp"
 #include "vendor/rapidxml.hpp"
+#include "xd/vendor/sol/forward.hpp"
 #include "tmx_properties.hpp"
 #include "direction.hpp"
 #include "tileset.hpp"
@@ -58,6 +59,8 @@ public:
     void run_script_file(const std::string& filename) {
         run_script_impl(filename, true);
     }
+    // Run a Lua function
+    void run_function(const sol::protected_function& function);
     // Run map's startup scripts
     void run_startup_scripts();
     // Check if object can move in given direction

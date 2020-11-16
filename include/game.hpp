@@ -8,6 +8,7 @@
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/simple_text_renderer.hpp"
 #include "xd/graphics/font.hpp"
+#include "xd/vendor/sol/forward.hpp"
 #include "direction.hpp"
 
 class Camera;
@@ -150,6 +151,8 @@ public:
     void run_script(const std::string& script);
     // Run a script file
     void run_script_file(const std::string& filename);
+    // Run a Lua function
+    void run_function(const sol::protected_function& function);
     // Set or get the current scripting interface
     void set_current_scripting_interface(Scripting_Interface* si) {
         current_scripting_interface = si;

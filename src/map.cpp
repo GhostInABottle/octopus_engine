@@ -11,6 +11,7 @@
 #include "../include/tileset.hpp"
 #include "../include/game.hpp"
 #include "../include/scripting_interface.hpp"
+#include "../include/xd/vendor/sol/sol.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/utility/direction.hpp"
@@ -66,8 +67,15 @@ void Map::run_script_impl(const std::string& script_or_filename, bool is_filenam
     if (is_filename) {
         scripting_interface->schedule_file(script_or_filename);
     } else {
-        scripting_interface->schedule(script_or_filename);
+        scripting_interface->schedule_code(script_or_filename);
     }
+    game.set_current_scripting_interface(old_interface);
+}
+
+void Map::run_function(const sol::protected_function& function) {
+    auto old_interface = game.get_current_scripting_interface();
+    game.set_current_scripting_interface(scripting_interface.get());
+    scripting_interface->schedule_function(function);
     game.set_current_scripting_interface(old_interface);
 }
 

@@ -43,7 +43,7 @@ void Scripting_Interface::update() {
         scheduler.run();
 }
 
-void Scripting_Interface::schedule(const std::string& script) {
+void Scripting_Interface::schedule_code(const std::string& script) {
     if (script.empty()) {
         LOGGER_W << "Tried to schedule an empty script starting with: " << script.substr(0, 50);
         return;
@@ -53,6 +53,10 @@ void Scripting_Interface::schedule(const std::string& script) {
 
 void Scripting_Interface::schedule_file(const std::string& filename) {
     scheduler.start_file(filename);
+}
+
+void Scripting_Interface::schedule_function(const sol::protected_function& function) {
+    scheduler.start(function);
 }
 
 void Scripting_Interface::set_globals() {
@@ -726,6 +730,7 @@ void Scripting_Interface::setup_scripts() {
     };
     game_type["run_script"] = &Game::run_script;
     game_type["run_script_file"] = &Game::run_script_file;
+    game_type["run_function"] = &Game::run_function;
     game_type["reset_scripting"] = &Game::reset_scripting;
     game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };
@@ -853,6 +858,7 @@ void Scripting_Interface::setup_scripts() {
     );
     map_type["run_script"] = &Map::run_script;
     map_type["run_script_file"] = &Map::run_script_file;
+    map_type["run_function"] = &Map::run_function;
     map_type["passable"] = [&](Map& map, const Map_Object& object, int dir) {
         auto c = map.passable(object, static_cast<Direction>(dir));
         return c.passable();

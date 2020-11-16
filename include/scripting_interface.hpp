@@ -18,8 +18,9 @@ public:
     Scripting_Interface& operator=(const Scripting_Interface&) = delete;
     explicit Scripting_Interface(Game& game);
     void update();
-    void schedule(const std::string& script);
+    void schedule_code(const std::string& script);
     void schedule_file(const std::string& filename);
+    void schedule_function(const sol::protected_function& function);
     template <typename T>
     T call(const std::string& script) {
         return lua_state().script(script).get<T>();

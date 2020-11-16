@@ -7,6 +7,7 @@
 #include <stack>
 #include <type_traits>
 #include <string>
+#include <memory>
 #include <utility>
 
 namespace xd
@@ -28,6 +29,7 @@ namespace xd
             void start_file(const std::string& filename) {
                 start(filename, true);
             }
+            void start(const sol::protected_function& function);
             void run();
             void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();
@@ -89,12 +91,14 @@ namespace xd
                 sol::thread thread;
                 sol::coroutine coroutine;
                 scheduler_cothread(sol::state& state, const std::string& code, bool is_file);
+                scheduler_cothread(sol::state& state, const sol::protected_function& function);
             };
             struct scheduler_thread_task
             {
                 std::shared_ptr<scheduler_cothread> thread;
                 std::shared_ptr<scheduler_task> task;
             };
+            void start(const std::shared_ptr<scheduler_cothread>& cothread);
             std::shared_ptr<scheduler_cothread> m_current_thread;
             std::stack<std::shared_ptr<scheduler_cothread>> m_thread_stack;
             std::list<scheduler_thread_task> m_tasks;

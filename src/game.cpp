@@ -20,6 +20,7 @@
 #include "../include/xd/graphics.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
+#include "../include/xd/vendor/sol/sol.hpp"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -162,9 +163,15 @@ struct Game::Impl {
         if (is_filename) {
             si->schedule_file(script_or_filename);
         } else {
-            si->schedule(script_or_filename);
+            si->schedule_code(script_or_filename);
         }
-        
+        game.set_current_scripting_interface(old_interface);
+    }
+    void run_function(Game& game, const sol::protected_function& function) {
+        auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
+        auto old_interface = game.get_current_scripting_interface();
+        game.set_current_scripting_interface(si.get());
+        si->schedule_function(function);
         game.set_current_scripting_interface(old_interface);
     }
     // Audio system
@@ -555,6 +562,10 @@ void Game::run_script(const std::string& script) {
 
 void Game::run_script_file(const std::string& filename) {
     pimpl->run_script(*this, filename, true);
+}
+
+void Game::run_function(const sol::function& function) {
+    pimpl->run_function(*this, function);
 }
 
 xd::lua::virtual_machine* Game::get_lua_vm() {

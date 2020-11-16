@@ -11,21 +11,11 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 
 void xd::lua::scheduler::start(const std::string& code_or_filename, bool is_file)
 {
-    // set the current thread
-    m_thread_stack.push(std::make_shared<scheduler_cothread>(state, code_or_filename, is_file));
-    m_current_thread = m_thread_stack.top();
-    // start the thread
-    auto result = m_current_thread->coroutine();
-    if (!result.valid()) {
-        sol::error err = result;
-        throw panic_error(err.what());
-    }
-    // reset current thread
-    m_thread_stack.pop();
-    if (m_thread_stack.empty())
-        m_current_thread = nullptr;
-    else
-        m_current_thread = m_thread_stack.top();
+    start(std::make_shared<scheduler_cothread>(state, code_or_filename, is_file));
+}
+
+void xd::lua::scheduler::start(const sol::protected_function& function) {
+    start(std::make_shared<scheduler_cothread>(state, function));
 }
 
 void xd::lua::scheduler::run()
@@ -79,6 +69,24 @@ int xd::lua::scheduler::pending_tasks()
     return m_tasks.size();
 }
 
+void xd::lua::scheduler::start(const std::shared_ptr<xd::lua::scheduler::scheduler_cothread>& cothread) {
+    // set the current thread
+    m_thread_stack.push(cothread);
+    m_current_thread = m_thread_stack.top();
+    // start the thread
+    auto result = m_current_thread->coroutine();
+    if (!result.valid()) {
+        sol::error err = result;
+        throw panic_error(err.what());
+    }
+    // reset current thread
+    m_thread_stack.pop();
+    if (m_thread_stack.empty())
+        m_current_thread = nullptr;
+    else
+        m_current_thread = m_thread_stack.top();
+}
+
 xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code, bool is_file) {
     thread = sol::thread::create(state);
     auto load_result = is_file ? thread.state().load_file(code) : thread.state().load(code);
@@ -87,4 +95,9 @@ xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, co
         throw panic_error(err.what());
     }
     coroutine = load_result;
+}
+
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::protected_function& function) {
+    thread = sol::thread::create(state);
+    coroutine = { thread.state(), function };
 }
