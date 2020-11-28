@@ -23,7 +23,6 @@ void Move_Object_Command::execute() {
     auto object = map->get_object(object_id);
     if (!object) {
         complete = true;
-        object->set_state(old_state);
         return;
     }
     if (paused) {
