@@ -158,14 +158,9 @@ void Scripting_Interface::setup_scripts() {
     dir["from_string"] = [](const std::string& str) {
         return static_cast<int>(string_to_direction(str));
     };
-    dir["facing_direction"] = sol::overload(
-        [](xd::vec2 pos1, xd::vec2 pos2) {
-            return static_cast<int>(facing_direction(pos1, pos2));
-        },
-        [](xd::vec2 pos1, xd::vec2 pos2, bool diagonal) {
-            return static_cast<int>(facing_direction(pos1, pos2, diagonal));
-        }
-    );
+    dir["facing_direction"] = [](xd::vec2 pos1, xd::vec2 pos2, std::optional<bool> diagonal) {
+        return static_cast<int>(facing_direction(pos1, pos2, diagonal.value_or(false)));
+    };
     dir["is_diagonal"] = [](int dir) {
         return is_diagonal(static_cast<Direction>(dir));
     };
@@ -473,25 +468,13 @@ void Scripting_Interface::setup_scripts() {
                 holder->set_sprite(*game, filename);
             });
     holder_type["reset"] = &Sprite_Holder::reset;
-    holder_type["set_sprite"] = sol::overload(
-        [&](Sprite_Holder* holder, const std::string& filename) {
-            holder->set_sprite(*game, filename);
-        },
-        [&](Sprite_Holder* holder, const std::string& filename, const std::string& pose) {
-            holder->set_sprite(*game, filename, pose);
-        }
-    );
-    holder_type["show_pose"] = sol::overload(
-        [&](Sprite_Holder* obj, const std::string& pose_name) {
-            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name));
-        },
-        [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state) {
-            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state));
-        },
-        [&](Sprite_Holder* obj, const std::string& pose_name, const std::string& state, Direction dir) {
-            return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name, state, dir));
-        }
-    );
+    holder_type["set_sprite"] = [&](Sprite_Holder* holder, const std::string& filename, std::optional<std::string> pose) {
+        holder->set_sprite(*game, filename, pose.value_or(""));
+    };
+    holder_type["show_pose"] = [&](Sprite_Holder* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name,
+            state.value_or(""), dir.value_or(Direction::NONE)));
+    };
 
     // Object draw order
     lua.new_enum<Map_Object::Draw_Order>("Draw_Order",
@@ -607,24 +590,12 @@ void Scripting_Interface::setup_scripts() {
                     Collision_Check_Type::BOTH, keep_trying);
         }
     );
-    object_type["move"] = sol::overload(
-        [&](Map_Object* obj, int dir, float pixels, bool skip, bool change_facing) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Move_Object_Command>(
-                    *game, *obj, static_cast<Direction>(dir),
-                    pixels, skip, change_facing);
-        },
-        [&](Map_Object* obj, int dir, float pixels, bool skip) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Move_Object_Command>(
-                    *game, *obj, static_cast<Direction>(dir), pixels, skip, true);
-        },
-        [&](Map_Object* obj, int dir, float pixels) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Move_Object_Command>(
-                    *game, *obj, static_cast<Direction>(dir), pixels, true, true);
-        }
-    );
+    object_type["move"] = [&](Map_Object* obj, int dir, float pixels, std::optional<bool> skip, std::optional<bool> change_facing) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Move_Object_Command>(
+            *game, *obj, static_cast<Direction>(dir), pixels,
+            skip.value_or(true), change_facing.value_or(true));
+    };
     object_type["face"] = sol::overload(
         (void (Map_Object::*)(xd::vec2)) &Map_Object::face,
         (void (Map_Object::*)(float, float)) &Map_Object::face,
@@ -712,10 +683,9 @@ void Scripting_Interface::setup_scripts() {
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pause"] = &Game::pause;
-    game_type["resume"] = sol::overload(
-        [](Game* game) { return game->resume(); },
-        [](Game* game, const std::string& script) { return game->resume(script); }
-    );
+    game_type["resume"] = [](Game* game, std::optional<std::string> script) {
+        return game->resume(script.value_or(""));
+    };
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
     game_type["triggered"] = sol::overload(
         [](Game* game) { return game->triggered(); },
@@ -1073,10 +1043,9 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["hide"] = [](Canvas& canvas) {
         canvas.set_visible(false);
     };
-    canvas_type["set_image"] = sol::overload(
-        [](Canvas& canvas, const std::string& filename) { canvas.set_image(filename); },
-        [](Canvas& canvas, const std::string& filename, xd::vec4 ck) { canvas.set_image(filename, ck); }
-    );
+    canvas_type["set_image"] = [](Canvas& canvas, const std::string& filename, std::optional<xd::vec4> ck) {
+        canvas.set_image(filename, ck.value_or(xd::vec4{0}));
+    };
     canvas_type["update"] = sol::overload(
         [&](Canvas& canvas, float x, float y, float mag_x,
                 float mag_y, float angle, float opacity, long duration) {

@@ -8,12 +8,14 @@ Clock::Clock(Game& game) : game(game), start_time(game.ticks()), time_stop(false
 int Clock::ticks() const {
     return game.ticks();
 }
+
 void Clock::stop_time() {
     if (time_stop)
         return;
     stop_start_time = game.ticks();
     time_stop = true;
 }
+
 // Resume game time
 void Clock::resume_time() {
     if (!time_stop)
@@ -21,6 +23,7 @@ void Clock::resume_time() {
     time_stop = false;
     total_stopped_time += game.ticks() - stop_start_time;
 }
+
 // Get total time in seconds without stopped time
 int Clock::seconds() const {
     int stopped_time = total_stopped_time +

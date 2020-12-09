@@ -4,3 +4,5 @@
 *.xcuserdatad
 *~
 build/
+editor/*.dll
+editor/*.exe
