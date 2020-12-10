@@ -31,7 +31,7 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
             object_node; object_node = object_node->next_sibling("object")) {
         auto object_ptr = Map_Object::load(*object_node, game);
         auto object = std::shared_ptr<Map_Object>(object_ptr.release());
-        map.add_object(object, -1, layer_ptr.get());
+        map.add_object(object, layer_ptr.get());
         if (object->get_name().empty()) {
             object->set_name("UNTITLED" + std::to_string(object->get_id()));
         }

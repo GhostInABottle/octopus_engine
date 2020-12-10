@@ -218,23 +218,14 @@ int Map::object_count() const {
     return objects.size();
 }
 
-Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, int layer_index, Object_Layer* layer) {
+Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_Layer* layer) {
     // If layer isn't specified try getting a layer named "objects",
     // if none is found use the 'middle' object layer
     if (!layer) {
-        if (layer_index < 0) {
-            layer = static_cast<Object_Layer*>(get_layer("objects"));
-            if (!layer) {
-                layer_index = static_cast<int>(std::floor(
-                    object_layers.size() / 2.0));
-                layer = object_layers[layer_index];
-            }
-        }
-        else if (static_cast<unsigned>(layer_index) > object_layers.size()) {
-            layer = *object_layers.begin();
-        }
-        else {
-            layer = object_layers[layer_index];
+        layer = static_cast<Object_Layer*>(get_layer("objects"));
+        if (!layer) {
+            int index = static_cast<int>(std::floor(object_layers.size() / 2.0));
+            layer = object_layers[index];
         }
     }
     object->set_layer(layer);
@@ -262,9 +253,10 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, int layer
     return object.get();
 }
 
-Map_Object* Map::add_new_object(std::string name, std::string sprite_file,
-    xd::vec2 pos, Direction dir) {
-    return add_object(std::make_shared<Map_Object>(game, name, sprite_file, pos, dir));
+Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<std::string> sprite_file,
+        std::optional<xd::vec2> pos, std::optional<Direction> dir, std::optional<Object_Layer*> layer) {
+    return add_object(std::make_shared<Map_Object>(game, name.value_or(""), sprite_file.value_or(""),
+        pos.value_or(xd::vec2{}), dir.value_or(Direction::DOWN)), layer.value_or(nullptr));
 }
 
 Map_Object* Map::get_object(std::string name) const {

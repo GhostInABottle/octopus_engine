@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <optional>
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/sprite_batch.hpp"
@@ -75,12 +76,14 @@ public:
     bool tile_passable(int x, int y) const;
     // Get number of objects
     int object_count() const;
-    // Add an object to object layer at index (or center object layer if -1)
-    Map_Object* add_object(const std::shared_ptr<Map_Object>& object,
-        int layer_index = -1, Object_Layer* layer = nullptr);
+    // Add an object to object layer (or center object layer if no layer)
+    Map_Object* add_object(const std::shared_ptr<Map_Object>& object, Object_Layer* layer = nullptr);
     // Create and add an object
-    Map_Object* add_new_object(std::string name = "", std::string sprite_file = "",
-        xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
+    Map_Object* add_new_object(std::optional<std::string> name = std::nullopt,
+        std::optional<std::string> sprite_file = std::nullopt,
+        std::optional<xd::vec2> pos = std::nullopt,
+        std::optional<Direction> dir = std::nullopt,
+        std::optional<Object_Layer*> layer = std::nullopt);
     // Get object by name
     Map_Object* get_object(std::string name) const;
     // Get object by ID
