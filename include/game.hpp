@@ -233,6 +233,8 @@ public:
     std::unordered_map<int, std::string> gamepad_names() const {
         return window->joystick_names();
     }
+    // Get string to be added to map object scripts
+    std::string get_object_script_preamble() const;
 private:
     std::unique_ptr<xd::window> window;
     bool paused;

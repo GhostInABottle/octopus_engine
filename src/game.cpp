@@ -47,7 +47,12 @@ struct Game::Impl {
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             save_path("not set"),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
-            reset_scripting(false) {}
+            reset_scripting(false) {
+        auto preamble = string_utilities::trim(Configurations::get<std::string>("game.object-script-preamble"));
+        if (preamble.empty()) return;
+        auto extension = preamble.substr(preamble.find_last_of(".") + 1);
+        object_script_preamble = (extension == "lua" ? file_utilities::read_file(preamble) : preamble) + ";";
+    }
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
         config_changes.insert(config_key);
@@ -223,6 +228,8 @@ struct Game::Impl {
     std::string pause_button;
     // Should the scripting interface be reset?
     bool reset_scripting;
+    // String added before every map object script
+    std::string object_script_preamble;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
@@ -748,4 +755,8 @@ bool Game::gamepad_enabled() const {
 int Game::get_gamepad_id() const {
     if (!window) return -1;
     return pimpl->get_gamepad_id(*window);
+}
+
+std::string Game::get_object_script_preamble() const {
+    return pimpl->object_script_preamble;
 }

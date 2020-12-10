@@ -12,6 +12,7 @@ void Configurations::load_defaults() {
     defaults["game.data-folder"] = std::string();
     defaults["game.data-folder-version"] = std::string("v0_1");
     defaults["game.object-outline-color"] = std::string("#FFFFFF00");
+    defaults["game.object-script-preamble"] = std::string();
     defaults["game.map-loaded-script"] = std::string();
     defaults["game.pause-script"] = std::string();
 

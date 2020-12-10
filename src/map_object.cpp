@@ -179,19 +179,23 @@ void Map_Object::set_name(const std::string& new_name) {
     string_utilities::capitalize(name);
 }
 
-void  Map_Object::set_trigger_script(const std::string& script) {
+std::string Map_Object::prepare_script(const std::string& script) const {
+    if (script.empty()) return script;
+    auto result = game.get_object_script_preamble();
     auto extension = script.substr(script.find_last_of(".") + 1);
-    trigger_script = extension == "lua" ? file_utilities::read_file(script) : script;
+    return result + (extension == "lua" ? file_utilities::read_file(script) : script);
+}
+
+void  Map_Object::set_trigger_script(const std::string& script) {
+    trigger_script = prepare_script(script);
 }
 
 void  Map_Object::set_touch_script(const std::string& script) {
-    auto extension = script.substr(script.find_last_of(".") + 1);
-    touch_script = extension == "lua" ? file_utilities::read_file(script) : script;
+    touch_script = prepare_script(script);
 }
 
 void  Map_Object::set_leave_script(const std::string& script) {
-    auto extension = script.substr(script.find_last_of(".") + 1);
-    leave_script = extension == "lua" ? file_utilities::read_file(script) : script;
+    leave_script = prepare_script(script);
 }
 
 xd::vec2 Map_Object::get_sprite_magnification() const {
@@ -210,9 +214,7 @@ void Map_Object::set_outlined(std::optional<bool> new_outlined) {
     } else {
         outline_conditions = Outline_Condition::NEVER;
     }
-
 }
-
 
 bool Map_Object::is_outlined() const {
     if ((outline_conditions & Outline_Condition::NEVER) != Outline_Condition::NONE) return false;

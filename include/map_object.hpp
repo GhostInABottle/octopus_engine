@@ -449,6 +449,8 @@ private:
     float speed;
     // Run a script
     void run_script(const std::string& script);
+    // Load the script and add the preamble
+    std::string prepare_script(const std::string& script) const;
 };
 
 #endif
