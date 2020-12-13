@@ -23,7 +23,10 @@ struct Show_Text_Command::Impl : Timed_Command {
             selected_choice(0),
             current_choice(0),
             pressed_direction(Direction::NONE),
-            press_start(0) {
+            press_start(0),
+            screen_margins(
+                static_cast<float>(Configurations::get<int>("text.screen-edge-margin-x")),
+                static_cast<float>(Configurations::get<int>("text.screen-edge-margin-y"))) {
 
         // Load choice sound effects
         auto audio = game.get_audio();
@@ -91,14 +94,14 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         if (always_visible) {
             // Make sure text fits on the screen
-            if (pos.x + text_width > game.game_width() - 10)
-                pos.x = static_cast<float>(game.game_width() - text_width - 10);
-            if (pos.x < 10.0f)
-                pos.x = 10.0f;
-            if (pos.y + text_height > game.game_height() - 10)
-                pos.y = static_cast<float>(game.game_height() - text_height * 2);
-            if (pos.y < 25.0f)
-                pos.y = 25.0f;
+            if (pos.x + text_width > game.game_width() - screen_margins.x)
+                pos.x = game.game_width() - text_width - screen_margins.x;
+            if (pos.x < screen_margins.x)
+                pos.x = screen_margins.x;
+            if (pos.y + text_height > game.game_height() - screen_margins.y)
+                pos.y = game.game_height() - text_height - screen_margins.y;
+            if (pos.y < screen_margins.y)
+                pos.y = screen_margins.y;
         }
 
         // Create the text canvas and show it
@@ -303,6 +306,8 @@ struct Show_Text_Command::Impl : Timed_Command {
     std::unique_ptr<xd::sound> confirm_sound;
     // Choice cancel sound effect
     std::unique_ptr<xd::sound> cancel_sound;
+    // How far the text should be from the screen edges
+    xd::vec2 screen_margins;
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :

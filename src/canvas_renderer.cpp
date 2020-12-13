@@ -12,10 +12,10 @@ Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
     camera(camera),
     fbo_supported(Configurations::get<bool>("debug.use-fbo") && xd::framebuffer::extension_supported()),
     background_margins(
-        Configurations::get<float>("text.background-margin-left"),
-        Configurations::get<float>("text.background-margin-top"),
-        Configurations::get<float>("text.background-margin-right"),
-        Configurations::get<float>("text.background-margin-bottom"))
+        Configurations::get<int>("text.background-margin-left"),
+        Configurations::get<int>("text.background-margin-top"),
+        Configurations::get<int>("text.background-margin-right"),
+        Configurations::get<int>("text.background-margin-bottom"))
 {}
 
 void Canvas_Renderer::render(Map& map) {

@@ -199,11 +199,20 @@ void  Map_Object::set_leave_script(const std::string& script) {
 }
 
 xd::vec2 Map_Object::get_sprite_magnification() const {
-    auto sprite = get_sprite();
     if (sprite)
         return sprite->get_frame().magnification;
     else
         return xd::vec2(1.0f, 1.0f);
+}
+
+xd::vec2 Map_Object::get_text_position() const
+{
+    auto box = get_bounding_box();
+    auto offset = xd::vec2{
+        box.x + box.w / 2,
+        -game.get_font_style().line_height() / 2
+    };
+    return get_position() + offset;
 }
 
 void Map_Object::set_outlined(std::optional<bool> new_outlined) {
@@ -264,15 +273,12 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
 }
 
 int Map_Object::get_angle() const {
-    if (sprite)
-        return get_sprite()->get_frame().angle;
-    else
-        return 0;
+    return sprite ? sprite->get_frame().angle : 0;
 }
 
 void Map_Object::set_angle(int angle) {
-    if (sprite)
-        get_sprite()->get_frame().angle = angle;
+    if (!sprite) return;
+    sprite->get_frame().angle = angle;
 }
 
 float Map_Object::get_speed() const {

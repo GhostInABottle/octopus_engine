@@ -23,10 +23,12 @@ void Configurations::load_defaults() {
     defaults["text.canvas-priority"] = 1000;
     defaults["text.show-background"] = true;
     defaults["text.background-color"] = std::string("#7F000000");
-    defaults["text.background-margin-left"] = 5.0f;
-    defaults["text.background-margin-top"] = 5.0f;
-    defaults["text.background-margin-right"] = 5.0f;
-    defaults["text.background-margin-bottom"] = 5.0f;
+    defaults["text.background-margin-left"] = 5;
+    defaults["text.background-margin-top"] = 5;
+    defaults["text.background-margin-right"] = 5;
+    defaults["text.background-margin-bottom"] = 5;
+    defaults["text.screen-edge-margin-x"] = 20;
+    defaults["text.screen-edge-margin-y"] = 20;
 
     defaults["graphics.screen-width"] = 640;
     defaults["graphics.screen-height"] = 480;
