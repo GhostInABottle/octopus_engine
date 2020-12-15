@@ -5,7 +5,7 @@
 
 class Layer_Updater : public xd::logic_component<Map> {
 public:
-    Layer_Updater(Layer& layer) : layer(layer) {}
+    Layer_Updater(Layer& layer) noexcept : layer(layer) {}
     virtual void update(Map& map) = 0;
 protected:
     Layer& layer;

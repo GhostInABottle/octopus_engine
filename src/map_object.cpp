@@ -28,6 +28,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         game(game),
         layer(nullptr),
         id(-1),
+        name(name),
+        position(pos),
         color(1.0f),
         magnification(1.0f),
         outline_conditions(get_default_outline_conditions()),
@@ -42,11 +44,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         passthrough(false),
         passthrough_type(Passthrough_Type::BOTH),
         override_tile_collision(false),
-        speed(1.0f),
-        name(name),
-        position(pos),
-        state("FACE"),
         direction(dir),
+        state("FACE"),
         face_state("FACE"),
         walk_state("WALK"),
         script_context(Script_Context::MAP),
@@ -54,11 +53,12 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         collision_object(nullptr),
         collision_area(nullptr),
         triggered_object(nullptr),
-        draw_order(Draw_Order::NORMAL) {
+        draw_order(Draw_Order::NORMAL),
+        speed(1.0f) {
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
-    auto bounding_box = get_bounding_box();
+    const auto bounding_box = get_bounding_box();
     position.x -= bounding_box.x;
     position.y -= bounding_box.y;
     set_speed(1.0f);
@@ -72,12 +72,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     else if (move_dir == Direction::BACKWARD)
         move_dir = opposite_direction(direction);
 
-    xd::vec2 movement_vector = direction_to_vector(move_dir);
-    xd::vec2 change = movement_vector * pixels;
-    bool x_changed = !check_close(change.x, 0.0f);
-    bool y_changed = !check_close(change.y, 0.0f);
-    bool multiple_directions = x_changed && y_changed;
-    bool movement = x_changed || y_changed;
+    const auto movement_vector = direction_to_vector(move_dir);
+    auto change = movement_vector * pixels;
+    const auto x_changed = !check_close(change.x, 0.0f);
+    const auto y_changed = !check_close(change.y, 0.0f);
+    const auto multiple_directions = x_changed && y_changed;
+    const auto movement = x_changed || y_changed;
 
     if (!movement) {
         set_state(face_state);
@@ -260,7 +260,7 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
         return;
     }
     if (sprite) {
-        auto normalized_filename = filename;
+        auto normalized_filename{filename};
         file_utilities::normalize_slashes(normalized_filename);
         if (sprite->get_filename() == normalized_filename)
             return;
@@ -387,7 +387,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_walk_state(properties["walk-state"]);
 
     if (properties.has_property("script-context")) {
-        auto context_string = properties["script-context"];
+        auto context_string{properties["script-context"]};
         string_utilities::capitalize(context_string);
         auto context = Script_Context::MAP;
         if (context_string == "GLOBAL")
@@ -413,7 +413,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("passthrough"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));
     if (properties.has_property("passthrough-type")) {
-        auto type_string = properties["passthrough-type"];
+        auto type_string{properties["passthrough-type"]};
         string_utilities::capitalize(type_string);
         auto type = Passthrough_Type::BOTH;
         if (type_string == "INITIATOR")
@@ -427,7 +427,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.has_property("override-tile-collision"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
     if (properties.has_property("outlined")) {
-        auto outlined = properties["outlined"];
+        auto outlined{properties["outlined"]};
         string_utilities::capitalize(outlined);
         if (outlined == "TRUE") {
             object_ptr->set_outlined(true);
@@ -460,7 +460,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_outlined_object_id(std::stoi(properties["outlined-object"]));
     }
     if (properties.has_property("draw-order")) {
-        auto order = properties["draw-order"];
+        auto order{properties["draw-order"]};
         string_utilities::capitalize(order);
         if (order == "BELOW")
             object_ptr->set_draw_order(Draw_Order::BELOW);

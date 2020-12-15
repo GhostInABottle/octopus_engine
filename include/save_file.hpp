@@ -8,8 +8,8 @@ class Save_File {
 public:
     Save_File(sol::state& state);
     Save_File(sol::state& state, const sol::table& data);
-    sol::object& lua_data() { return data; }
-    bool is_valid() const { return valid; }
+    sol::object& lua_data() noexcept { return data; }
+    bool is_valid() const noexcept { return valid; }
     friend std::ostream& operator<<(std::ostream& stream, Save_File& save_file);
     friend std::istream& operator>>(std::istream& stream, Save_File& save_file);
 private:

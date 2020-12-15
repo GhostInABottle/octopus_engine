@@ -25,8 +25,8 @@ namespace xd
             GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);
         virtual ~texture();
 
-        void bind() const;
-        void bind(int unit) const;
+        void bind() const noexcept;
+        void bind(int unit) const noexcept;
 
         void load(const std::string& filename, vec4 color_key = vec4(0));
         void load(const xd::image& image);
@@ -34,10 +34,10 @@ namespace xd
         void load(const void *data);
         void copy_read_buffer(int x, int y, int width, int height);
 
-        GLuint texture_id() const;
-        int width() const;
-        int height() const;
-        vec4 color_key() const;
+        GLuint texture_id() const noexcept { return m_texture_id; }
+        int width() const noexcept { return m_width; }
+        int height() const noexcept { return m_height; }
+        vec4 color_key() const noexcept { return m_color_key; }
 
         void set_wrap(GLint wrap_s, GLint wrap_t);
         void set_filter(GLint mag_filter, GLint min_filter);

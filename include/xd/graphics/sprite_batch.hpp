@@ -36,8 +36,8 @@ namespace xd
         void draw_outlined(const shader_uniforms& uniforms, const batch_list& batches);
         void draw_outlined(const shader_uniforms& uniforms);
 
-        void set_scale(float scale) { m_scale = scale; }
-        float get_scale() const { return m_scale; }
+        void set_scale(float scale) noexcept { m_scale = scale; }
+        float get_scale() const noexcept { return m_scale; }
         void set_outline_color(vec4 outline_color) { m_outline_color = outline_color; }
         vec4 get_outline_color() const { return m_outline_color; }
 

@@ -9,7 +9,7 @@ namespace xd
 {
     struct font_shadow
     {
-        font_shadow()
+        font_shadow() noexcept
             : x(1), y(1), color(vec4(0,0,0,1)) {}
         font_shadow(float x, float y, const vec4& color)
             : x(x), y(y), color(color) {}
@@ -21,7 +21,7 @@ namespace xd
 
     struct font_outline
     {
-        font_outline()
+        font_outline() noexcept
             : width(1), color(vec4(0,0,0,1)) {}
         font_outline(int width, const vec4& color)
             : width(width), color(color) {}
@@ -43,25 +43,25 @@ namespace xd
         }
 
         // setters for required styles
-        font_style& color(const vec4& color) { m_color = color; return *this; }
-        font_style& size(int size) { m_size = size; return *this; }
-        font_style& letter_spacing(float letter_spacing) { m_letter_spacing = letter_spacing; return *this; }
-        font_style& line_height(float line_height) { m_line_height = line_height; return *this; }
-        font_style& force_autohint(bool force_autohint) { m_force_autohint = force_autohint; return *this; }
+        font_style& color(const vec4& color) noexcept { m_color = color; return *this; }
+        font_style& size(int size) noexcept { m_size = size; return *this; }
+        font_style& letter_spacing(float letter_spacing) noexcept { m_letter_spacing = letter_spacing; return *this; }
+        font_style& line_height(float line_height) noexcept { m_line_height = line_height; return *this; }
+        font_style& force_autohint(bool force_autohint) noexcept { m_force_autohint = force_autohint; return *this; }
 
         // getters for required styles
-        vec4 color() const { return m_color; }
-        int size() const { return m_size; }
-        float letter_spacing() const { return m_letter_spacing; }
-        float line_height() const { return m_line_height; }
-        bool force_autohint() const { return m_force_autohint; }
+        vec4 color() const noexcept { return m_color; }
+        int size() const noexcept { return m_size; }
+        float letter_spacing() const noexcept { return m_letter_spacing; }
+        float line_height() const noexcept { return m_line_height; }
+        bool force_autohint() const noexcept { return m_force_autohint; }
 
         // modifiable getters for required styles
-        vec4& color() { return m_color; }
-        int& size() { return m_size; }
-        float& letter_spacing() { return m_letter_spacing; }
-        float& line_height() { return m_line_height; }
-        bool& force_autohint() { return m_force_autohint;  }
+        vec4& color() noexcept { return m_color; }
+        int& size() noexcept { return m_size; }
+        float& letter_spacing() noexcept { return m_letter_spacing; }
+        float& line_height() noexcept { return m_line_height; }
+        bool& force_autohint() noexcept { return m_force_autohint;  }
 
         // setters for optional styles
         font_style& type(const std::string& type) { m_type = type; return *this; }
@@ -71,14 +71,14 @@ namespace xd
         font_style& outline(const font_outline& outline) { m_outline = outline; return *this; }
 
         // resetters for optional styles
-        font_style& reset_type() { m_type = std::nullopt; return *this; }
-        font_style& reset_shadow() { m_shadow = std::nullopt; return *this; }
-        font_style& reset_outline() { m_outline = std::nullopt; return *this; }
+        font_style& reset_type() noexcept { m_type = std::nullopt; return *this; }
+        font_style& reset_shadow() noexcept { m_shadow = std::nullopt; return *this; }
+        font_style& reset_outline() noexcept { m_outline = std::nullopt; return *this; }
 
         // checkers for optional styles
-        bool has_type() const { return m_type.has_value(); }
-        bool has_shadow() const { return m_shadow.has_value(); }
-        bool has_outline() const { return m_outline.has_value(); }
+        bool has_type() const noexcept { return m_type.has_value(); }
+        bool has_shadow() const noexcept { return m_shadow.has_value(); }
+        bool has_outline() const noexcept { return m_outline.has_value(); }
 
         // getters for optional styles
         std::string type() const

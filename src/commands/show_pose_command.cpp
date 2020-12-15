@@ -19,12 +19,12 @@ bool Show_Pose_Command::is_complete() const {
     return stopped || infinite_pose_complete || sprite->is_stopped();
 }
 
-void Show_Pose_Command::pause() {
+void Show_Pose_Command::pause() noexcept {
     Command::pause();
     holder->get_sprite()->pause();
 }
 
-void Show_Pose_Command::resume() {
+void Show_Pose_Command::resume() noexcept {
     Command::resume();
     holder->get_sprite()->resume();
 }

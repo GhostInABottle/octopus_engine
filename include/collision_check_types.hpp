@@ -10,11 +10,11 @@ enum class Collision_Check_Type {
 };
 
 inline Collision_Check_Type operator|(
-        Collision_Check_Type a, Collision_Check_Type b) {
+        Collision_Check_Type a, Collision_Check_Type b) noexcept {
     return static_cast<Collision_Check_Type>(
         static_cast<int>(a) | static_cast<int>(b));
 }
-inline int operator&(Collision_Check_Type a, Collision_Check_Type b) {
+inline int operator&(Collision_Check_Type a, Collision_Check_Type b) noexcept {
     return static_cast<int>(a) & static_cast<int>(b);
 }
 

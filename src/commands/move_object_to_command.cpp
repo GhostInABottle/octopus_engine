@@ -15,8 +15,8 @@ struct Move_Object_To_Command::Impl {
     Impl(Map& map, Map_Object& object, float x, float y,
         Collision_Check_Type check_type, bool keep_trying)
         : map(map), object(object), destination(x, y), path_found(false), pixels(0.0f),
-        check_type(check_type), keep_trying(keep_trying), last_attempt_time(0),
-        blocked(false), complete(false), nearest(nullptr), old_state(object.get_state()) {}
+        keep_trying(keep_trying), last_attempt_time(0), blocked(false),
+        complete(false), check_type(check_type), nearest(nullptr), old_state(object.get_state()) {}
     Map& map;
     Map_Object& object;
     xd::vec2 destination;
@@ -62,7 +62,7 @@ struct Move_Object_To_Command::Impl {
         if (paused) return;
         if ((blocked || !path_found) && keep_trying) {
             object.set_state(old_state);
-            int time_passed = map.get_game().ticks() - last_attempt_time;
+            const int time_passed = map.get_game().ticks() - last_attempt_time;
             if ((map.get_objects_moved() && time_passed > 1000) || time_passed > 5000) {
                 init();
                 map.set_objects_moved(false);
@@ -75,14 +75,14 @@ struct Move_Object_To_Command::Impl {
             return;
         }
 
-        auto check_completion = [&](bool is_stopped) {
-            auto pos = object.get_real_position();
+        const auto check_completion = [&](bool is_stopped) {
+            const auto pos = object.get_real_position();
             return is_stopped || object.is_stopped() || (!path_found && !keep_trying) ||
                 (check_close(pos.x, destination.x, 1) && check_close(pos.y, destination.y, 1));
         };
 
-        int index = static_cast<int>(pixels) / map.get_tile_width();
-        int max_index = static_cast<int>(path.size() - 1);
+        const int index = static_cast<int>(pixels) / map.get_tile_width();
+        const int max_index = static_cast<int>(path.size() - 1);
 
         if (index <= max_index) {
             auto collision = move_object(path[index]);
@@ -91,7 +91,7 @@ struct Move_Object_To_Command::Impl {
             else
                 blocked = true;
 
-            if (complete = check_completion(stopped)) {
+            if ((complete = check_completion(stopped))) {
                 object.set_state(old_state);
             }
 
@@ -100,10 +100,10 @@ struct Move_Object_To_Command::Impl {
 
         if (!(complete = check_completion(stopped))) {
             // Try to manually move to the destination
-            auto pos = object.get_real_position();
-            auto tile_width = static_cast<float>(map.get_tile_width());
-            auto tile_height = static_cast<float>(map.get_tile_width());
-            auto within_tile = (std::abs(pos.x - destination.x) <= tile_width
+            const auto pos = object.get_real_position();
+            const auto tile_width = static_cast<float>(map.get_tile_width());
+            const auto tile_height = static_cast<float>(map.get_tile_width());
+            const auto within_tile = (std::abs(pos.x - destination.x) <= tile_width
                     && std::abs(pos.y - destination.y) <= tile_height);
             if (within_tile) {
                 auto collision = move_object(facing_direction(pos, destination, true));
@@ -112,12 +112,12 @@ struct Move_Object_To_Command::Impl {
             }
         }
 
-        if (complete = check_completion(stopped)) {
+        if ((complete = check_completion(stopped))) {
             object.set_state(old_state);
         }
     }
     // Is movement complete
-    bool is_complete(bool) const {
+    bool is_complete(bool) const noexcept {
         return complete;
     }
 };
@@ -133,6 +133,6 @@ void Move_Object_To_Command::execute() {
     pimpl->execute(stopped, paused);
 }
 
-bool Move_Object_To_Command::is_complete() const {
+bool Move_Object_To_Command::is_complete() const noexcept {
     return pimpl->is_complete(stopped);
 }

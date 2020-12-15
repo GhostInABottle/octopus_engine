@@ -48,7 +48,7 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         // Estimate text size by stripping out tags
         auto full = full_text();
-        auto clean_text = full;
+        auto clean_text{full};
         int start = 0;
         while ((start = clean_text.find_first_of('{')) != std::string::npos) {
             int end = clean_text.find_first_of('}', start);
@@ -56,7 +56,7 @@ struct Show_Text_Command::Impl : Timed_Command {
                 clean_text.erase(start, end - start + 1);
             }
         }
-        auto text_lines = string_utilities::split(clean_text, "\n");
+        auto text_lines = string_utilities::split(clean_text, "\n", false);
         if (text_lines.empty())
             text_lines.push_back("");
 
@@ -72,7 +72,7 @@ struct Show_Text_Command::Impl : Timed_Command {
         // Set text position based on size estimation
         float char_height = font_style.line_height();
         float text_height = char_height * (text_lines.size() - 1);
-        auto pos = options.position;
+        auto pos{options.position};
         bool camera_relative = (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
         bool always_visible = (options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
 
@@ -121,12 +121,14 @@ struct Show_Text_Command::Impl : Timed_Command {
             Configurations::get<int>("text.canvas-priority") :
             options.canvas_priority;
         canvas->set_priority(priority);
+
         canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
         canvas_updater->set_new_opacity(1.0f);
         int duration = options.fade_in_duration == -1 ?
             Configurations::get<int>("text.fade-in-duration") :
             options.fade_in_duration;
         canvas_updater->set_duration(duration);
+
         if (options.duration == -1) {
             was_disabled = game.get_player()->is_disabled();
             game.get_player()->set_disabled(true);
@@ -333,14 +335,14 @@ void Show_Text_Command::set_start_time(int start) {
     pimpl->set_start_time(start);
 }
 
-void Show_Text_Command::pause() {
+void Show_Text_Command::pause() noexcept {
     pimpl->pause();
 }
 
-void Show_Text_Command::pause(int ticks) {
+void Show_Text_Command::pause(int ticks) noexcept {
     pimpl->pause(ticks);
 }
 
-void Show_Text_Command::resume() {
+void Show_Text_Command::resume() noexcept {
     pimpl->resume();
 }

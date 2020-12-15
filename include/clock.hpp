@@ -9,7 +9,7 @@ public:
     // Get game ticks
     int ticks() const;
     // Check if game time is stopped
-    bool stopped() const { return time_stop; }
+    bool stopped() const noexcept { return time_stop; }
     // Stop game time
     void stop_time();
     // Resume game time

@@ -36,15 +36,15 @@ public:
         }
     }
     // To avoid rvalue issues in stringstream(e.g. char* being treated as void*)
-    Log& lvalue() {
+    Log& lvalue() noexcept {
         return *this;
     }
     // Get the reporting level
-    static Log_Level get_reporting_level() {
+    static Log_Level get_reporting_level() noexcept {
         return reporting_level;
     }
     // Set the reporting level
-    static void set_reporting_level(Log_Level level) {
+    static void set_reporting_level(Log_Level level) noexcept {
         reporting_level = level;
     }
     // Convert an error level enum value to string
@@ -75,7 +75,7 @@ public:
     }
     // Return timestamp in "YYYY-MM-DD HH:MM:SS" format
     static std::string timestamp() {
-        std::time_t seconds_time = std::time(0);
+        const std::time_t seconds_time = std::time(0);
         // Ignore unsafe function warning
 #pragma warning(push)
 #pragma warning(disable: 4996)

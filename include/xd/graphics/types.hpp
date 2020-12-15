@@ -7,19 +7,19 @@ namespace xd
 {
     struct rect
     {
-        rect()
+        rect() noexcept
             : x(0), y(0), w(0), h(0)
         {}
 
-        explicit rect(float x, float y, float w, float h)
+        explicit rect(float x, float y, float w, float h) noexcept
             : x(x), y(y), w(w), h(h)
         {}
 
-        explicit rect(const glm::vec2& xy, const glm::vec2& wh)
+        explicit rect(const glm::vec2& xy, const glm::vec2& wh) noexcept
             : x(xy.x), y(xy.y), w(wh.x), h(wh.y)
         {}
 
-        explicit rect(const glm::vec2& xy, float w, float h)
+        explicit rect(const glm::vec2& xy, float w, float h) noexcept
             : x(xy.x), y(xy.y), w(w), h(h)
         {}
 
@@ -37,7 +37,7 @@ namespace xd
         {}
 
         // check if two rects intersect
-        bool intersects(const rect& other) {
+        bool intersects(const rect& other) noexcept {
             return (
                     x < (other.x + other.w) &&
                 (x+w) > other.x           &&

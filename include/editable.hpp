@@ -9,10 +9,10 @@ class Property_Mapper;
 // e.g. Map, Layer or Map_Object
 class Editable {
 public:
-    void set_property_mapper(std::unique_ptr<Property_Mapper> property_mapper) {
+    void set_property_mapper(std::unique_ptr<Property_Mapper> property_mapper) noexcept {
         mapper = std::move(property_mapper);
     }
-    Property_Mapper* get_property_mapper() {
+    Property_Mapper* get_property_mapper() noexcept {
         return mapper.get();
     }
     virtual ~Editable() = 0;

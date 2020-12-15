@@ -49,7 +49,7 @@ namespace xd
         std::string filename() const { return m_filename; }
     private:
         struct int_pair_hash {
-            std::size_t operator () (const std::pair<int, int> &p) const {
+            std::size_t operator () (const std::pair<int, int> &p) const noexcept {
                 std::size_t seed = 0;
                 seed ^= p.first + 0x9e3779b9 + (seed << 6) + (seed >> 2);
                 seed ^= p.second + 0x9e3779b9 + (seed << 6) + (seed >> 2);

@@ -15,7 +15,7 @@ namespace xd
             virtual_machine& operator=(const virtual_machine&) = delete;
             virtual_machine();
 
-            sol::state& lua_state() { return m_lua_state; }
+            sol::state& lua_state() noexcept { return m_lua_state; }
 
             sol::table globals() const
             {

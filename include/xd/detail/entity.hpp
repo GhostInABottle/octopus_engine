@@ -16,7 +16,7 @@ namespace xd { namespace detail {
         virtual ~component_base() {}
     private:
         friend xd::entity<T>;
-        virtual void init(T&) {}
+        virtual void init(T&) noexcept {}
     };
 
     template <typename T>

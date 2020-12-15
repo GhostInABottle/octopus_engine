@@ -136,7 +136,7 @@ struct Sprite::Impl {
         }
     }
 
-    void reset() {
+    void reset() noexcept {
         frame_index = 0;
         old_time = game.ticks();
         repeat_count = 0;
@@ -147,8 +147,8 @@ struct Sprite::Impl {
         tweening = false;
     }
 
-    int get_frame_time(const Frame& frame) const {
-        int frame_time = frame.duration == -1 ? pose->duration : frame.duration;
+    int get_frame_time(const Frame& frame) const noexcept {
+        const int frame_time = frame.duration == -1 ? pose->duration : frame.duration;
         return static_cast<int>(frame_time * speed);
     }
 
@@ -156,30 +156,30 @@ struct Sprite::Impl {
         return data->filename;
     }
 
-    bool finished_repeating() const {
+    bool finished_repeating() const noexcept {
         return pose->repeats != -1 && repeat_count >= pose->repeats;
     }
 
-    void pause() {
+    void pause() noexcept {
         paused = true;
         pause_start = game.ticks();
     }
 
-    void resume() {
+    void resume() noexcept {
         paused = false;
         pause_start = -1;
     }
 
-    long paused_time() const {
+    long paused_time() const noexcept {
         if (pause_start == -1) return 0;
         return game.ticks() - pause_start;
     }
 
-    long passed_time() const {
+    long passed_time() const noexcept {
         return game.ticks() - old_time - paused_time();
     }
 
-    bool is_completed() const {
+    bool is_completed() const noexcept {
         return frame_count > 0
             && frame_index == frame_count - 1
             && passed_time() >= get_frame_time(pose->frames[frame_index]);
@@ -194,7 +194,6 @@ struct Sprite::Impl {
             tag_string += key + ":" + value + " ";
         }
         int matched_pose = -1;
-        bool name_matched = false;
         bool default_name_matched = false;
         if (tag_map.find(tag_string) != tag_map.end()) {
             matched_pose = tag_map[tag_string];
@@ -346,50 +345,50 @@ xd::vec2 Sprite::get_size() const {
     xd::vec2 size;
     auto& pose = *pimpl->pose;
     if (pose.frames.size() > 0) {
-        auto& frame = pose.frames[0];
+        auto& frame = pose.frames.front();
         size = xd::vec2(frame.rectangle.w, frame.rectangle.h);
     }
     return size;
 }
 
-Frame& Sprite::get_frame() {
+Frame& Sprite::get_frame() noexcept {
      return pimpl->pose->frames[pimpl->frame_index];
 }
 
-const Frame& Sprite::get_frame() const {
+const Frame& Sprite::get_frame() const noexcept {
      return pimpl->pose->frames[pimpl->frame_index];
 }
 
 
-bool Sprite::is_stopped() const {
+bool Sprite::is_stopped() const noexcept {
     return pimpl->finished;
 }
 
-void Sprite::stop() {
+void Sprite::stop() noexcept {
     pimpl->finished = true;
 }
 
-bool Sprite::is_paused() const {
+bool Sprite::is_paused() const noexcept {
     return pimpl->paused;
 }
 
-void Sprite::pause() {
+void Sprite::pause() noexcept {
     pimpl->pause();
 }
 
-void Sprite::resume() {
+void Sprite::resume() noexcept {
     pimpl->resume();
 }
 
-bool Sprite::is_completed() const {
+bool Sprite::is_completed() const noexcept {
     return pimpl->is_completed();
 }
 
-float Sprite::get_speed() const {
+float Sprite::get_speed() const noexcept {
     return pimpl->speed;
 }
 
-void Sprite::set_speed(float speed) {
+void Sprite::set_speed(float speed) noexcept {
     // Scale sprite speed in the opposite direction of object speed,
     // between 0.5 for max speed (10) and 2 for min speed (0)
     // but also make sure object speed 1 maps to sprite speed 1

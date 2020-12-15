@@ -11,12 +11,12 @@ Timed_Command::Timed_Command(Game& game, int duration, int start_time) :
 
 Timed_Command::~Timed_Command() {}
 
-void Timed_Command::pause(int ticks) {
+void Timed_Command::pause(int ticks) noexcept {
     Command::pause();
     pause_start = ticks < 0 ?  game.ticks() : ticks;
 }
 
-void Timed_Command::resume() {
+void Timed_Command::resume() noexcept {
     Command::resume();
     pause_start = -1;
 }

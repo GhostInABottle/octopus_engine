@@ -15,11 +15,7 @@ namespace xd
             m_stack.push(glm::mat4());
         }
 
-        ~matrix_stack()
-        {
-        }
-
-        const glm::mat4& get() const
+        const glm::mat4& get() const noexcept
         {
             return m_stack.top();
         }

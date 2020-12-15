@@ -58,7 +58,7 @@ namespace xd
     public:
         typedef event_callback<Args> event_callback_t;
 
-        event_info()
+        event_info() noexcept
             : m_counter(0)
         {
         }

@@ -260,9 +260,8 @@ void xd::font::render(const std::string& text, const font_style& style,
 
     // render each glyph in the string
     glm::vec2 text_pos;
-    if (pos)
-        text_pos = *pos;
-    float width = 0;
+    if (pos) text_pos = *pos;
+
     FT_UInt prev_codepoint = 0;
 
     for (unsigned int i = 0; i < glyph_count; ++i) {

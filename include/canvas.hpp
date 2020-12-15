@@ -58,18 +58,18 @@ public:
     // Find a child by name
     Canvas* get_child(const std::string& child_name) {
         auto child = std::find_if(children.begin(), children.end(),
-            [&](auto& child) { return child->name == child_name; });
+            [&](auto& child) noexcept { return child->name == child_name; });
         return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by index
-    Canvas* get_child(std::size_t index) {
+    Canvas* get_child(std::size_t index) noexcept {
         if (index >= 0 && index < children.size()) {
             return children[index].get();
         }
         return nullptr;
     }
     // Get number of children
-    std::size_t get_child_count() const {
+    std::size_t get_child_count() const noexcept {
         return children.size();
     }
     // Setup FBO texture
@@ -99,15 +99,15 @@ public:
     // Set bold and italic fonts
     void link_font(const std::string& type, const std::string& font_file);
     // Get the sprite, if any
-    Sprite* get_sprite() override { return sprite.get(); }
+    Sprite* get_sprite() noexcept override { return sprite.get(); }
     // Get canvas width
-    int get_width() const {
+    int get_width() const noexcept {
         if (image_texture)
             return image_texture->width();
         return 0;
     }
     // Get canvas height
-    int get_height() const {
+    int get_height() const noexcept {
         if (image_texture)
             return image_texture->height();
         return 0;
@@ -119,61 +119,61 @@ public:
     void set_name(const std::string& new_name) {
         name = new_name;
     }
-    int get_priority() const {
+    int get_priority() const noexcept {
         return priority;
     }
-    void set_priority(int new_priority) {
+    void set_priority(int new_priority) noexcept {
         priority = new_priority;
     }
-    xd::vec2 get_position() const {
+    xd::vec2 get_position() const noexcept {
         return position;
     }
-    void set_position(xd::vec2 new_position) {
+    void set_position(xd::vec2 new_position) noexcept {
         if (position == new_position)
             return;
         position = new_position;
         redraw_needed = true;
     }
-    float get_x() const {
+    float get_x() const noexcept {
         return position.x;
     }
-    void set_x(float x) {
+    void set_x(float x) noexcept {
         if (position.x == x)
             return;
         position.x = x;
         redraw_needed = true;
     }
-    float get_y() const {
+    float get_y() const noexcept {
         return position.y;
     }
-    void set_y(float y) {
+    void set_y(float y) noexcept {
         if (position.y == y)
             return;
         position.y = y;
         redraw_needed = true;
     }
-    xd::vec2 get_origin() const {
+    xd::vec2 get_origin() const noexcept {
         return origin;
     }
-    void set_origin(xd::vec2 new_origin) {
+    void set_origin(xd::vec2 new_origin) noexcept {
         if (origin == new_origin)
             return;
         origin = new_origin;
         redraw_needed = true;
     }
-    xd::vec2 get_magnification() const {
+    xd::vec2 get_magnification() const noexcept {
         return magnification;
     }
-    void set_magnification(xd::vec2 new_magnification) {
+    void set_magnification(xd::vec2 new_magnification) noexcept {
         if (magnification == new_magnification)
             return;
         magnification = new_magnification;
         redraw_needed = true;
     }
-    xd::rect get_scissor_box() const {
+    xd::rect get_scissor_box() const noexcept {
         return scissor_box;
     }
-    void set_scissor_box(xd::rect new_scissor_box) {
+    void set_scissor_box(xd::rect new_scissor_box) noexcept {
         if (scissor_box.x == new_scissor_box.x
                 && scissor_box.y == new_scissor_box.y
                 && scissor_box.w == new_scissor_box.w
@@ -182,92 +182,92 @@ public:
         scissor_box = new_scissor_box;
         redraw_needed = true;
     }
-    float get_angle() const {
+    float get_angle() const noexcept {
         return angle;
     }
-    void set_angle(float new_angle) {
+    void set_angle(float new_angle) noexcept {
         if (angle == new_angle)
             return;
         angle = new_angle;
         redraw_needed = true;
     }
-    float get_opacity() const {
+    float get_opacity() const noexcept {
         return color.a;
     }
-    void set_opacity(float opacity) {
+    void set_opacity(float opacity) noexcept {
         if (color.a == opacity)
             return;
         color.a = opacity;
         redraw_needed = true;
     }
-    xd::vec4 get_color() const {
+    xd::vec4 get_color() const noexcept {
         return color;
     }
-    void set_color(xd::vec4 new_color) {
+    void set_color(xd::vec4 new_color) noexcept {
         if (color == new_color)
             return;
         color = new_color;
         redraw_needed = true;
     }
-    bool is_visible() const {
+    bool is_visible() const noexcept {
         return visible;
     }
-    void set_visible(bool new_visible) {
+    void set_visible(bool new_visible) noexcept {
         if (visible == new_visible)
             return;
         visible = new_visible;
         redraw_needed = true;
     }
-    bool should_update() const;
+    bool should_update() const noexcept;
     std::string get_filename() const {
         return filename;
     }
-    std::shared_ptr<xd::texture> get_image_texture() const {
+    std::shared_ptr<xd::texture> get_image_texture() const noexcept {
         return image_texture;
     }
-    std::shared_ptr<xd::texture> get_fbo_texture() const {
+    std::shared_ptr<xd::texture> get_fbo_texture() const noexcept {
         return fbo_texture;
     }
-    std::shared_ptr<xd::framebuffer> get_framebuffer() const {
+    std::shared_ptr<xd::framebuffer> get_framebuffer() const noexcept {
         return framebuffer;
     }
-    std::vector<std::string>& get_text_lines() {
+    std::vector<std::string>& get_text_lines() noexcept {
         return text_lines;
     }
     float get_text_width(const std::string& text) {
         return font->get_width(text, *style);
     }
-    xd::font_style* get_style() const {
+    xd::font_style* get_style() const noexcept {
         return style.get();
     }
-    bool is_camera_relative() const {
+    bool is_camera_relative() const noexcept {
         return camera_relative;
     }
     const std::string get_font_filename() const {
         return font->filename();
     }
-    int get_font_size() const {
+    int get_font_size() const noexcept {
         return style->size();
     }
-    void set_font_size(int size) {
+    void set_font_size(int size) noexcept {
         if (style->size() == size)
             return;
         style->size() = size;
         redraw_needed = true;
     }
-    xd::vec4 get_text_color() const {
+    xd::vec4 get_text_color() const noexcept {
         return style->color();
     }
-    void set_text_color(xd::vec4 text_color) {
+    void set_text_color(xd::vec4 text_color) noexcept {
         if (style->color() == text_color)
             return;
         style->color() = text_color;
         redraw_needed = true;
     }
-    float get_line_height() const {
+    float get_line_height() const noexcept {
         return style->line_height();
     }
-    void set_line_height(float height) {
+    void set_line_height(float height) noexcept {
         if (style->line_height() == height)
             return;
         style->line_height() = height;
@@ -299,10 +299,10 @@ public:
         style->outline().color = color;
         redraw_needed = true;
     }
-    bool has_text_outline() const {
+    bool has_text_outline() const noexcept {
         return style->has_outline();
     }
-    void reset_text_outline() {
+    void reset_text_outline() noexcept {
         style->reset_outline();
         redraw_needed = true;
     }
@@ -333,10 +333,10 @@ public:
         style->shadow().color = shadow_color;
         redraw_needed = true;
     }
-    bool has_shadow() const {
+    bool has_shadow() const noexcept {
         return style->has_shadow();
     }
-    void reset_text_shadow() {
+    void reset_text_shadow() noexcept {
         style->reset_shadow();
         redraw_needed = true;
     }
@@ -351,61 +351,61 @@ public:
         style->type(text_type);
         redraw_needed = true;
     }
-    bool has_text_type() const {
+    bool has_text_type() const noexcept {
         return style->has_type();
     }
-    void reset_text_type() {
+    void reset_text_type() noexcept {
         style->reset_type();
         redraw_needed = true;
     }
-    Canvas::Type get_type() const {
+    Canvas::Type get_type() const noexcept {
         return type;
     }
-    Canvas::Type get_children_type() const {
+    Canvas::Type get_children_type() const noexcept {
         return children_type;
     }
-    bool get_permissive_tag_parsing() const {
+    bool get_permissive_tag_parsing() const noexcept {
         return permissive_tag_parsing;
     }
-    void set_permissive_tag_parsing(bool value) {
+    void set_permissive_tag_parsing(bool value) noexcept {
         permissive_tag_parsing = value;
     }
-    xd::vec4 get_image_outline_color() const {
+    xd::vec4 get_image_outline_color() const noexcept {
         return outline_color;
     }
-    void set_image_outline_color(xd::vec4 color) {
+    void set_image_outline_color(xd::vec4 color) noexcept {
         outline_color = color;
     }
-    bool has_image_outline() const {
+    bool has_image_outline() const noexcept {
         return use_outline_shader;
     }
-    void set_image_outline(bool value) {
+    void set_image_outline(bool value) noexcept {
         use_outline_shader = value;
     }
     bool should_redraw(int time) const;
-    void redraw() {
+    void redraw() noexcept {
         redraw_needed = true;
     }
-    void mark_as_drawn(int time);
-    bool has_background() const {
+    void mark_as_drawn(int time) noexcept;
+    bool has_background() const noexcept {
         return background_visible;
     }
-    void set_background_visible(bool visible) {
+    void set_background_visible(bool visible) noexcept {
         background_visible = visible;
     }
-    xd::rect get_background_rect() const {
+    xd::rect get_background_rect() const noexcept {
         return background_rect;
     }
-    void set_background_rect(xd::rect new_rect) {
+    void set_background_rect(xd::rect new_rect) noexcept {
         background_rect = new_rect;
     }
-    xd::vec4 get_background_color() const {
+    xd::vec4 get_background_color() const noexcept {
         return background_color;
     }
-    void set_background_color(xd::vec4 new_color) {
+    void set_background_color(xd::vec4 new_color) noexcept {
         background_color = new_color;
     }
-    bool is_paused_game_canvas() const {
+    bool is_paused_game_canvas() const noexcept {
         return paused_game_canvas;
     }
 private:

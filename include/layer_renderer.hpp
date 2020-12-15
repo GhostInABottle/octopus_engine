@@ -13,8 +13,8 @@ class Layer_Renderer : public xd::render_component<Map> {
 public:
     Layer_Renderer(const Layer& layer, const Camera& camera);
     virtual void render(Map& map) = 0;
-    xd::sprite_batch& get_batch() { return batch; }
-    void redraw() { needs_redraw = true; }
+    xd::sprite_batch& get_batch() noexcept { return batch; }
+    void redraw() noexcept { needs_redraw = true; }
 protected:
     xd::sprite_batch batch;
     const Layer& layer;

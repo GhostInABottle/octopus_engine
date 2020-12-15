@@ -29,7 +29,7 @@ namespace xd
         {
         }
 
-        utf8::uint32_t get() const
+        utf8::uint32_t get() const noexcept
         {
             return m_chr;
         }
@@ -50,7 +50,7 @@ namespace xd
         typedef std::vector<formatted_char>::iterator iterator;
         typedef std::vector<formatted_char>::const_iterator const_iterator;
 
-        formatted_text()
+        formatted_text() noexcept
         {
         }
 
@@ -82,42 +82,42 @@ namespace xd
             return *this;
         }
 
-        formatted_char& operator[](size_t index)
+        formatted_char& operator[](size_t index) noexcept
         {
             return m_chars[index];
         }
 
-        const formatted_char& operator[](size_t index) const
+        const formatted_char& operator[](size_t index) const noexcept
         {
             return m_chars[index];
         }
 
-        iterator begin()
+        iterator begin() noexcept
         {
             return m_chars.begin();
         }
 
-        iterator end()
+        iterator end() noexcept
         {
             return m_chars.end();
         }
 
-        const_iterator begin() const
+        const_iterator begin() const noexcept
         {
             return m_chars.begin();
         }
 
-        const_iterator end() const
+        const_iterator end() const noexcept
         {
             return m_chars.end();
         }
 
-        size_t length() const
+        size_t length() const noexcept
         {
             return m_chars.size();
         }
 
-        void clear()
+        void clear() noexcept
         {
             m_chars.clear();
         }
@@ -161,7 +161,7 @@ namespace xd
                 return def;
         }
 
-        size_t count() const
+        size_t count() const noexcept
         {
             return m_args.size();
         }

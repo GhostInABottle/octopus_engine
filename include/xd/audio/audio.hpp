@@ -22,7 +22,7 @@ namespace xd
         float get_music_volume() const;
         void set_sound_volume(float volume) const;
         float get_sound_volume() const;
-        detail::audio_handle* get_handle() {
+        detail::audio_handle* get_handle() noexcept {
             return m_audio_handle.get();
         }
     private:

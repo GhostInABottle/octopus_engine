@@ -5,7 +5,7 @@ namespace xd
 {
     struct window_options
     {
-        window_options()
+        window_options() noexcept
             : fullscreen(false)
             , allow_resize(false)
             , display_cursor(true)
@@ -24,7 +24,7 @@ namespace xd
         window_options(bool fullscreen, bool allow_resize, bool display_cursor, bool vsync,
             bool enable_joystick, bool gamepad_detection, bool axis_as_dpad, float axis_sensitivity,
             int depth_bits, int stencil_bits, int antialiasing_level,
-            int major_version, int minor_version)
+            int major_version, int minor_version) noexcept
             : fullscreen(fullscreen)
             , allow_resize(allow_resize)
             , display_cursor(display_cursor)

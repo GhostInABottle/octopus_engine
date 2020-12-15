@@ -235,7 +235,6 @@ xd::vec2 Camera::get_centered_position(xd::vec2 pos) const {
 }
 
 xd::vec2 Camera::get_centered_position(const Map_Object& target) const {
-    xd::vec2 target_position = target.get_position();
     auto sprite = target.get_sprite();
     auto sprite_size = sprite ? sprite->get_size() : xd::vec2{0.0f, 0.0f};
     auto object_pos = target.get_position() + sprite_size / 2.0f;

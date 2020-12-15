@@ -8,8 +8,8 @@ class Game;
 class Timed_Command : public Command {
 public:
     Timed_Command(Game& game, int duration, int start_time = -1);
-    void pause(int ticks = -1) override;
-    void resume() override;
+    void pause(int ticks = -1) noexcept override;
+    void resume() noexcept override;
     long paused_time(int ticks = -1) const;
     long passed_time(int ticks = -1) const;
     bool is_done(int ticks = -1) const;

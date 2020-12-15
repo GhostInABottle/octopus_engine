@@ -10,7 +10,7 @@ namespace xd
     namespace detail
     {
         template <class T>
-        inline void hash_combine(std::size_t& seed, const T& v)
+        inline void hash_combine(std::size_t& seed, const T& v) noexcept
         {
             std::hash<T> hasher;
             seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -31,19 +31,19 @@ namespace xd
         int device_id;
     };
 
-    inline bool operator==(const key& lhs, const key& rhs)
+    inline bool operator==(const key& lhs, const key& rhs) noexcept
     {
         return (lhs.type == rhs.type
             && lhs.code == rhs.code
             && lhs.device_id == rhs.device_id);
     }
 
-    inline bool operator!=(const key& lhs, const key& rhs)
+    inline bool operator!=(const key& lhs, const key& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    inline std::size_t hash_value(const key& k)
+    inline std::size_t hash_value(const key& k) noexcept
     {
         std::size_t seed = 0;
         detail::hash_combine(seed, k.type);
@@ -61,7 +61,7 @@ namespace xd
 
     struct input_filter
     {
-        input_filter() {}
+        input_filter() noexcept {}
         input_filter(input_type type, std::optional<int> mod = std::nullopt) : type(type), modifiers(mod) {}
         input_filter(const key& pkey, std::optional<int> mod = std::nullopt) : physical_key(pkey), modifiers(mod) {}
         input_filter(std::string vkey, std::optional<int> mod = std::nullopt) : virtual_key(vkey), modifiers(mod) {}
@@ -86,9 +86,9 @@ namespace xd
     };
 
     // utility function to create key
-    inline key KEY(int code)
+    inline constexpr key KEY(int code) noexcept
     {
-        key k;
+        key k{};
         k.type = input_type::INPUT_KEYBOARD;
         k.code = code;
         k.device_id = -1;
@@ -96,9 +96,9 @@ namespace xd
     }
 
     // utility function to create mouse
-    inline key MOUSE(int code)
+    inline constexpr key MOUSE(int code) noexcept
     {
-        key k;
+        key k{};
         k.type = input_type::INPUT_MOUSE;
         k.code = code;
         k.device_id = -1;
@@ -106,9 +106,9 @@ namespace xd
     }
 
     // utility function to create gamepad
-    inline key GAMEPAD(int code, int joystick_id = -1)
+    inline constexpr key GAMEPAD(int code, int joystick_id = -1) noexcept
     {
-        key k;
+        key k{};
         k.type = input_type::INPUT_GAMEPAD;
         k.code = code;
         k.device_id = joystick_id;
@@ -209,7 +209,7 @@ namespace std
     template <>
     struct hash<xd::key>
     {
-        size_t operator()(const xd::key& k) const
+        size_t operator()(const xd::key& k) const noexcept
         {
             return xd::hash_value(k);
         }

@@ -51,12 +51,12 @@ xd::texture::~texture()
     glDeleteTextures(1, &m_texture_id);
 }
 
-void xd::texture::bind() const
+void xd::texture::bind() const noexcept
 {
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 }
 
-void xd::texture::bind(int unit) const
+void xd::texture::bind(int unit) const noexcept
 {
     if (unit != m_unit) {
         glActiveTexture(unit);
@@ -115,26 +115,6 @@ void xd::texture::copy_read_buffer(int x, int y, int width, int height)
     m_width = width;
     m_height = height;
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, m_width, m_height);
-}
-
-GLuint xd::texture::texture_id() const
-{
-    return m_texture_id;
-}
-
-int xd::texture::width() const
-{
-    return m_width;
-}
-
-int xd::texture::height() const
-{
-    return m_height;
-}
-
-xd::vec4 xd::texture::color_key() const
-{
-    return m_color_key;
 }
 
 void xd::texture::set_wrap(GLint wrap_s, GLint wrap_t)

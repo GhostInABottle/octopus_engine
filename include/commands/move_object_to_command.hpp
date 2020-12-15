@@ -15,7 +15,7 @@ public:
         bool keep_trying = false);
     ~Move_Object_To_Command();
     void execute() override;
-    bool is_complete() const override;
+    bool is_complete() const noexcept override;
 private:
     struct Impl;
     friend struct Impl;

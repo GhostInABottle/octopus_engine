@@ -18,6 +18,7 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     game(game),
     priority(0),
     type(Canvas::Type::IMAGE),
+    children_type(Canvas::Type::IMAGE),
     position(position),
     origin(0.5f, 0.5f),
     magnification(1.0f, 1.0f),
@@ -25,8 +26,7 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     visible(false),
     camera_relative(false),
     redraw_needed(true),
-    last_drawn_time(0), 
-    children_type(Canvas::Type::IMAGE),
+    last_drawn_time(0),
     permissive_tag_parsing(false),
     use_outline_shader(false),
     outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))),
@@ -109,7 +109,7 @@ void Canvas::remove_child(const std::string& child_name) {
         ), children.end());
     // Update children type if needed
     if (!children.empty() && children_type == Type::MIXED) {
-        auto child_type = children[0]->get_type();
+        auto child_type = children.front()->get_type();
         for (auto& c : children) {
             if (c->get_type() != child_type) {
                 child_type = Type::MIXED;
@@ -195,20 +195,20 @@ void Canvas::link_font(const std::string& font_type, const std::string& font_fil
     }
 }
 
-bool Canvas::should_update() const {
+bool Canvas::should_update() const noexcept {
     if (!visible) return false;
     return game.is_paused() == paused_game_canvas;
 }
 
 bool Canvas::should_redraw(int time) const {
-    bool redraw_children = std::any_of(std::begin(children), std::end(children),
+    const bool redraw_children = std::any_of(std::begin(children), std::end(children),
         [time](const std::unique_ptr<Canvas>& c) { return c->should_redraw(time);  });
     static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
-    bool time_to_update = time - last_drawn_time > ms_between_refresh;
+    const bool time_to_update = time - last_drawn_time > ms_between_refresh;
     return redraw_needed || redraw_children || time_to_update;
 }
 
-void Canvas::mark_as_drawn(int time) {
+void Canvas::mark_as_drawn(int time) noexcept {
     redraw_needed = false;
     last_drawn_time = time;
 }

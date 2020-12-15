@@ -255,8 +255,8 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         paused(false),
         pausing_enabled(true),
         magnification(Configurations::get<float>("debug.magnification")),
-        style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         current_scripting_interface(nullptr),
+        style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         text_renderer(),
         editor_ticks(0),
         editor_size(1, 1) {
@@ -438,7 +438,6 @@ void Game::render() {
     if (pimpl->editor_mode) return;
 
     // Draw FPS
-    auto height = static_cast<float>(game_height());
     if (pimpl->show_fps) {
         text_renderer.render(*font, pimpl->debug_style,
             camera->get_geometry().projection().get(),5, 10,
@@ -491,7 +490,7 @@ void Game::resume(const std::string& script) {
     if (!script.empty()) run_script(script);
 }
 
-void Game::exit() {
+void Game::exit() noexcept {
     pimpl->exit_requested = true;
 }
 
@@ -521,11 +520,11 @@ void Game::set_fullscreen(bool fullscreen) {
     camera->set_size(framebuffer_width(), framebuffer_height());
 }
 
-float Game::game_width(bool magnified) const {
+float Game::game_width(bool magnified) const noexcept {
     return magnified ? pimpl->game_width / magnification : pimpl->game_width;
 }
 
-float Game::game_height(bool magnified) const {
+float Game::game_height(bool magnified) const noexcept {
     return magnified ? pimpl->game_height / magnification : pimpl->game_height;
 }
 
@@ -538,7 +537,7 @@ void Game::set_magnification(float mag) {
 std::vector<std::string> Game::triggered_keys() const {
     std::vector<std::string> results;
     auto keys = window->triggered_keys();
-    for (auto key : keys) {
+    for (xd::key key : keys) {
         if (key.type == xd::input_type::INPUT_GAMEPAD && key.device_id != get_gamepad_id()) continue;
         key.device_id = -1;
         results.push_back(pimpl->key_binder->get_key_name(key));
@@ -571,15 +570,15 @@ void Game::run_script_file(const std::string& filename) {
     pimpl->run_script(*this, filename, true);
 }
 
-void Game::run_function(const sol::function& function) {
+void Game::run_function(const sol::protected_function& function) {
     pimpl->run_function(*this, function);
 }
 
-xd::lua::virtual_machine* Game::get_lua_vm() {
+xd::lua::virtual_machine* Game::get_lua_vm() noexcept {
     return &pimpl->vm;
 }
 
-void Game::reset_scripting() {
+void Game::reset_scripting() noexcept {
     pimpl->reset_scripting = true;
 }
 
@@ -638,7 +637,7 @@ int Game::seconds() const {
     return clock->seconds();
 }
 
-int Game::ticks() const {
+int Game::ticks() const noexcept {
     if (!window)
         return editor_ticks;
     int stopped_time = pimpl->total_paused_time + (paused ?
@@ -715,7 +714,7 @@ void Game::load_map(const std::string& filename) {
     player->set_collision_area(nullptr);
     player->set_outlining_object(nullptr);
     player->clear_linked_objects();
-    auto start_pos = pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position();
+    auto start_pos{pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position()};
     auto bounding_box = player->get_bounding_box();
     start_pos.x -= bounding_box.x;
     start_pos.y -= bounding_box.y;
@@ -725,7 +724,7 @@ void Game::load_map(const std::string& filename) {
     camera->set_object(player.get());
     // Play background music
     auto bg_music = map->get_bg_music_filename();
-    auto playing_music = music ? music->get_filename() : "";
+    auto playing_music{music ? music->get_filename() : ""};
     if (bg_music == "false") {
         music.reset();
     } else if (!bg_music.empty() && bg_music != playing_music) {

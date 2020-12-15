@@ -8,30 +8,22 @@ namespace xd
     class transform_geometry
     {
     public:
-        transform_geometry()
-        {
-        }
-
-        ~transform_geometry()
-        {
-        }
-
-        matrix_stack& projection()
+        matrix_stack& projection() noexcept
         {
             return m_projection;
         }
 
-        const matrix_stack& projection() const
+        const matrix_stack& projection() const noexcept
         {
             return m_projection;
         }
 
-        matrix_stack& model_view()
+        matrix_stack& model_view() noexcept
         {
             return m_model_view;
         }
 
-        const matrix_stack& model_view() const
+        const matrix_stack& model_view() const noexcept
         {
             return m_model_view;
         }

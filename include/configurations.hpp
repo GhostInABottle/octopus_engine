@@ -20,13 +20,13 @@ public:
     // Load default values
     static void load_defaults();
     // Check if configuration defaults are loaded
-    static bool defaults_loaded() { return !defaults.empty(); }
+    static bool defaults_loaded() noexcept { return !defaults.empty(); }
     // Parse the configuration file and returns list of parse errors
     static std::vector<std::string> parse(std::string filename);
     // Save the configuration file
     static void save(std::string filename);
     // Has the configurations changed since it was last saved?
-    static bool changed() { return changed_since_save; }
+    static bool changed() noexcept { return changed_since_save; }
     // Get the option with given name
     template<typename T>
     static T get(const std::string& name) {
@@ -52,7 +52,7 @@ public:
         observers[name] = c;
     }
     // Remove a callback with given name
-    static void remove_observer(const std::string& name) {
+    static void remove_observer(const std::string& name) noexcept {
         observers.erase(name);
     }
     // Update an option with given name

@@ -15,7 +15,7 @@ namespace xd { namespace detail {
 
     struct sprite_vertex_traits : vertex_traits<sprite_vertex>
     {
-        sprite_vertex_traits()
+        sprite_vertex_traits() noexcept
         {
             bind_vertex_attribute(VERTEX_POSITION, &sprite_vertex::pos);
             bind_vertex_attribute(VERTEX_TEXTURE, &sprite_vertex::texpos);

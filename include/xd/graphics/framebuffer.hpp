@@ -24,11 +24,11 @@ namespace xd
         void attach_color_texture(const xd::texture& texture, int slot) const;
         void attach_depth_buffer(unsigned int id) const;
 
-        static bool extension_supported() {
+        static bool extension_supported() noexcept {
             return GLEW_EXT_framebuffer_object;
         }
 
-        GLuint framebuffer_id() const {
+        GLuint framebuffer_id() const noexcept {
             return m_buffer_id;
         }
 

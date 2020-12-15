@@ -41,7 +41,7 @@ public:
             xd::vec2 pos = xd::vec2(),
             Node* parent = nullptr,
             int g = 0,
-            int h = 0) :
+            int h = 0) noexcept :
             tile_width(tile_width),
             tile_height(tile_height),
             pos(pos),
@@ -50,18 +50,18 @@ public:
             h(h) {}
         // Total cost at this node
         // f(n) = g(n) + h(n)
-        int cost() const {
+        int cost() const noexcept {
             return g + h;
         }
-        xd::ivec2 tile_pos() const {
+        xd::ivec2 tile_pos() const noexcept {
             return xd::ivec2(
                 static_cast<int>(pos.x) / tile_width,
                 static_cast<int>(pos.y) / tile_height);
         }
-        bool operator==(const Node& other) const {
+        bool operator==(const Node& other) const noexcept {
             return other.tile_pos() == tile_pos();
         }
-        bool operator<(const Node& other) const {
+        bool operator<(const Node& other) const noexcept {
             return cost() > other.cost();
         }
         // Check if another node is within the range of this one
@@ -107,16 +107,16 @@ public:
     // Generate final path
     std::deque<Direction> generate_path();
     // Check if path was found
-    bool is_found() const { return found; }
+    bool is_found() const noexcept { return found; }
     // Get/set nearest node
-    Node& nearest() { return nearest_node; }
+    Node& nearest() noexcept { return nearest_node; }
 private:
     // Add a node to an array of nodes
     void add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent);
     // Distance between two points (heuristic)
-    int distance(xd::ivec2 pos1, xd::ivec2 pos2) const {
-        int dx = std::abs(pos1.x - pos2.x);
-        int dy = std::abs(pos1.y - pos2.y);
+    int distance(xd::ivec2 pos1, xd::ivec2 pos2) const noexcept {
+        const int dx = std::abs(pos1.x - pos2.x);
+        const int dy = std::abs(pos1.y - pos2.y);
         return std::max(dx, dy) ;
     }
     // Get a list of adjacent nodes to the given node

@@ -35,16 +35,16 @@ public:
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
         bool change_facing = true);
     // Getters and setters
-    Object_Layer* get_layer() const {
+    Object_Layer* get_layer() const noexcept {
         return layer;
     }
-    void set_layer(Object_Layer* new_layer) {
+    void set_layer(Object_Layer* new_layer) noexcept {
         layer = new_layer;
     }
-    int get_id() const {
+    int get_id() const noexcept {
         return id;
     }
-    void set_id(int new_id) {
+    void set_id(int new_id) noexcept {
         id = new_id;
     }
     std::string get_name() const {
@@ -63,60 +63,60 @@ public:
     void set_type(const std::string& new_type) {
         type = new_type;
     }
-    xd::vec2 get_position() const {
+    xd::vec2 get_position() const noexcept {
         return position;
     }
-    void set_position(xd::vec2 new_position) {
+    void set_position(xd::vec2 new_position) noexcept {
         position = new_position;
     }
-    float get_x() const {
+    float get_x() const noexcept {
         return position.x;
     }
-    void set_x(float x) {
+    void set_x(float x) noexcept {
         position.x = x;
     }
-    float get_y() const {
+    float get_y() const noexcept {
         return position.y;
     }
-    void set_y(float y) {
+    void set_y(float y) noexcept {
         position.y = y;
     }
     xd::vec2 get_text_position() const;
-    xd::vec2 get_size() const {
+    xd::vec2 get_size() const noexcept {
         return size;
     }
-    void set_size(xd::vec2 new_size) {
+    void set_size(xd::vec2 new_size) noexcept {
         size = new_size;
     }
-    xd::vec4 get_color() const {
+    xd::vec4 get_color() const noexcept {
         return color;
     }
-    void set_color(xd::vec4 new_color) {
+    void set_color(xd::vec4 new_color) noexcept {
         color = new_color;
     }
-    xd::vec2 get_magnification() const {
+    xd::vec2 get_magnification() const noexcept {
         return magnification;
     }
-    void set_magnification(xd::vec2 new_mag) {
+    void set_magnification(xd::vec2 new_mag) noexcept {
         magnification = new_mag;
     }
     xd::vec2 get_sprite_magnification() const;
-    unsigned int get_gid() const {
+    unsigned int get_gid() const noexcept {
         return gid;
     }
-    float get_opacity() const {
+    float get_opacity() const noexcept {
         return opacity;
     }
-    void set_opacity(float new_opacity) {
+    void set_opacity(float new_opacity) noexcept {
         opacity = new_opacity;
     }
-    bool is_visible() const {
+    bool is_visible() const noexcept {
         return visible;
     }
-    void set_visible(bool new_visible) {
+    void set_visible(bool new_visible) noexcept {
         visible = new_visible;
     }
-    bool is_disabled() const {
+    bool is_disabled() const noexcept {
         return disabled;
     }
     void set_disabled(bool new_disabled) {
@@ -124,45 +124,45 @@ public:
         if (state != walk_state) return;
         set_state(face_state);
     }
-    bool is_stopped() const {
+    bool is_stopped() const noexcept {
         return stopped;
     }
-    void set_stopped(bool new_stopped) {
+    void set_stopped(bool new_stopped) noexcept {
         stopped = new_stopped;
     }
-    bool is_frozen() const {
+    bool is_frozen() const noexcept {
         return frozen;
     }
-    void set_frozen(bool new_frozen) {
+    void set_frozen(bool new_frozen) noexcept {
         frozen = new_frozen;
     }
-    bool is_passthrough() const {
+    bool is_passthrough() const noexcept {
         return passthrough;
     }
-    void set_passthrough(bool new_passthrough) {
+    void set_passthrough(bool new_passthrough) noexcept {
         passthrough = new_passthrough;
     }
-    Passthrough_Type get_passthrough_type() const {
+    Passthrough_Type get_passthrough_type() const noexcept {
         return passthrough_type;
     }
-    void set_passthrough_type(Passthrough_Type type) {
+    void set_passthrough_type(Passthrough_Type type) noexcept {
         passthrough_type = type;
     }
-    bool initiates_passthrough() const {
+    bool initiates_passthrough() const noexcept {
         return passthrough
             && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::INITIATOR)) != 0;
     }
-    bool receives_passthrough() const {
+    bool receives_passthrough() const noexcept {
         return passthrough
             && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::RECEIVER)) != 0;
     }
-    bool overrides_tile_collision() const {
+    bool overrides_tile_collision() const noexcept {
         return override_tile_collision;
     }
-    void set_override_tile_collision(bool new_override) {
+    void set_override_tile_collision(bool new_override) noexcept {
         override_tile_collision = new_override;
     }
-    Direction get_direction() const {
+    Direction get_direction() const noexcept {
         return direction;
     }
     void set_direction(Direction dir) {
@@ -193,58 +193,58 @@ public:
     void set_walk_state(const std::string& name) {
         walk_state = name;
     }
-    Script_Context get_script_context() const {
+    Script_Context get_script_context() const noexcept {
         return script_context;
     }
-    void set_script_context(Script_Context context) {
+    void set_script_context(Script_Context context) noexcept {
         script_context = context;
     }
-    bool has_trigger_script() const {
+    bool has_trigger_script() const noexcept {
         return !trigger_script.empty();
     }
     std::string get_trigger_script() const {
         return trigger_script;
     }
     void set_trigger_script(const std::string& script);
-    bool has_touch_script() const {
+    bool has_touch_script() const noexcept {
         return !touch_script.empty();
     }
     std::string get_touch_script() const {
         return touch_script;
     }
     void set_touch_script(const std::string& script);
-    bool has_leave_script() const {
+    bool has_leave_script() const noexcept {
         return !leave_script.empty();
     }
     std::string get_leave_script() const {
         return leave_script;
     }
     void set_leave_script(const std::string& script);
-    bool has_any_script() const {
+    bool has_any_script() const noexcept {
         return !trigger_script.empty() || !touch_script.empty() || !leave_script.empty();
     }
-    bool is_player_facing() const {
+    bool is_player_facing() const noexcept {
         return player_facing;
     }
-    void set_player_facing(bool facing) {
+    void set_player_facing(bool facing) noexcept {
         player_facing = facing;
     }
-    Map_Object* get_collision_object() const {
+    Map_Object* get_collision_object() const noexcept {
         return collision_object;
     }
-    void set_collision_object(Map_Object* object) {
+    void set_collision_object(Map_Object* object) noexcept {
         collision_object = object;
     }
-    Map_Object* get_collision_area() const {
+    Map_Object* get_collision_area() const noexcept {
         return collision_area;
     }
-    void set_collision_area(Map_Object* area) {
+    void set_collision_area(Map_Object* area) noexcept {
         collision_area = area;
     }
-    Map_Object* get_triggered_object() const {
+    Map_Object* get_triggered_object() const noexcept {
         return triggered_object;
     }
-    void set_triggered_object(Map_Object* obj) {
+    void set_triggered_object(Map_Object* obj) noexcept {
         triggered_object = obj;
     }
     void add_linked_object(Map_Object* obj) {
@@ -257,52 +257,52 @@ public:
                 [obj](const Map_Object* o) { return o == obj; }),
             linked_objects.end());
     }
-    void clear_linked_objects() {
+    void clear_linked_objects() noexcept {
         linked_objects.clear();
     }
     bool is_outlined() const;
     void set_outlined(std::optional<bool> new_outlined);
-    void set_outline_conditions(Outline_Condition conditions) {
+    void set_outline_conditions(Outline_Condition conditions) noexcept {
         outline_conditions = conditions;
     }
-    Outline_Condition get_outline_conditions() const {
+    Outline_Condition get_outline_conditions() const noexcept {
         return outline_conditions;
     }
     Outline_Condition get_default_outline_conditions() const;
-    std::optional<xd::vec4> get_outline_color() const {
+    std::optional<xd::vec4> get_outline_color() const noexcept {
         return outline_color;
     }
     void set_outline_color(std::optional<xd::vec4> new_color) {
         outline_color = new_color;
     }
-    int get_outlined_object_id() const {
+    int get_outlined_object_id() const noexcept {
         return outlined_object_id;
     }
-    void set_outlined_object_id(int id) {
+    void set_outlined_object_id(int id) noexcept {
         outlined_object_id = id;
     }
-    Map_Object* get_outlining_object() const {
+    Map_Object* get_outlining_object() const noexcept {
         return outlining_object;
     }
-    void set_outlining_object(Map_Object* object) {
+    void set_outlining_object(Map_Object* object) noexcept {
         outlining_object = object;
     }
-    Draw_Order get_draw_order() const {
+    Draw_Order get_draw_order() const noexcept {
         return draw_order;
     }
-    void set_draw_order(Draw_Order order) {
+    void set_draw_order(Draw_Order order) noexcept {
         draw_order = order;
     }
-    Sprite* get_sprite() override {
+    Sprite* get_sprite() noexcept override {
         return sprite.get();
     }
-    const Sprite* get_sprite() const {
+    const Sprite* get_sprite() const noexcept {
         return sprite.get();
     }
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     float get_speed() const;
     void set_speed(float speed);
-    float get_fps_independent_speed() const {
+    float get_fps_independent_speed() const noexcept {
         return speed;
     }
     // Get bounding box
@@ -314,7 +314,7 @@ public:
     }
     // Get position with bounding box
     xd::vec2 get_real_position() const {
-        auto box = get_bounding_box();
+        const auto box = get_bounding_box();
         return xd::vec2(position.x + box.x, position.y + box.y);
     }
     // Get sprite angle

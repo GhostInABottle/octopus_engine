@@ -27,7 +27,7 @@ namespace xd
             {
             }
 
-            bool is_complete()
+            bool is_complete() override
             {
                 return m_callback();
             }

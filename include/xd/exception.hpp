@@ -22,7 +22,7 @@ namespace xd
         {
         }
 
-        virtual const char *what() const noexcept
+        virtual const char *what() const noexcept override
         {
             if (m_message.length() != 0)
                 return m_message.c_str();

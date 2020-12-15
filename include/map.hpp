@@ -73,9 +73,9 @@ public:
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
         Collision_Record&& previous_record = Collision_Record{});
     // Check if a particular tile is passable
-    bool tile_passable(int x, int y) const;
+    bool tile_passable(int x, int y) const noexcept;
     // Get number of objects
-    int object_count() const;
+    int object_count() const noexcept;
     // Add an object to object layer (or center object layer if no layer)
     Map_Object* add_object(const std::shared_ptr<Map_Object>& object, Object_Layer* layer = nullptr);
     // Create and add an object
@@ -89,7 +89,7 @@ public:
     // Get object by ID
     Map_Object* get_object(int id) const;
     // Get all objects
-    std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
+    std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() noexcept {
         return objects;
     }
     // Delete object
@@ -131,7 +131,7 @@ public:
     // Load map from a TMX map node
     static std::unique_ptr<Map> load(Game& game, rapidxml::xml_node<>& node);
     // Getters and setters
-    Game& get_game() {
+    Game& get_game() noexcept {
         return game;
     }
     void set_property(const std::string& name, const std::string& value) {
@@ -140,34 +140,34 @@ public:
     std::string get_property(const std::string& name) const {
         return properties[name];
     }
-    int get_width() const {
+    int get_width() const noexcept {
         return width;
     }
-    int get_height() const {
+    int get_height() const noexcept {
         return height;
     }
-    int get_tile_width() const {
+    int get_tile_width() const noexcept {
         return tile_width;
     }
-    int get_tile_height() const {
+    int get_tile_height() const noexcept {
         return tile_height;
     }
-    int get_pixel_width() const {
+    int get_pixel_width() const noexcept {
         return width * tile_width;
     }
-    int get_pixel_height() const {
+    int get_pixel_height() const noexcept {
         return height * tile_height;
     }
     std::string get_filename() const {
         return filename;
     }
-    xd::vec2 get_starting_position() const {
+    xd::vec2 get_starting_position() const noexcept {
         return starting_position;
     }
     const Tileset& get_tileset(int index) const {
-        return tilesets[index];
+        return tilesets.at(index);
     }
-    bool get_objects_moved() const {
+    bool get_objects_moved() const noexcept {
         return objects_moved;
     }
     std::string get_bg_music_filename() const {
@@ -182,10 +182,10 @@ public:
     void set_startup_scripts(const std::string& scripts) {
         set_property("scripts", scripts);
     }
-    void set_objects_moved(bool moved) {
+    void set_objects_moved(bool moved) noexcept {
         objects_moved = moved;
     }
-    bool is_changed() {
+    bool is_changed() noexcept {
         return needs_redraw;
     }
 private:

@@ -42,8 +42,8 @@ namespace detail {
 
 Map::Map(Game& game) :
         game(game),
-        height(1),
         width(1),
+        height(1),
         tile_width(1),
         tile_height(1),
         next_object_id(1),
@@ -105,14 +105,14 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
     if (object.initiates_passthrough())
         return result;
-    auto bounding_box = object.get_bounding_box();
+    const auto bounding_box = object.get_bounding_box();
     if (bounding_box.w < 1 || bounding_box.h < 1)
         return result;
 
-    float x_change = (direction & Direction::RIGHT) != Direction::NONE ?
+    const float x_change = (direction & Direction::RIGHT) != Direction::NONE ?
             speed : (direction & Direction::LEFT) != Direction::NONE ?
             -speed : 0.0f;
-    float y_change = (direction & Direction::DOWN) != Direction::NONE ?
+    const float y_change = (direction & Direction::DOWN) != Direction::NONE ?
             speed : (direction & Direction::UP) != Direction::NONE ?
             -speed : 0.0f;
     xd::rect this_box(
@@ -129,22 +129,22 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         for (auto& object_pair : objects) {
             auto other_id = object_pair.first;
             auto other_object = object_pair.second.get();
-            auto visible = other_object->is_visible();
-            auto passthrough = other_object->receives_passthrough();
+            const auto visible = other_object->is_visible();
+            const auto passthrough = other_object->receives_passthrough();
 
             // Skip objects with no bounding box
-            auto box = other_object->get_bounding_box();
+            const auto box = other_object->get_bounding_box();
             if (box.w < 1 || box.h < 1)
                 continue;
-            auto other_pos = other_object->get_position();
+            const auto other_pos = other_object->get_position();
             xd::rect object_box{other_pos.x + box.x, other_pos.y + box.y, box.w, box.h};
-            auto intersects = this_box.intersects(object_box);
+            const auto intersects = this_box.intersects(object_box);
 
             // Special case for skipping tile collision detection
             if (other_object->overrides_tile_collision() && visible && passthrough && intersects)
                 check_tile_collision = false;
             // Areas are passthrough objects with a script
-            auto is_area = passthrough && other_object->has_any_script();
+            const auto is_area = passthrough && other_object->has_any_script();
             // Skip self, invisible, or passthrough objects (except areas)
             if (other_id == object.get_id()|| !visible|| (!is_area && passthrough))
                 continue;
@@ -170,16 +170,16 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
     // Check tile collisions (unless an object overrides collision)
     if (check_tile_collision) {
-        xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
+        const xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
         // Minimum map bounds check (before small negatives are cast to 0)
         if (tile_pos.x < 0.0f || tile_pos.y < 0.0f) {
             result.type = Collision_Type::TILE;
             return result;
         }
-        int min_x = static_cast<int>(tile_pos.x);
-        int min_y = static_cast<int>(tile_pos.y);
-        int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
-        int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
+        const int min_x = static_cast<int>(tile_pos.x);
+        const int min_y = static_cast<int>(tile_pos.y);
+        const int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
+        const int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
         for (int y = min_y; y <= max_y; ++y) {
             for (int x = min_x; x <= max_x; ++x) {
                 // Maximum map bounds check (taking collision box into account)
@@ -189,7 +189,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                 }
                 // Check if tile is blocking
                 if (collision_layer && collision_tileset) {
-                    int tile = collision_layer->tiles[x + y * width] -
+                    const int tile = collision_layer->tiles[x + y * width] -
                         collision_tileset->first_id;
                     if (tile >= 2) {
                         result.type = Collision_Type::TILE;
@@ -206,15 +206,15 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     return result;
 }
 
-bool Map::tile_passable(int x, int y) const {
+bool Map::tile_passable(int x, int y) const noexcept {
     if (x < 0 || x >= width || y < 0 || y >= height)
         return false;
     if (!collision_layer || !collision_tileset) return true;
-    int tile_index = x + y * width;
+    const int tile_index = x + y * width;
     return collision_layer->tiles[tile_index] - collision_tileset->first_id <= 1;
 }
 
-int Map::object_count() const {
+int Map::object_count() const noexcept {
     return objects.size();
 }
 
@@ -330,7 +330,7 @@ Layer* Map::get_layer(std::string name) const {
     string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
-            auto layer_name = layer->name;
+            auto layer_name{layer->name};
             string_utilities::capitalize(layer_name);
             return layer_name == name;
     });
@@ -378,7 +378,7 @@ void Map::delete_layer(std::string name) {
     // Delete any matching object layer and its object
     for (auto layer = object_layers.begin(); layer != object_layers.end();)
     {
-        auto layer_name = (*layer)->name;
+        auto layer_name{(*layer)->name};
         string_utilities::capitalize(layer_name);
         if (layer_name != name)
         {
@@ -393,7 +393,7 @@ void Map::delete_layer(std::string name) {
     }
     // Clear the collision object if necessary
     if (collision_layer) {
-        auto collision_layer_name = collision_layer->name;
+        auto collision_layer_name{collision_layer->name};
         string_utilities::capitalize(collision_layer_name);
         if (collision_layer_name == name) {
             collision_layer = nullptr;
@@ -402,7 +402,7 @@ void Map::delete_layer(std::string name) {
     // Delete matching layers
     layers.erase(std::remove_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
-            auto layer_name = layer->name;
+            auto layer_name{layer->name};
             string_utilities::capitalize(layer_name);
             return layer_name == name;
         }
@@ -523,7 +523,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     // Startup scripts
     if (map_ptr->properties.has_property("scripts")) {
         auto filenames = string_utilities::split(map_ptr->properties["scripts"], ",");
-        for (auto filename : filenames) {
+        for (std::string filename : filenames) {
             string_utilities::trim(filename);
             map_ptr->start_scripts.push_back(filename);
         }

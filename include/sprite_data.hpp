@@ -33,7 +33,7 @@ struct Frame {
     // Frame sound effect filename
     std::string sound_file;
 
-    Frame() : duration(-1), magnification(1.0f, 1.0f), angle(0),
+    Frame() noexcept : duration(-1), magnification(1.0f, 1.0f), angle(0),
         opacity(1.0f), tween_frame(false) {}
 };
 
@@ -57,7 +57,7 @@ struct Pose {
     // List of frames
     std::vector<Frame> frames;
 
-    Pose() : duration(100), repeats(-1), require_completion(false) {}
+    Pose() noexcept : duration(100), repeats(-1), require_completion(false) {}
 };
 
 struct Sprite_Data {

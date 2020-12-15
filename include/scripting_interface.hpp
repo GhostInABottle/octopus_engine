@@ -26,7 +26,7 @@ public:
         return lua_state().script(script).get<T>();
     }
     void set_globals();
-    xd::lua::scheduler& get_scheduler() { return scheduler; }
+    xd::lua::scheduler& get_scheduler() noexcept { return scheduler; }
     template<typename T, typename ... Args>
     std::unique_ptr<Command_Result> register_command(Args&& ... args) {
         auto command = std::make_shared<T>(std::forward<Args>(args)...);

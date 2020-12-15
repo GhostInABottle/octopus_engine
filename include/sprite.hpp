@@ -40,24 +40,24 @@ public:
     // Get size of first frame
     xd::vec2 get_size() const;
     // Get current frame
-    Frame& get_frame();
-    const Frame& get_frame() const;
+    Frame& get_frame() noexcept;
+    const Frame& get_frame() const noexcept;
     // Is the current animation done?
-    bool is_stopped() const;
+    bool is_stopped() const noexcept;
     // Mark the sprite as completed
-    void stop();
+    void stop() noexcept;
     // Is the sprite paused / not updating
-    bool is_paused() const;
+    bool is_paused() const noexcept;
     // Stop updating the sprite
-    void pause();
+    void pause() noexcept;
     // Resume updating the sprite
-    void resume();
+    void resume() noexcept;
     // Did we reach the last frame?
-    bool is_completed() const;
+    bool is_completed() const noexcept;
     // Gets animation speed modifier;
-    float get_speed() const;
+    float get_speed() const noexcept;
     // Sets animation speed modifier
-    void set_speed(float speed);
+    void set_speed(float speed) noexcept;
 private:
     struct Impl;
     friend struct Impl;

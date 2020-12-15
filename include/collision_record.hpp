@@ -34,10 +34,10 @@ struct Collision_Record {
     // Direction of edge tiles (e.g. correcting tiles next to a door)
     Direction edge_direction;
     // Does collision type allow passing through?
-    bool passable() const {
+    bool passable() const noexcept {
         return type == Collision_Type::NONE || type == Collision_Type::AREA;
     }
-    Collision_Record(Collision_Type type = Collision_Type::NONE)
+    Collision_Record(Collision_Type type = Collision_Type::NONE) noexcept
         : type(type), this_object(nullptr), other_object(nullptr),
         other_area(nullptr), edge_direction(Direction::NONE) {}
 };

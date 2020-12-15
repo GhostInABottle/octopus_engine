@@ -44,17 +44,17 @@ public:
     // Render the scene
     void render();
     // Is the game currently paused?
-    bool is_paused() const { return paused; }
+    bool is_paused() const noexcept { return paused; }
     // Check if pausing is possible
-    bool is_pausing_enabled() const { return pausing_enabled; }
+    bool is_pausing_enabled() const noexcept { return pausing_enabled; }
     // Set whether the game will pause on button press or unfocus
-    void set_pausing_enabled(bool value) { pausing_enabled = value; }
+    void set_pausing_enabled(bool value) noexcept { pausing_enabled = value; }
     // Pause game
     void pause();
     // Resume game
     void resume(const std::string& script = "");
     // Exit game
-    void exit();
+    void exit() noexcept;
     // Window dimensions in screen coordinates
     int window_width() const {
         return window ? window->width() : editor_size.x;
@@ -70,7 +70,7 @@ public:
         return window ? window->framebuffer_height() : editor_size.y;
     }
     // Was the executable build in debug mode?
-    bool is_debug() const {
+    bool is_debug() const noexcept {
 #ifdef NDEBUG
         return false;
 #else
@@ -90,20 +90,20 @@ public:
     // Toggle fullscreen mode
     void set_fullscreen(bool fullscreen);
     // Game dimensions
-    float game_width(bool magnified = true) const;
-    float game_height(bool magnified = true) const;
+    float game_width(bool magnified = true) const noexcept;
+    float game_height(bool magnified = true) const noexcept;
     // Get screen magnification
-    float get_magnification() const {
+    float get_magnification() const noexcept {
         return magnification;
     }
     // Set screen magnification
     void set_magnification(float mag);
     // Frames per seconds
-    int fps() const {
+    int fps() const noexcept {
         return window->fps();
     }
     // Number of frames since the beginning
-    int frame_count() const {
+    int frame_count() const noexcept {
         return window->frame_count();
     }
     // Is key currently pressed
@@ -114,7 +114,7 @@ public:
         return window->pressed(key, get_gamepad_id());
     }
     // Was any key triggered since last update?
-    bool triggered() const {
+    bool triggered() const noexcept {
         return window->triggered();
     }
     // Was key triggered since last update?
@@ -154,20 +154,20 @@ public:
     // Run a Lua function
     void run_function(const sol::protected_function& function);
     // Set or get the current scripting interface
-    void set_current_scripting_interface(Scripting_Interface* si) {
+    void set_current_scripting_interface(Scripting_Interface* si) noexcept {
         current_scripting_interface = si;
     }
-    Scripting_Interface* get_current_scripting_interface() {
+    Scripting_Interface* get_current_scripting_interface() noexcept {
         return current_scripting_interface;
     }
     // Get the shared Lua virtual machine
-    xd::lua::virtual_machine* get_lua_vm();
+    xd::lua::virtual_machine* get_lua_vm() noexcept;
     // Reset the scripting interface and run startup scripts again
-    void reset_scripting();
+    void reset_scripting() noexcept;
     // Play some music
     void load_music(const std::string& filename);
     // Get the music currently playing
-    std::shared_ptr<xd::music> playing_music() { return music; }
+    std::shared_ptr<xd::music> playing_music() noexcept { return music; }
     // Set or get the global volume for music
     float get_global_music_volume() const;
     void set_global_music_volume(float volume) const;
@@ -180,41 +180,41 @@ public:
     // Load the map right away
     void load_map(const std::string& filename);
     // Get the map
-    Map* get_map() { return map.get(); }
+    Map* get_map() noexcept { return map.get(); }
     // Create a new map
     void new_map(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Add a canvas to current map
     void add_canvas(std::shared_ptr<Canvas> canvas);
     // Get the camera
-    Camera* get_camera() { return camera.get(); }
+    Camera* get_camera() noexcept { return camera.get(); }
     // Get the player
-    Map_Object* get_player() { return player.get(); }
+    Map_Object* get_player() noexcept { return player.get(); }
     // Get global asset manager
     xd::asset_manager& get_asset_manager();
     void render_text(xd::font& font, xd::text_formatter& formatter,
         const xd::font_style& style, float x, float y, const std::string& text);
     // Get text renderer
-    xd::simple_text_renderer& get_text_renderer() { return text_renderer; }
+    xd::simple_text_renderer& get_text_renderer() noexcept { return text_renderer; }
     // Get font
-    std::shared_ptr<xd::font> get_font() { return font; }
+    std::shared_ptr<xd::font> get_font() noexcept { return font; }
     // Get style
-    const xd::font_style& get_font_style() { return style; }
+    const xd::font_style& get_font_style() noexcept { return style; }
     // Get decorator for shaking text
-    Shake_Decorator* get_shake_decorator() { return shake_decorator.get(); }
+    Shake_Decorator* get_shake_decorator() noexcept { return shake_decorator.get(); }
     // Get clock
-    Clock* get_clock() { return clock.get(); }
+    Clock* get_clock() noexcept { return clock.get(); }
     // Is time stopped
     bool stopped() const;
     // Total game time in seconds
     int seconds() const;
     // Time elapsed since game started (in ms) not including pauses
-    int ticks() const;
+    int ticks() const noexcept;
     // Manually set ticks
-    void set_ticks(int ticks) {
+    void set_ticks(int ticks) noexcept {
         editor_ticks = ticks;
     }
     // Total time elapsed since game started (in ms)
-    int window_ticks() { return window ? window->ticks() : editor_ticks; }
+    int window_ticks() noexcept { return window ? window->ticks() : editor_ticks; }
     // Get save file directory and creates it if needed
     std::string get_save_directory() const;
     // Save game
@@ -236,12 +236,12 @@ public:
     // Get string to be added to map object scripts
     std::string get_object_script_preamble() const;
 private:
+    struct Impl;
+    friend struct Impl;
     std::unique_ptr<xd::window> window;
     bool paused;
     bool pausing_enabled;
     float magnification;
-    struct Impl;
-    friend struct Impl;
     std::unique_ptr<Impl> pimpl;
     std::unique_ptr<Clock> clock;
     std::unique_ptr<Camera> camera;
