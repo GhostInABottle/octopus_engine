@@ -8,35 +8,43 @@
 #include "../include/utility/direction.hpp"
 #include "../include/configurations.hpp"
 
-Player_Controller::Player_Controller(Game& game) : game(game) {}
+Player_Controller::Player_Controller(Game& game)
+    : game(game),
+    action_button(Configurations::get<std::string>("controls.action-button")),
+    last_collision_check(game.ticks()),
+    collision_check_delay(Configurations::get<int>("debug.collision-check-delay")) {}
 
 void Player_Controller::update(Map_Object& object) {
-    if (object.is_disabled())
-        return;
-
     Direction direction = Direction::NONE;
-    if (game.pressed("up"))
-        direction = direction | Direction::UP;
-    if (game.pressed("down"))
-        direction = direction | Direction::DOWN;
-    if (game.pressed("right"))
-        direction = direction | Direction::RIGHT;
-    if (game.pressed("left"))
-        direction = direction | Direction::LEFT;
 
-    static std::string action_button =
-        Configurations::get<std::string>("controls.action-button");
-    bool action_pressed = game.triggered(action_button);
-    bool moved = direction != Direction::NONE;
-    if (!moved && !action_pressed) {
-        if (object.get_state() == object.get_walk_state())
+    auto check_input = !object.is_disabled();
+    if (check_input) {
+        if (game.pressed("up"))
+            direction = direction | Direction::UP;
+        if (game.pressed("down"))
+            direction = direction | Direction::DOWN;
+        if (game.pressed("right"))
+            direction = direction | Direction::RIGHT;
+        if (game.pressed("left"))
+            direction = direction | Direction::LEFT;
+    }
+
+    auto action_pressed = check_input && game.triggered(action_button);
+    auto moved = direction != Direction::NONE;
+    auto time_to_check = game.ticks() - last_collision_check > collision_check_delay;
+    if (!moved && !action_pressed && !time_to_check) {
+        if (check_input && object.get_state() == object.get_walk_state())
             object.set_state(object.get_face_state());
         return;
     }
-    auto collision = object.move(direction, object.get_fps_independent_speed());
+    last_collision_check = game.ticks();
+
+    auto speed = object.get_fps_independent_speed();
+    auto update_state = moved || action_pressed;
+    auto collision = object.move(direction, speed, Collision_Check_Type::BOTH, true, update_state);
     // Check if stuck inside another object
     if (moved && collision.type == Collision_Type::OBJECT) {
-        bool passable = false;
+        auto passable = false;
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
             if (dir == direction) continue;
@@ -49,15 +57,14 @@ void Player_Controller::update(Map_Object& object) {
         }
         // If surrounded by object in all directions, ignore object collisions
         if (!passable)
-            collision = object.move(direction, object.get_fps_independent_speed(),
-                Collision_Check_Type::TILE);
+            collision = object.move(direction, speed, Collision_Check_Type::TILE);
     }
 
     process_collision(object, collision, Collision_Type::OBJECT, action_pressed);
     process_collision(object, collision, Collision_Type::AREA, action_pressed);
+    if (object.get_collision_object()) return;
 
     // Check collision one more time to outline any touched objects
-    if (object.get_collision_object()) return;
     auto touching = game.get_map()->passable(object, object.get_direction(), Collision_Check_Type::OBJECT);
     if (touching.type == Collision_Type::OBJECT) {
         process_collision(object, touching, Collision_Type::OBJECT, false);

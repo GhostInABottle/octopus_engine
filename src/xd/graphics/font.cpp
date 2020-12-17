@@ -49,7 +49,7 @@ namespace xd { namespace detail { namespace font {
 
     struct glyph
     {
-        glyph() {}
+        glyph() : glyph_index(0), texture_id(0) {}
         glyph(const glyph& other)
             : glyph_index(other.glyph_index)
             , texture_id(other.texture_id)

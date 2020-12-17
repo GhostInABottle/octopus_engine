@@ -1,6 +1,7 @@
 #ifndef HPP_PLAYER_CONTROLLER
 #define HPP_PLAYER_CONTROLLER
 
+#include <string>
 #include "map_object.hpp"
 
 class Game;
@@ -12,6 +13,9 @@ public:
     void update(Map_Object& object);
 private:
     Game& game;
+    std::string action_button;
+    int last_collision_check;
+    int collision_check_delay;
     void process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool action_pressed);
 };
 
