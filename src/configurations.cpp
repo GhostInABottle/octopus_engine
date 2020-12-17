@@ -87,6 +87,7 @@ void Configurations::load_defaults() {
     defaults["debug.save-signature"] = 0x7BEDEADu;
     defaults["debug.update-config-files"] = true;
     defaults["debug.collision-check-delay"] = 50;
+    defaults["debug.edge-tolerance-pixels"] = 8;
 
     defaults["startup.map"] = std::string();
     defaults["startup.player-sprite"] = std::string();

@@ -12,7 +12,8 @@ Player_Controller::Player_Controller(Game& game)
     : game(game),
     action_button(Configurations::get<std::string>("controls.action-button")),
     last_collision_check(game.ticks()),
-    collision_check_delay(Configurations::get<int>("debug.collision-check-delay")) {}
+    collision_check_delay(Configurations::get<int>("debug.collision-check-delay")),
+    edge_tolerance_pixels(Configurations::get<int>("debug.edge-tolerance-pixels")) {}
 
 void Player_Controller::update(Map_Object& object) {
     Direction direction = Direction::NONE;
@@ -70,13 +71,12 @@ void Player_Controller::update(Map_Object& object) {
         auto horizontal = direction == Direction::LEFT || direction == Direction::RIGHT;
         auto pos1{object.get_position()};
         auto pos2{pos1};
-        auto pixels = 8;
         if (vertical) {
-            pos1.x -= pixels;
-            pos2.x += pixels;
+            pos1.x -= edge_tolerance_pixels;
+            pos2.x += edge_tolerance_pixels;
         } else {
-            pos1.y -= pixels;
-            pos2.y += pixels;
+            pos1.y -= edge_tolerance_pixels;
+            pos2.y += edge_tolerance_pixels;
         }
 
         auto new_dir = Direction::NONE;
