@@ -98,24 +98,6 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         check_type
     );
 
-    // Check suggested direction (e.g. corrections for doors)
-    auto edge_dir = collision.edge_direction;
-    auto corrected_dir = Direction::NONE;
-    if (edge_dir != Direction::NONE && movement && !multiple_directions && !collision.passable()) {
-        auto edge_vector = direction_to_vector(edge_dir);
-        auto corrected_vector = xd::normalize(movement_vector + edge_vector);
-        corrected_dir = vector_to_direction(corrected_vector);
-        if (corrected_dir != Direction::NONE) {
-            collision = map->passable(*this,
-                corrected_dir, check_type);
-            if (collision.passable()) {
-                change = direction_to_vector(corrected_dir) * pixels;
-            } else {
-                corrected_dir = Direction::NONE;
-            }
-        }
-    }
-
     // Move object
     if (collision.passable()) {
         position += change;
@@ -148,9 +130,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     // Update movement pose
     if (movement) {
         if (change_facing) {
-            if (corrected_dir != Direction::NONE) {
-                direction = move_dir;
-            } else if (check_close(change.y, -pixels)) {
+            if (check_close(change.y, -pixels)) {
                 direction = Direction::UP;
             } else if (check_close(change.y, pixels)) {
                 direction = Direction::DOWN;
@@ -166,9 +146,8 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         }
         if (update_state) set_state(walk_state);
         map->set_objects_moved(true);
-        auto linked_direction = corrected_dir != Direction::NONE ? corrected_dir : move_dir;
         for (auto obj : linked_objects) {
-            obj->move(linked_direction, pixels, check_type, change_facing);
+            obj->move(move_dir, pixels, check_type, change_facing);
         }
     }
     return collision;

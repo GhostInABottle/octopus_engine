@@ -193,9 +193,6 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                         collision_tileset->first_id;
                     if (tile >= 2) {
                         result.type = Collision_Type::TILE;
-                        if (tile >= 3 && tile <= 6) {
-                            result.edge_direction = static_cast<Direction>((tile - 2) * 3);
-                        }
                         return result;
                     }
                 }

@@ -42,13 +42,15 @@ void Player_Controller::update(Map_Object& object) {
     auto speed = object.get_fps_independent_speed();
     auto update_state = moved || action_pressed;
     auto collision = object.move(direction, speed, Collision_Check_Type::BOTH, true, update_state);
+
     // Check if stuck inside another object
+    auto map = game.get_map();
     if (moved && collision.type == Collision_Type::OBJECT) {
         auto passable = false;
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
             if (dir == direction) continue;
-            auto rec = game.get_map()->passable(object, dir);
+            auto rec = map->passable(object, dir);
             auto& others = rec.other_objects;
             if (others.find(collision.other_object->get_name()) == others.end()) {
                 passable = true;
@@ -60,12 +62,40 @@ void Player_Controller::update(Map_Object& object) {
             collision = object.move(direction, speed, Collision_Check_Type::TILE);
     }
 
+    // Try to move around edges
+    auto check_edges = moved && !is_diagonal(direction) && !collision.passable()
+        && (!collision.other_object || !collision.other_object->has_any_script());
+    if (check_edges) {
+        auto vertical = direction == Direction::UP || direction == Direction::DOWN;
+        auto horizontal = direction == Direction::LEFT || direction == Direction::RIGHT;
+        auto pos1{object.get_position()};
+        auto pos2{pos1};
+        auto pixels = 8;
+        if (vertical) {
+            pos1.x -= pixels;
+            pos2.x += pixels;
+        } else {
+            pos1.y -= pixels;
+            pos2.y += pixels;
+        }
+
+        auto new_dir = Direction::NONE;
+        if (map->passable(object, direction, pos1, speed).passable()) {
+            new_dir = vertical ? Direction::LEFT : Direction::UP;
+        } else if (map->passable(object, direction, pos2, speed).passable()) {
+            new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
+        }
+
+        if (new_dir != Direction::NONE)
+            collision = object.move(new_dir, speed, Collision_Check_Type::BOTH, false);
+    }
+
     process_collision(object, collision, Collision_Type::OBJECT, action_pressed);
     process_collision(object, collision, Collision_Type::AREA, action_pressed);
     if (object.get_collision_object()) return;
 
     // Check collision one more time to outline any touched objects
-    auto touching = game.get_map()->passable(object, object.get_direction(), Collision_Check_Type::OBJECT);
+    auto touching = map->passable(object, object.get_direction(), Collision_Check_Type::OBJECT);
     if (touching.type == Collision_Type::OBJECT) {
         process_collision(object, touching, Collision_Type::OBJECT, false);
     }
