@@ -65,7 +65,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
 }
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
-        Collision_Check_Type check_type, bool change_facing, bool update_state) {
+        Collision_Check_Type check_type, bool change_facing) {
     // Map relative directions
     if (move_dir == Direction::FORWARD)
         move_dir = direction;
@@ -80,7 +80,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     const auto movement = x_changed || y_changed;
 
     if (!movement) {
-        if (update_state) set_state(face_state);
+        set_state(face_state);
         // If there was no movement there's no need to check tile collision,
         // but maybe we want to check object collision to trigger scripts
         if (check_type & Collision_Check_Type::OBJECT) {
@@ -122,7 +122,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
             move_dir = vector_to_direction(change);
         } else {
             if (movement && change_facing) direction = move_dir;
-            if (update_state) set_state(face_state);
+            set_state(face_state);
             return collision;
         }
     }
@@ -140,11 +140,11 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
                 direction = Direction::RIGHT;
             } else {
                 direction = move_dir;
-                if (update_state) set_state(face_state);
+                set_state(face_state);
                 return collision;
             }
         }
-        if (update_state) set_state(walk_state);
+        set_state(walk_state);
         map->set_objects_moved(true);
         for (auto obj : linked_objects) {
             obj->move(move_dir, pixels, check_type, change_facing);

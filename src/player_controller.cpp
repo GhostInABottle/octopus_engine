@@ -41,11 +41,15 @@ void Player_Controller::update(Map_Object& object) {
     last_collision_check = game.ticks();
 
     auto speed = object.get_fps_independent_speed();
-    auto update_state = moved || action_pressed;
-    auto collision = object.move(direction, speed, Collision_Check_Type::BOTH, true, update_state);
+    auto map = game.get_map();
+    auto check_type = Collision_Check_Type::BOTH;
+    if (direction == Direction::NONE) {
+        direction = object.get_direction();
+    }
+
+    auto collision = map->passable(object, direction, check_type);
 
     // Check if stuck inside another object
-    auto map = game.get_map();
     if (moved && collision.type == Collision_Type::OBJECT) {
         auto passable = false;
         for (int i = 1; i <= 8; i *= 2) {
@@ -59,11 +63,14 @@ void Player_Controller::update(Map_Object& object) {
             }
         }
         // If surrounded by object in all directions, ignore object collisions
-        if (!passable)
-            collision = object.move(direction, speed, Collision_Check_Type::TILE);
+        if (!passable) {
+            check_type = Collision_Check_Type::TILE;
+            collision = map->passable(object, direction, check_type);
+        }
     }
 
     // Try to move around edges
+    auto change_facing = true;
     auto check_edges = moved && !is_diagonal(direction) && !collision.passable()
         && (!collision.other_object || !collision.other_object->has_any_script());
     if (check_edges) {
@@ -86,19 +93,18 @@ void Player_Controller::update(Map_Object& object) {
             new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
         }
 
-        if (new_dir != Direction::NONE)
-            collision = object.move(new_dir, speed, Collision_Check_Type::BOTH, false);
+        if (new_dir != Direction::NONE) {
+            change_facing = object.get_direction() != direction;
+            direction = new_dir;
+        }
+    }
+
+    if (moved || action_pressed) {
+        collision = object.move(direction, speed, check_type, change_facing);
     }
 
     process_collision(object, collision, Collision_Type::OBJECT, action_pressed);
     process_collision(object, collision, Collision_Type::AREA, action_pressed);
-    if (object.get_collision_object()) return;
-
-    // Check collision one more time to outline any touched objects
-    auto touching = map->passable(object, object.get_direction(), Collision_Check_Type::OBJECT);
-    if (touching.type == Collision_Type::OBJECT) {
-        process_collision(object, touching, Collision_Type::OBJECT, false);
-    }
 }
 
 void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool action_pressed) {
@@ -115,8 +121,10 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
         if (other)
             object.set_collision_area(other);
     }
-    auto touched = other && other->has_touch_script() && other != old_object;
-    auto triggered = other && action_pressed && other->has_trigger_script();
+
+    auto run_scripts = !object.is_disabled();
+    auto touched = run_scripts && other && other->has_touch_script() && other != old_object;
+    auto triggered = run_scripts && action_pressed && other && other->has_trigger_script();
     if (touched || triggered) {
         object.set_triggered_object(other);
         if (other->is_player_facing()) {
@@ -129,7 +137,7 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
             other->run_trigger_script();
         }
     } else if (!other) {
-        if (old_object && old_object->has_leave_script()) {
+        if (run_scripts && old_object && old_object->has_leave_script()) {
             old_object->run_leave_script();
         }
         if (type == Collision_Type::OBJECT) {

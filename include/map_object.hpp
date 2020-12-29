@@ -33,7 +33,7 @@ public:
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
-        bool change_facing = true, bool update_state = true);
+        bool change_facing = true);
     // Getters and setters
     Object_Layer* get_layer() const noexcept {
         return layer;
