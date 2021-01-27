@@ -99,7 +99,7 @@ void Player_Controller::update(Map_Object& object) {
         }
     }
 
-    if (moved || action_pressed) {
+    if (moved) {
         collision = object.move(direction, speed, check_type, change_facing);
     }
 
