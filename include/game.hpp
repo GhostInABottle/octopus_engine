@@ -147,6 +147,12 @@ public:
     void unbind_virtual_key(const std::string& virtual_key);
     // Get bound physical key names for a virtual key
     std::vector<std::string> get_bound_keys(const std::string& virtual_name) const;
+    // Start recording character/text input
+    void begin_character_input() const { window->begin_character_input(); }
+    // Stop recording character input and reset the buffer
+    std::string end_character_input() { return window->end_character_input(); }
+    // Get the currently stored buffer of characters
+    std::string character_input() const { return window->character_input(); }
     // Run a script
     void run_script(const std::string& script);
     // Run a script file

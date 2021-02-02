@@ -680,6 +680,7 @@ void Scripting_Interface::setup_scripts() {
         return sol::as_table(game.get_sizes());
     });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
+    game_type["character_input"] = sol::property(&Game::character_input);
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pause"] = &Game::pause;
@@ -698,6 +699,8 @@ void Scripting_Interface::setup_scripts() {
     game_type["get_bound_keys"] = [](Game* game, const std::string& virtual_name) {
         return sol::as_table(game->get_bound_keys(virtual_name));
     };
+    game_type["begin_character_input"] = &Game::begin_character_input;
+    game_type["end_character_input"] = &Game::end_character_input;
     game_type["run_script"] = &Game::run_script;
     game_type["run_script_file"] = &Game::run_script_file;
     game_type["run_function"] = &Game::run_function;

@@ -238,6 +238,19 @@ elseif c.selected == 6 then
         end
         wait(1)
     end
+    text(o, "Starting to record character input. Press ENTER to stop"):wait()
+    done = false
+    game:begin_character_input()
+    while not done do
+        wait(0)
+        for i, key in ipairs(game.triggered_keys) do
+            if key == 'ENTER' then
+                done = true
+            end
+        end
+   end
+   local char_input = game:end_character_input()
+   text(o, "You entered: " .. char_input):wait()
 elseif c.selected == 7 then
     -- Other
     local files = filesystem.list_directory('.')

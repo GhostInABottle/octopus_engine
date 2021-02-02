@@ -1,6 +1,7 @@
 #include "../../../include/xd/system/window.hpp"
 #include "../../../include/xd/system/exceptions.hpp"
 #include "../../../include/xd/vendor/glm/gtx/hash.hpp"
+#include "../../../include/xd/vendor/utf8.h"
 #include <GL/glew.h>
 #ifdef _WIN32
     #include <GL/glfw3.h>
@@ -22,6 +23,10 @@ namespace
     void on_mouse_proxy(GLFWwindow*, int key, int action, int)
     {
         window_instance->on_input(xd::input_type::INPUT_MOUSE, key, action);
+    }
+
+    void on_character_input(GLFWwindow*, unsigned int codepoint) {
+        window_instance->on_character_input(codepoint);
     }
 
     void on_joystick_changed(int id, int event) {
@@ -169,6 +174,10 @@ void xd::window::on_input(input_type type, int key, int action, int device_id)
     } else {
         m_input_events["key_up"](args);
     }
+}
+
+void xd::window::on_character_input(unsigned int codepoint) {
+    utf8::append(codepoint, std::back_inserter(m_character_buffer));
 }
 
 void xd::window::update()
@@ -526,6 +535,17 @@ bool xd::window::triggered_once(const std::string& key, int joystick_id)
         }
     }
     return false;
+}
+
+void xd::window::begin_character_input() const {
+    glfwSetCharCallback(m_window, ::on_character_input);
+}
+
+std::string xd::window::end_character_input() {
+    glfwSetCharCallback(m_window, nullptr);
+    std::string input_copy{m_character_buffer};
+    m_character_buffer = "";
+    return input_copy;
 }
 
 float xd::window::axis_value(const xd::key& key, int joystick_id)

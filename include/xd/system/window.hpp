@@ -84,6 +84,10 @@ namespace xd
             return m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
         }
 
+        void begin_character_input() const;
+        std::string end_character_input();
+        std::string character_input() const { return m_character_buffer; }
+
         float axis_value(const key& key, int joystick_id = -1);
         float axis_value(const std::string& key, int joystick_id = -1);
 
@@ -122,6 +126,8 @@ namespace xd
 
         // input event handler, for internal use
         void on_input(input_type type, int key, int action, int device_id = 0);
+        // character input event handler, for internal use
+        void on_character_input(unsigned int codepoint);
 
     private:
         GLFWwindow* m_window;
@@ -132,11 +138,13 @@ namespace xd
         xd::ivec2 m_windowed_pos;
         // windowed mode content size
         xd::ivec2 m_windowed_size;
-
+        // joystick options
         bool m_joystick_enabled;
         bool m_gamepad_detection;
         bool m_axis_as_dpad;
         float m_axis_sensitivity;
+        // stored character input
+        std::string m_character_buffer;
 
         // keep track of ticks
         std::uint32_t m_current_ticks;
