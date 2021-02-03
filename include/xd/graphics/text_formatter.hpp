@@ -231,16 +231,24 @@ namespace xd
         virtual ~text_formatter();
 
         const std::string& get_decorator_open_delim() const;
+        const std::string& get_decorator_open_escape_delim() const;
         const std::string& get_decorator_close_delim() const;
+        const std::string& get_decorator_close_escape_delim() const;
         const std::string& get_decorator_terminate_delim() const;
         void set_decorator_open_delim(const std::string& delim);
+        void set_decorator_open_escape_delim(const std::string& delim);
         void set_decorator_close_delim(const std::string& delim);
+        void set_decorator_close_escape_delim(const std::string& delim);
         void set_decorator_terminate_delim(const std::string& delim);
         void set_decorator_delims(const std::string& open, const std::string& close, const std::string& terminate);
         const std::string& get_variable_open_delim() const;
+        const std::string& get_variable_open_escape_delim() const;
         const std::string& get_variable_close_delim() const;
+        const std::string& get_variable_close_escape_delim() const;
         void set_variable_open_delim(const std::string& delim);
+        void set_variable_open_escape_delim(const std::string& delim);
         void set_variable_close_delim(const std::string& delim);
+        void set_variable_close_escape_delim(const std::string& delim);
         void set_variable_delims(const std::string& open, const std::string& close);
 
         void register_decorator(const std::string& name, decorator_callback_t decorator);
@@ -266,10 +274,14 @@ namespace xd
 
         // delimiters
         std::string m_decorator_open_delim;
+        std::string m_decorator_open_escape_delim;
         std::string m_decorator_close_delim;
+        std::string m_decorator_close_escape_delim;
         std::string m_decorator_terminate_delim;
         std::string m_variable_open_delim;
+        std::string m_variable_open_escape_delim;
         std::string m_variable_close_delim;
+        std::string m_variable_close_escape_delim;
     };
 }
 

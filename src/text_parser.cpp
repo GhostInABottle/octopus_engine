@@ -64,13 +64,14 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
     std::unordered_map<std::string, std::vector<int>> unmatched_tokens;
 
     while (start != end) {
-        if (*start == '{') {
+        // Handle tags
+        auto next_char = start + 1 != end ? *(start + 1) : '_';
+        if (*start == '{' && next_char != '{') {
             Token tag_token;
             tag_token.unmatched = false;
             tag_token.start_index = utf8::distance(text.begin(), start);
             start++;
-            if (validate_condition(start == end, "open brace at the end"))
-                break;
+            if (validate_condition(start == end, "open brace at the end")) break;
 
             if (*start == '/') {
                 tag_token.type = Token_Type::CLOSING_TAG;
@@ -87,11 +88,13 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             while (start != end)
             {
                 if (std::find(std::begin(special), std::end(special), *start) == std::end(special)) {
+                    // Read tag name or value
                     if (tag_token.tag.empty())
                         tag_name += *start;
                     else
                         value += *start;
                 } else {
+                    // Handle special character in tag
                     if (*start == '=') {
                         if (tag_token.type == Token_Type::OPENING_TAG) {
                             tag_token.tag = tag_name;
@@ -117,14 +120,17 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                             tag_token.value = value;
                         }
 
+                        // Closing the tag and matching it
                         if (tag_token.type == Token_Type::OPENING_TAG) {
                             unmatched_tokens[tag_token.tag].push_back(tokens.size());
                             tag_token.unmatched = true;
                         } else {
                             if (unmatched_tokens[tag_token.tag].empty()) {
+                                // A closing tag with no matched open tag
                                 tag_token.unmatched = true;
                             } else {
                                 auto& opening_token = tokens[unmatched_tokens[tag_token.tag].back()];
+                                // Found the closing tag for an unmatched open tag
                                 if (opening_token.start_index < tag_token.start_index) {
                                     opening_token.unmatched = false;
                                     unmatched_tokens[tag_token.tag].pop_back();
@@ -143,11 +149,13 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                 start++;
             }
 
+            // Reached the end of the string but tag wasn't closed
             auto unclosed_tag = tag_token.tag.empty() || (has_value && tag_token.value.empty());
             if (!error && !validate_condition(unclosed_tag, "tag was not closed "))
                 tokens.push_back(tag_token);
         }
 
+        // Not a tag token, so we read it as a text token until we find a tag
         if (start != end) {
             Token text_token;
             text_token.unmatched = false;
@@ -156,12 +164,19 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             std::string parsed_text;
             while (start != end)
             {
-                if (*start != '{' && *start != '}')
+                next_char = start + 1 != end ? *(start + 1) : '_';
+                auto is_text = *start != '{' && *start != '}';
+                if (!is_text && *start == next_char) {
                     parsed_text += *start;
-                else if (*start == '{')
+                    start++;
+                } else if (is_text) {
+                    parsed_text += *start;
+                } else if (*start == '{') {
                     break;
+                } else {
+                    validate_condition(*start == '}', "unexpected closing tag");
+                }
 
-                validate_condition(*start == '}', "unexpected closing tag");
                 start++;
             }
 

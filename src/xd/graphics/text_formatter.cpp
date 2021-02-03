@@ -12,10 +12,10 @@
 
 namespace xd { namespace detail { namespace text_formatter {
 
-    template< typename Iter1, typename Iter2 >
-    bool safe_equal(Iter1 begin1, Iter1 end1, Iter2 begin2, Iter2 end2)
+    template< typename Iter >
+    bool safe_equal(std::string str1, Iter begin2, Iter end2)
     {
-        return end2 - begin2 >= end1 - begin1 && std::equal(begin1, end1, begin2);
+        return end2 - begin2 >= str1.end() - str1.begin() && std::equal(str1.begin(), str1.end(), begin2);
     }
 
     // formatted text list
@@ -705,10 +705,14 @@ void xd::text_decorator::pop_force_autohint()
 
 xd::text_formatter::text_formatter()
     : m_decorator_open_delim("{")
+    , m_decorator_open_escape_delim("{{")
     , m_decorator_close_delim("}")
+    , m_decorator_close_escape_delim("}}")
     , m_decorator_terminate_delim("/")
-    , m_variable_open_delim("${")
-    , m_variable_close_delim("}")
+    , m_variable_open_delim("$<")
+    , m_variable_open_escape_delim("$$<<")
+    , m_variable_close_delim(">")
+    , m_variable_close_escape_delim(">>")
 {
 }
 
@@ -721,9 +725,17 @@ const std::string& xd::text_formatter::get_decorator_open_delim() const
     return m_decorator_open_delim;
 }
 
+const std::string& xd::text_formatter::get_decorator_open_escape_delim() const {
+    return m_decorator_open_escape_delim;
+}
+
 const std::string& xd::text_formatter::get_decorator_close_delim() const
 {
     return m_decorator_close_delim;
+}
+
+const std::string& xd::text_formatter::get_decorator_close_escape_delim() const {
+    return m_decorator_close_escape_delim;
 }
 
 const std::string& xd::text_formatter::get_decorator_terminate_delim() const
@@ -736,9 +748,17 @@ void xd::text_formatter::set_decorator_open_delim(const std::string& delim)
     m_decorator_open_delim = delim;
 }
 
+void xd::text_formatter::set_decorator_open_escape_delim(const std::string& delim) {
+    m_decorator_open_escape_delim = delim;
+}
+
 void xd::text_formatter::set_decorator_close_delim(const std::string& delim)
 {
     m_decorator_close_delim = delim;
+}
+
+void xd::text_formatter::set_decorator_close_escape_delim(const std::string& delim) {
+    m_decorator_close_escape_delim = delim;
 }
 
 void xd::text_formatter::set_decorator_terminate_delim(const std::string& delim)
@@ -751,6 +771,8 @@ void xd::text_formatter::set_decorator_delims(const std::string& open, const std
     m_decorator_open_delim = open;
     m_decorator_close_delim = close;
     m_decorator_terminate_delim = terminate;
+    m_decorator_open_escape_delim = open + open;
+    m_decorator_close_escape_delim = close + close;
 }
 
 const std::string& xd::text_formatter::get_variable_open_delim() const
@@ -758,9 +780,17 @@ const std::string& xd::text_formatter::get_variable_open_delim() const
     return m_variable_open_delim;
 }
 
+const std::string& xd::text_formatter::get_variable_open_escape_delim() const {
+    return m_variable_open_escape_delim;
+}
+
 const std::string& xd::text_formatter::get_variable_close_delim() const
 {
     return m_variable_close_delim;
+}
+
+const std::string& xd::text_formatter::get_variable_close_escape_delim() const {
+    return m_variable_close_escape_delim;
 }
 
 void xd::text_formatter::set_variable_open_delim(const std::string& delim)
@@ -768,9 +798,17 @@ void xd::text_formatter::set_variable_open_delim(const std::string& delim)
     m_variable_open_delim = delim;
 }
 
+void xd::text_formatter::set_variable_open_escape_delim(const std::string& delim) {
+    m_variable_open_escape_delim = delim;
+}
+
 void xd::text_formatter::set_variable_close_delim(const std::string& delim)
 {
     m_variable_close_delim = delim;
+}
+
+void xd::text_formatter::set_variable_close_escape_delim(const std::string& delim) {
+    m_variable_close_escape_delim = delim;
 }
 
 void xd::text_formatter::register_decorator(const std::string& name, xd::text_formatter::decorator_callback_t decorator)
@@ -821,6 +859,8 @@ void xd::text_formatter::set_variable_delims(const std::string& open, const std:
 {
     m_variable_open_delim = open;
     m_variable_close_delim = close;
+    m_variable_open_escape_delim = open + open;
+    m_variable_close_escape_delim = close + close;
 }
 
 void xd::text_formatter::render(const std::string& text, xd::font& font, const xd::font_style& style,
@@ -895,12 +935,31 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
     // parser state variables
     std::list<std::string> open_decorators;
     std::string current_text;
+    std::unordered_map<std::string, std::string> escape_delims = {
+        { m_decorator_open_delim, m_decorator_open_escape_delim },
+        { m_decorator_close_delim, m_decorator_close_escape_delim },
+        { m_variable_open_delim, m_variable_open_escape_delim },
+        { m_variable_close_delim, m_variable_close_escape_delim }
+    };
 
     // parse!
     std::string::const_iterator start = text.begin(), end = text.end();
     while (start != end) {
+        // Skip escape delims
+        auto skip = false;
+        for (auto& [delim, escape_delim] : escape_delims) {
+            if (detail::text_formatter::safe_equal(escape_delim, start, end)) {
+                std::string::const_iterator delim_start = delim.begin(), delim_end = delim.cend();
+                utf8::append(utf8::next(delim_start, delim_end), std::back_inserter(current_text));
+                utf8::advance(start, utf8::distance(escape_delim.begin(), escape_delim.end()), end);
+                skip = true;
+                break;
+            }
+        }
+        if (skip) continue;
+
         // check if we have an opening decorator delimiter
-        if (detail::text_formatter::safe_equal(m_decorator_open_delim.begin(), m_decorator_open_delim.end(), start, end)) {
+        if (detail::text_formatter::safe_equal(m_decorator_open_delim, start, end)) {
             // push current text node
             if (current_text.length() != 0) {
                 detail::text_formatter::token_text tok;
@@ -914,7 +973,7 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
 
             // check is this opening or closing tag
             bool open_decorator;
-            if (detail::text_formatter::safe_equal(m_decorator_terminate_delim.begin(), m_decorator_terminate_delim.end(), start, end)) {
+            if (detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end)) {
                 // closing tag
                 utf8::advance(start, utf8::distance(m_decorator_terminate_delim.begin(), m_decorator_terminate_delim.end()), end);
                 open_decorator = false;
@@ -925,7 +984,7 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
             // get the decorator name
             std::string decorator_name;
             while (start != end && (*start != '=' || !open_decorator)
-                && !detail::text_formatter::safe_equal(m_decorator_close_delim.begin(), m_decorator_close_delim.end(), start, end))
+                && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end))
             {
                 utf8::append(utf8::next(start, end), std::back_inserter(decorator_name));
             }
@@ -938,7 +997,7 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
 
                 // parse arguments
                 std::string arg;
-                while (start != end && !detail::text_formatter::safe_equal(m_decorator_close_delim.begin(), m_decorator_close_delim.end(), start, end)) {
+                while (start != end && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)) {
                     if (*start == ',') {
                         // push and reset the argument
                         args.m_args.push_back(arg);
@@ -1000,7 +1059,7 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
         }
 
         // check if we have an opening variable delimiter
-        if (detail::text_formatter::safe_equal(m_variable_open_delim.begin(), m_variable_open_delim.end(), start, end)) {
+        if (detail::text_formatter::safe_equal(m_variable_open_delim, start, end)) {
             // push current text node
             if (current_text.length() != 0) {
                 detail::text_formatter::token_text tok;
@@ -1014,7 +1073,7 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
 
             // get the tag name
             std::string variable_name;
-            while (start != end && !detail::text_formatter::safe_equal(m_variable_close_delim.begin(), m_variable_close_delim.end(), start, end)) {
+            while (start != end && !detail::text_formatter::safe_equal(m_variable_close_delim, start, end)) {
                 utf8::append(utf8::next(start, end), std::back_inserter(variable_name));
             }
 

@@ -54,6 +54,8 @@ struct Show_Text_Command::Impl : Timed_Command {
             int end = clean_text.find_first_of('}', start);
             if (end != std::string::npos) {
                 clean_text.erase(start, end - start + 1);
+            } else {
+                break;
             }
         }
         auto text_lines = string_utilities::split(clean_text, "\n", false);

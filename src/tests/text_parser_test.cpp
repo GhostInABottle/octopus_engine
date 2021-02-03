@@ -3,6 +3,7 @@
 
 namespace detail {
     std::string invalid_cases[] = {
+        "{",            // open brace at the end
         "a{",           // open brace at the end
         "a{/",          // close brace at the end
         "a}",           // unexpected closing tag
@@ -12,7 +13,6 @@ namespace detail {
         "{a=}",         // empty value
         "{//}",         // unexpected character in tag
         "{/b/b}",       // unexpected character in tag
-        "{{}}",         // unexpected character in tag
         "{a",           // tag was not closed
         "{/a",          // tag was not closed
         "aaa}"          // unexpected closing tag
@@ -127,8 +127,9 @@ BOOST_AUTO_TEST_CASE(text_parser_handles_empty_text) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_text) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "hello", false, 0, 4));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::TEXT, "", "hello", false, 0, 4)
+    };
 
     detail::validate_tokens(parser, "hello", tokens);
 }
@@ -136,10 +137,11 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_text) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "hello", false, 3, 7));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
+        detail::build_token(Token_Type::TEXT, "", "hello", false, 3, 7),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11)
+    };
 
     detail::validate_tokens(parser, "{b}hello{/b}", tokens);
 }
@@ -148,10 +150,11 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_unicode_text) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "مرحبا", false, 3, 7));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
+        detail::build_token(Token_Type::TEXT, "", "مرحبا", false, 3, 7),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11)
+    };
 
     detail::validate_tokens(parser, "{b}مرحبا{/b}", tokens);
 }
@@ -159,10 +162,11 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_unicode_text) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_value) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "c", false, 0, 4));
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "hello", false, 5, 9));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 10, 13));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "c", false, 0, 4),
+        detail::build_token(Token_Type::TEXT, "", "hello", false, 5, 9),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 10, 13)
+    };
 
     detail::validate_tokens(parser, "{b=c}hello{/b}", tokens);
 }
@@ -170,9 +174,10 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_value) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_empty_text) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 3, 6));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 3, 6)
+    };
 
     detail::validate_tokens(parser, "{b}{/b}", tokens);
 }
@@ -180,13 +185,14 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_empty_text) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_tags) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "x", false, 3, 3));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 4, 7));
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 8, 10));
-    tokens.push_back(detail::build_token(Token_Type::TEXT, "", "y", false, 11, 11));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 12, 15));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 0, 2),
+        detail::build_token(Token_Type::TEXT, "", "x", false, 3, 3),
+        detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 4, 7),
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 8, 10),
+        detail::build_token(Token_Type::TEXT, "", "y", false, 11, 11),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 12, 15)
+    };
 
     detail::validate_tokens(parser, "{a}x{/a}{b}y{/b}", tokens);
 }
@@ -194,9 +200,10 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_tags) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_unmatched_tags) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", true, 3, 6));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", true, 3, 6),
+    };
 
     detail::validate_tokens(parser, "{a}{/b}", tokens);
 }
@@ -204,17 +211,28 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_unmatched_tags) {
 BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_unmatched_tags) {
     Text_Parser parser;
 
-    std::vector<Token> tokens;
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2));
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 3, 5));
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 6, 8));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 9, 12));
-    tokens.push_back(detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 13, 15));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 16, 19));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "b", "", true, 20, 23));
-    tokens.push_back(detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 24, 27));
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2),
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 3, 5),
+        detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 6, 8),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 9, 12),
+        detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 13, 15),
+        detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 16, 19),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", true, 20, 23),
+        detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 24, 27)
+    };
 
     detail::validate_tokens(parser, "{a}{b}{a}{/b}{a}{/a}{/b}{/a}", tokens);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_parses_escaped_tags) {
+    Text_Parser parser;
+
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::TEXT, "", "{b}hello{b} world{/b}", false, 0, 26),
+    };
+
+    detail::validate_tokens(parser, "{{b}}hello{{b}} world{{/b}}", tokens);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
