@@ -103,11 +103,11 @@ void Player_Controller::update(Map_Object& object) {
         collision = object.move(direction, speed, check_type, change_facing);
     }
 
-    process_collision(object, collision, Collision_Type::OBJECT, action_pressed);
-    process_collision(object, collision, Collision_Type::AREA, action_pressed);
+    process_collision(object, collision, Collision_Type::OBJECT, moved, action_pressed);
+    process_collision(object, collision, Collision_Type::AREA, moved, action_pressed);
 }
 
-void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool action_pressed) {
+void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool moved, bool action_pressed) {
     Map_Object* old_object = nullptr;
     Map_Object* other = nullptr;
     if (type == Collision_Type::OBJECT) {
@@ -123,7 +123,7 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
     }
 
     auto run_scripts = !object.is_disabled();
-    auto touched = run_scripts && other && other->has_touch_script() && other != old_object;
+    auto touched = run_scripts && moved && other && other->has_touch_script() && other != old_object;
     auto triggered = run_scripts && action_pressed && other && other->has_trigger_script();
     if (touched || triggered) {
         object.set_triggered_object(other);
@@ -137,7 +137,7 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
             other->run_trigger_script();
         }
     } else if (!other) {
-        if (run_scripts && old_object && old_object->has_leave_script()) {
+        if (run_scripts && moved && old_object && old_object->has_leave_script()) {
             old_object->run_leave_script();
         }
         if (type == Collision_Type::OBJECT) {
