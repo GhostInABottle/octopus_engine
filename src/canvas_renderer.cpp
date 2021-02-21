@@ -165,18 +165,18 @@ void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
     xd::vec2 pos = canvas.get_position();
     auto camera_pos = camera.get_position();
     pos += camera_pos;
-    xd::vec4 color = canvas.get_color();
     if (parent) {
         pos += parent->get_position();
     }
 
     xd::vec2 mag = canvas.get_magnification();
     if (auto sprite = canvas.get_sprite()) {
-        sprite->render(batch, xd::vec2(pos.x, pos.y), 1.0f, mag, color);
+        sprite->render(batch, canvas, pos);
     } else {
-        float angle = canvas.get_angle();
+        auto angle = canvas.get_angle().value_or(0.0f);
+        auto origin = canvas.get_origin().value_or(xd::vec2{0.5f, 0.5f});
         batch.add(canvas.get_image_texture(), pos.x, pos.y,
-            xd::radians(angle), mag, color, canvas.get_origin());
+            xd::radians(angle), mag, canvas.get_color(), origin);
     }
 }
 

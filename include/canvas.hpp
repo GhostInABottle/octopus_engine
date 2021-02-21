@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <optional>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/font.hpp"
@@ -152,10 +153,10 @@ public:
         position.y = y;
         redraw_needed = true;
     }
-    xd::vec2 get_origin() const noexcept {
+    std::optional<xd::vec2> get_origin() const noexcept {
         return origin;
     }
-    void set_origin(xd::vec2 new_origin) noexcept {
+    void set_origin(std::optional<xd::vec2> new_origin) noexcept {
         if (origin == new_origin)
             return;
         origin = new_origin;
@@ -182,10 +183,10 @@ public:
         scissor_box = new_scissor_box;
         redraw_needed = true;
     }
-    float get_angle() const noexcept {
+    std::optional<float> get_angle() const noexcept {
         return angle;
     }
-    void set_angle(float new_angle) noexcept {
+    void set_angle(std::optional<float> new_angle) noexcept {
         if (angle == new_angle)
             return;
         angle = new_angle;
@@ -424,13 +425,13 @@ private:
     // Canvas position
     xd::vec2 position;
     // Drawing origin
-    xd::vec2 origin;
+    std::optional<xd::vec2> origin;
     // X and Y magnification
     xd::vec2 magnification;
     // Scissor test rectangle (won't draw outside it)
     xd::rect scissor_box;
     // Rotation angle in degrees
-    float angle;
+    std::optional<float> angle;
     // Color applied to the image
     xd::vec4 color;
     // Is the canvas visible?

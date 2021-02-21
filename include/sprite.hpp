@@ -12,6 +12,8 @@ struct Frame;
 struct Pose;
 struct Sprite_Data;
 class Map_Object;
+class Canvas;
+struct Image_Layer;
 
 class Sprite : public xd::component<Map_Object> {
 public:
@@ -19,9 +21,8 @@ public:
     ~Sprite();
     // Render a frame
     void render(Map_Object& object);
-    void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
-        xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
-        bool repeat = false, xd::vec2 repeat_pos = xd::vec2());
+    void render(xd::sprite_batch& batch, const Canvas& canvas, const xd::vec2 pos);
+    void render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos);
     // Frame update
     void update(Map_Object& object);
     void update();
@@ -40,24 +41,24 @@ public:
     // Get size of first frame
     xd::vec2 get_size() const;
     // Get current frame
-    Frame& get_frame() noexcept;
-    const Frame& get_frame() const noexcept;
+    Frame& get_frame();
+    const Frame& get_frame() const;
     // Is the current animation done?
-    bool is_stopped() const noexcept;
+    bool is_stopped() const;
     // Mark the sprite as completed
-    void stop() noexcept;
+    void stop();
     // Is the sprite paused / not updating
-    bool is_paused() const noexcept;
+    bool is_paused() const;
     // Stop updating the sprite
-    void pause() noexcept;
+    void pause();
     // Resume updating the sprite
-    void resume() noexcept;
+    void resume();
     // Did we reach the last frame?
-    bool is_completed() const noexcept;
+    bool is_completed() const;
     // Gets animation speed modifier;
-    float get_speed() const noexcept;
+    float get_speed() const;
     // Sets animation speed modifier
-    void set_speed(float speed) noexcept;
+    void set_speed(float speed);
 private:
     struct Impl;
     friend struct Impl;

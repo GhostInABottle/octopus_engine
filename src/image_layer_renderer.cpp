@@ -13,8 +13,7 @@ void Image_Layer_Renderer::render(Map& map) {
     if (image_layer.fixed)
         pos = camera.get_position();
     if (image_layer.sprite) {
-        image_layer.sprite->render(batch, pos, layer.opacity, xd::vec2(1.0f),
-            xd::vec4(1.0f), image_layer.repeat, image_layer.position);
+        image_layer.sprite->render(batch, image_layer, pos);
     } else {
         auto& texture = image_layer.image_texture;
         xd::vec4 color(1.0f, 1.0f, 1.0f, layer.opacity);

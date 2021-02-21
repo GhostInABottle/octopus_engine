@@ -1,14 +1,17 @@
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/map_object.hpp"
+#include "../include/canvas.hpp"
 #include "../include/object_layer.hpp"
 #include "../include/object_layer_renderer.hpp"
+#include "../include/image_layer.hpp"
 #include "../include/game.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/string.hpp"
 #include "../include/xd/audio.hpp"
 #include <algorithm>
 #include <iostream>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -71,6 +74,30 @@ struct Sprite::Impl {
         speed(1.0f)
     {
         set_default_pose();
+    }
+
+    void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
+            xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
+            std::optional<float> angle = std::nullopt, std::optional<xd::vec2> origin = std::nullopt,
+        bool repeat = false, xd::vec2 repeat_pos = xd::vec2()) {
+        auto& frame = pose->frames[frame_index];
+        auto& image = frame.image ? frame.image :
+            (pose->image ? pose->image : data->image);
+        if (!image)
+            return;
+        xd::rect src = frame.rectangle;
+        if (repeat) {
+            // Sprite's src rectangle position is ignored
+            src.x = -repeat_pos.x;
+            src.y = -repeat_pos.y;
+        }
+        color.a *= opacity * frame.opacity;
+        batch.add(image, src,
+            pos.x, pos.y,
+            xd::radians(angle.value_or(static_cast<float>(frame.angle))),
+            frame.magnification * mag,
+            color,
+            origin.value_or(pose->origin));
     }
 
     void update() {
@@ -136,7 +163,7 @@ struct Sprite::Impl {
         }
     }
 
-    void reset() noexcept {
+    void reset() {
         frame_index = 0;
         old_time = game.ticks();
         repeat_count = 0;
@@ -147,7 +174,7 @@ struct Sprite::Impl {
         tweening = false;
     }
 
-    int get_frame_time(const Frame& frame) const noexcept {
+    int get_frame_time(const Frame& frame) const {
         const int frame_time = frame.duration == -1 ? pose->duration : frame.duration;
         return static_cast<int>(frame_time * speed);
     }
@@ -156,30 +183,30 @@ struct Sprite::Impl {
         return data->filename;
     }
 
-    bool finished_repeating() const noexcept {
+    bool finished_repeating() const {
         return pose->repeats != -1 && repeat_count >= pose->repeats;
     }
 
-    void pause() noexcept {
+    void pause() {
         paused = true;
         pause_start = game.ticks();
     }
 
-    void resume() noexcept {
+    void resume() {
         paused = false;
         pause_start = -1;
     }
 
-    long paused_time() const noexcept {
+    long paused_time() const {
         if (pause_start == -1) return 0;
         return game.ticks() - pause_start;
     }
 
-    long passed_time() const noexcept {
+    long passed_time() const {
         return game.ticks() - old_time - paused_time();
     }
 
-    bool is_completed() const noexcept {
+    bool is_completed() const {
         return frame_count > 0
             && frame_index == frame_count - 1
             && passed_time() >= get_frame_time(pose->frames[frame_index]);
@@ -278,39 +305,44 @@ Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
 Sprite::~Sprite() {}
 
 void Sprite::render(Map_Object& object) {
-    if (!object.is_visible())
-        return;
+    if (!object.is_visible()) return;
+
     auto layer =  object.get_layer();
     auto& batch = layer->renderer->get_batch();
-    render(batch, object.get_position(),
+    pimpl->render(batch, object.get_position(),
            layer->opacity * object.get_opacity(),
            object.get_magnification(),
            layer->color * object.get_color());
 }
 
-void Sprite::render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
-        xd::vec2 mag, xd::vec4 color, bool repeat, xd::vec2 repeat_pos) {
-    auto& pose = get_pose();
-    auto& frame = get_frame();
-    auto& image = frame.image ? frame.image :
-        (pose.image ? pose.image : pimpl->data->image);
-    if (!image)
-        return;
-    xd::rect src = frame.rectangle;
-    if (repeat) {
-        // Sprite's src rectangle position is ignored
-        src.x = -repeat_pos.x;
-        src.y = -repeat_pos.y;
-    }
-    float angle = xd::radians(static_cast<float>(frame.angle));
-    color.a *= opacity * frame.opacity;
-    auto magnification = frame.magnification * mag;
-    batch.add(image, src, pos.x, pos.y, angle,
-        magnification, color, get_pose().origin);
+void Sprite::render(xd::sprite_batch& batch, const Canvas& canvas, const xd::vec2 pos) {
+    if (!canvas.is_visible()) return;
+
+    pimpl->render(batch,
+        pos,
+        canvas.get_opacity(),
+        canvas.get_magnification(),
+        canvas.get_color(),
+        canvas.get_angle(),
+        canvas.get_origin());
+}
+
+void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos) {
+    if (!image_layer.visible) return;
+
+    pimpl->render(batch,
+        pos,
+        image_layer.opacity,
+        xd::vec2(1.0f),     // magnification
+        xd::vec4(1.0f),     // Color
+        std::nullopt,       // angle
+        std::nullopt,       // origin
+        image_layer.repeat,
+        image_layer.position);
 }
 
 void Sprite::update(Map_Object&) {
-   update();
+    pimpl->update();
 }
 
 void Sprite::update() {
@@ -351,44 +383,44 @@ xd::vec2 Sprite::get_size() const {
     return size;
 }
 
-Frame& Sprite::get_frame() noexcept {
+Frame& Sprite::get_frame() {
      return pimpl->pose->frames[pimpl->frame_index];
 }
 
-const Frame& Sprite::get_frame() const noexcept {
+const Frame& Sprite::get_frame() const {
      return pimpl->pose->frames[pimpl->frame_index];
 }
 
 
-bool Sprite::is_stopped() const noexcept {
+bool Sprite::is_stopped() const {
     return pimpl->finished;
 }
 
-void Sprite::stop() noexcept {
+void Sprite::stop() {
     pimpl->finished = true;
 }
 
-bool Sprite::is_paused() const noexcept {
+bool Sprite::is_paused() const {
     return pimpl->paused;
 }
 
-void Sprite::pause() noexcept {
+void Sprite::pause() {
     pimpl->pause();
 }
 
-void Sprite::resume() noexcept {
+void Sprite::resume() {
     pimpl->resume();
 }
 
-bool Sprite::is_completed() const noexcept {
+bool Sprite::is_completed() const {
     return pimpl->is_completed();
 }
 
-float Sprite::get_speed() const noexcept {
+float Sprite::get_speed() const {
     return pimpl->speed;
 }
 
-void Sprite::set_speed(float speed) noexcept {
+void Sprite::set_speed(float speed) {
     // Scale sprite speed in the opposite direction of object speed,
     // between 0.5 for max speed (10) and 2 for min speed (0)
     // but also make sure object speed 1 maps to sprite speed 1
