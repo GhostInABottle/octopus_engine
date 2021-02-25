@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     main_window.cpp \
     ../include/xd/vendor/glm/detail/glm.cpp \
     ../src/vendor/base64.cpp \
+    ../src/vendor/lutf8lib.cpp \
+    ../src/vendor/platform_folders.cpp \
     ../src/camera.cpp \
     ../src/canvas.cpp \
     ../src/canvas_renderer.cpp \
     ../src/canvas_updater.cpp \
     ../src/clock.cpp \
-    ../src/collision_record.cpp \
     ../src/command.cpp \
     ../src/command_result.cpp \
+    ../src/commands/timed_command.cpp \
     ../src/commands/fade_music_command.cpp \
     ../src/commands/move_camera_command.cpp \
     ../src/commands/move_object_command.cpp \
@@ -35,7 +37,7 @@ SOURCES += main.cpp\
     ../src/commands/show_pose_command.cpp \
     ../src/commands/show_text_command.cpp \
     ../src/commands/text_options.cpp \
-    ../src/commands/tint_screen_command.cpp \
+    ../src/commands/tint_command.cpp \
     ../src/commands/update_canvas_command.cpp \
     ../src/commands/update_layer_command.cpp \
     ../src/commands/wait_command.cpp \
@@ -48,9 +50,11 @@ SOURCES += main.cpp\
     ../src/image_layer.cpp \
     ../src/image_layer_renderer.cpp \
     ../src/image_layer_updater.cpp \
+    ../src/key_binder.cpp \
     ../src/layer.cpp \
     ../src/layer_renderer.cpp \
     ../src/log.cpp \
+    ../src/lua_object.cpp \
     ../src/map.cpp \
     ../src/map_object.cpp \
     ../src/object_layer.cpp \
@@ -69,7 +73,11 @@ SOURCES += main.cpp\
     ../src/tile_layer_renderer.cpp \
     ../src/tileset.cpp \
     ../src/tmx_properties.cpp \
-    ../src/utility.cpp \
+    ../src/utility/math.cpp \
+    ../src/utility/file.cpp \
+    ../src/utility/string.cpp \
+    ../src/utility/color.cpp \
+    ../src/utility/xml.cpp \
     ../src/xd/audio/audio.cpp \
     ../src/xd/audio/music.cpp \
     ../src/xd/audio/sound.cpp \
@@ -106,6 +114,11 @@ SOURCES += main.cpp\
 
 HEADERS  += main_window.hpp \
     ../include/vendor/base64.hpp \
+    ../include/vendor/lutf8lib.hpp \
+    ../include/vendor/platform_folders.hpp \
+    ../include/vendor/rapidxml.hpp \
+    ../include/vendor/rapidxml_print.hpp \
+    ../include/vendor/unidata.h \
     ../include/camera.hpp \
     ../include/canvas.hpp \
     ../include/canvas_renderer.hpp \
@@ -116,6 +129,7 @@ HEADERS  += main_window.hpp \
     ../include/command.hpp \
     ../include/command_result.hpp \
     ../include/commands.hpp \
+    ../include/commands/timed_command.hpp \
     ../include/commands/fade_music_command.hpp \
     ../include/commands/move_camera_command.hpp \
     ../include/commands/move_object_command.hpp \
@@ -124,7 +138,7 @@ HEADERS  += main_window.hpp \
     ../include/commands/show_pose_command.hpp \
     ../include/commands/show_text_command.hpp \
     ../include/commands/text_options.hpp \
-    ../include/commands/tint_screen_command.hpp \
+    ../include/commands/tint_command.hpp \
     ../include/commands/update_canvas_command.hpp \
     ../include/commands/update_layer_command.hpp \
     ../include/commands/wait_command.hpp \
@@ -132,18 +146,19 @@ HEADERS  += main_window.hpp \
     ../include/configurations.hpp \
     ../include/custom_shaders.hpp \
     ../include/direction.hpp \
-    ../include/direction_utilities.hpp \
     ../include/editable.hpp \
     ../include/exceptions.hpp \
     ../include/game.hpp \
     ../include/image_layer.hpp \
     ../include/image_layer_renderer.hpp \
     ../include/image_layer_updater.hpp \
+    ../include/key_binder.hpp \
     ../include/layer.hpp \
     ../include/layer_renderer.hpp \
     ../include/layer_types.hpp \
     ../include/layer_updater.hpp \
     ../include/log.hpp \
+    ../include/lua_object.hpp \
     ../include/map.hpp \
     ../include/map_object.hpp \
     ../include/object_layer.hpp \
@@ -165,7 +180,12 @@ HEADERS  += main_window.hpp \
     ../include/tile_layer_renderer.hpp \
     ../include/tileset.hpp \
     ../include/tmx_properties.hpp \
-    ../include/utility.hpp \
+    ../include/utility/color.hpp \
+    ../include/utility/direction.hpp \
+    ../include/utility/file.hpp \
+    ../include/utility/math.hpp \
+    ../include/utility/string.hpp \
+    ../include/utility/xml.hpp \
     ../include/xd/asset_manager.hpp \
     ../include/xd/asset_serializer.hpp \
     ../include/xd/audio.hpp \
@@ -207,20 +227,15 @@ HEADERS  += main_window.hpp \
     ../include/xd/graphics/vertex_batch.hpp \
     ../include/xd/graphics/vertex_traits.hpp \
     ../include/xd/lua.hpp \
-    ../include/xd/lua/detail/scheduler.hpp \
-    ../include/xd/lua/detail/scheduler_task.hpp \
     ../include/xd/lua/exceptions.hpp \
-    ../include/xd/lua/function.hpp \
     ../include/xd/lua/scheduler.hpp \
     ../include/xd/lua/scheduler_task.hpp \
-    ../include/xd/lua/types.hpp \
     ../include/xd/lua/virtual_machine.hpp \
     ../include/xd/system.hpp \
     ../include/xd/system/exceptions.hpp \
     ../include/xd/system/input.hpp \
     ../include/xd/system/window.hpp \
     ../include/xd/system/window_options.hpp \
-    ../include/xd/types.hpp \
     map_view.hpp \
     mappers/image_layer_mapper.hpp \
     mappers/layer_mapper.hpp \
@@ -235,10 +250,11 @@ HEADERS  += main_window.hpp \
     qtpropertybrowser/src/qtpropertybrowserutils_p.h \
     qtpropertybrowser/src/qtpropertymanager.h \
     qtpropertybrowser/src/qttreepropertybrowser.h \
-    qtpropertybrowser/src/qtvariantproperty.h \
-    ui_main_window.h
+    qtpropertybrowser/src/qtvariantproperty.h
 
 FORMS    += main_window.ui
 
 DISTFILES += \
     ../include/xd/vendor/glm/CMakeLists.txt
+
+QMAKE_CXXFLAGS += /std:c++17 /bigobj

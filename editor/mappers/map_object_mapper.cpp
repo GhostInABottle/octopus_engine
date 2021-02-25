@@ -136,11 +136,15 @@ void Map_Object_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantProper
     browser->addProperty(item);
     // Trigger script
     item = manager->addProperty(QVariant::String, "Trigger Script");
-    item->setValue(QString::fromStdString(obj->get_trigger_script_source()));
+    item->setValue(QString::fromStdString(obj->get_trigger_script()));
     browser->addProperty(item);
-    // Exit script
-    item = manager->addProperty(QVariant::String, "Exit Script");
-    item->setValue(QString::fromStdString(obj->get_exit_script_source()));
+    // Leave script
+    item = manager->addProperty(QVariant::String, "Leave Script");
+    item->setValue(QString::fromStdString(obj->get_leave_script()));
+    browser->addProperty(item);
+    // Touch script
+    item = manager->addProperty(QVariant::String, "Touch Script");
+    item->setValue(QString::fromStdString(obj->get_touch_script()));
     browser->addProperty(item);
 }
 
@@ -191,8 +195,10 @@ void Map_Object_Mapper::change_property(QtProperty* prop) {
     } else if (prop_name == "Draw Order") {
         obj->set_draw_order(static_cast<Map_Object::Draw_Order>(prop_value.toInt()));
     } else if (prop_name == "Trigger Script") {
-        obj->set_trigger_script_source(prop_value.toString().toStdString());
-    } else if (prop_name == "Exit Script") {
-        obj->set_exit_script_source(prop_value.toString().toStdString());
+        obj->set_trigger_script(prop_value.toString().toStdString());
+    } else if (prop_name == "Leave Script") {
+        obj->set_leave_script(prop_value.toString().toStdString());
+    } else if (prop_name == "Touch Script") {
+        obj->set_touch_script(prop_value.toString().toStdString());
     }
 }

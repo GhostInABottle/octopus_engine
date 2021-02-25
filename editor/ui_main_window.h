@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.1
+** Created by: Qt User Interface Compiler version 5.15.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -189,7 +189,7 @@ public:
         dock_layout->addLayout(lists_layout);
 
         dock_widget->setWidget(dock_contents);
-        Main_Window->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock_widget);
+        Main_Window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
 
         menu_bar->addAction(menu_file->menuAction());
         menu_file->addAction(action_new_map);
@@ -208,28 +208,28 @@ public:
 
     void retranslateUi(QMainWindow *Main_Window)
     {
-        Main_Window->setWindowTitle(QApplication::translate("Main_Window", "Octopus Editor", nullptr));
-        action_open_project->setText(QApplication::translate("Main_Window", "Open &Project...", nullptr));
-#ifndef QT_NO_SHORTCUT
-        action_open_project->setShortcut(QApplication::translate("Main_Window", "Ctrl+P", nullptr));
-#endif // QT_NO_SHORTCUT
-        action_save->setText(QApplication::translate("Main_Window", "&Save", nullptr));
-#ifndef QT_NO_SHORTCUT
-        action_save->setShortcut(QApplication::translate("Main_Window", "Ctrl+S", nullptr));
-#endif // QT_NO_SHORTCUT
-        action_save_as->setText(QApplication::translate("Main_Window", "Save As...", nullptr));
-        action_open_map->setText(QApplication::translate("Main_Window", "&Open Map...", nullptr));
-#ifndef QT_NO_SHORTCUT
-        action_open_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+O", nullptr));
-#endif // QT_NO_SHORTCUT
-        action_new_map->setText(QApplication::translate("Main_Window", "&New Map", nullptr));
-#ifndef QT_NO_SHORTCUT
-        action_new_map->setShortcut(QApplication::translate("Main_Window", "Ctrl+N", nullptr));
-#endif // QT_NO_SHORTCUT
-        menu_file->setTitle(QApplication::translate("Main_Window", "&File", nullptr));
-        tab_widget->setTabText(tab_widget->indexOf(map_tab), QApplication::translate("Main_Window", "Maps", nullptr));
-        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QApplication::translate("Main_Window", "Layers", nullptr));
-        tab_widget->setTabText(tab_widget->indexOf(object_tab), QApplication::translate("Main_Window", "Objects", nullptr));
+        Main_Window->setWindowTitle(QCoreApplication::translate("Main_Window", "Octopus Editor", nullptr));
+        action_open_project->setText(QCoreApplication::translate("Main_Window", "Open &Project...", nullptr));
+#if QT_CONFIG(shortcut)
+        action_open_project->setShortcut(QCoreApplication::translate("Main_Window", "Ctrl+P", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_save->setText(QCoreApplication::translate("Main_Window", "&Save", nullptr));
+#if QT_CONFIG(shortcut)
+        action_save->setShortcut(QCoreApplication::translate("Main_Window", "Ctrl+S", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_save_as->setText(QCoreApplication::translate("Main_Window", "Save As...", nullptr));
+        action_open_map->setText(QCoreApplication::translate("Main_Window", "&Open Map...", nullptr));
+#if QT_CONFIG(shortcut)
+        action_open_map->setShortcut(QCoreApplication::translate("Main_Window", "Ctrl+O", nullptr));
+#endif // QT_CONFIG(shortcut)
+        action_new_map->setText(QCoreApplication::translate("Main_Window", "&New Map", nullptr));
+#if QT_CONFIG(shortcut)
+        action_new_map->setShortcut(QCoreApplication::translate("Main_Window", "Ctrl+N", nullptr));
+#endif // QT_CONFIG(shortcut)
+        menu_file->setTitle(QCoreApplication::translate("Main_Window", "&File", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(map_tab), QCoreApplication::translate("Main_Window", "Maps", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(layer_tab), QCoreApplication::translate("Main_Window", "Layers", nullptr));
+        tab_widget->setTabText(tab_widget->indexOf(object_tab), QCoreApplication::translate("Main_Window", "Objects", nullptr));
     } // retranslateUi
 
 };
