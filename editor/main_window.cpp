@@ -1,12 +1,13 @@
+#include "main_window.hpp"
+#include "ui_main_window.h"
+#include "property_editor.hpp"
+#include "../include/exceptions.hpp"
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QList>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDirIterator>
-#include "main_window.hpp"
-#include "ui_main_window.h"
-#include "property_editor.hpp"
 
 namespace detail {
     void update_layers(Map_View* map_view, QListView* layer_list) {
@@ -113,7 +114,6 @@ void Main_Window::select_map(const QModelIndex & index) {
     if (QFileInfo(filename).exists()) {
         map_view->load_map(filename.toStdString());
     }
-    prop_edit->set_map(*map_view->get_game(), map_view->get_map());
 }
 
 void Main_Window::update_map(std::string filename) {
@@ -197,10 +197,18 @@ void Main_Window::add_layer(Layer_Type type) {
 }
 
 void Main_Window::delete_layer() {
+    auto rows = ui->layer_list->selectionModel()->selectedRows();
+    if (rows.empty()) return;
+    prop_edit->set_map(*map_view->get_game(), map_view->get_map());
     auto layer_model = static_cast<QStandardItemModel*>(ui->layer_list->model());
-    for (auto& i : ui->layer_list->selectionModel()->selectedRows()) {
-        map_view->delete_layer(layer_model->itemFromIndex(i)->text().toStdString());
-        layer_model->removeRow(i.row());
+    for (auto& i : rows) {
+        try {
+            map_view->delete_layer(layer_model->itemFromIndex(i)->text().toStdString());
+            layer_model->removeRow(i.row());
+        } catch (tmx_exception& e) {
+            // If there's only one object layer don't delete it
+            QMessageBox::warning(this, tr(e.what()), tr(e.what()));
+        }
     }
     detail::update_objects(map_view, ui->object_list);
 }

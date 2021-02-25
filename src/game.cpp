@@ -740,6 +740,7 @@ void Game::load_map(const std::string& filename) {
 void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
     map = std::make_unique<Map>(*this);
     map->resize(map_size, tile_size);
+    map->add_layer(Layer_Type::OBJECT);
 }
 
 void Game::add_canvas(std::shared_ptr<Canvas> canvas) {

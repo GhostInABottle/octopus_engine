@@ -1,14 +1,14 @@
 #include "property_editor.hpp"
+#include "mappers/map_mapper.hpp"
+#include "mappers/map_object_mapper.hpp"
+#include "mappers/image_layer_mapper.hpp"
+#include "mappers/object_layer_mapper.hpp"
 #include "qtpropertybrowser/src/qtpropertymanager.h"
 #include "qtpropertybrowser/src/qtvariantproperty.h"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
 #include "../include/image_layer.hpp"
 #include "../include/object_layer.hpp"
-#include "mappers/map_mapper.hpp"
-#include "mappers/map_object_mapper.hpp"
-#include "mappers/image_layer_mapper.hpp"
-#include "mappers/object_layer_mapper.hpp"
 #include <QMessageBox>
 
 Property_Editor::Property_Editor()
@@ -33,7 +33,10 @@ void Property_Editor::set_map(Game&, Map* map) {
 }
 
 void Property_Editor::set_layer(Game& game, Layer* layer) {
-    current_object = nullptr;
+    if (current_object) {
+        current_object->set_property_mapper(nullptr);
+        current_object = nullptr;
+    }
     if (layer) {
         std::unique_ptr<Layer_Mapper> mapper;
         if (Image_Layer* img = dynamic_cast<Image_Layer*>(layer)) {
@@ -50,13 +53,16 @@ void Property_Editor::set_layer(Game& game, Layer* layer) {
 }
 
 void Property_Editor::set_map_object(Game& game, Map_Object* obj) {
-    current_object = nullptr;
+    if (current_object) {
+        current_object->set_property_mapper(nullptr);
+        current_object = nullptr;
+    }
     if (obj) {
         std::unique_ptr<Map_Object_Mapper> mapper(new Map_Object_Mapper(game, obj));
         mapper->populate(this, manager);
         obj->set_property_mapper(std::move(mapper));
-        current_object = static_cast<Editable*>(obj);
     }
+    current_object = static_cast<Editable*>(obj);
 }
 
 void Property_Editor::update_property(const QString& name, const QVariant& value) {

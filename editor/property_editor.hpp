@@ -20,6 +20,7 @@ public:
     void set_map(Game& game, Map* map);
     void set_layer(Game& game, Layer* layer);
     void set_map_object(Game& game, Map_Object* obj);
+    void reset_object() { current_object = nullptr; }
     void update_property(const QString& name, const QVariant& value);
 private:
     void change_property(QtProperty* item);

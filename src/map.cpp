@@ -293,18 +293,19 @@ void Map::delete_object(Map_Object* object) {
 }
 
 void Map::erase_object_references(Map_Object* object) {
-    auto player = game.get_player();
-    if (object == player->get_triggered_object()) {
-        player->set_triggered_object(nullptr);
-    }
-    if (object == player->get_collision_object()) {
-        player->set_collision_object(nullptr);
-    }
-    if (object == player->get_collision_area()) {
-        player->set_collision_area(nullptr);
-    }
-    if (object == player->get_outlining_object()) {
-        player->set_outlining_object(nullptr);
+    if (auto player{game.get_player()}) {
+        if (object == player->get_triggered_object()) {
+            player->set_triggered_object(nullptr);
+        }
+        if (object == player->get_collision_object()) {
+            player->set_collision_object(nullptr);
+        }
+        if (object == player->get_collision_area()) {
+            player->set_collision_area(nullptr);
+        }
+        if (object == player->get_outlining_object()) {
+            player->set_outlining_object(nullptr);
+        }
     }
     auto name = object->get_name();
     string_utilities::capitalize(name);
@@ -380,12 +381,14 @@ void Map::delete_layer(std::string name) {
         if (layer_name != name)
         {
             layer++;
-        } else {
+        } else if (object_layers.size() > 1) {
             for (auto& obj : (*layer)->objects)
             {
                 erase_object_references(obj);
             }
             layer = object_layers.erase(layer);
+        } else {
+            throw tmx_exception("Must have at least one object layer in map");
         }
     }
     // Clear the collision object if necessary
