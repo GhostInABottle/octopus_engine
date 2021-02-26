@@ -111,6 +111,15 @@ void Map_View::add_object() {
     object->set_size(xd::vec2(16, 16));
 }
 
+void Map_View::delete_object(const std::string& object_name) {
+    auto object = get_map()->get_object(object_name);
+    if (!object) return;
+    if (object == selected_object) {
+        selected_object = nullptr;
+    }
+    get_map()->delete_object(object);
+}
+
 std::vector<std::string> Map_View::get_layer_names() {
     std::vector<std::string> layer_names;
     auto map = get_map();

@@ -75,7 +75,6 @@ void Player_Controller::update(Map_Object& object) {
         && (!collision.other_object || !collision.other_object->has_any_script());
     if (check_edges) {
         auto vertical = direction == Direction::UP || direction == Direction::DOWN;
-        auto horizontal = direction == Direction::LEFT || direction == Direction::RIGHT;
         auto pos1{object.get_position()};
         auto pos2{pos1};
         if (vertical) {

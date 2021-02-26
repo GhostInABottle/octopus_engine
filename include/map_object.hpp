@@ -451,4 +451,14 @@ private:
     std::string prepare_script(const std::string& script) const;
 };
 
+inline Map_Object::Outline_Condition operator|(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
+{
+    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+inline Map_Object::Outline_Condition operator&(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
+{
+    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) & static_cast<int>(b));
+}
+
 #endif

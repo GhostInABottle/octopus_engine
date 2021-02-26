@@ -28,6 +28,7 @@ public:
     void add_layer(Layer_Type type);
     void delete_layer(const std::string& name);
     void add_object();
+    void delete_object(const std::string& name);
     std::vector<std::string> get_layer_names();
     std::vector<std::string> get_object_names();
     void highlight_object(Map_Object* obj);

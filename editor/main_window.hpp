@@ -39,6 +39,8 @@ private slots:
     void delete_layer();
     // Add layer
     void add_layer(Layer_Type type);
+    // Delete object
+    void delete_object();
     // Add object
     void add_object();
 private:

@@ -118,7 +118,7 @@ struct Game::Impl {
         }
     }
     // Process key-mapping string
-    void process_keymap(Game& game, xd::window* window, bool gamepad_only = false) {
+    void process_keymap(Game& game) {
         if (!key_binder) {
             key_binder = std::make_unique<Key_Binder>(game);
         }
@@ -335,7 +335,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     // Track player by camera
     camera->set_object(player.get());
     // Bind game keys
-    pimpl->process_keymap(*this, window.get());
+    pimpl->process_keymap(*this);
     // Setup Lua scripts
     pimpl->reset_scripting_interface(*this);
     // Script run when game is paused

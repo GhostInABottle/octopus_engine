@@ -136,6 +136,7 @@ void Main_Window::update_map(std::string filename) {
 void Main_Window::select_list_object(const QModelIndex& current, const QModelIndex&) {
     auto object_model = static_cast<QStandardItemModel*>(ui->object_list->model());
     auto item = object_model->itemFromIndex(current);
+    if (!item) return;
     auto& game = *map_view->get_game();
     auto map_object = map_view->get_object(item->text().toStdString());
     prop_edit->set_map_object(game, map_object);
@@ -179,8 +180,10 @@ void Main_Window::show_layer_menu(const QPoint &pos) {
     action = new_menu.addAction("Collision Layer");
     connect(action, &QAction::triggered, this, [this] { add_layer(Layer_Type::TILE); });
     menu.addMenu(&new_menu);
-    action = menu.addAction("Delete");
-    connect(action, &QAction::triggered, this, &Main_Window::delete_layer);
+    if (ui->layer_list->indexAt(pos).isValid()) {
+        action = menu.addAction("Delete");
+        connect(action, &QAction::triggered, this, &Main_Window::delete_layer);
+    }
     menu.exec(ui->layer_list->mapToGlobal(pos));
 }
 
@@ -188,6 +191,10 @@ void Main_Window::show_object_menu(const QPoint &pos) {
     QMenu menu;
     auto action = menu.addAction("New");
     connect(action, &QAction::triggered, this, &Main_Window::add_object);
+    if (ui->object_list->indexAt(pos).isValid()) {
+        action = menu.addAction("Delete");
+        connect(action, &QAction::triggered, this, &Main_Window::delete_object);
+    }
     menu.exec(ui->object_list->mapToGlobal(pos));
 }
 
@@ -215,5 +222,17 @@ void Main_Window::delete_layer() {
 
 void Main_Window::add_object() {
     map_view->add_object();
+    detail::update_objects(map_view, ui->object_list);
+}
+
+void Main_Window::delete_object() {
+    auto rows = ui->object_list->selectionModel()->selectedRows();
+    if (rows.empty()) return;
+    prop_edit->set_map(*map_view->get_game(), map_view->get_map());
+    auto object_model = static_cast<QStandardItemModel*>(ui->object_list->model());
+    for (auto& i : rows) {
+        map_view->delete_object(object_model->itemFromIndex(i)->text().toStdString());
+        object_model->removeRow(i.row());
+    }
     detail::update_objects(map_view, ui->object_list);
 }

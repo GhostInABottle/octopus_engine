@@ -13,16 +13,6 @@
 #include "../include/configurations.hpp"
 #include <utility>
 
-Map_Object::Outline_Condition operator|(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
-{
-    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-Map_Object::Outline_Condition operator&(Map_Object::Outline_Condition a, Map_Object::Outline_Condition b)
-{
-    return static_cast<Map_Object::Outline_Condition>(static_cast<int>(a) & static_cast<int>(b));
-}
-
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir) :
         game(game),
