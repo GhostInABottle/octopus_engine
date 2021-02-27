@@ -11,7 +11,7 @@
 class Layer_Renderer;
 class Layer_Updater;
 
-struct Layer : public Editable {
+struct Layer : public Editable, public Tmx_Object {
     // Layer ID
     int id;
     // Layer name
@@ -24,8 +24,6 @@ struct Layer : public Editable {
     float opacity;
     // Is the layer visible?
     bool visible;
-    // Layer properties
-    Tmx_Properties properties;
     // Layer rendering component
     std::unique_ptr<Layer_Renderer> renderer;
     // Layer logic component
@@ -44,13 +42,6 @@ struct Layer : public Editable {
             const std::string& node_name);
     // Load layer data from XML node
     void load(rapidxml::xml_node<>& node);
-    // Get and set a property
-    void set_property(const std::string& name, const std::string& value) {
-        properties[name] = value;
-    }
-    std::string get_property(const std::string& name) const {
-        return properties[name];
-    }
     virtual ~Layer() = 0;
 
 };

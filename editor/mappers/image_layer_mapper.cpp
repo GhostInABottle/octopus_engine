@@ -59,9 +59,12 @@ void Image_Layer_Mapper::change_property(QtProperty* prop) {
         layer->repeat = prop_value.toBool();
     } else if (prop_name == "Fixed") {
         layer->fixed = prop_value.toBool();
+        layer->set_editor_property("fixed", layer->fixed ? "TRUE" : "FALSE", "FALSE");
     } else if (prop_name == "Velocity") {
         QPointF pos = prop_value.toPointF();
         layer->velocity = xd::vec2(pos.x(), pos.y());
+        layer->set_editor_property("xspeed", std::to_string(pos.x()), std::to_string(0.0f));
+        layer->set_editor_property("yspeed", std::to_string(pos.y()), std::to_string(0.0f));
     } else if (prop_name == "Image") {
         layer->set_image(prop_value.toString().toStdString());
     } else if (prop_name == "Transparent") {
@@ -70,8 +73,12 @@ void Image_Layer_Mapper::change_property(QtProperty* prop) {
                                             c.blueF(), c.alphaF());
         layer->set_image(layer->image_source);
     } else if (prop_name == "Sprite") {
-        layer->set_sprite(game, prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        layer->set_sprite(game, value);
+        layer->set_editor_property("sprite", value);
     } else if (prop_name == "Pose") {
-        layer->set_pose(prop_value.toString().toStdString(), "", Direction::NONE);
+        auto value = prop_value.toString().toStdString();
+        layer->set_pose(value, "", Direction::NONE);
+        layer->set_editor_property("pose", value);
     }
 }

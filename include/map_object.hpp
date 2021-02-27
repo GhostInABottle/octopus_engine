@@ -21,7 +21,7 @@
 class Game;
 struct Object_Layer;
 
-class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable {
+class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable, public Tmx_Object {
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
@@ -51,12 +51,6 @@ public:
         return name;
     }
     void set_name(const std::string& new_name);
-    void set_property(const std::string& name, const std::string& value) {
-        properties[name] = value;
-    }
-    std::string get_property(const std::string& name) const {
-        return properties[name];
-    }
     std::string get_type() const {
         return type;
     }
@@ -437,8 +431,6 @@ private:
     Map_Object* triggered_object;
     // Objects that move whenever this object moves
     std::vector<Map_Object*> linked_objects;
-    // Object properties
-    Tmx_Properties properties;
     // How object is drawn relative to other objects in layer
     Draw_Order draw_order;
     // Optional sprite representing the object

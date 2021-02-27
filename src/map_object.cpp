@@ -301,7 +301,7 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
         node->append_attribute(xml_attribute(doc, "width", std::to_string((int)size.x)));
     if (size.y != 0)
         node->append_attribute(xml_attribute(doc, "height", std::to_string((int)size.y)));
-    if (get_gid() != -1)
+    if (get_gid() != 0)
         node->append_attribute(xml_attribute(doc, "gid", std::to_string(get_gid())));
     if (!is_visible())
         node->append_attribute(xml_attribute(doc, "visible", "0"));
@@ -338,24 +338,24 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     auto& properties = object_ptr->properties;
     properties.read(node);
 
-    if (properties.has_property("sprite"))
+    if (properties.contains("sprite"))
         object_ptr->set_sprite(game, properties["sprite"]);
-    if (properties.has_property("direction"))
+    if (properties.contains("direction"))
         object_ptr->set_direction(string_to_direction(properties["direction"]));
-    if (properties.has_property("pose"))
+    if (properties.contains("pose"))
         object_ptr->pose_name = properties["pose"];
-    if (properties.has_property("state"))
+    if (properties.contains("state"))
         object_ptr->state = properties["state"];
-    if (properties.has_property("speed"))
+    if (properties.contains("speed"))
         object_ptr->set_speed(std::stof(properties["speed"]));
-    if (properties.has_property("opacity"))
+    if (properties.contains("opacity"))
         object_ptr->set_opacity(std::stof(properties["opacity"]));
-    if (properties.has_property("face-state"))
+    if (properties.contains("face-state"))
         object_ptr->set_face_state(properties["face-state"]);
-    if (properties.has_property("walk-state"))
+    if (properties.contains("walk-state"))
         object_ptr->set_walk_state(properties["walk-state"]);
 
-    if (properties.has_property("script-context")) {
+    if (properties.contains("script-context")) {
         auto context_string{properties["script-context"]};
         string_utilities::capitalize(context_string);
         auto context = Script_Context::MAP;
@@ -366,22 +366,22 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_script_context(context);
     }
 
-    if (properties.has_property("script"))
+    if (properties.contains("script"))
         object_ptr->set_trigger_script(properties["script"]);
-    else if (properties.has_property("trigger-script"))
+    else if (properties.contains("trigger-script"))
         object_ptr->set_trigger_script(properties["trigger-script"]);
 
-    if (properties.has_property("touch-script"))
+    if (properties.contains("touch-script"))
         object_ptr->set_touch_script(properties["touch-script"]);
 
-    if (properties.has_property("leave-script"))
+    if (properties.contains("leave-script"))
         object_ptr->set_leave_script (properties["leave-script"]);
 
-    if (properties.has_property("player-facing"))
+    if (properties.contains("player-facing"))
         object_ptr->set_player_facing(string_utilities::string_to_bool(properties["player-facing"]));
-    if (properties.has_property("passthrough"))
+    if (properties.contains("passthrough"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));
-    if (properties.has_property("passthrough-type")) {
+    if (properties.contains("passthrough-type")) {
         auto type_string{properties["passthrough-type"]};
         string_utilities::capitalize(type_string);
         auto type = Passthrough_Type::BOTH;
@@ -393,9 +393,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             LOGGER_W << "Unknown object passthrough type '" << type_string << "' - defaulting to BOTH";
         object_ptr->set_passthrough_type(type);
     }
-    if (properties.has_property("override-tile-collision"))
+    if (properties.contains("override-tile-collision"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
-    if (properties.has_property("outlined")) {
+    if (properties.contains("outlined")) {
         auto outlined{properties["outlined"]};
         string_utilities::capitalize(outlined);
         if (outlined == "TRUE") {
@@ -425,10 +425,10 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             }
         }
     }
-    if (properties.has_property("outlined-object")) {
+    if (properties.contains("outlined-object")) {
         object_ptr->set_outlined_object_id(std::stoi(properties["outlined-object"]));
     }
-    if (properties.has_property("draw-order")) {
+    if (properties.contains("draw-order")) {
         auto order{properties["draw-order"]};
         string_utilities::capitalize(order);
         if (order == "BELOW")

@@ -459,17 +459,19 @@ void Map::save(std::string save_filename) {
     doc->append_node(map_node);
     std::ofstream out;
     out.open(save_filename, std::ios_base::out | std::ios_base::trunc);
-    out << *doc;
+    rapidxml::print_stream(out, *doc, rapidxml::print_space_indenting);
 }
 
 rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "map");
     node->append_attribute(xml_attribute(doc, "version", "1.0"));
     node->append_attribute(xml_attribute(doc, "orientation", "orthogonal"));
+    node->append_attribute(xml_attribute(doc, "renderorder", "right-down"));
     node->append_attribute(xml_attribute(doc, "width", std::to_string(width)));
     node->append_attribute(xml_attribute(doc, "height", std::to_string(height)));
     node->append_attribute(xml_attribute(doc, "tilewidth", std::to_string(tile_width)));
     node->append_attribute(xml_attribute(doc, "tileheight", std::to_string(tile_height)));
+    node->append_attribute(xml_attribute(doc, "nextobjectid", std::to_string(next_object_id)));
     properties.save(doc, *node);
     // Tilesets
     for (auto& tileset : tilesets) {
@@ -513,15 +515,15 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     map_ptr->properties.read(node);
 
     // Background music
-    if (map_ptr->properties.has_property("music")) {
+    if (map_ptr->properties.contains("music")) {
         map_ptr->background_music = map_ptr->properties["music"];
-    } else if (map_ptr->properties.has_property("music-script")) {
+    } else if (map_ptr->properties.contains("music-script")) {
         auto si = game.get_current_scripting_interface();
         map_ptr->background_music = si->call<std::string>(map_ptr->properties["music-script"]);
     }
 
     // Startup scripts
-    if (map_ptr->properties.has_property("scripts")) {
+    if (map_ptr->properties.contains("scripts")) {
         auto filenames = string_utilities::split(map_ptr->properties["scripts"], ",");
         for (std::string filename : filenames) {
             string_utilities::trim(filename);
@@ -530,13 +532,13 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     }
 
     // Player position
-    if (map_ptr->properties.has_property("player-position-x")) {
+    if (map_ptr->properties.contains("player-position-x")) {
         map_ptr->starting_position.x = std::stof(map_ptr->properties["player-position-x"]);
     }
     else {
         map_ptr->starting_position.x = static_cast<float>(map_ptr->get_pixel_width() / 2);
     }
-    if (map_ptr->properties.has_property("player-position-y")) {
+    if (map_ptr->properties.contains("player-position-y")) {
         map_ptr->starting_position.y = std::stof(map_ptr->properties["player-position-y"]);
     }
     else {

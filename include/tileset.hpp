@@ -9,7 +9,7 @@
 #include "vendor/rapidxml.hpp"
 #include "tmx_properties.hpp"
 
-struct Tileset {
+struct Tileset : public Tmx_Object {
     struct Tile {
         int id;
         Tmx_Properties properties;
@@ -24,8 +24,6 @@ struct Tileset {
     int tile_width;
     // Height of each tile pixels
     int tile_height;
-    // Tileset properties
-    Tmx_Properties properties;
     // Image source file
     std::string image_source;
     // Image transparent color
@@ -38,12 +36,6 @@ struct Tileset {
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Tileset> load(const std::string& filename);
     static std::unique_ptr<Tileset> load(rapidxml::xml_node<>& node);
-    void set_property(const std::string& name, const std::string& value) {
-        properties[name] = value;
-    }
-    std::string get_property(const std::string& name) const {
-        return properties[name];
-    }
     xd::rect tile_source_rect(int tile_index) const;
 };
 

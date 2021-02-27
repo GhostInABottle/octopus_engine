@@ -5,6 +5,8 @@
 #include "../../include/map_object.hpp"
 #include "../../include/sprite.hpp"
 #include "../../include/game.hpp"
+#include "../../include/utility/direction.hpp"
+#include "../../include/utility/string.hpp"
 
 namespace detail {
     QStringList types;
@@ -93,11 +95,19 @@ void Map_Object_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantProper
     item->setValue(QString::fromStdString(obj->get_state()));
     browser->addProperty(item);
     // Direction
-    item = manager->addProperty(QtVariantPropertyManager::flagTypeId(),
-                    "Direction");
+    item = manager->addProperty(QtVariantPropertyManager::enumTypeId(), "Direction");
     QStringList& directions = detail::get_directions();
-    item->setAttribute("flagNames", directions);
-    item->setValue(static_cast<int>(obj->get_direction()));
+    item->setAttribute("enumNames", directions);
+    auto dir = obj->get_direction();
+    if ((dir & Direction::UP) != Direction::NONE) {
+        item->setValue(0);
+    } else if ((dir & Direction::RIGHT) != Direction::NONE) {
+        item->setValue(1);
+    } else if ((dir & Direction::LEFT) != Direction::NONE) {
+        item->setValue(3);
+    } else {
+        item->setValue(2);
+    }
     browser->addProperty(item);
     // Position
     item = manager->addProperty(QVariant::Point, "Position");
@@ -147,6 +157,10 @@ void Map_Object_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantProper
     // Frozen
     item = manager->addProperty(QVariant::Bool, "Frozen");
     item->setValue(obj->is_disabled());
+    browser->addProperty(item);
+    // Player-facing
+    item = manager->addProperty(QVariant::Bool, "Player-facing");
+    item->setValue(obj->is_player_facing());
     browser->addProperty(item);
     // Pass-through
     item = manager->addProperty(QVariant::Bool, "Pass-through");
@@ -245,13 +259,29 @@ void Map_Object_Mapper::change_property(QtProperty* prop) {
         QStringList& types = detail::get_types();
         obj->set_type(types[prop_value.toInt()].toStdString());
     } else if (prop_name == "Sprite") {
-        obj->set_sprite(game, prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_sprite(game, value);
+        obj->set_editor_property("sprite", value);
     } else if (prop_name == "Pose") {
-        obj->set_pose(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_pose(value);
+        obj->set_editor_property("pose", value);
     } else if (prop_name == "State") {
-        obj->set_pose("", prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_pose("", value);
+        obj->set_editor_property("state", value);
     } else if (prop_name == "Direction") {
-        obj->set_direction(static_cast<Direction>(prop_value.toInt()));
+        auto value = prop_value.toInt();
+        auto dir = Direction::DOWN;
+        if (value == 0) {
+            dir = Direction::UP;
+        } else if (value == 1) {
+            dir = Direction::RIGHT;
+        } else if (value == 3) {
+            dir = Direction::LEFT;
+        }
+        obj->set_direction(dir);
+        obj->set_editor_property("direction", direction_to_string(dir), "DOWN");
     } else if (prop_name == "Position") {
         QPoint pos = prop_value.toPoint();
         obj->set_position(xd::vec2(pos.x(), pos.y()));
@@ -262,9 +292,13 @@ void Map_Object_Mapper::change_property(QtProperty* prop) {
         QColor c = prop_value.value<QColor>();
         obj->set_color(xd::vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()));
     } else if (prop_name == "Speed") {
-        obj->set_speed(prop_value.toFloat());
+        auto value = prop_value.toFloat();
+        obj->set_speed(value);
+        obj->set_editor_property("speed", std::to_string(value), std::to_string(1.0f));
     } else if (prop_name == "Opacity") {
-        obj->set_opacity(prop_value.toFloat());
+        auto value = prop_value.toFloat();
+        obj->set_opacity(value);
+        obj->set_editor_property("opacity", std::to_string(value), std::to_string(1.0f));
     } else if (prop_name == "Angle") {
         obj->set_angle(prop_value.toInt());
     } else if (prop_name == "Visible") {
@@ -275,26 +309,56 @@ void Map_Object_Mapper::change_property(QtProperty* prop) {
         obj->set_stopped(prop_value.toBool());
     } else if (prop_name == "Frozen") {
         obj->set_frozen(prop_value.toBool());
+    } else if (prop_name == "Player-facing") {
+        auto value = prop_value.toBool();
+        obj->set_player_facing(value);
+        obj->set_editor_property("player-facing", value ? "TRUE" : "FALSE", "TRUE");
     } else if (prop_name == "Pass-through") {
-        obj->set_passthrough(prop_value.toBool());
+        auto value = prop_value.toBool();
+        obj->set_passthrough(value);
+        obj->set_editor_property("passthrough", value ? "TRUE" : "FALSE", "FALSE");
     } else if (prop_name == "Pass-through Type") {
-        obj->set_passthrough_type(static_cast<Map_Object::Passthrough_Type>(prop_value.toInt() + 1));
+        auto value = static_cast<Map_Object::Passthrough_Type>(prop_value.toInt() + 1);
+        obj->set_passthrough_type(value);
+        auto value_str = value == Map_Object::Passthrough_Type::INITIATOR ? "INITIATOR"
+            : (value == Map_Object::Passthrough_Type::RECEIVER ? "RECEIVER" : "BOTH");
+        obj->set_editor_property("passthrough-type", value_str, "BOTH");
     } else if (prop_name == "Draw Order") {
-        obj->set_draw_order(static_cast<Map_Object::Draw_Order>(prop_value.toInt()));
+        auto value = static_cast<Map_Object::Draw_Order>(prop_value.toInt());
+        obj->set_draw_order(value);
+        auto value_str = value == Map_Object::Draw_Order::BELOW ? "BELOW"
+            : (value == Map_Object::Draw_Order::ABOVE ? "ABOVE" : "NORMAL");
+        obj->set_editor_property("draw-order", value_str, "NORMAL");
     } else if (prop_name == "Trigger Script") {
-        obj->set_trigger_script(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_trigger_script(value);
+        auto script_prop = obj->get_property("script") != "" ? "script" : "trigger-script";
+        obj->set_editor_property(script_prop, value, "", false);
     } else if (prop_name == "Leave Script") {
-        obj->set_leave_script(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_leave_script(value);
+        obj->set_editor_property("leave-script", value, "", false);
     } else if (prop_name == "Touch Script") {
-        obj->set_touch_script(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_touch_script(value);
+        obj->set_editor_property("touch-script", value, "", false);
     } else if (prop_name == "Script Context") {
-        obj->set_script_context(static_cast<Map_Object::Script_Context>(prop_value.toInt()));
+        auto value = static_cast<Map_Object::Script_Context>(prop_value.toInt());
+        obj->set_script_context(value);
+        auto str_value = value == Map_Object::Script_Context::MAP ? "MAP" : "GLOBAL";
+        obj->set_editor_property("script-context", str_value, "MAP");
     } else if (prop_name == "Face State") {
-        obj->set_face_state(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_face_state(value);
+        obj->set_editor_property("face-state", value, "FACE");
     } else if (prop_name == "Walk State") {
-        obj->set_walk_state(prop_value.toString().toStdString());
+        auto value = prop_value.toString().toStdString();
+        obj->set_walk_state(value);
+        obj->set_editor_property("walk-state", value, "WALK");
     } else if (prop_name == "Overrides Tile Collision") {
-        obj->set_override_tile_collision(prop_value.toBool());
+        auto value = prop_value.toBool();
+        obj->set_override_tile_collision(value);
+        obj->set_editor_property("override-tile-collision", value ? "TRUE" : "FALSE", "FALSE");
     } else if (prop_name == "Outlined") {
         auto& conditions = detail::get_outline_conditions();
         auto condition_str = conditions[prop_value.toInt()];
@@ -315,7 +379,10 @@ void Map_Object_Mapper::change_property(QtProperty* prop) {
             }
             obj->set_outline_conditions(new_condition);
         }
+        obj->set_editor_property("outlined", condition_str.toStdString(), "TOUCHED, SCRIPT, SOLID");
     } else if (prop_name == "Outlined Object") {
-        obj->set_outlined_object_id(prop_value.toInt());
+        auto value = prop_value.toInt();
+        obj->set_outlined_object_id(value);
+        obj->set_editor_property("outlined-object", std::to_string(value), std::to_string(-1));
     }
 }

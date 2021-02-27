@@ -37,11 +37,15 @@ xd::vec4 hex_to_color(std::string hex) {
     return int_to_color(value);
 }
 
-std::string color_to_hex(const xd::vec4& color) {
+std::string color_to_hex(const xd::vec4& color, bool always_include_alpha) {
     int value = color_to_int(color);
     std::stringstream ss;
     ss << std::hex << value;
-    return ss.str();
+    auto hex_string = ss.str();
+    if (!always_include_alpha && hex_string.size() == 8 && hex_string.find("ff") == 0) {
+        return hex_string.substr(2);
+    }
+    return hex_string;
 }
 
 std::string color_to_rgba_string(const xd::vec4& color) {

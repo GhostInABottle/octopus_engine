@@ -58,16 +58,16 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     // Layer properties
     auto& properties = layer_ptr->properties;
     std::string sprite;
-    if (properties.has_property("xspeed"))
+    if (properties.contains("xspeed"))
         layer_ptr->velocity.x = std::stof(properties["xspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
-    if (properties.has_property("yspeed"))
+    if (properties.contains("yspeed"))
         layer_ptr->velocity.y = std::stof(properties["yspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
-    if (properties.has_property("fixed"))
+    if (properties.contains("fixed"))
         layer_ptr->fixed = string_utilities::string_to_bool(properties["fixed"]);
-    if (properties.has_property("sprite"))
+    if (properties.contains("sprite"))
         sprite = properties["sprite"];
     std::string pose;
-    if (properties.has_property("pose"))
+    if (properties.contains("pose"))
         pose = properties["pose"];
 
     // Image

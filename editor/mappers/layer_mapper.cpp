@@ -24,6 +24,14 @@ void Layer_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantPropertyMan
     item = manager->addProperty(QVariant::Bool, "Visible");
     item->setValue(layer->visible);
     browser->addProperty(item);
+    // Vertex Shader
+    item = manager->addProperty(QVariant::String, "Vertex Shader");
+    item->setValue(QString::fromStdString(layer->get_property("vertex-shader")));
+    browser->addProperty(item);
+    // Fragment Shader
+    item = manager->addProperty(QVariant::String, "Fragment Shader");
+    item->setValue(QString::fromStdString(layer->get_property("fragment-shader")));
+    browser->addProperty(item);
 }
 
 void Layer_Mapper::change_property(QtProperty* prop) {
@@ -38,5 +46,9 @@ void Layer_Mapper::change_property(QtProperty* prop) {
         layer->opacity = prop_value.toFloat();
     } else if (prop_name == "Visible") {
         layer->visible = prop_value.toBool();
+    } else if (prop_name == "Vertex Shader") {
+        layer->set_editor_property("vertex-shader", prop_value.toString().toStdString());
+    } else if (prop_name == "Fragment Shader") {
+        layer->set_editor_property("fragment-shader", prop_value.toString().toStdString());
     }
 }

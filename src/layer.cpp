@@ -49,8 +49,8 @@ void Layer::load(rapidxml::xml_node<>& node) {
 
     properties.read(node);
 
-    auto has_vert = properties.has_property("vertex-shader");
-    auto has_frag = properties.has_property("fragment-shader");
+    auto has_vert = properties.contains("vertex-shader");
+    auto has_frag = properties.contains("fragment-shader");
     if (has_vert && has_frag) {
         vertex_shader = properties["vertex-shader"];
         fragment_shader = properties["fragment-shader"];

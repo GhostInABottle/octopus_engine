@@ -34,7 +34,7 @@ class Scripting_Interface;
 class Map_Renderer;
 class Map_Updater;
 
-class Map : public xd::entity<Map>, public Editable, public Lua_Object {
+class Map : public xd::entity<Map>, public Editable, public Lua_Object, public Tmx_Object {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;
@@ -43,7 +43,7 @@ public:
     ~Map();
     // Get map name
     std::string get_name() const {
-        if (properties.has_property("name"))
+        if (properties.contains("name"))
             return properties["name"];
         else
             return "unnamed map";
@@ -89,7 +89,7 @@ public:
     // Get object by ID
     Map_Object* get_object(int id) const;
     // Get all objects
-    std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() noexcept {
+    std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
         return objects;
     }
     // Delete object
@@ -131,38 +131,35 @@ public:
     // Load map from a TMX map node
     static std::unique_ptr<Map> load(Game& game, rapidxml::xml_node<>& node);
     // Getters and setters
-    Game& get_game() noexcept {
+    Game& get_game() {
         return game;
     }
-    void set_property(const std::string& name, const std::string& value) {
-        properties[name] = value;
-    }
-    std::string get_property(const std::string& name) const {
-        return properties[name];
-    }
-    int get_width() const noexcept {
+    int get_width() const {
         return width;
     }
-    int get_height() const noexcept {
+    int get_height() const {
         return height;
     }
-    int get_tile_width() const noexcept {
+    int get_tile_width() const {
         return tile_width;
     }
-    int get_tile_height() const noexcept {
+    int get_tile_height() const {
         return tile_height;
     }
-    int get_pixel_width() const noexcept {
+    int get_pixel_width() const {
         return width * tile_width;
     }
-    int get_pixel_height() const noexcept {
+    int get_pixel_height() const {
         return height * tile_height;
     }
     std::string get_filename() const {
         return filename;
     }
-    xd::vec2 get_starting_position() const noexcept {
+    xd::vec2 get_starting_position() const {
         return starting_position;
+    }
+    void set_starting_position(xd::vec2 new_pos) {
+        starting_position = new_pos;
     }
     const Tileset& get_tileset(int index) const {
         return tilesets.at(index);
@@ -182,7 +179,7 @@ public:
     void set_startup_scripts(const std::string& scripts) {
         set_property("scripts", scripts);
     }
-    void set_objects_moved(bool moved) noexcept {
+    void set_objects_moved(bool moved) {
         objects_moved = moved;
     }
     bool is_changed() noexcept {
@@ -205,8 +202,6 @@ private:
     int next_object_id;
     // Starting position for player
     xd::vec2 starting_position;
-    // Map properties
-    Tmx_Properties properties;
     // Scripting interface for map scripts
     std::unique_ptr<Scripting_Interface> scripting_interface;
     // Hash table of object IDs to objects

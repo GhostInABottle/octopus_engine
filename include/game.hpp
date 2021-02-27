@@ -43,6 +43,8 @@ public:
     void frame_update();
     // Render the scene
     void render();
+    // Is the game running in editor mode?
+    bool in_editor_mode() const;
     // Is the game currently paused?
     bool is_paused() const noexcept { return paused; }
     // Check if pausing is possible

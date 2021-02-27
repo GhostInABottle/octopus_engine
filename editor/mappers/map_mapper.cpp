@@ -22,9 +22,18 @@ void Map_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantPropertyManag
     item = manager->addProperty(QVariant::String, "Music");
     item->setValue(QString::fromStdString(map->get_bg_music_filename()));
     browser->addProperty(item);
+    // Music Script
+    item = manager->addProperty(QVariant::String, "Music Script");
+    item->setValue(QString::fromStdString(map->get_property("music-script")));
+    browser->addProperty(item);
     // Scripts
     item = manager->addProperty(QVariant::String, "Scripts");
     item->setValue(QString::fromStdString(map->get_startup_scripts()));
+    browser->addProperty(item);
+    // Player Position
+    item = manager->addProperty(QVariant::Point, "Player Position");
+    auto pos = map->get_starting_position();
+    item->setValue(QPoint(static_cast<int>(pos.x), static_cast<int>(pos.y)));
     browser->addProperty(item);
 }
 
@@ -43,7 +52,15 @@ void Map_Mapper::change_property(QtProperty* prop) {
         map->resize(map_size, tile_size);
     } else if (prop_name == "Music") {
         map->set_bg_music_filename(prop_value.toString().toStdString());
+    } else if (prop_name == "Music Script") {
+        auto value = prop_value.toString().toStdString();
+        map->set_editor_property("music-script", value, "", false);
     } else if (prop_name == "Scripts") {
         map->set_startup_scripts(prop_value.toString().toStdString());
+    } else if (prop_name == "Player Position") {
+        auto value = prop_value.toPoint();
+        map->set_starting_position(xd::vec2{value.x(), value.y()});
+        map->set_editor_property("player-position-x", std::to_string(value.x()));
+        map->set_editor_property("player-position-y", std::to_string(value.y()));
     }
 }

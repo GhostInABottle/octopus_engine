@@ -454,6 +454,10 @@ void Game::render() {
     window->swap();
 }
 
+bool Game::in_editor_mode() const {
+    return pimpl->editor_mode;
+}
+
 void Game::pause() {
     paused = true;
     pimpl->pause_start_time = window->ticks();

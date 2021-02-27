@@ -6,13 +6,17 @@
 #include "../include/utility/color.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
+#include <algorithm>
 
 rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
     auto node = Layer::save(doc, "objectgroup");
-    std::string color_hex = color_to_hex(color);
-    if (color_hex != std::string("ffffffff"))
+    std::string color_hex = color_to_hex(color, true);
+    if (color_hex != "ffffffff")
         node->append_attribute(xml_attribute(doc, "color", color_hex));
-    for (auto& object : objects) {
+    auto sorted_objects{objects};
+    std::sort(sorted_objects.begin(), sorted_objects.end(),
+        [](Map_Object* a, Map_Object* b) { return a->get_id() < b->get_id(); });
+    for (auto& object : sorted_objects) {
         node->append_node(object->save(doc));
     }
     return node;
