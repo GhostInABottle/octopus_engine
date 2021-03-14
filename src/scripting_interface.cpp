@@ -848,7 +848,7 @@ void Scripting_Interface::setup_scripts() {
     // Camera tracking and effects
     auto camera_type = lua.new_usertype<Camera>("Camera");
     camera_type["screen_tint"] = sol::property(&Camera::get_screen_tint, &Camera::set_screen_tint);
-    camera_type["map_tint"] = sol::property(&Camera::get_screen_tint, &Camera::set_screen_tint);
+    camera_type["map_tint"] = sol::property(&Camera::get_map_tint, &Camera::set_map_tint);
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
     camera_type["position_bounds"] = sol::readonly_property(&Camera::get_position_bounds);
     camera_type["tracked_object"] = sol::property(&Camera::get_object, &Camera::set_object);
