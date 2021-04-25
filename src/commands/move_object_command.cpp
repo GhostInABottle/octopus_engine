@@ -25,19 +25,17 @@ void Move_Object_Command::execute() {
         complete = true;
         return;
     }
-    if (paused) {
-        object->set_state(old_state);
-        return;
+    if (!paused) {
+        auto collision = object->move(direction, object->get_fps_independent_speed(),
+            Collision_Check_Type::BOTH, change_facing);
+        if (collision.passable())
+            pixels -= object->get_fps_independent_speed();
+        else if (skip_blocking)
+            pixels = 0.0f;
     }
-    auto collision = object->move(direction, object->get_fps_independent_speed(),
-        Collision_Check_Type::BOTH, change_facing);
-    if (collision.passable())
-        pixels -= object->get_fps_independent_speed();
-    else if (skip_blocking)
-        pixels = 0.0f;
 
     complete = stopped || object->is_stopped() || pixels <= 0.01f;
-    if (complete) {
+    if (complete || paused) {
         object->set_state(old_state);
     }
 }
