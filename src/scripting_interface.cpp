@@ -504,6 +504,7 @@ void Scripting_Interface::setup_scripts() {
     object_type["name"] = sol::property(&Map_Object::get_name, &Map_Object::set_name);
     object_type["type"] = sol::property(&Map_Object::get_type, &Map_Object::set_type);
     object_type["position"] = sol::property(&Map_Object::get_position, &Map_Object::set_position);
+    object_type["size"] = sol::property(&Map_Object::get_size, &Map_Object::set_size);
     object_type["x"] = sol::property(&Map_Object::get_x, &Map_Object::set_x);
     object_type["y"] = sol::property(&Map_Object::get_y, &Map_Object::set_y);
     object_type["color"] = sol::property(&Map_Object::get_color, &Map_Object::set_color);
