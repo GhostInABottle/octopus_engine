@@ -431,3 +431,7 @@ void Sprite::set_speed(float speed) {
     else
         pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (pimpl->max_speed - 1.0f);
 }
+
+bool Sprite::is_eight_directional() const {
+    return pimpl->data->has_diagonal_directions;
+}

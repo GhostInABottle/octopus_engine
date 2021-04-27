@@ -73,6 +73,8 @@ struct Sprite_Data {
     std::vector<Pose> poses;
     // Asset manager for caching the textures
     xd::asset_manager& asset_manager;
+    // Does it have any diagonal directions?
+    bool has_diagonal_directions;
 
     explicit Sprite_Data(xd::asset_manager& manager);
     ~Sprite_Data();

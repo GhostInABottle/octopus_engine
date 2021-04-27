@@ -59,6 +59,8 @@ public:
     float get_speed() const;
     // Sets animation speed modifier
     void set_speed(float speed);
+    // Does the sprite support diagonal directions?
+    bool is_eight_directional() const;
 private:
     struct Impl;
     friend struct Impl;

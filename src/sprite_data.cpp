@@ -3,12 +3,13 @@
 #include "../include/utility/color.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/log.hpp"
 #include <iostream>
 
-Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager) {}
+Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager), has_diagonal_directions(false) {}
 
 Sprite_Data::~Sprite_Data() {
     // Release persistent textures from manager
@@ -182,6 +183,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             sprite_ptr->poses[pose_index].tags[key] = value;
             if (key == "NAME" && value == sprite_ptr->default_pose) {
                 default_pose_found = true;
+            }
+            if (!sprite_ptr->has_diagonal_directions && key == "DIRECTION") {
+                sprite_ptr->has_diagonal_directions = is_diagonal(string_to_direction(value));
             }
         }
     }

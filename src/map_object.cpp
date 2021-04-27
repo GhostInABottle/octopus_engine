@@ -34,6 +34,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         passthrough(false),
         passthrough_type(Passthrough_Type::BOTH),
         override_tile_collision(false),
+        strict_multidirectional_movement(false),
         direction(dir),
         state("FACE"),
         face_state("FACE"),
@@ -92,7 +93,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     if (collision.passable()) {
         position += change;
     } else {
-        if (multiple_directions) {
+        if (multiple_directions && !strict_multidirectional_movement) {
             // Check if we can move in either direction
             collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN),
                 check_type, std::move(collision));
@@ -111,7 +112,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
             position += change;
             move_dir = vector_to_direction(change);
         } else {
-            if (movement && change_facing) direction = move_dir;
+            if (movement && change_facing) {
+                direction = move_dir;
+                if (sprite && is_diagonal(direction) && !sprite->is_eight_directional()) {
+                    direction = diagonal_to_four_directions(direction);
+                }
+            }
             set_state(face_state);
             return collision;
         }
@@ -120,7 +126,9 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     // Update movement pose
     if (movement) {
         if (change_facing) {
-            if (check_close(change.y, -pixels)) {
+            if (sprite && sprite->is_eight_directional()) {
+                direction = move_dir;
+            } else if (check_close(change.y, -pixels)) {
                 direction = Direction::UP;
             } else if (check_close(change.y, pixels)) {
                 direction = Direction::DOWN;
@@ -130,6 +138,9 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
                 direction = Direction::RIGHT;
             } else {
                 direction = move_dir;
+                if (sprite && is_diagonal(direction) && !sprite->is_eight_directional()) {
+                    direction = diagonal_to_four_directions(direction);
+                }
                 set_state(face_state);
                 return collision;
             }

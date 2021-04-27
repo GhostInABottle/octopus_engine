@@ -2,6 +2,7 @@
 #define HPP_UTILITY_DIRECTION
 
 #include <iostream>
+#include "../log.hpp"
 #include "../direction.hpp"
 #include "string.hpp"
 
@@ -47,39 +48,48 @@ inline Direction vector_to_direction(xd::vec2 vec) noexcept {
 // Get the name of a direction
 inline std::string direction_to_string(Direction dir) {
     static std::string direction_names[] = {
-        "",		    // 0
-        "Up",		// 1
-        "Right",	// 2
-        "Up",		// 3 (Up + Right)
-        "Down",		// 4
-        "Up",		// 5 (Up + Down)
-        "Down",		// 6 (Right + Down)
-        "Up",		// 7 (Right + Up + Down)
-        "Left",		// 8
-        "Up",		// 9 (Left + Up)
-        "Left",		// A (Left + Right)
-        "Up",		// B (Left + Right + Up)
-        "Down",		// C (Left + Down)
-        "Up",		// D (Up + Down + Left)
-        "Down",		// E (Down + Right + Left)
-        "Down"		// All directions
+        "",                     // 0
+        "Up",                   // 1
+        "Right",                // 2
+        "Up|Right",             // 3
+        "Down",                 // 4
+        "Up|Down",              // 5
+        "Down|Right",           // 6
+        "Up|Down|Right",        // 7
+        "Left",                 // 8
+        "Up|Left",              // 9
+        "Left|Right",           // A
+        "Up|Left|Right",        // B
+        "Down|Left",            // C
+        "Up|Down|Left",         // D
+        "Down|Left|Right",      // E
+        "Up|Down|Left|Right"    // F
     };
     const int direction_int = static_cast<int>(dir);
     return direction_names[direction_int];
 }
 
 inline Direction string_to_direction(std::string str) {
+    auto dir = Direction::NONE;
+    if (str.empty()) return dir;
+
     string_utilities::capitalize(str);
-    if (str == "LEFT")
-        return Direction::LEFT;
-    else if (str == "RIGHT")
-        return Direction::RIGHT;
-    else if (str == "UP")
-        return Direction::UP;
-    else if (str == "DOWN")
-        return Direction::DOWN;
-    else
-        return Direction::NONE;
+    auto parts = string_utilities::split(str, "|");
+    for (auto& part : parts) {
+        if (part == "UP")
+            dir = dir | Direction::UP;
+        else if (part == "DOWN")
+            dir = dir | Direction::DOWN;
+        else if (part == "LEFT")
+            dir = dir | Direction::LEFT;
+        else if (part == "RIGHT")
+            dir = dir | Direction::RIGHT;
+        else {
+            LOGGER_W << "Unexpected direction " << part << " in directional string " << str;
+        }
+
+    }
+    return dir;
 }
 
 // Get direction for object at pos1 to face pos2
@@ -124,6 +134,19 @@ inline Direction facing_direction(xd::ivec2 pos1, xd::ivec2 pos2) {
 inline bool is_diagonal(Direction dir) noexcept {
     const Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
     return (dir & dir_minus_1) != Direction::NONE;
+}
+
+inline Direction diagonal_to_four_directions(Direction dir) {
+    if ((dir & Direction::UP) != Direction::NONE)
+        return Direction::UP;
+    else if ((dir & Direction::DOWN) != Direction::NONE)
+        return Direction::DOWN;
+    else if ((dir & Direction::LEFT) != Direction::NONE)
+        return Direction::LEFT;
+    else if ((dir & Direction::RIGHT) != Direction::NONE)
+        return Direction::RIGHT;
+    else
+        return Direction::NONE;
 }
 
 inline std::ostream& operator<<(std::ostream& out, Direction dir)
