@@ -226,6 +226,7 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
         }
     }
     object->set_layer(layer);
+
     // Update ID counter for new objects
     int id = object->get_id();
     if (id == -1) {
@@ -235,18 +236,26 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
     if (id >= next_object_id) {
         next_object_id = id + 1;
     }
-    // Add to object map and to layer
+
     auto name = object->get_name();
     if (name.empty()) {
         name = "UNTITLED" + std::to_string(id);
         object->set_name(name);
     }
     string_utilities::capitalize(name);
-    auto mapping = std::unordered_multimap<std::string, int>::value_type(name, id);
-    object_name_to_id.insert(mapping);
+
+    if (get_object(id)) {
+        throw std::runtime_error("Trying to add object with existing ID " + std::to_string(id));
+    }
+    if (get_object(name)) {
+        throw std::runtime_error("Trying to add object with existing name " + name);
+    }
+    object_name_to_id[name] = id;
     objects[id] = object;
     object->set_name(name);
+
     layer->objects.push_back(object.get());
+
     return object.get();
 }
 
@@ -259,18 +268,14 @@ Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<s
 Map_Object* Map::get_object(std::string name) const {
     string_utilities::capitalize(name);
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
-        int id = object_name_to_id.find(name)->second;
-        return get_object(id);
+        return get_object(object_name_to_id.at(name));
     }
     return nullptr;
 }
 
 Map_Object* Map::get_object(int id) const {
     auto obj = objects.find(id);
-    if (obj != objects.end())
-        return obj->second.get();
-    else
-        return nullptr;
+    return obj != objects.end() ? obj->second.get() : nullptr;
 }
 
 void Map::delete_object(const std::string& name) {
@@ -282,8 +287,8 @@ void Map::delete_object(int id) {
 }
 
 void Map::delete_object(Map_Object* object) {
-    if (!object)
-        return;
+    if (!object) return;
+
     auto& layer_objects = object->get_layer()->objects;
     layer_objects.erase(
         std::remove(layer_objects.begin(), layer_objects.end(), object),

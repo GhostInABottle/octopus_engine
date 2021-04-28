@@ -207,7 +207,7 @@ private:
     // Hash table of object IDs to objects
     std::unordered_map<int, std::shared_ptr<Map_Object>> objects;
     // Hash table of object names to IDs
-    std::unordered_multimap<std::string, int> object_name_to_id;
+    std::unordered_map<std::string, int> object_name_to_id;
     // List of map tilesets
     std::vector<Tileset> tilesets;
     // Obstruction data tileset
