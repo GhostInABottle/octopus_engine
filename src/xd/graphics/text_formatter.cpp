@@ -198,45 +198,21 @@ namespace xd { namespace detail { namespace text_formatter {
     {
         stacked_font_style(const font_style& initial_state)
         {
-            nested_color color;
-            color.value = initial_state.color();
-            color.level = 0;
-            colors.push_back(color);
-
-            nested_size size;
-            size.value = initial_state.size();
-            size.level = 0;
-            sizes.push_back(size);
-
-            nested_letter_spacing letter_spacing;
-            letter_spacing.value = initial_state.letter_spacing();
-            letter_spacing.level = 0;
-            letter_spacings.push_back(letter_spacing);
-
-            nested_force_autohint force_autohint;
-            force_autohint.value = initial_state.force_autohint();
-            force_autohint.level = 0;
-            force_autohints.push_back(force_autohint);
+            colors.push_back(nested_color{initial_state.color(), 0});
+            sizes.push_back(nested_size{initial_state.size(), 0});
+            letter_spacings.push_back(nested_letter_spacing{initial_state.letter_spacing(), 0});
+            force_autohints.push_back(nested_force_autohint{initial_state.force_autohint(), 0});
 
             if (initial_state.has_type()) {
-                nested_type type;
-                type.value = initial_state.type();
-                type.level = 0;
-                types.push_back(type);
+                types.push_back(nested_type{initial_state.type(), 0});
             }
 
             if (initial_state.has_shadow()) {
-                nested_shadow shadow;
-                shadow.value = initial_state.shadow();
-                shadow.level = 0;
-                shadows.push_back(shadow);
+                shadows.push_back(nested_shadow{initial_state.shadow(), 0});
             }
 
             if (initial_state.has_outline()) {
-                nested_outline outline;
-                outline.value = initial_state.outline();
-                outline.level = 0;
-                outlines.push_back(outline);
+                outlines.push_back(nested_outline{initial_state.outline(), 0});
             }
 
         }
@@ -318,18 +294,16 @@ namespace xd { namespace detail { namespace text_formatter {
 
         void push_letter_spacing(float value, int level)
         {
-            if (letter_spacings.size() != 0)
-                push(letter_spacings, value, level);
-            else
-                push(letter_spacings, value, level);
+            push(letter_spacings, value, level);
         }
 
         void push_force_autohint(bool value, int level)
         {
-            if (force_autohints.size() != 0)
-                push(force_autohints, value, level);
-            else
-                push(force_autohints, value, level);
+            push(force_autohints, value, level);
+        }
+
+        void push_icon(int value, int level) {
+             push(icons, value, level);
         }
 
         template <typename T>
@@ -385,6 +359,10 @@ namespace xd { namespace detail { namespace text_formatter {
             pop(force_autohints, level);
         }
 
+        void pop_icon(int level) {
+            pop(icons, level);
+        }
+
         template <typename T>
         void pop_level(std::list<T>& list, int level)
         {
@@ -408,6 +386,7 @@ namespace xd { namespace detail { namespace text_formatter {
             pop_level(positions, level);
             pop_level(letter_spacings, level);
             pop_level(force_autohints, level);
+            pop_level(icons, level);
         }
 
         std::list<nested_color> colors;
@@ -419,6 +398,7 @@ namespace xd { namespace detail { namespace text_formatter {
         std::list<nested_position> positions;
         std::list<nested_letter_spacing> letter_spacings;
         std::list<nested_force_autohint> force_autohints;
+        std::list<nested_icon> icons;
     };
 
 
@@ -475,6 +455,10 @@ namespace xd { namespace detail { namespace text_formatter {
             m_style_stack.push_force_autohint(state_change.value, state_change.level);
         }
 
+        void operator()(const state_change_push_icon& state_change) {
+            m_style_stack.push_icon(state_change.value, state_change.level);
+        }
+
         void operator()(const state_change_pop_color& state_change)
         {
             m_style_stack.pop_color(state_change.level);
@@ -520,6 +504,9 @@ namespace xd { namespace detail { namespace text_formatter {
             m_style_stack.pop_force_autohint(state_change.level);
         }
 
+        void operator()(const state_change_pop_icon& state_change) {
+            m_style_stack.pop_icon(state_change.level);
+        }
     private:
         stacked_font_style& m_style_stack;
     };
@@ -570,138 +557,123 @@ void xd::text_decorator::push_text(utf8::uint32_t chr)
 
 void xd::text_decorator::push_color(const glm::vec4& value)
 {
-    detail::text_formatter::state_change_push_color state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_color state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_alpha(float value)
 {
-    detail::text_formatter::state_change_push_alpha state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_alpha state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_size(int value)
 {
-    detail::text_formatter::state_change_push_size state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_size state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_type(const std::string& value)
 {
-    detail::text_formatter::state_change_push_type state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_type state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_shadow(const font_shadow& value)
 {
-    detail::text_formatter::state_change_push_shadow state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_shadow state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_outline(const font_outline& value)
 {
-    detail::text_formatter::state_change_push_outline state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_outline state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_position(const glm::vec2& value)
 {
-    detail::text_formatter::state_change_push_position state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_position state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_letter_spacing(float value)
 {
-    detail::text_formatter::state_change_push_letter_spacing state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_letter_spacing state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::push_force_autohint(bool value)
 {
-    detail::text_formatter::state_change_push_force_autohint state_change;
-    state_change.value = value;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_push_force_autohint state_change{value, m_current_level};
+    m_current_state_changes.push_back(state_change);
+}
+
+void xd::text_decorator::push_icon(int value)
+{
+    detail::text_formatter::state_change_push_icon state_change{value, m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_color()
 {
-    detail::text_formatter::state_change_pop_color state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_color state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_alpha()
 {
-    detail::text_formatter::state_change_pop_alpha state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_alpha state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_size()
 {
-    detail::text_formatter::state_change_pop_size state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_size state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_type()
 {
-    detail::text_formatter::state_change_pop_type state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_type state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_shadow()
 {
-    detail::text_formatter::state_change_pop_shadow state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_shadow state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_outline()
 {
-    detail::text_formatter::state_change_pop_outline state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_outline state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_position()
 {
-    detail::text_formatter::state_change_pop_position state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_position state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_letter_spacing()
 {
-    detail::text_formatter::state_change_pop_letter_spacing state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_letter_spacing state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
 void xd::text_decorator::pop_force_autohint()
 {
-    detail::text_formatter::state_change_pop_force_autohint state_change;
-    state_change.level = m_current_level;
+    detail::text_formatter::state_change_pop_force_autohint state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
+
+void xd::text_decorator::pop_icon() {
+    detail::text_formatter::state_change_pop_icon state_change{m_current_level};
+    m_current_state_changes.push_back(state_change);
+}
+
 
 xd::text_formatter::text_formatter()
     : m_decorator_open_delim("{")
@@ -895,11 +867,12 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
         for (auto& formatted_char : text) {
             if (formatted_char.m_state_changes.size() || formatted_char.m_level < current_level) {
                 // draw the current string using current style
-                if (current_str.length() != 0) {
-                    if (style_stack.positions.size() != 0)
+                if (current_str.length() != 0 || !style_stack.icons.empty()) {
+                    int icon = style_stack.icons.empty() ? -1 : style_stack.icons.back().value;
+                    if (!style_stack.positions.empty())
                         pos += style_stack.positions.back().value;
-                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos);
-                    if (style_stack.positions.size() != 0)
+                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, icon);
+                    if (!style_stack.positions.empty())
                         pos -= style_stack.positions.back().value;
                     current_str.clear();
                 }
@@ -923,7 +896,7 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
 
         // draw the rest of the string
         if (current_str.length() != 0) {
-            if (style_stack.positions.size() != 0)
+            if (!style_stack.positions.empty())
                 pos += style_stack.positions.back().value;
             font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos);
         }

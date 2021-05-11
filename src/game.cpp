@@ -285,17 +285,17 @@ Game::Game(xd::audio* audio, bool editor_mode) :
     if (!file_utilities::file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
-    font = pimpl->asset_manager.load<xd::font>(font_file);
+    font = create_font(font_file);
     if (!bold_font_file.empty()) {
         if (file_utilities::file_exists(bold_font_file)) {
-            font->link_font("bold", pimpl->asset_manager.load<xd::font>(bold_font_file));
+            font->link_font("bold", create_font(bold_font_file));
         } else {
             LOGGER_W << "Couldn't read bold font file " << bold_font_file;
         }
     }
     if (!italic_font_file.empty()) {
         if (file_utilities::file_exists(italic_font_file)) {
-            font->link_font("italic", pimpl->asset_manager.load<xd::font>(italic_font_file));
+            font->link_font("italic", create_font(italic_font_file));
         } else {
             LOGGER_W << "Couldn't read italic font file " << bold_font_file;
         }
@@ -626,6 +626,16 @@ void Game::set_next_map(const std::string& filename, float x, float y, Direction
 
 xd::asset_manager& Game::get_asset_manager() {
     return pimpl->asset_manager;
+}
+
+std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
+    if (!file_utilities::file_exists(filename))
+        throw std::runtime_error("Couldn't read font file " + filename);
+    return pimpl->asset_manager.load<xd::font>(
+        filename,
+        Configurations::get<std::string>("font.icon-image"),
+        hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
+        xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")});
 }
 
 void Game::render_text(xd::font& font, xd::text_formatter& formatter,

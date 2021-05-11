@@ -8,6 +8,7 @@
 #include <memory>
 #include "../../../include/xd/graphics/font.hpp"
 #include "../../../include/xd/graphics/exceptions.hpp"
+#include "../../../include/xd/graphics/texture.hpp"
 #include "../../../include/xd/vendor/utf8.h"
 #include "../../../include/xd/vendor/unicode_data.hpp"
 
@@ -89,22 +90,27 @@ namespace xd { namespace detail { namespace font {
 
 } } }
 
-xd::font::font(const std::string& filename)
-    : m_filename(filename)
+xd::font::font(const std::string& filename) : xd::font(filename, "", xd::vec4{}, xd::ivec2{}) {}
+
+xd::font::font(const std::string& font_filename, const std::string& icons_filename, vec4 transparent_color, xd::vec2 icon_size)
+    : m_filename(font_filename)
     , m_mvp_uniform("mvpMatrix")
     , m_position_uniform("vPosition")
     , m_color_uniform("vColor")
     , m_texture_uniform("colorMap")
-{
+    , m_icon_size(icon_size) {
     int error;
 
     FT_Face handle = nullptr;
     // load the font
-    error = FT_New_Face(detail::font::library, filename.c_str(), 0, &handle);
+    error = FT_New_Face(detail::font::library, font_filename.c_str(), 0, &handle);
     // construct a new font face; make sure it gets deleted if exception is thrown
     m_face = std::make_unique<detail::font::face>(handle);
     if (error)
-        throw font_load_failed(filename);
+        throw font_load_failed(font_filename);
+
+    if (icons_filename.empty()) return;
+    m_icon_texture = std::make_shared<xd::texture>(icons_filename, transparent_color);
 }
 
 xd::font::~font()
@@ -214,7 +220,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
 
 void xd::font::render(const std::string& text, const font_style& style,
     xd::shader_program* shader, const glm::mat4& mvp, glm::vec2 *pos,
-    bool actual_rendering)
+    int icon, bool actual_rendering)
 {
     int load_flags = style.m_force_autohint ? FT_LOAD_FORCE_AUTOHINT : FT_LOAD_NO_HINTING;
     // check if we're rendering using this font or a linked font
@@ -224,8 +230,30 @@ void xd::font::render(const std::string& text, const font_style& style,
             throw invalid_font_type(*style.m_type);
         font_style linked_style = style;
         linked_style.m_type = std::nullopt;
-        i->second->render(text, linked_style, shader, mvp, pos, actual_rendering);
+        i->second->render(text, linked_style, shader, mvp, pos, icon, actual_rendering);
         return;
+    }
+
+    glm::vec2 text_pos;
+    if (pos) text_pos = *pos;
+
+    // Render the icon, if any
+    if (icon != -1 && m_icon_texture) {
+        auto icons_per_row = static_cast<int>(m_icon_texture->width() / m_icon_size.x);
+        rect src{
+            static_cast<float>(icon % icons_per_row) * m_icon_size.x,
+            static_cast<float>(icon / icons_per_row) * m_icon_size.y,
+            m_icon_size.x,
+            m_icon_size.y
+        };
+        auto icon_mvp = xd::translate(mvp, xd::vec3(0, -src.h, 0));
+        m_sprite_batch.add(m_icon_texture, src, pos->x, pos->y);
+        m_sprite_batch.draw(xd::shader_uniforms{icon_mvp});
+        text_pos.x += src.w;
+        if (text.empty() || text == " ") {
+            *pos = text_pos;
+            return;
+        }
     }
 
     // check if the font size is already loaded
@@ -258,12 +286,9 @@ void xd::font::render(const std::string& text, const font_style& style,
         shader->bind_uniform(m_texture_uniform, 0);
     }
 
-    // render each glyph in the string
-    glm::vec2 text_pos;
-    if (pos) text_pos = *pos;
-
     FT_UInt prev_codepoint = 0;
 
+    // render each glyph in the string
     for (unsigned int i = 0; i < glyph_count; ++i) {
         // get the unicode code point
         utf8::uint32_t codepoint = hb_glyph_infos[i].codepoint;
@@ -326,8 +351,7 @@ void xd::font::render(const std::string& text, const font_style& style,
                 // draw font multiple times times to draw outline (EXPENSIVE!)
                 for (int x = -style.m_outline->width; x <= style.m_outline->width; x++) {
                     for (int y = -style.m_outline->width; y <= style.m_outline->width; y++) {
-                        if (x == 0 && y == 0)
-                            continue;
+                        if (x == 0 && y == 0) continue;
                         shader->bind_uniform(m_position_uniform, glyph_pos + glm::vec2(x, y));
                         glyph.quad_ptr->render();
                     }
@@ -364,7 +388,7 @@ void xd::font::render(const std::string& text, const font_style& style,
 float xd::font::get_width(const std::string& text, const font_style& style)
 {
     glm::vec2 pos(0.0f, 0.0f);
-    render(text, style, nullptr, glm::mat4(), &pos, false);
+    render(text, style, nullptr, glm::mat4(), &pos, -1, false);
     return pos.x;
 }
 

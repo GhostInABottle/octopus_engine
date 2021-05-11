@@ -180,15 +180,13 @@ void Canvas::render_text(const std::string& text_to_render, float x, float y) co
 void Canvas::set_font(const std::string& font_file) {
     if (font_file == get_font_filename())
         return;
-    if (!file_utilities::file_exists(font_file))
-        throw std::runtime_error("Couldn't read font file " + font_file);
-    font = game.get_asset_manager().load<xd::font>(font_file);
+    font = game.create_font(font_file);
     redraw_needed = true;
 }
 
 void Canvas::link_font(const std::string& font_type, const std::string& font_file) {
     if (file_utilities::file_exists(font_file)) {
-        font->link_font(font_type, std::make_shared<xd::font>(font_file));
+        font->link_font(font_type, game.create_font(font_file));
     } else {
         LOGGER_W << "Couldn't read '" << font_type << "' font file " << font_file;
     }
