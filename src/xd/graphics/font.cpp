@@ -249,11 +249,10 @@ void xd::font::render(const std::string& text, const font_style& style,
         auto icon_mvp = xd::translate(mvp, xd::vec3(0, -src.h, 0));
         m_sprite_batch.add(m_icon_texture, src, pos->x, pos->y);
         m_sprite_batch.draw(xd::shader_uniforms{icon_mvp});
+        m_sprite_batch.clear();
         text_pos.x += src.w;
-        if (text.empty() || text == " ") {
-            *pos = text_pos;
-            return;
-        }
+        *pos = text_pos;
+        return;
     }
 
     // check if the font size is already loaded

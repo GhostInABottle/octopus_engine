@@ -22,7 +22,6 @@ xd::stock_text_formatter::stock_text_formatter()
     register_decorator("type", std::bind(&stock_text_formatter::type_decorator, this, _1, _2, _3));
     register_decorator("bold", std::bind(&stock_text_formatter::bold_decorator, this, _1, _2, _3));
     register_decorator("italic", std::bind(&stock_text_formatter::italic_decorator, this, _1, _2, _3));
-    register_decorator("icon", std::bind(&stock_text_formatter::icon_decorator, this, _1, _2, _3));
     register_decorator("color", std::bind(&stock_text_formatter::color_decorator, this, _1, _2, _3));
     register_decorator("shadow", std::bind(&stock_text_formatter::shadow_decorator, this, _1, _2, _3));
     register_decorator("outline", std::bind(&stock_text_formatter::outline_decorator, this, _1, _2, _3));
@@ -81,11 +80,6 @@ void xd::stock_text_formatter::italic_decorator(text_decorator& decorator, const
 {
     decorator.push_type("italic");
     decorator.push_text(text);
-}
-
-void xd::stock_text_formatter::icon_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args) {
-    decorator.push_icon(args.get<int>(0));
-    decorator.push_text(text.length() == 0 ? formatted_text{" "} : text);
 }
 
 void xd::stock_text_formatter::color_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)

@@ -85,8 +85,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             std::string value;
             bool has_value = false;
             bool error = false;
-            while (start != end)
-            {
+            while (start != end) {
                 if (std::find(std::begin(special), std::end(special), *start) == std::end(special)) {
                     // Read tag name or value
                     if (tag_token.tag.empty())

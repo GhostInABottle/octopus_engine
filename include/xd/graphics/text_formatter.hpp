@@ -15,22 +15,18 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <variant>
 
-namespace xd
-{
+namespace xd {
     class text_formatter;
 
-    class formatted_char
-    {
+    class formatted_char {
     public:
         formatted_char(utf8::uint32_t chr)
             : m_chr(chr)
-            , m_level(0)
-        {
-        }
+            , m_level(0) {}
 
-        utf8::uint32_t get() const noexcept
-        {
+        utf8::uint32_t get() const noexcept {
             return m_chr;
         }
 
@@ -41,40 +37,34 @@ namespace xd
 
         friend class text_decorator;
         friend class text_formatter;
-        friend class detail::text_formatter::decorate_text;
+        friend class detail::text_formatter::token_decorator;
+        friend class detail::text_formatter::formatted_element_renderer;
     };
 
-    class formatted_text
-    {
+    class formatted_text {
     public:
         typedef std::vector<formatted_char>::iterator iterator;
         typedef std::vector<formatted_char>::const_iterator const_iterator;
 
-        formatted_text() noexcept
-        {
-        }
+        formatted_text() noexcept {}
 
-        formatted_text(const std::string& text)
-        {
+        formatted_text(const std::string& text) {
             *this += text;
         }
 
-        formatted_text& operator+=(const formatted_char& chr)
-        {
+        formatted_text& operator+=(const formatted_char& chr) {
             m_chars.push_back(chr);
             return *this;
         }
 
-        formatted_text& operator+=(const formatted_text& text)
-        {
+        formatted_text& operator+=(const formatted_text& text) {
             if (this != &text) {
                 m_chars.insert(m_chars.end(), text.m_chars.begin(), text.m_chars.end());
             }
             return *this;
         }
 
-        formatted_text& operator+=(const std::string& text)
-        {
+        formatted_text& operator+=(const std::string& text) {
             std::string::const_iterator i = text.begin();
             while (i != text.end()) {
                 m_chars.push_back(utf8::next(i, text.end()));
@@ -82,49 +72,39 @@ namespace xd
             return *this;
         }
 
-        formatted_char& operator[](size_t index) noexcept
-        {
+        formatted_char& operator[](size_t index) noexcept {
             return m_chars[index];
         }
 
-        const formatted_char& operator[](size_t index) const noexcept
-        {
+        const formatted_char& operator[](size_t index) const noexcept {
             return m_chars[index];
         }
 
-        iterator begin() noexcept
-        {
+        iterator begin() noexcept {
             return m_chars.begin();
         }
 
-        iterator end() noexcept
-        {
+        iterator end() noexcept {
             return m_chars.end();
         }
 
-        const_iterator begin() const noexcept
-        {
+        const_iterator begin() const noexcept {
             return m_chars.begin();
         }
 
-        const_iterator end() const noexcept
-        {
+        const_iterator end() const noexcept {
             return m_chars.end();
         }
 
-        size_t length() const noexcept
-        {
+        size_t length() const noexcept {
             return m_chars.size();
         }
 
-        void clear() noexcept
-        {
+        void clear() noexcept {
             m_chars.clear();
         }
 
-        std::string get_unformatted() const
-        {
-            //return std::string(m_chars.begin(), m_chars.end());
+        std::string get_unformatted() const {
             std::string unformatted;
             for (const_iterator i = m_chars.begin(); i != m_chars.end(); ++i) {
                 utf8::append(i->get(), std::back_inserter(unformatted));
@@ -137,8 +117,10 @@ namespace xd
 
         friend class text_decorator;
         friend class text_formatter;
-        friend class detail::text_formatter::decorate_text;
+        friend class detail::text_formatter::token_decorator;
     };
+
+    typedef std::variant<int, formatted_text> formatted_element;
 
     class text_decorator_args
     {
@@ -192,7 +174,6 @@ namespace xd
         void push_position(const glm::vec2& position);
         void push_letter_spacing(float letter_spacing);
         void push_force_autohint(bool force_autohint);
-        void push_icon(int index);
 
         void pop_color();
         void pop_alpha();
@@ -203,7 +184,6 @@ namespace xd
         void pop_position();
         void pop_letter_spacing();
         void pop_force_autohint();
-        void pop_icon();
 
         template <typename T>
         void push_text(const T& val)
@@ -219,7 +199,7 @@ namespace xd
         detail::text_formatter::state_change_list m_current_state_changes;
 
         // decorate_text needs to be able to modify current state
-        friend class detail::text_formatter::decorate_text;
+        friend class detail::text_formatter::token_decorator;
     };
 
     class text_formatter

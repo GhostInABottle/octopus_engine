@@ -18,13 +18,15 @@ namespace xd { namespace detail { namespace text_formatter {
         return end2 - begin2 >= str1.end() - str1.begin() && std::equal(str1.begin(), str1.end(), begin2);
     }
 
-    // formatted text list
-    typedef std::list<formatted_text> formatted_text_list;
-
     // token types
     struct token_text
     {
         std::string text;
+    };
+
+    struct token_icon
+    {
+        int index;
     };
 
     struct token_variable
@@ -93,6 +95,11 @@ namespace xd { namespace detail { namespace text_formatter {
             m_tokens.push_back(new_tok);
         }
 
+        void operator()(const token_icon& tok) {
+            // don't do anything to decorators
+            m_tokens.push_back(tok);
+        }
+
         void operator()(const token_open_decorator& tok)
         {
             // don't do anything to decorators
@@ -109,31 +116,37 @@ namespace xd { namespace detail { namespace text_formatter {
         token_list& m_tokens;
     };
 
-    // decorate text
-    class decorate_text
+    // decorate text and icons
+    class token_decorator
     {
     public:
-        decorate_text(formatted_text_list& texts)
-            : m_texts(texts)
+        token_decorator(std::list<formatted_element>& elements)
+            : m_elements(elements)
             , m_prev_close_decorator(false)
             , m_level(0)
         {
         }
 
+        std::list<formatted_element>::iterator find_formatted_text() {
+            return std::find_if(m_elements.begin(), m_elements.end(),
+                [](formatted_element& e) { return std::holds_alternative<formatted_text>(e); });
+        }
+
         void operator()(const token_text& tok)
         {
             // set level for each character
-            formatted_text text(tok.text);
+            formatted_text text{tok.text};
             for (auto& formatted_char : text) {
                 formatted_char.m_level = m_level;
             }
 
             // text node, create a formatted version of it
-            if (m_texts.size() && !m_prev_close_decorator) {
-                m_texts.front().m_chars.insert(m_texts.front().m_chars.begin(),
+            auto first_text = m_elements.empty() ? nullptr : std::get_if<formatted_text>(&m_elements.front());
+            if (!m_prev_close_decorator && first_text) {
+                first_text->m_chars.insert(first_text->m_chars.begin(),
                     text.begin(), text.end());
             } else {
-                m_texts.push_front(text);
+                m_elements.push_front(text);
             }
 
             m_prev_close_decorator = false;
@@ -144,17 +157,29 @@ namespace xd { namespace detail { namespace text_formatter {
             // do nothing; variables are already expanded
         }
 
+        void operator()(const token_icon& tok)
+        {
+            m_elements.push_front(tok.index);
+            m_prev_close_decorator = false;
+        }
+
         void operator()(const token_open_decorator& tok)
         {
             // if there are no associated text node, create an empty one
-            if (m_prev_close_decorator)
-                m_texts.push_front(formatted_text());
+            if (m_prev_close_decorator) {
+                m_elements.push_front(formatted_text{});
+            }
 
+            auto first_text_iterator = find_formatted_text();
+            if (first_text_iterator == m_elements.end()) {
+                m_elements.push_back(formatted_text{});
+                first_text_iterator = std::prev(m_elements.end());
+            }
+
+            auto text = std::get_if<formatted_text>(&*first_text_iterator);
             // decorate the associated text node
-            formatted_text text = m_texts.front();
             xd::text_decorator decorator(m_level);
-            m_texts.pop_front();
-            tok.callback(decorator, text, tok.args);
+            tok.callback(decorator, *text, tok.args);
             if (decorator.m_current_text.length()) {
                 // set level for each character
                 formatted_text::iterator i = decorator.m_current_text.begin();
@@ -163,17 +188,17 @@ namespace xd { namespace detail { namespace text_formatter {
                         i->m_level = m_level;
                     ++i;
                 }
+            }
 
+            auto next_iterator = std::next(first_text_iterator);
+            auto next_element = next_iterator != m_elements.end() ? std::get_if<formatted_text>(&*next_iterator) : nullptr;
+            if (next_element && next_element->begin()->m_level == (m_level - 1)) {
                 // if we're inside another decorator, concatenate with previous string
-                if (m_texts.size() && m_texts.front().begin()->m_level == (m_level-1)) {
-                    m_texts.front().m_chars.insert(m_texts.front().m_chars.begin(),
-                        decorator.m_current_text.begin(), decorator.m_current_text.end());
-                } else {
-                    m_texts.push_front(decorator.m_current_text);
-                }
-
+                next_element->m_chars.insert(next_element->m_chars.begin(),
+                    decorator.m_current_text.begin(), decorator.m_current_text.end());
+                m_elements.erase(first_text_iterator);
             } else {
-                m_texts.push_front(formatted_text());
+                text->m_chars.assign(decorator.m_current_text.begin(), decorator.m_current_text.end());
             }
 
             // tokens are iterated in reverse order, hence we decrement
@@ -189,7 +214,7 @@ namespace xd { namespace detail { namespace text_formatter {
         }
 
     private:
-        formatted_text_list& m_texts;
+        std::list<formatted_element>& m_elements;
         bool m_prev_close_decorator;
         int m_level;
     };
@@ -302,10 +327,6 @@ namespace xd { namespace detail { namespace text_formatter {
             push(force_autohints, value, level);
         }
 
-        void push_icon(int value, int level) {
-             push(icons, value, level);
-        }
-
         template <typename T>
         void pop(std::list<T>& list, int level)
         {
@@ -359,10 +380,6 @@ namespace xd { namespace detail { namespace text_formatter {
             pop(force_autohints, level);
         }
 
-        void pop_icon(int level) {
-            pop(icons, level);
-        }
-
         template <typename T>
         void pop_level(std::list<T>& list, int level)
         {
@@ -386,7 +403,6 @@ namespace xd { namespace detail { namespace text_formatter {
             pop_level(positions, level);
             pop_level(letter_spacings, level);
             pop_level(force_autohints, level);
-            pop_level(icons, level);
         }
 
         std::list<nested_color> colors;
@@ -398,7 +414,6 @@ namespace xd { namespace detail { namespace text_formatter {
         std::list<nested_position> positions;
         std::list<nested_letter_spacing> letter_spacings;
         std::list<nested_force_autohint> force_autohints;
-        std::list<nested_icon> icons;
     };
 
 
@@ -455,10 +470,6 @@ namespace xd { namespace detail { namespace text_formatter {
             m_style_stack.push_force_autohint(state_change.value, state_change.level);
         }
 
-        void operator()(const state_change_push_icon& state_change) {
-            m_style_stack.push_icon(state_change.value, state_change.level);
-        }
-
         void operator()(const state_change_pop_color& state_change)
         {
             m_style_stack.pop_color(state_change.level);
@@ -503,12 +514,67 @@ namespace xd { namespace detail { namespace text_formatter {
         {
             m_style_stack.pop_force_autohint(state_change.level);
         }
-
-        void operator()(const state_change_pop_icon& state_change) {
-            m_style_stack.pop_icon(state_change.level);
-        }
     private:
         stacked_font_style& m_style_stack;
+    };
+
+    class formatted_element_renderer {
+    public:
+        formatted_element_renderer(int& level, xd::font& font, stacked_font_style& style_stack, xd::shader_program& shader, const glm::mat4& mvp, glm::vec2& pos)
+            : m_current_level(level), m_font(font), m_style_stack(style_stack), m_shader(shader), m_mvp(mvp), m_pos(pos) {}
+
+        void operator()(int icon_index) {
+            m_font.render(" ", m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos, icon_index);
+        }
+
+        void operator()(const formatted_text& text) {
+            // iterate through each char until a style change is met
+            std::string current_str;
+
+            for (auto& formatted_char : text) {
+                if (formatted_char.m_state_changes.size() || formatted_char.m_level < m_current_level) {
+                    // draw the current string using current style
+                    if (current_str.length() != 0) {
+                        if (!m_style_stack.positions.empty())
+                            m_pos += m_style_stack.positions.back().value;
+                        m_font.render(current_str, m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos);
+                        if (!m_style_stack.positions.empty())
+                            m_pos -= m_style_stack.positions.back().value;
+                        current_str.clear();
+                    }
+
+                    // process the styles
+                    detail::text_formatter::apply_state_changes change_current_style(m_style_stack);
+                    for (auto& state_change : formatted_char.m_state_changes) {
+                        std::visit(change_current_style, state_change);
+                    }
+                }
+
+                // purge styles from the previous level if the new level is smaller
+                if (formatted_char.m_level < m_current_level) {
+                    m_style_stack.pop_level(formatted_char.m_level);
+                }
+
+                // add char to the current string and keep track of current level
+                m_current_level = formatted_char.m_level;
+                utf8::append(formatted_char.m_chr, std::back_inserter(current_str));
+            }
+
+            // draw the rest of the string
+            if (current_str.length() != 0) {
+                if (!m_style_stack.positions.empty())
+                    m_pos += m_style_stack.positions.back().value;
+                m_font.render(current_str, m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos);
+            }
+        }
+
+    private:
+        int& m_current_level;
+        xd::font& m_font;
+        stacked_font_style& m_style_stack;
+        xd::shader_program& m_shader;
+        const glm::mat4& m_mvp;
+        glm::vec2& m_pos;
     };
 
 } } }
@@ -540,7 +606,7 @@ void xd::text_decorator::push_text(const xd::formatted_text& text)
 
 void xd::text_decorator::push_text(const std::string& text)
 {
-    push_text(formatted_text(text));
+    push_text(formatted_text{text});
 }
 
 void xd::text_decorator::push_text(const formatted_char& chr)
@@ -609,12 +675,6 @@ void xd::text_decorator::push_force_autohint(bool value)
     m_current_state_changes.push_back(state_change);
 }
 
-void xd::text_decorator::push_icon(int value)
-{
-    detail::text_formatter::state_change_push_icon state_change{value, m_current_level};
-    m_current_state_changes.push_back(state_change);
-}
-
 void xd::text_decorator::pop_color()
 {
     detail::text_formatter::state_change_pop_color state_change{m_current_level};
@@ -666,11 +726,6 @@ void xd::text_decorator::pop_letter_spacing()
 void xd::text_decorator::pop_force_autohint()
 {
     detail::text_formatter::state_change_pop_force_autohint state_change{m_current_level};
-    m_current_state_changes.push_back(state_change);
-}
-
-void xd::text_decorator::pop_icon() {
-    detail::text_formatter::state_change_pop_icon state_change{m_current_level};
     m_current_state_changes.push_back(state_change);
 }
 
@@ -850,8 +905,8 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
     }
 
     // second pass: iterate through the tokens in reverse order, decorating the text
-    detail::text_formatter::formatted_text_list texts;
-    detail::text_formatter::decorate_text decorate_text_step(texts);
+    std::list<formatted_element> elements;
+    detail::text_formatter::token_decorator decorate_text_step(elements);
     for (auto i = tokens.rbegin(); i != tokens.rend(); ++i) {
         std::visit(decorate_text_step, *i);
     }
@@ -860,46 +915,10 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
     detail::text_formatter::stacked_font_style style_stack(style);
     glm::vec2 pos;
     int current_level = 0;
-    for (auto& text : texts) {
-        // iterate through each char until a style change is met
-        std::string current_str;
-
-        for (auto& formatted_char : text) {
-            if (formatted_char.m_state_changes.size() || formatted_char.m_level < current_level) {
-                // draw the current string using current style
-                if (current_str.length() != 0 || !style_stack.icons.empty()) {
-                    int icon = style_stack.icons.empty() ? -1 : style_stack.icons.back().value;
-                    if (!style_stack.positions.empty())
-                        pos += style_stack.positions.back().value;
-                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, icon);
-                    if (!style_stack.positions.empty())
-                        pos -= style_stack.positions.back().value;
-                    current_str.clear();
-                }
-
-                // process the styles
-                detail::text_formatter::apply_state_changes change_current_style(style_stack);
-                for (auto& state_change : formatted_char.m_state_changes) {
-                    std::visit(change_current_style, state_change);
-                }
-            }
-
-            // purge styles from the previous level if the new level is smaller
-            if (formatted_char.m_level < current_level) {
-                style_stack.pop_level(formatted_char.m_level);
-            }
-
-            // add char to the current string and keep track of current level
-            current_level = formatted_char.m_level;
-            utf8::append(formatted_char.m_chr, std::back_inserter(current_str));
-        }
-
-        // draw the rest of the string
-        if (current_str.length() != 0) {
-            if (!style_stack.positions.empty())
-                pos += style_stack.positions.back().value;
-            font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos);
-        }
+    detail::text_formatter::formatted_element_renderer renderer(current_level,
+       font, style_stack, shader,  mvp, pos);
+    for (auto& element : elements) {
+        std::visit(renderer, element);
     }
 }
 
@@ -992,8 +1011,9 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
             }
 
             // make sure it's registered
+            auto is_icon = decorator_name == "icon";
             decorator_list_t::iterator decorator_pos = m_decorators.find(decorator_name);
-            if (decorator_pos == m_decorators.end()) {
+            if (!is_icon && decorator_pos == m_decorators.end()) {
                 throw text_formatter_parse_exception(text, "decorator \""+decorator_name+"\" not registered");
             }
 
@@ -1006,11 +1026,15 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
                 open_decorators.push_back(decorator_name);
 
                 // push the token
-                detail::text_formatter::token_open_decorator tok;
-                tok.name = decorator_name;
-                tok.args = args;
-                tok.callback = decorator_pos->second;
-                tokens.push_back(tok);
+                if (is_icon) {
+                    tokens.push_back(detail::text_formatter::token_icon{args.get<int>(0)});
+                } else {
+                    detail::text_formatter::token_open_decorator tok;
+                    tok.name = decorator_name;
+                    tok.args = args;
+                    tok.callback = decorator_pos->second;
+                    tokens.push_back(tok);
+                }
             } else {
                 // check that tags are closed in correct order
                 if (open_decorators.size() == 0) {
@@ -1023,9 +1047,11 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
                 open_decorators.pop_back();
 
                 // push the token
-                detail::text_formatter::token_close_decorator tok;
-                tok.name = decorator_name;
-                tokens.push_back(tok);
+                if (!is_icon) {
+                    detail::text_formatter::token_close_decorator tok;
+                    tok.name = decorator_name;
+                    tokens.push_back(tok);
+                }
             }
 
             continue;
