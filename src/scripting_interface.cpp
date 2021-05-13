@@ -936,6 +936,7 @@ void Scripting_Interface::setup_scripts() {
     token_type["unmatched"] = sol::readonly(&Token::unmatched);
     token_type["start_index"] = sol::readonly(&Token::start_index);
     token_type["end_index"] = sol::readonly(&Token::end_index);
+    token_type["self_closing"] = sol::readonly(&Token::self_closing);
 
     // Text parser
     auto parser_type = lua.new_usertype<Text_Parser>("Text_Parser",

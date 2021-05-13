@@ -976,8 +976,8 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
             // get the decorator name
             std::string decorator_name;
             while (start != end && (*start != '=' || !open_decorator)
-                && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end))
-            {
+                    && (!detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end) || !open_decorator)
+                    && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)) {
                 utf8::append(utf8::next(start, end), std::back_inserter(decorator_name));
             }
 
@@ -989,7 +989,9 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
 
                 // parse arguments
                 std::string arg;
-                while (start != end && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)) {
+                while (start != end
+                        && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)
+                        && !detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end)) {
                     if (*start == ',') {
                         // push and reset the argument
                         args.m_args.push_back(arg);
@@ -1003,6 +1005,13 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
 
                 // push the last arg
                 args.m_args.push_back(arg);
+            }
+
+            // Check for self-closing decorator
+            auto self_closing = false;
+            if (start != end && open_decorator && detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end)) {
+                utf8::advance(start, utf8::distance(m_decorator_terminate_delim.begin(), m_decorator_terminate_delim.end()), end);
+                self_closing = true;
             }
 
             // closing delimiter not found
@@ -1035,7 +1044,9 @@ void xd::text_formatter::parse(const std::string& text, detail::text_formatter::
                     tok.callback = decorator_pos->second;
                     tokens.push_back(tok);
                 }
-            } else {
+            }
+
+            if (!open_decorator || self_closing) {
                 // check that tags are closed in correct order
                 if (open_decorators.size() == 0) {
                     throw text_formatter_parse_exception(text, "decorator \""+decorator_name+"\" closed without opening tag");

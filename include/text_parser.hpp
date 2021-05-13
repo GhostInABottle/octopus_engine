@@ -18,6 +18,7 @@ struct Token {
     bool unmatched = false;
     int start_index = 0;
     int end_index = 0;
+    bool self_closing = false;
     std::string to_string() const;
     Token to_opening_token(const std::string& val = "") const;
     Token to_closing_token() const;

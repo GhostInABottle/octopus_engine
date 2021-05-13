@@ -67,7 +67,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
         // Handle tags
         auto next_char = start + 1 != end ? *(start + 1) : '_';
         if (*start == '{' && next_char != '{') {
-            Token tag_token;
+            Token tag_token, close_token;
             tag_token.unmatched = false;
             tag_token.start_index = utf8::distance(text.begin(), start);
             start++;
@@ -85,6 +85,47 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             std::string value;
             bool has_value = false;
             bool error = false;
+
+            auto match_closing_tag = [&unmatched_tokens, &tokens](Token& tag_token) {
+                if (unmatched_tokens[tag_token.tag].empty()) {
+                    // A closing tag with no matched open tag
+                    tag_token.unmatched = true;
+                } else {
+                    auto& opening_token = tokens[unmatched_tokens[tag_token.tag].back()];
+                    // Found the closing tag for an unmatched open tag
+                    if (opening_token.start_index < tag_token.start_index) {
+                        opening_token.unmatched = false;
+                        unmatched_tokens[tag_token.tag].pop_back();
+                    }
+                }
+            };
+
+            auto close_tag = [&]() {
+                tag_token.end_index = utf8::distance(text.begin(), start);
+                if (tag_token.tag.empty()) {
+                    if (validate_condition(tag_name.empty(), "empty tag")) {
+                        error = true;
+                        return false;
+                    }
+                    tag_token.tag = tag_name;
+                } else {
+                    if (validate_condition(value.empty(), "empty value")) {
+                        error = true;
+                        return false;
+                    }
+                    tag_token.value = value;
+                }
+
+                // Closing the tag and matching it
+                if (tag_token.type == Token_Type::OPENING_TAG) {
+                    unmatched_tokens[tag_token.tag].push_back(tokens.size());
+                    tag_token.unmatched = true;
+                } else {
+                    match_closing_tag(tag_token);
+                }
+                return true;
+            };
+
             while (start != end) {
                 if (std::find(std::begin(special), std::end(special), *start) == std::end(special)) {
                     // Read tag name or value
@@ -104,39 +145,23 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                             break;
                         }
                     } else if (*start == '}') {
-                        tag_token.end_index = utf8::distance(text.begin(), start);
-                        if (tag_token.tag.empty()) {
-                            if (validate_condition(tag_name.empty(), "empty tag")) {
-                                error = true;
-                                break;
-                            }
-                            tag_token.tag = tag_name;
-                        } else {
-                            if (validate_condition(value.empty(), "empty value")) {
-                                error = true;
-                                break;
-                            }
-                            tag_token.value = value;
-                        }
+                        if (!close_tag()) break;
+                        start++;
+                        break;
+                    } else if (*start == '/') {
+                        // Handle self-closing tokens, e.g. {a/}
+                        start++;
+                        if (validate_condition(start == end, "close brace at the end of tag")) break;
+                        if (validate_condition(*start != '}', "unexpected / in tag")) break;
 
-                        // Closing the tag and matching it
-                        if (tag_token.type == Token_Type::OPENING_TAG) {
-                            unmatched_tokens[tag_token.tag].push_back(tokens.size());
-                            tag_token.unmatched = true;
-                        } else {
-                            if (unmatched_tokens[tag_token.tag].empty()) {
-                                // A closing tag with no matched open tag
-                                tag_token.unmatched = true;
-                            } else {
-                                auto& opening_token = tokens[unmatched_tokens[tag_token.tag].back()];
-                                // Found the closing tag for an unmatched open tag
-                                if (opening_token.start_index < tag_token.start_index) {
-                                    opening_token.unmatched = false;
-                                    unmatched_tokens[tag_token.tag].pop_back();
-                                }
-                            }
-                        }
+                        tag_token.self_closing = true;
+                        if (!close_tag()) break;
 
+                        close_token.type = Token_Type::CLOSING_TAG;
+                        close_token.tag = tag_token.tag;
+                        close_token.start_index = tag_token.end_index;
+                        close_token.end_index = tag_token.end_index;
+                        close_token.self_closing = true;
                         start++;
                         break;
                     } else {
@@ -148,10 +173,15 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                 start++;
             }
 
-            // Reached the end of the string but tag wasn't closed
+            // Add tokens unless they were not properly closed
             auto unclosed_tag = tag_token.tag.empty() || (has_value && tag_token.value.empty());
-            if (!error && !validate_condition(unclosed_tag, "tag was not closed "))
+            if (!error && !validate_condition(unclosed_tag, "tag was not closed ")) {
                 tokens.push_back(tag_token);
+                if (!close_token.tag.empty()) {
+                    match_closing_tag(close_token);
+                    tokens.push_back(close_token);
+                }
+            }
         }
 
         // Not a tag token, so we read it as a text token until we find a tag

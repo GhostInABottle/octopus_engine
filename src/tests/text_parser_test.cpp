@@ -25,6 +25,7 @@ namespace detail {
         BOOST_CHECK_EQUAL(actual.unmatched, expected.unmatched);
         BOOST_CHECK_EQUAL(actual.start_index, expected.start_index);
         BOOST_CHECK_EQUAL(actual.end_index, expected.end_index);
+        BOOST_CHECK_EQUAL(actual.self_closing, expected.self_closing);
     }
 
     void validate_tokens(const Text_Parser& parser, const std::string& text, std::vector<Token> expectedTokens) {
@@ -38,7 +39,7 @@ namespace detail {
         }
     }
 
-    Token build_token(Token_Type type, std::string tag, std::string value, bool unmatched, int start, int end) {
+    Token build_token(Token_Type type, std::string tag, std::string value, bool unmatched, int start, int end, bool self_closing = false) {
         Token token;
         token.type = type;
         token.tag = tag;
@@ -46,6 +47,7 @@ namespace detail {
         token.unmatched = unmatched;
         token.start_index = start;
         token.end_index = end;
+        token.self_closing = self_closing;
         return token;
     }
 }
@@ -180,6 +182,20 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_empty_text) {
     };
 
     detail::validate_tokens(parser, "{b}{/b}", tokens);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_parses_self_closing_tags) {
+    Text_Parser parser;
+
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 3, true),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 3, 3, true),
+        detail::build_token(Token_Type::TEXT, "", "x", false, 4, 4),
+        detail::build_token(Token_Type::OPENING_TAG, "c", "1", false, 5, 10, true),
+        detail::build_token(Token_Type::CLOSING_TAG, "c", "", false, 10, 10, true)
+    };
+
+    detail::validate_tokens(parser, "{b/}x{c=1/}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_tags) {
