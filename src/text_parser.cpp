@@ -4,9 +4,11 @@
 #include <sstream>
 #include <unordered_map>
 #include "../include/log.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/xd/vendor/utf8.h"
 
 std::string Token::to_string() const {
+    if (type == Token_Type::CLOSING_TAG && self_closing) return "";
     if (type == Token_Type::TEXT) return value;
 
     std::string str = "{";
@@ -16,6 +18,9 @@ std::string Token::to_string() const {
     str += tag;
     if (type == Token_Type::OPENING_TAG && !value.empty()) {
         str += "=" + value;
+    }
+    if (type == Token_Type::OPENING_TAG && self_closing) {
+        str += "/";
     }
     str += "}";
 
@@ -39,7 +44,7 @@ Token Token::to_closing_token() const {
     return closing_token;
 }
 
-std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) const {
+std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) {
     std::vector<Token> tokens;
 
     auto start = text.begin(), end = text.end();
@@ -218,4 +223,52 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
     }
 
     return tokens;
+}
+
+std::vector<std::string> Text_Parser::split_to_lines(const std::string& text, bool permissive) {
+    // Split tags across multiple lines
+    // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
+    auto text_lines = string_utilities::split(text, "\n", false);
+    if (text_lines.empty()) {
+        text_lines.push_back("");
+    }
+    if (text_lines.size() == 1 && !permissive) {
+        return text_lines;
+    }
+
+    std::string open_tags;
+    for (auto& line : text_lines) {
+        line = open_tags + line;
+        open_tags = "";
+
+        auto line_tokens = parse(line, permissive);
+        for (auto i = line_tokens.rbegin(); i != line_tokens.rend(); i++) {
+            auto& token = *i;
+            if (token.unmatched && token.type == Token_Type::OPENING_TAG) {
+                // Close open tag and remember it for following lines
+                line += token.to_closing_token().to_string();
+                open_tags = token.to_string() + open_tags;
+            }
+        }
+    }
+    return text_lines;
+}
+
+std::string Text_Parser::strip_tags(const std::string& original, const std::unordered_set<std::string>& tags_to_strip, bool permissive) {
+    auto found = false;
+    for (auto& tag : tags_to_strip) {
+        if (original.find(tag + "}") != std::string::npos) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) return original;
+
+    auto tokens = parse(original, permissive);
+    std::string result;
+    for (auto& token : tokens) {
+        if (!token.tag.empty() && tags_to_strip.find(token.tag) != tags_to_strip.end()) continue;
+        result += token.to_string();
+    }
+    return result;
 }

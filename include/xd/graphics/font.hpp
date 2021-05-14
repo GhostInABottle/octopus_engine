@@ -23,7 +23,6 @@ namespace xd
     public:
 
         font(const std::string& filename);
-        font(const std::string& font_filename, const std::string& icons_filename, vec4 transparent_color, vec2 icon_size);
         virtual ~font();
         font(const font&) = delete;
         font& operator=(const font&) = delete;
@@ -34,7 +33,7 @@ namespace xd
 
         void render(const std::string& text, const font_style& style,
             shader_program* shader, const glm::mat4& mvp,
-            glm::vec2 *pos = 0, int icon = -1, bool actual_rendering = true);
+            glm::vec2 *pos = 0, bool actual_rendering = true);
 
         float get_width(const std::string& text, const font_style& style);
 
@@ -71,18 +70,12 @@ namespace xd
         std::string m_position_uniform;
         std::string m_color_uniform;
         std::string m_texture_uniform;
-        vec2 m_icon_size;
-        std::shared_ptr<texture> m_icon_texture;
-        sprite_batch m_sprite_batch;
     };
 
     template <>
     struct asset_serializer<xd::font> {
         typedef std::string key_type;
         key_type operator()(const std::string& filename) const {
-            return filename;
-        }
-        key_type operator()(const std::string& filename, const std::string& icons_filename, vec4 transparent_color, vec2 icon_size) const {
             return filename;
         }
         key_type operator()(const xd::font& font) const {

@@ -4,10 +4,11 @@
 #include "detail/text_formatter.hpp"
 
 #include "../glm.hpp"
+#include "../vendor/utf8.h"
 #include "exceptions.hpp"
 #include "font.hpp"
 #include "shader_program.hpp"
-#include "../vendor/utf8.h"
+#include "sprite_batch.hpp"
 #include <boost/lexical_cast.hpp>
 #include <list>
 #include <vector>
@@ -209,7 +210,7 @@ namespace xd {
         typedef std::function<void (text_decorator&, const formatted_text&, const text_decorator_args&)> decorator_callback_t;
         typedef std::function<std::string (const std::string&)> variable_callback_t;
 
-        text_formatter();
+        text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{});
         virtual ~text_formatter();
 
         const std::string& get_decorator_open_delim() const;
@@ -239,16 +240,20 @@ namespace xd {
         void unregister_decorator(const std::string& name);
         void unregister_variable(const std::string& name);
 
-        void render(const std::string& text, xd::font& font, const font_style& style,
-            shader_program& shader, const glm::mat4& mvp);
+        glm::vec2 render(const std::string& text, xd::font& font, const font_style& style,
+            shader_program& shader, const glm::mat4& mvp, bool actual_rendering = true);
 
     private:
-        //typedef std::list<detail::text_formatter_token> token_list_t;
         typedef std::unordered_map<std::string, decorator_callback_t> decorator_list_t;
         typedef std::unordered_map<std::string, variable_callback_t> variable_list_t;
 
+        // Icon rendering
+        vec2 m_icon_size;
+        std::shared_ptr<texture> m_icon_texture;
+        sprite_batch m_icon_batch;
+
         // parse
-        void parse(const std::string& text, detail::text_formatter::token_list& tokens);
+        void parse(const std::string& text, std::list<detail::text_formatter::token>& tokens);
 
         // callbacks
         decorator_list_t m_decorators;

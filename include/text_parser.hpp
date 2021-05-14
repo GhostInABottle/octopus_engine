@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <stdexcept>
 
 enum class Token_Type {
@@ -33,7 +34,9 @@ public:
 // Analyzes text and returns list of tokens
 class Text_Parser {
 public:
-    std::vector<Token> parse(const std::string& text, bool permissive = false) const;
+    static std::vector<Token> parse(const std::string& text, bool permissive = false);
+    static std::vector<std::string> split_to_lines(const std::string& text, bool permissive = false);
+    static std::string strip_tags(const std::string& original, const std::unordered_set<std::string>& tags_to_strip, bool permissive = false);
 };
 
 #endif

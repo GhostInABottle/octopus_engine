@@ -5,6 +5,7 @@
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/canvas.hpp"
+#include "../../include/text_parser.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"
 #include "../../include/utility/color.hpp"
@@ -46,27 +47,16 @@ struct Show_Text_Command::Impl : Timed_Command {
         selected_choice_color = "{color=" + color_to_rgba_string(hex_to_color(
             Configurations::get<std::string>("text.choice-selected-color"))) + "}";
 
-        // Estimate text size by stripping out tags
         auto full = full_text();
-        auto clean_text{full};
-        int start = 0;
-        while ((start = clean_text.find_first_of('{')) != std::string::npos) {
-            int end = clean_text.find_first_of('}', start);
-            if (end != std::string::npos) {
-                clean_text.erase(start, end - start + 1);
-            } else {
-                break;
-            }
-        }
-        auto text_lines = string_utilities::split(clean_text, "\n", false);
-        if (text_lines.empty())
-            text_lines.push_back("");
+        std::unordered_set<std::string> tags_to_strip{"typewriter"};
+        auto clean_text = Text_Parser::strip_tags(full, tags_to_strip);
+        auto text_lines = Text_Parser::split_to_lines(clean_text);
 
         // Find text width based on widest line
         auto& font_style = game.get_font_style();
         auto text_width = 0.0f;
         for (auto& line : text_lines) {
-            auto width = game.get_font()->get_width(line, font_style);
+            auto width = game.text_width(line, nullptr, &font_style);
             if (width > text_width)
                 text_width = width;
         }
@@ -105,6 +95,8 @@ struct Show_Text_Command::Impl : Timed_Command {
             if (pos.y < screen_margins.y)
                 pos.y = screen_margins.y;
         }
+
+        game.reset_text_decorators();
 
         // Create the text canvas and show it
         canvas = std::make_shared<Canvas>(game, pos, full, camera_relative || always_visible);

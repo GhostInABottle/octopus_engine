@@ -1,8 +1,9 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/text_parser.hpp"
+#include "../../include/utility/string.hpp"
 
 namespace detail {
-    std::string invalid_cases[] = {
+    std::string invalid_parsing_cases[] = {
         "{",            // open brace at the end
         "a{",           // open brace at the end
         "a{/",          // close brace at the end
@@ -18,6 +19,22 @@ namespace detail {
         "aaa}"          // unexpected closing tag
     };
 
+    std::vector<std::string> before_split = {
+        "h{b}ello",
+        "{/b}{c=6}h{d}i",
+        "hey{/d}",
+        "b{/c}y{e}e{/e}!",
+        "{icon=4/}farewell"
+    };
+
+    std::vector<std::string> after_split = {
+        "h{b}ello{/b}",
+        "{b}{/b}{c=6}h{d}i{/d}{/c}",
+        "{c=6}{d}hey{/d}{/c}",
+        "{c=6}b{/c}y{e}e{/e}!",
+        "{icon=4/}farewell"
+    };
+
     void validate_token(Token actual, Token expected) {
         BOOST_CHECK_EQUAL(static_cast<int>(actual.type), static_cast<int>(expected.type));
         BOOST_CHECK_EQUAL(actual.tag, expected.tag);
@@ -28,10 +45,10 @@ namespace detail {
         BOOST_CHECK_EQUAL(actual.self_closing, expected.self_closing);
     }
 
-    void validate_tokens(const Text_Parser& parser, const std::string& text, std::vector<Token> expectedTokens) {
+    void validate_tokens(const std::string& text, std::vector<Token> expectedTokens) {
         std::vector<Token> actualTokens;
 
-        BOOST_CHECK_NO_THROW(actualTokens = parser.parse(text));
+        BOOST_CHECK_NO_THROW(actualTokens = Text_Parser::parse(text));
         BOOST_CHECK_EQUAL(actualTokens.size(), expectedTokens.size());
 
         for (std::size_t i = 0; i < actualTokens.size(); ++i) {
@@ -102,91 +119,72 @@ BOOST_AUTO_TEST_CASE(token_to_closing_token_changes_opening_token) {
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_exceptions) {
-    Text_Parser parser;
-
-    for (auto& invalid : detail::invalid_cases) {
-        BOOST_CHECK_THROW(parser.parse(invalid), parsing_exception);
+    for (auto& invalid : detail::invalid_parsing_cases) {
+        BOOST_CHECK_THROW(Text_Parser::parse(invalid), parsing_exception);
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(text_parser_no_exceptions_if_permissive) {
-    Text_Parser parser;
-
-    for (auto& invalid : detail::invalid_cases) {
-        BOOST_CHECK_NO_THROW(parser.parse(invalid, true));
+    for (auto& invalid : detail::invalid_parsing_cases) {
+        BOOST_CHECK_NO_THROW(Text_Parser::parse(invalid, true));
     }
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_handles_empty_text) {
-    Text_Parser parser;
-
     std::vector<Token> tokens;
-
-    detail::validate_tokens(parser, "", tokens);
+    detail::validate_tokens("", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_text) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::TEXT, "", "hello", false, 0, 4)
     };
 
-    detail::validate_tokens(parser, "hello", tokens);
+    detail::validate_tokens("hello", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
         detail::build_token(Token_Type::TEXT, "", "hello", false, 3, 7),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11)
     };
 
-    detail::validate_tokens(parser, "{b}hello{/b}", tokens);
+    detail::validate_tokens("{b}hello{/b}", tokens);
 }
 
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_unicode_text) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
         detail::build_token(Token_Type::TEXT, "", "مرحبا", false, 3, 7),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 8, 11)
     };
 
-    detail::validate_tokens(parser, "{b}مرحبا{/b}", tokens);
+    detail::validate_tokens("{b}مرحبا{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_value) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "b", "c", false, 0, 4),
         detail::build_token(Token_Type::TEXT, "", "hello", false, 5, 9),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 10, 13)
     };
 
-    detail::validate_tokens(parser, "{b=c}hello{/b}", tokens);
+    detail::validate_tokens("{b=c}hello{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_empty_text) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 2),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 3, 6)
     };
 
-    detail::validate_tokens(parser, "{b}{/b}", tokens);
+    detail::validate_tokens("{b}{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_self_closing_tags) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 0, 3, true),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 3, 3, true),
@@ -195,12 +193,10 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_self_closing_tags) {
         detail::build_token(Token_Type::CLOSING_TAG, "c", "", false, 10, 10, true)
     };
 
-    detail::validate_tokens(parser, "{b/}x{c=1/}", tokens);
+    detail::validate_tokens("{b/}x{c=1/}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_tags) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "a", "", false, 0, 2),
         detail::build_token(Token_Type::TEXT, "", "x", false, 3, 3),
@@ -210,23 +206,19 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_tags) {
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 12, 15)
     };
 
-    detail::validate_tokens(parser, "{a}x{/a}{b}y{/b}", tokens);
+    detail::validate_tokens("{a}x{/a}{b}y{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_unmatched_tags) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2),
         detail::build_token(Token_Type::CLOSING_TAG, "b", "", true, 3, 6),
     };
 
-    detail::validate_tokens(parser, "{a}{/b}", tokens);
+    detail::validate_tokens("{a}{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_unmatched_tags) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::OPENING_TAG, "a", "", true, 0, 2),
         detail::build_token(Token_Type::OPENING_TAG, "b", "", false, 3, 5),
@@ -238,17 +230,96 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_multiple_unmatched_tags) {
         detail::build_token(Token_Type::CLOSING_TAG, "a", "", false, 24, 27)
     };
 
-    detail::validate_tokens(parser, "{a}{b}{a}{/b}{a}{/a}{/b}{/a}", tokens);
+    detail::validate_tokens("{a}{b}{a}{/b}{a}{/a}{/b}{/a}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_escaped_tags) {
-    Text_Parser parser;
-
     std::vector<Token> tokens = {
         detail::build_token(Token_Type::TEXT, "", "{b}hello{b} world{/b}", false, 0, 26),
     };
 
-    detail::validate_tokens(parser, "{{b}}hello{{b}} world{{/b}}", tokens);
+    detail::validate_tokens("{{b}}hello{{b}} world{{/b}}", tokens);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_empty_text) {
+    auto lines = Text_Parser::split_to_lines("");
+    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines[0], "");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line) {
+    auto lines = Text_Parser::split_to_lines("hello");
+    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines[0], "hello");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line_non_permissive) {
+    auto lines = Text_Parser::split_to_lines("h{b}ello", false);
+    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines[0], "h{b}ello");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line_permissive) {
+    auto lines = Text_Parser::split_to_lines("h{b}ello", false);
+    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines[0], "h{b}ello");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_throws_for_error_in_multi_line_non_permissive) {
+    BOOST_CHECK_THROW(Text_Parser::split_to_lines("h{b}i\nbye{/b=1}", false), parsing_exception);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_multi_line_non_permissive) {
+    auto lines = Text_Parser::split_to_lines(string_utilities::join(detail::before_split, "\n"), false);
+    BOOST_CHECK_EQUAL_COLLECTIONS(lines.begin(), lines.end(), detail::after_split.begin(), detail::after_split.end());
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_multi_line_permissive) {
+    auto lines = Text_Parser::split_to_lines(string_utilities::join(detail::before_split, "\n"), true);
+    BOOST_CHECK_EQUAL_COLLECTIONS(lines.begin(), lines.end(), detail::after_split.begin(), detail::after_split.end());
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_returns_original_if_no_input_tags) {
+    auto original = "hello{b} there{/b}!";
+    auto actual = Text_Parser::strip_tags(original, {});
+    BOOST_CHECK_EQUAL(actual, original);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_returns_original_if_tags_not_found) {
+    auto original = "hello{b} there{/b}!";
+    auto actual = Text_Parser::strip_tags(original, {"c"});
+    BOOST_CHECK_EQUAL(actual, original);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_strips_tag) {
+    auto original = "hello{b} there{/b}!";
+    auto actual = Text_Parser::strip_tags(original, {"b", "c"});
+    BOOST_CHECK_EQUAL(actual, "hello there!");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_handles_complex_cases) {
+    auto original = "{c=5,abc}hello{b} {/w}\nt{icon=4/}here{/b}!";
+    auto actual = Text_Parser::strip_tags(original, {"b", "c", "icon", "d"});
+    BOOST_CHECK_EQUAL(actual, "hello {/w}\nthere!");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_throws_when_found_and_error_and_non_permissive) {
+    BOOST_CHECK_THROW(Text_Parser::strip_tags("{a=}{b}", {"b"}, false), parsing_exception);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_does_not_throw_when_not_found_and_error_and_non_permissive) {
+    auto actual = Text_Parser::strip_tags("{a=}{b}", {"c"}, false);
+    BOOST_CHECK_EQUAL(actual, "{a=}{b}");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_does_not_throw_when_found_and_error_and_permissive) {
+    auto actual = Text_Parser::strip_tags("{a=}{b}", {"b"}, true);
+    BOOST_CHECK_EQUAL(actual, "");
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_strip_tags_does_not_throw_when_not_found_and_error_and_permissive) {
+    auto actual = Text_Parser::strip_tags("{a=}{b}", {"c"}, true);
+    BOOST_CHECK_EQUAL(actual, "{a=}{b}");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -23,6 +23,8 @@ namespace string_utilities {
     std::string join(const std::vector<std::string>& strings, const std::string& separator);
     // Convert "true"/"TRUE"/"1" to true and "false"/"FALSE"/"0" to false
     bool string_to_bool(const std::string& original);
+    // Replace all instances in the string
+    void replace_all(std::string& haystack, const std::string& needle, const std::string& replacement);
 }
 
 #endif

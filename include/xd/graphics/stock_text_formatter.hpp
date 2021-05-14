@@ -13,7 +13,7 @@ namespace xd
     {
     public:
 
-        stock_text_formatter();
+        stock_text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{});
         virtual ~stock_text_formatter();
 
         bool has_color(const std::string& name);
@@ -21,6 +21,7 @@ namespace xd
         void set_color(const std::string& name, const glm::vec4& color);
 
         void reset_typewriter(int timer = 0);
+        void reset_typewriters();
 
     private:
         typedef std::unordered_map<std::string, glm::vec4> color_map_t;
@@ -30,7 +31,6 @@ namespace xd
         void type_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void bold_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void italic_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
-        void icon_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void color_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void shadow_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void outline_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);

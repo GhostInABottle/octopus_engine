@@ -26,3 +26,8 @@ void xd::simple_text_renderer::render_formatted(xd::font& font, xd::text_formatt
     auto mvp = xd::translate(projection, vec3(x, y, 0));
     formatter.render(text, font, style, *m_shader, mvp);
 }
+
+float xd::simple_text_renderer::text_width(xd::font& font, xd::text_formatter& formatter,
+    const xd::font_style& style, const std::string& text) {
+    return formatter.render(text, font, style, *m_shader, xd::mat4(), false).x;
+}

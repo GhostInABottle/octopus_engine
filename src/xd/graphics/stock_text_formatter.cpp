@@ -1,7 +1,8 @@
 #include "../../../include/xd/graphics/stock_text_formatter.hpp"
 #include <functional>
 
-xd::stock_text_formatter::stock_text_formatter()
+xd::stock_text_formatter::stock_text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size)
+    : xd::text_formatter(icons_filename, transparent_color, icon_size)
 {
     // shortcut for using _1 _2 etc
     using namespace std::placeholders;
@@ -56,6 +57,11 @@ void xd::stock_text_formatter::set_color(const std::string& name, const glm::vec
 void xd::stock_text_formatter::reset_typewriter(int timer)
 {
     m_typewriter_timers[timer] = std::clock();
+}
+
+void xd::stock_text_formatter::reset_typewriters()
+{
+    m_typewriter_timers.clear();
 }
 
 void xd::stock_text_formatter::size_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)

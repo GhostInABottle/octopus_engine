@@ -779,7 +779,7 @@ void Scripting_Interface::setup_scripts() {
         }
     ));
     game_type["text_width"] = [&](Game& game, const std::string& text) {
-        return game.get_font()->get_width(text, game.get_font_style());
+        return game.text_width(text);
     };
 
     // Map layer

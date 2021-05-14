@@ -18,7 +18,6 @@ class Scripting_Interface;
 class Canvas;
 class Clock;
 class Save_File;
-class Shake_Decorator;
 
 namespace xd {
     class asset_manager;
@@ -202,16 +201,15 @@ public:
     // Craete a font
     std::shared_ptr<xd::font> create_font(const std::string& filename);
     // Render some text
-    void render_text(xd::font& font, xd::text_formatter& formatter,
-        const xd::font_style& style, float x, float y, const std::string& text);
-    // Get text renderer
-    xd::simple_text_renderer& get_text_renderer() noexcept { return text_renderer; }
+    void render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text);
     // Get font
     std::shared_ptr<xd::font> get_font() noexcept { return font; }
     // Get style
     const xd::font_style& get_font_style() noexcept { return style; }
-    // Get decorator for shaking text
-    Shake_Decorator* get_shake_decorator() noexcept { return shake_decorator.get(); }
+    // Get width of text, in pixels
+    float text_width(const std::string& text, xd::font* font = nullptr, const xd::font_style* style = nullptr);
+    // Reset any active text decorators (e.g. {typewriter})
+    void reset_text_decorators();
     // Get clock
     Clock* get_clock() noexcept { return clock.get(); }
     // Is time stopped
@@ -262,10 +260,8 @@ private:
     std::shared_ptr<xd::music> music;
     std::shared_ptr<xd::font> font;
     xd::font_style style;
-    xd::simple_text_renderer text_renderer;
     int editor_ticks;
     xd::ivec2 editor_size;
-    std::unique_ptr<Shake_Decorator> shake_decorator;
 };
 
 #endif

@@ -29,7 +29,7 @@
 #include <unordered_set>
 
 struct Game::Impl {
-    explicit Impl(xd::audio* audio, bool editor_mode) :
+    explicit Impl(Game& game, xd::audio* audio, bool editor_mode) :
             audio(audio),
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
@@ -47,7 +47,15 @@ struct Game::Impl {
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             save_path("not set"),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
-            reset_scripting(false) {
+            reset_scripting(false),
+            text_formatter(
+                Configurations::get<std::string>("font.icon-image"),
+                hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
+                xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")}),
+            shake_decorator(game) {
+        text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+            shake_decorator(decorator, text, args);
+        });
         auto preamble = string_utilities::trim(Configurations::get<std::string>("game.object-script-preamble"));
         if (preamble.empty()) return;
         auto extension = preamble.substr(preamble.find_last_of(".") + 1);
@@ -230,10 +238,16 @@ struct Game::Impl {
     bool reset_scripting;
     // String added before every map object script
     std::string object_script_preamble;
+    // Text formatter
+    xd::stock_text_formatter text_formatter;
+    // Text renderer
+    xd::simple_text_renderer text_renderer;
+    // {shake} decorator
+    Shake_Decorator shake_decorator;
 };
 
 Game::Game(xd::audio* audio, bool editor_mode) :
-        pimpl(std::make_unique<Impl>(audio, editor_mode)),
+        pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
             Configurations::get<int>("graphics.screen-width"),
@@ -257,13 +271,11 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         magnification(Configurations::get<float>("debug.magnification")),
         current_scripting_interface(nullptr),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
-        text_renderer(),
         editor_ticks(0),
         editor_size(1, 1) {
     // Set members
     clock = std::make_unique<Clock>(*this);
     camera = std::make_unique<Camera>(*this);
-    shake_decorator = std::make_unique<Shake_Decorator>(*this);
     // Listen to config changes
     Configurations::add_observer("Game",
         [this](const std::string& key) {
@@ -439,7 +451,7 @@ void Game::render() {
 
     // Draw FPS
     if (pimpl->show_fps) {
-        text_renderer.render(*font, pimpl->debug_style,
+        pimpl->text_renderer.render(*font, pimpl->debug_style,
             camera->get_geometry().projection().get(),5, 10,
             "FPS: " + std::to_string(fps()));
     }
@@ -447,7 +459,7 @@ void Game::render() {
     // Draw game time
     if (pimpl->show_time) {
         auto seconds = std::to_string(clock->seconds());
-        text_renderer.render(*font, pimpl->debug_style,
+        pimpl->text_renderer.render(*font, pimpl->debug_style,
             camera->get_geometry().projection().get(), 5, 20, seconds);
     }
 
@@ -631,16 +643,21 @@ xd::asset_manager& Game::get_asset_manager() {
 std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
     if (!file_utilities::file_exists(filename))
         throw std::runtime_error("Couldn't read font file " + filename);
-    return pimpl->asset_manager.load<xd::font>(
-        filename,
-        Configurations::get<std::string>("font.icon-image"),
-        hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
-        xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")});
+    return pimpl->asset_manager.load<xd::font>(filename);
 }
 
-void Game::render_text(xd::font& font, xd::text_formatter& formatter,
-        const xd::font_style& style, float x, float y, const std::string& text) {
-    text_renderer.render_formatted(font, formatter, style, camera->get_geometry().projection().get(), x, y, text);
+void Game::render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text) {
+    pimpl->text_renderer.render_formatted(font, pimpl->text_formatter,
+        style, camera->get_geometry().projection().get(), x, y, text);
+}
+
+float Game::text_width(const std::string& text, xd::font* font, const xd::font_style* style) {
+    return pimpl->text_renderer.text_width(font ? *font : *this->font, pimpl->text_formatter,
+        style ? *style : this->style, text);
+}
+
+void Game::reset_text_decorators() {
+    pimpl->text_formatter.reset_typewriters();
 }
 
 bool Game::stopped() const {

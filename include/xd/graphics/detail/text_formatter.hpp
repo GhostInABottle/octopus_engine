@@ -96,9 +96,6 @@ namespace xd { namespace detail { namespace text_formatter {
         state_change_pop_force_autohint
     > state_change;
 
-    // token list
-    typedef std::list<token> token_list;
-
     // state change list
     typedef std::list<state_change> state_change_list;
 

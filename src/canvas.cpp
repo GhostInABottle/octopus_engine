@@ -1,6 +1,4 @@
 #include <cmath>
-#include "../include/xd/graphics/stock_text_formatter.hpp"
-#include "../include/xd/graphics/simple_text_renderer.hpp"
 #include "../include/xd/graphics/framebuffer.hpp"
 #include "../include/canvas.hpp"
 #include "../include/utility/color.hpp"
@@ -9,7 +7,6 @@
 #include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/sprite_data.hpp"
-#include "../include/shake_decorator.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
@@ -47,11 +44,6 @@ Canvas::Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::v
 
 Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative, bool is_child) : Canvas(game, position) {
     font = game.get_font();
-    formatter = std::make_unique<xd::stock_text_formatter>();
-    auto shake_decorator = game.get_shake_decorator();
-    formatter->register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
-        shake_decorator->operator()(decorator, text, args);
-    });
     style = std::make_unique<xd::font_style>(game.get_font_style());
     this->camera_relative = camera_relative;
     if (!is_child) {
@@ -148,33 +140,12 @@ void Canvas::set_text(const std::string& new_text) {
     if (text == new_text && !text.empty())
         return;
     text = new_text;
+    text_lines = Text_Parser::split_to_lines(new_text, permissive_tag_parsing);
     redraw_needed = true;
-    // Split tags across multiple lines
-    // e.g. "{a=b}x\ny{/a}" => "{a=b}x{/a}", "{a=b}y{/a}"
-    text_lines = string_utilities::split(new_text, "\n", false);
-    if (text_lines.size() > 1 || permissive_tag_parsing) {
-        std::string open_tags;
-        for (auto& line : text_lines) {
-            line = open_tags + line;
-            open_tags = "";
-
-            auto line_tokens = parser.parse(line, permissive_tag_parsing);
-
-            for (auto i = line_tokens.rbegin(); i != line_tokens.rend(); i++) {
-                auto& token = *i;
-                if (token.unmatched && token.type == Token_Type::OPENING_TAG) {
-                    // Close open tag and remember it for following lines
-                    line += token.to_closing_token().to_string();
-                    open_tags = token.to_string() + open_tags;
-                }
-            }
-        }
-    }
 }
 
 void Canvas::render_text(const std::string& text_to_render, float x, float y) const {
-    game.render_text(*font, *formatter, *style,
-        std::round(x), std::round(y), text_to_render);
+    game.render_text(*font, *style, std::round(x), std::round(y), text_to_render);
 }
 
 void Canvas::set_font(const std::string& font_file) {
@@ -195,6 +166,10 @@ void Canvas::link_font(const std::string& font_type, const std::string& font_fil
 bool Canvas::should_update() const noexcept {
     if (!visible) return false;
     return game.is_paused() == paused_game_canvas;
+}
+
+float Canvas::get_text_width(const std::string& text) {
+    return game.text_width(text, font.get(), style.get());
 }
 
 bool Canvas::should_redraw(int time) const {

@@ -235,9 +235,7 @@ public:
     std::vector<std::string>& get_text_lines() noexcept {
         return text_lines;
     }
-    float get_text_width(const std::string& text) {
-        return font->get_width(text, *style);
-    }
+    float get_text_width(const std::string& text);
     xd::font_style* get_style() const noexcept {
         return style.get();
     }
@@ -453,8 +451,6 @@ private:
     std::shared_ptr<xd::font> font;
     // Text style
     std::unique_ptr<xd::font_style> style;
-    // Text formatter
-    std::unique_ptr<xd::text_formatter> formatter;
     // Render relative to camera? (by default: true for text, false otherwise)
     bool camera_relative;
     // List of child canvases that are rendered with this one
@@ -463,8 +459,6 @@ private:
     bool redraw_needed;
     // When was the last time the canvas was redrawn
     int last_drawn_time;
-    // Used for parsing text tags
-    Text_Parser parser;
     // Ignore missing tags
     bool permissive_tag_parsing;
     // Apply outline to drawn images?

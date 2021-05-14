@@ -55,3 +55,7 @@ bool string_utilities::string_to_bool(const std::string& original) {
         LOGGER_W << "Unable to convert string " << original << " to boolean. Defaulting to false.";
     return false;
 }
+
+void string_utilities::replace_all(std::string& haystack, const std::string& needle, const std::string& replacement) {
+    boost::replace_all(haystack, needle, replacement);
+}

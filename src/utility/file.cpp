@@ -29,7 +29,7 @@ std::string file_utilities::read_file(std::string filename) {
 }
 
 void file_utilities::normalize_slashes(std::string& filename) {
-    boost::replace_all(filename, "\\", "/");
+    string_utilities::replace_all(filename, "\\", "/");
 }
 
 std::string file_utilities::get_data_directory(bool log_errors) {

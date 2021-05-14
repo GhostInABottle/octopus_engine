@@ -1,5 +1,6 @@
 #include "../../../include/xd/graphics/exceptions.hpp"
 #include "../../../include/xd/graphics/text_formatter.hpp"
+#include "../../../include/xd/graphics/texture.hpp"
 #include "../../../include/xd/glm.hpp"
 #include "../../../include/xd/vendor/utf8.h"
 #include <string>
@@ -11,6 +12,9 @@
 #include <cctype>
 
 namespace xd { namespace detail { namespace text_formatter {
+
+    template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+    template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
     template< typename Iter >
     bool safe_equal(std::string str1, Iter begin2, Iter end2)
@@ -51,7 +55,7 @@ namespace xd { namespace detail { namespace text_formatter {
     class expand_variables
     {
     public:
-        expand_variables(token_list& tokens)
+        expand_variables(std::list<detail::text_formatter::token>& tokens)
             : m_tokens(tokens)
         {
         }
@@ -113,7 +117,7 @@ namespace xd { namespace detail { namespace text_formatter {
         }
 
     private:
-        token_list& m_tokens;
+        std::list<detail::text_formatter::token>& m_tokens;
     };
 
     // decorate text and icons
@@ -518,65 +522,6 @@ namespace xd { namespace detail { namespace text_formatter {
         stacked_font_style& m_style_stack;
     };
 
-    class formatted_element_renderer {
-    public:
-        formatted_element_renderer(int& level, xd::font& font, stacked_font_style& style_stack, xd::shader_program& shader, const glm::mat4& mvp, glm::vec2& pos)
-            : m_current_level(level), m_font(font), m_style_stack(style_stack), m_shader(shader), m_mvp(mvp), m_pos(pos) {}
-
-        void operator()(int icon_index) {
-            m_font.render(" ", m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos, icon_index);
-        }
-
-        void operator()(const formatted_text& text) {
-            // iterate through each char until a style change is met
-            std::string current_str;
-
-            for (auto& formatted_char : text) {
-                if (formatted_char.m_state_changes.size() || formatted_char.m_level < m_current_level) {
-                    // draw the current string using current style
-                    if (current_str.length() != 0) {
-                        if (!m_style_stack.positions.empty())
-                            m_pos += m_style_stack.positions.back().value;
-                        m_font.render(current_str, m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos);
-                        if (!m_style_stack.positions.empty())
-                            m_pos -= m_style_stack.positions.back().value;
-                        current_str.clear();
-                    }
-
-                    // process the styles
-                    detail::text_formatter::apply_state_changes change_current_style(m_style_stack);
-                    for (auto& state_change : formatted_char.m_state_changes) {
-                        std::visit(change_current_style, state_change);
-                    }
-                }
-
-                // purge styles from the previous level if the new level is smaller
-                if (formatted_char.m_level < m_current_level) {
-                    m_style_stack.pop_level(formatted_char.m_level);
-                }
-
-                // add char to the current string and keep track of current level
-                m_current_level = formatted_char.m_level;
-                utf8::append(formatted_char.m_chr, std::back_inserter(current_str));
-            }
-
-            // draw the rest of the string
-            if (current_str.length() != 0) {
-                if (!m_style_stack.positions.empty())
-                    m_pos += m_style_stack.positions.back().value;
-                m_font.render(current_str, m_style_stack.get_font_style(), &m_shader, m_mvp, &m_pos);
-            }
-        }
-
-    private:
-        int& m_current_level;
-        xd::font& m_font;
-        stacked_font_style& m_style_stack;
-        xd::shader_program& m_shader;
-        const glm::mat4& m_mvp;
-        glm::vec2& m_pos;
-    };
-
 } } }
 
 xd::text_decorator::text_decorator(int level)
@@ -730,17 +675,20 @@ void xd::text_decorator::pop_force_autohint()
 }
 
 
-xd::text_formatter::text_formatter()
-    : m_decorator_open_delim("{")
-    , m_decorator_open_escape_delim("{{")
-    , m_decorator_close_delim("}")
-    , m_decorator_close_escape_delim("}}")
-    , m_decorator_terminate_delim("/")
-    , m_variable_open_delim("$<")
-    , m_variable_open_escape_delim("$$<<")
-    , m_variable_close_delim(">")
-    , m_variable_close_escape_delim(">>")
-{
+xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size)
+        : m_decorator_open_delim("{")
+        , m_decorator_open_escape_delim("{{")
+        , m_decorator_close_delim("}")
+        , m_decorator_close_escape_delim("}}")
+        , m_decorator_terminate_delim("/")
+        , m_variable_open_delim("$<")
+        , m_variable_open_escape_delim("$$<<")
+        , m_variable_close_delim(">")
+        , m_variable_close_escape_delim(">>")
+        , m_icon_size(icon_size) {
+    if (icons_filename.empty()) return;
+    m_icon_texture = std::make_shared<xd::texture>(icons_filename, transparent_color,
+        GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
 }
 
 xd::text_formatter::~text_formatter()
@@ -890,15 +838,14 @@ void xd::text_formatter::set_variable_delims(const std::string& open, const std:
     m_variable_close_escape_delim = close + close;
 }
 
-void xd::text_formatter::render(const std::string& text, xd::font& font, const xd::font_style& style,
-    xd::shader_program& shader, const glm::mat4& mvp)
-{
+glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, const xd::font_style& style,
+    xd::shader_program& shader, const glm::mat4& mvp, bool actual_rendering) {
     // parse the input
-    detail::text_formatter::token_list tokens;
+    std::list<detail::text_formatter::token> tokens;
     parse(text, tokens);
 
     // first pass: replace variables and concatenate strings
-    detail::text_formatter::token_list expanded_tokens;
+    std::list<detail::text_formatter::token> expanded_tokens;
     detail::text_formatter::expand_variables expand_variables_step(expanded_tokens);
     for (auto& token : tokens) {
         std::visit(expand_variables_step, token);
@@ -915,14 +862,84 @@ void xd::text_formatter::render(const std::string& text, xd::font& font, const x
     detail::text_formatter::stacked_font_style style_stack(style);
     glm::vec2 pos;
     int current_level = 0;
-    detail::text_formatter::formatted_element_renderer renderer(current_level,
-       font, style_stack, shader,  mvp, pos);
+
+    auto render_icon = [&](int icon_index) {
+        if (!m_icon_texture) return;
+        if (actual_rendering) {
+            auto icons_per_row = static_cast<int>(m_icon_texture->width() / m_icon_size.x);
+            rect src{
+                static_cast<float>(icon_index % icons_per_row) * m_icon_size.x,
+                static_cast<float>(icon_index / icons_per_row) * m_icon_size.y,
+                m_icon_size.x,
+                m_icon_size.y
+            };
+            auto style = style_stack.get_font_style();
+            auto color = vec4{1.0f, 1.0f, 1.0f, style.color().a};
+            m_icon_batch.add(m_icon_texture, src, pos.x, pos.y, color);
+        }
+        pos.x += m_icon_size.x;
+    };
+
+    auto render_text = [&](const formatted_text& text) {
+        // iterate through each char until a style change is met
+        std::string current_str;
+
+        for (auto& formatted_char : text) {
+            if (formatted_char.m_state_changes.size() || formatted_char.m_level < current_level) {
+                // draw the current string using current style
+                if (current_str.length() != 0) {
+                    if (!style_stack.positions.empty())
+                        pos += style_stack.positions.back().value;
+                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, actual_rendering);
+                    if (!style_stack.positions.empty())
+                        pos -= style_stack.positions.back().value;
+                    current_str.clear();
+                }
+
+                // process the styles
+                detail::text_formatter::apply_state_changes change_current_style(style_stack);
+                for (auto& state_change : formatted_char.m_state_changes) {
+                    std::visit(change_current_style, state_change);
+                }
+            }
+
+            // purge styles from the previous level if the new level is smaller
+            if (formatted_char.m_level < current_level) {
+                style_stack.pop_level(formatted_char.m_level);
+            }
+
+            // add char to the current string and keep track of current level
+            current_level = formatted_char.m_level;
+            utf8::append(formatted_char.m_chr, std::back_inserter(current_str));
+        }
+
+        // draw the rest of the string
+        if (current_str.length() != 0) {
+            if (!style_stack.positions.empty())
+                pos += style_stack.positions.back().value;
+            font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, actual_rendering);
+        }
+    };
+
+
     for (auto& element : elements) {
-        std::visit(renderer, element);
+        std::visit(
+            detail::text_formatter::overloaded{
+                render_icon,
+                render_text
+            }
+            , element);
     }
+    if (!m_icon_batch.empty()) {
+        auto icon_mvp = xd::translate(mvp, xd::vec3(0, -m_icon_size.y, 0));
+        m_icon_batch.draw(xd::shader_uniforms{icon_mvp});
+        m_icon_batch.clear();
+    }
+
+    return pos;
 }
 
-void xd::text_formatter::parse(const std::string& text, detail::text_formatter::token_list& tokens)
+void xd::text_formatter::parse(const std::string& text, std::list<detail::text_formatter::token>& tokens)
 {
     // parser state variables
     std::list<std::string> open_decorators;
