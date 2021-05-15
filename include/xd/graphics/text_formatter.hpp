@@ -210,7 +210,7 @@ namespace xd {
         typedef std::function<void (text_decorator&, const formatted_text&, const text_decorator_args&)> decorator_callback_t;
         typedef std::function<std::string (const std::string&)> variable_callback_t;
 
-        text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{});
+        text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{}, vec2 icon_offset = vec2{});
         virtual ~text_formatter();
 
         const std::string& get_decorator_open_delim() const;
@@ -249,6 +249,7 @@ namespace xd {
 
         // Icon rendering
         vec2 m_icon_size;
+        vec2 m_icon_offset;
         std::shared_ptr<texture> m_icon_texture;
         sprite_batch m_icon_batch;
 

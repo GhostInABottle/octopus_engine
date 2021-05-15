@@ -51,7 +51,8 @@ struct Game::Impl {
             text_formatter(
                 Configurations::get<std::string>("font.icon-image"),
                 hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
-                xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")}),
+                xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
+                xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game) {
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);

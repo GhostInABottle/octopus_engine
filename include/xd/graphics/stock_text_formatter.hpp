@@ -13,7 +13,7 @@ namespace xd
     {
     public:
 
-        stock_text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{});
+        stock_text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{}, vec2 icon_offset = vec2{});
         virtual ~stock_text_formatter();
 
         bool has_color(const std::string& name);

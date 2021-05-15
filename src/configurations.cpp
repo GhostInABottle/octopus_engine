@@ -60,6 +60,8 @@ void Configurations::load_defaults() {
     defaults["font.icon-image"] = std::string();
     defaults["font.icon-width"] = 12.0f;
     defaults["font.icon-height"] = 12.0f;
+    defaults["font.icon-offset-x"] = 0.0f;
+    defaults["font.icon-offset-y"] = 0.0f;
     defaults["font.icon-transparent-color"] = std::string("FF00FF00");
 
     defaults["controls.gamepad-enabled"] = true;

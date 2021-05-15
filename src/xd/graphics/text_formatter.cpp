@@ -675,7 +675,7 @@ void xd::text_decorator::pop_force_autohint()
 }
 
 
-xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size)
+xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size, vec2 icon_offset)
         : m_decorator_open_delim("{")
         , m_decorator_open_escape_delim("{{")
         , m_decorator_close_delim("}")
@@ -685,7 +685,8 @@ xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 trans
         , m_variable_open_escape_delim("$$<<")
         , m_variable_close_delim(">")
         , m_variable_close_escape_delim(">>")
-        , m_icon_size(icon_size) {
+        , m_icon_size(icon_size)
+        , m_icon_offset(icon_offset) {
     if (icons_filename.empty()) return;
     m_icon_texture = std::make_shared<xd::texture>(icons_filename, transparent_color,
         GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
@@ -931,7 +932,7 @@ glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, co
             , element);
     }
     if (!m_icon_batch.empty()) {
-        auto icon_mvp = xd::translate(mvp, xd::vec3(0, -m_icon_size.y, 0));
+        auto icon_mvp = xd::translate(mvp, xd::vec3(m_icon_offset.x, m_icon_offset.y - m_icon_size.y, 0));
         m_icon_batch.draw(xd::shader_uniforms{icon_mvp});
         m_icon_batch.clear();
     }
