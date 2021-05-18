@@ -45,6 +45,7 @@ struct Game::Impl {
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
+            preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             save_path("not set"),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
             reset_scripting(false),
@@ -105,6 +106,7 @@ struct Game::Impl {
         }
         if (config_changed("controls.gamepad-number") && window) {
             gamepad_id = -1;
+            preferred_gamepad_id = Configurations::get<int>("controls.gamepad-number");
             get_gamepad_id(*window);
         }
         if (config_changed("debug.show-fps")) {
@@ -138,9 +140,10 @@ struct Game::Impl {
     // Get preferred gamepad ID (or first one)
     int get_gamepad_id(xd::window& window) {
         if (gamepad_id == -1 || !window.joystick_present(gamepad_id)) {
-            int preferred_id = Configurations::get<int>("controls.gamepad-number");
-            if (gamepad_id != preferred_id && preferred_id != -1 && window.joystick_present(preferred_id)) {
-                gamepad_id = preferred_id;
+            if (gamepad_id != preferred_gamepad_id
+                    && preferred_gamepad_id != -1
+                    && window.joystick_present(preferred_gamepad_id)) {
+                gamepad_id = preferred_gamepad_id;
             } else {
                 gamepad_id = window.first_joystick_id();
             }
@@ -227,6 +230,8 @@ struct Game::Impl {
     float game_height;
     // Active gamepad id
     int gamepad_id;
+    // Configured gamepad ID
+    int preferred_gamepad_id;
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
     // Calculated save folder path

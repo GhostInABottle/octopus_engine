@@ -463,22 +463,6 @@ void Scripting_Interface::setup_scripts() {
     rect_type["h"] = &xd::rect::h;
     rect_type["intersects"] = &xd::rect::intersects;
 
-    // Sprite holders: map object, image layer, canvas, etc.
-    auto holder_type = lua.new_usertype<Sprite_Holder>("Sprite_Holder");
-    holder_type["sprite"] = sol::property(
-            &Sprite_Holder::get_sprite_filename,
-            [&](Sprite_Holder* holder, const std::string& filename) {
-                holder->set_sprite(*game, filename);
-            });
-    holder_type["reset"] = &Sprite_Holder::reset;
-    holder_type["set_sprite"] = [&](Sprite_Holder* holder, const std::string& filename, std::optional<std::string> pose) {
-        holder->set_sprite(*game, filename, pose.value_or(""));
-    };
-    holder_type["show_pose"] = [&](Sprite_Holder* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name,
-            state.value_or(""), dir.value_or(Direction::NONE)));
-    };
-
     // Object draw order
     lua.new_enum<Map_Object::Draw_Order>("Draw_Order",
         {
@@ -501,8 +485,7 @@ void Scripting_Interface::setup_scripts() {
         });
 
     // Map object
-    auto object_type = lua.new_usertype<Map_Object>("Map_Object",
-        sol::base_classes, sol::bases<Sprite_Holder>());
+    auto object_type = lua.new_usertype<Map_Object>("Map_Object");
     object_type["id"] = sol::property(&Map_Object::get_id);
     object_type["name"] = sol::property(&Map_Object::get_name, &Map_Object::set_name);
     object_type["type"] = sol::property(&Map_Object::get_type, &Map_Object::set_type);
@@ -519,6 +502,19 @@ void Scripting_Interface::setup_scripts() {
     object_type["passthrough"] = sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough);
     object_type["passthrough_type"] = sol::property(&Map_Object::get_passthrough_type, &Map_Object::set_passthrough_type);
     object_type["pose"] = sol::property(&Map_Object::get_pose_name, &Map_Object::set_pose_name);
+    object_type["sprite"] = sol::property(
+        &Map_Object::get_sprite_filename,
+        [&](Map_Object* obj, const std::string& filename) {
+            obj->set_sprite(*game, filename);
+        });
+    object_type["reset"] = &Map_Object::reset;
+    object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename, std::optional<std::string> pose) {
+        obj->set_sprite(*game, filename, pose.value_or(""));
+    };
+    object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name,
+            state.value_or(""), dir.value_or(Direction::NONE)));
+    };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
     object_type["face_state"] = sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state);
@@ -796,9 +792,21 @@ void Scripting_Interface::setup_scripts() {
     };
 
     // Image layer
-    auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer",
-        sol::base_classes, sol::bases<Layer, Sprite_Holder>());
+    auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer");
     image_layer_type["velocity"] = &Image_Layer::velocity;
+    image_layer_type["sprite"] = sol::property(
+        &Image_Layer::get_sprite_filename,
+        [&](Image_Layer* layer, const std::string& filename) {
+            layer->set_sprite(*game, filename);
+        });
+    image_layer_type["reset"] = &Image_Layer::reset;
+    image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {
+        layer->set_sprite(*game, filename, pose.value_or(""));
+    };
+    image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(layer, pose_name,
+            state.value_or(""), dir.value_or(Direction::NONE)));
+    };
 
     // Current map / scene
     auto map_type = lua.new_usertype<Map>("Map");
@@ -997,8 +1005,7 @@ void Scripting_Interface::setup_scripts() {
                 game->add_canvas(canvas);
                 return canvas;
             }
-        ),
-        sol::base_classes, sol::bases<Sprite_Holder>());
+        ));
     canvas_type[sol::meta_function::index] = &Canvas::get_lua_property;
     canvas_type[sol::meta_function::new_index] = &Canvas::set_lua_property;
     canvas_type["name"] = sol::property(&Canvas::get_name, &Canvas::set_name);
@@ -1009,6 +1016,19 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["pose_name"] = sol::property(&Canvas::get_pose_name);
     canvas_type["pose_state"] = sol::property(&Canvas::get_pose_state);
     canvas_type["pose_direction"] = sol::property(&Canvas::get_pose_direction);
+    canvas_type["sprite"] = sol::property(
+        &Canvas::get_sprite_filename,
+        [&](Canvas* canvas, const std::string& filename) {
+            canvas->set_sprite(*game, filename);
+        });
+    canvas_type["reset"] = &Canvas::reset;
+    canvas_type["set_sprite"] = [&](Canvas* canvas, const std::string& filename, std::optional<std::string> pose) {
+        canvas->set_sprite(*game, filename, pose.value_or(""));
+    };
+    canvas_type["show_pose"] = [&](Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(canvas, pose_name,
+            state.value_or(""), dir.value_or(Direction::NONE)));
+    };
     canvas_type["origin"] = sol::property(&Canvas::get_origin, &Canvas::set_origin);
     canvas_type["magnification"] = sol::property(&Canvas::get_magnification, &Canvas::set_magnification);
     canvas_type["scissor_box"] = sol::property(&Canvas::get_scissor_box, &Canvas::set_scissor_box);
