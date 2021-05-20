@@ -8,6 +8,7 @@
 #include "../include/game.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/string.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
 #include <algorithm>
 #include <iostream>
@@ -24,8 +25,12 @@ struct Sprite::Impl {
     Game& game;
     // Sprite data (poses, frames, etc.)
     std::unique_ptr<Sprite_Data> data;
-    // Current tags
-    std::unordered_map<std::string, std::string> tags;
+    // Current pose name
+    std::string current_pose_name;
+    // Current pose state
+    std::string current_pose_state;
+    // Current direction
+    Direction current_pose_direction;
     // Cache of tag combination to poses
     std::unordered_map<std::string, int> tag_map;
     // Currently active pose
@@ -62,6 +67,7 @@ struct Sprite::Impl {
     Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
         game(game),
         data(std::move(data)),
+        current_pose_direction(Direction::NONE),
         frame_index(0),
         old_time(game.ticks()),
         repeat_count(0),
@@ -212,14 +218,14 @@ struct Sprite::Impl {
             && passed_time() >= get_frame_time(pose->frames[frame_index]);
     }
 
-    void set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
+    void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir) {
         // Update current pose tags
-        tags = new_tags;
+        current_pose_name = string_utilities::capitalize(pose_name);
+        current_pose_state = string_utilities::capitalize(state_name);
+        current_pose_direction = dir;
         // Lookup pose in cache
         std::string tag_string;
-        for (auto& [key, value] : tags) {
-            tag_string += key + ":" + value + " ";
-        }
+        tag_string = "P:" + current_pose_name + "|S:" + current_pose_state + "|D:" + direction_to_string(dir);
         int matched_pose = -1;
         bool default_name_matched = false;
         if (tag_map.find(tag_string) != tag_map.end()) {
@@ -227,33 +233,35 @@ struct Sprite::Impl {
         } else {
             // Map of pose IDs to their tag match count
             std::unordered_map<int, unsigned int> matches;
+            int matches_needed = (pose_name.empty() ? 0 : 1) + (state_name.empty() ? 0 : 1) + (dir == Direction::NONE ? 0 : 1);
             int default_pose = -1;
-            // Loop over tags incrementing poses that match
-            for (auto& [key, value] : tags) {
-                for (unsigned int i = 0; i < data->poses.size(); ++i) {
-                    auto& pose_tags = data->poses[i].tags;
-                    if (pose_tags.find(key) == pose_tags.end() || pose_tags[key] != value) continue;
+            bool is_default = data->default_pose != "" && current_pose_name == data->default_pose;
+            // Loop over poses incrementing poses that match
+            for (unsigned int i = 0; i < data->poses.size(); ++i) {
+                auto& pose = data->poses[i];
+                auto name_matched = current_pose_name == pose.name;
+                if (!current_pose_name.empty() && name_matched) {
                     matches[i]++;
-                    auto& pose_name = pose_tags["NAME"];
                     // Update best default pose
-                    if (data->default_pose != "" && pose_name == data->default_pose
-                            && compare_matches(i, default_pose, matches) > 0) {
+                    if (is_default && compare_matches(i, default_pose, matches) > 0) {
                         default_pose = i;
-                        if (pose_name == tags["NAME"]) {
-                            default_name_matched = true;
-                        }
-                    }
-                    // Update best match
-                    auto comparison = compare_matches(i, matched_pose, matches);
-                    if (comparison > 0 || (comparison == 0 && pose_name == tags["NAME"])) {
-                        matched_pose = i;
-                        // If all tags are matched, exit loops
-                        if (matches[i] == tags.size())
-                            break;
+                        default_name_matched = true;
                     }
                 }
-                if (matches[matched_pose] == tags.size())
+                if (!current_pose_state.empty() && current_pose_state == pose.state) {
+                    matches[i]++;
+                }
+                if (dir != Direction::NONE && dir == pose.direction) {
+                    matches[i]++;
+                }
+                // Update best match
+                auto comparison = compare_matches(i, matched_pose, matches);
+                if (comparison > 0 || (comparison == 0 && name_matched)) {
+                    matched_pose = i;
+                }
+                if (matches[i] == matches_needed) {
                     break;
+                }
             }
 
             // Prefer default pose to other poses with same matches
@@ -286,7 +294,7 @@ struct Sprite::Impl {
             return;
         }
         for (auto& p : data->poses) {
-            if (p.tags.find("NAME") != p.tags.end() && p.tags["NAME"] == data->default_pose) {
+            if (p.name == data->default_pose) {
                 pose = &p;
                 return;
             }
@@ -357,8 +365,8 @@ std::string Sprite::get_filename() const {
     return pimpl->get_filename();
 }
 
-void Sprite::set_pose(const std::unordered_map<std::string, std::string>& new_tags) {
-    pimpl->set_pose(new_tags);
+void Sprite::set_pose(const std::string& pose_name, const std::string& state_name, Direction dir) {
+    pimpl->set_pose(pose_name, state_name, dir);
 }
 
 Pose& Sprite::get_pose() {

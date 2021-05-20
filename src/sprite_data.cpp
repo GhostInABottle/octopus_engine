@@ -180,12 +180,21 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             std::string value = tag_node->first_attribute("Value")->value();
             string_utilities::capitalize(key);
             string_utilities::capitalize(value);
-            sprite_ptr->poses[pose_index].tags[key] = value;
-            if (key == "NAME" && value == sprite_ptr->default_pose) {
-                default_pose_found = true;
-            }
-            if (!sprite_ptr->has_diagonal_directions && key == "DIRECTION") {
-                sprite_ptr->has_diagonal_directions = is_diagonal(string_to_direction(value));
+            if (key == "NAME") {
+                sprite_ptr->poses[pose_index].name = value;
+                if (value == sprite_ptr->default_pose) {
+                    default_pose_found = true;
+                }
+            } else if (key == "STATE") {
+                sprite_ptr->poses[pose_index].state = value;
+            } else if (key == "DIRECTION") {
+                auto dir = string_to_direction(value);
+                sprite_ptr->poses[pose_index].direction = dir;
+                if (!sprite_ptr->has_diagonal_directions) {
+                    sprite_ptr->has_diagonal_directions = is_diagonal(dir);
+                }
+            } else {
+                LOGGER_W << "Unsupported tag " << key << " with value " << value;
             }
         }
     }

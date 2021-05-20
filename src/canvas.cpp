@@ -87,10 +87,17 @@ void Canvas::set_sprite(Game& game, const std::string& sprite_filename, const st
     redraw_needed = true;
 }
 
+std::string Canvas::get_pose_name() {
+    return get_sprite() ? get_sprite()->get_pose().name : "";
+}
+
+std::string Canvas::get_pose_state() {
+    return get_sprite() ? get_sprite()->get_pose().state : "";
+}
+
 Direction Canvas::get_pose_direction()
 {
-    auto dir_string = get_pose_tag("DIRECTION");
-    return dir_string.empty() ? Direction::NONE : string_to_direction(dir_string);
+    return get_sprite() ? get_sprite()->get_pose().direction : Direction::NONE;
 }
 
 void Canvas::remove_child(const std::string& child_name) {

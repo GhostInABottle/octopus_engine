@@ -2,6 +2,7 @@
 #define HPP_SPRITE
 
 #include <memory>
+#include "direction.hpp"
 #include "xd/system.hpp"
 #include "xd/entity.hpp"
 #include "xd/graphics/types.hpp"
@@ -31,7 +32,7 @@ public:
     // Get sprite file name
     std::string get_filename() const;
     // Sets the current pose
-    void set_pose(const std::unordered_map<std::string, std::string>& new_tags);
+    void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir);
     // Get the current pose
     Pose& get_pose();
     // Get the default pose name

@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
 #include "vendor/rapidxml.hpp"
+#include "direction.hpp"
 
 namespace xd {
     class asset_manager;
@@ -52,12 +52,16 @@ struct Pose {
     std::shared_ptr<xd::texture> image;
     // Transparent color
     xd::vec4 transparent_color;
-    // Hash table of tags
-    std::unordered_map<std::string, std::string> tags;
+    // Name for specifying the pose
+    std::string name;
+    // State (e.g. walk or face) when this pose is picked
+    std::string state;
+    // Direction represented by this pose
+    Direction direction;
     // List of frames
     std::vector<Frame> frames;
 
-    Pose() noexcept : duration(100), repeats(-1), require_completion(false) {}
+    Pose() noexcept : duration(100), repeats(-1), require_completion(false), direction(Direction::NONE) {}
 };
 
 struct Sprite_Data {

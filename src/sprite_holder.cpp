@@ -10,31 +10,13 @@ Sprite_Holder::~Sprite_Holder() {}
 void Sprite_Holder::set_pose(const std::string& pose_name,
         const std::string& state, Direction direction) {
     if (get_sprite()) {
-        std::unordered_map<std::string, std::string> tags;
-        if (!pose_name.empty())
-            tags["NAME"] = string_utilities::capitalize(pose_name);
-        if (!state.empty())
-            tags["STATE"] = string_utilities::capitalize(state);
-        if (direction != Direction::NONE)
-            tags["DIRECTION"] = string_utilities::capitalize(direction_to_string(direction));
-        get_sprite()->set_pose(tags);
+        get_sprite()->set_pose(pose_name, state, direction);
     }
 }
 
 void Sprite_Holder::reset() {
     if (get_sprite())
         get_sprite()->reset();
-}
-
-std::string Sprite_Holder::get_pose_tag(const std::string& tag) {
-    auto sprite = get_sprite();
-    if (!sprite) return "";
-
-    auto& tags = sprite->get_pose().tags;
-    if (tags.find(tag) != tags.end())
-        return tags[tag];
-    else
-        return "";
 }
 
 std::string Sprite_Holder::get_sprite_filename() {

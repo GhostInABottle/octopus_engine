@@ -80,13 +80,9 @@ public:
     // Update the sprite
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     // Get pose name
-    std::string get_pose_name() {
-        return get_pose_tag("NAME");
-    }
+    std::string get_pose_name();
     // Get pose state
-    std::string get_pose_state() {
-        return get_pose_tag("STATE");
-    }
+    std::string get_pose_state();
     // Get pose direction
     Direction get_pose_direction();
     // Update the text for a text canvas
