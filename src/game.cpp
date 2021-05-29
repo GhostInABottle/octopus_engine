@@ -794,6 +794,24 @@ int Game::get_gamepad_id() const {
     return pimpl->get_gamepad_id(*window);
 }
 
+std::optional<std::string> Game::get_gamepad_name() const {
+    if (!window || !gamepad_enabled()) return "";
+    auto current_id = get_gamepad_id();
+    std::optional<std::string> current_name = std::nullopt;
+    if (current_id == -1) {
+        current_name = window->first_joystick_name();
+    }  else {
+        auto names = window->joystick_names();
+        for (auto& [id, name] : names) {
+            if (current_id == id) {
+                current_name = name;
+                break;
+            }
+        }
+    }
+    return current_name;
+}
+
 std::string Game::get_object_script_preamble() const {
     return pimpl->object_script_preamble;
 }

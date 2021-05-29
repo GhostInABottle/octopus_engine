@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <optional>
 #include "xd/system.hpp"
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/simple_text_renderer.hpp"
@@ -242,6 +243,8 @@ public:
     std::unordered_map<int, std::string> gamepad_names() const {
         return window->joystick_names();
     }
+    // Get current gamepad's name
+    std::optional<std::string> get_gamepad_name() const;
     // Get string to be added to map object scripts
     std::string get_object_script_preamble() const;
 private:

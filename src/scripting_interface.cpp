@@ -676,6 +676,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
+    game_type["gamepad_name"] = sol::property(&Game::get_gamepad_name);
     game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
     game_type["monitor_resolutions"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_sizes());

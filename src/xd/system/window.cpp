@@ -587,6 +587,18 @@ int xd::window::first_joystick_id() const
     return -1;
 }
 
+std::optional<std::string> xd::window::first_joystick_name() const
+{
+    auto id = first_joystick_id();
+    const char* name = nullptr;
+    if (joystick_is_gamepad(id)) {
+        name = glfwGetGamepadName(id);
+    } else {
+        name = glfwGetJoystickName(id);
+    }
+    return name ? std::optional<std::string>{name} : std::nullopt;
+}
+
 std::unordered_map<int, std::string> xd::window::joystick_names() const
 {
     std::unordered_map<int, std::string> names;

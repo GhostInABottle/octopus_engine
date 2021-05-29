@@ -12,6 +12,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <optional>
 
 struct GLFWwindow;
 
@@ -105,6 +106,7 @@ namespace xd
         void add_joystick(int id);
         void remove_joystick(int id);
         int first_joystick_id() const;
+        std::optional<std::string> first_joystick_name() const;
         std::unordered_map<int, std::string> joystick_names() const;
         void reset_joystick_states();
 
