@@ -99,8 +99,8 @@ Key_Binder::Key_Binder(Game& game)
     keys_for_name["GAMEPAD-BACK"] = { xd::GAMEPAD_BUTTON_BACK };
     keys_for_name["GAMEPAD-START"] = { xd::GAMEPAD_BUTTON_START };
     keys_for_name["GAMEPAD-GUIDE"] = { xd::GAMEPAD_BUTTON_GUIDE };
-    keys_for_name["GAMEPAD-LT"] = { xd::GAMEPAD_BUTTON_LEFT_THUMB };
-    keys_for_name["GAMEPAD-RT"] = { xd::GAMEPAD_BUTTON_RIGHT_THUMB };
+    keys_for_name["GAMEPAD-LSB"] = { xd::GAMEPAD_BUTTON_LEFT_THUMB };
+    keys_for_name["GAMEPAD-RSB"] = { xd::GAMEPAD_BUTTON_RIGHT_THUMB };
     keys_for_name["GAMEPAD-UP"] = { xd::GAMEPAD_BUTTON_DPAD_UP };
     keys_for_name["GAMEPAD-RIGHT"] = { xd::GAMEPAD_BUTTON_DPAD_RIGHT };
     keys_for_name["GAMEPAD-DOWN"] = { xd::GAMEPAD_BUTTON_DPAD_DOWN };
