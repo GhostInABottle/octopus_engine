@@ -155,6 +155,8 @@ public:
     std::string end_character_input() { return window->end_character_input(); }
     // Get the currently stored buffer of characters
     std::string character_input() const { return window->character_input(); }
+    // Get printable name for a key
+    std::string get_key_name(const std::string& physical_key) const;
     // Run a script
     void run_script(const std::string& script);
     // Run a script file

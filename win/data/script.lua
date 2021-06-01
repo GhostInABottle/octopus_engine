@@ -229,7 +229,7 @@ elseif c.selected == 6 then
                     done = true
                     break
                 else
-                    keys = keys .. ' ' .. key
+                    keys = keys .. ' ' .. key .. ' (' .. game:get_key_name(key) .. ')'
                 end
             end
             if not done then

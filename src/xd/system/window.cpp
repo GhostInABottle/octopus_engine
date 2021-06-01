@@ -437,6 +437,13 @@ void xd::window::unbind_key(const std::string& virtual_key)
     }
 }
 
+
+std::string xd::window::key_name(const key& physical_key)
+{
+    const char* name = glfwGetKeyName(physical_key.code, 0);
+    return name ? name : "";
+}
+
 bool xd::window::pressed(const xd::key& key, int joystick_id) const
 {
     switch (key.type) {

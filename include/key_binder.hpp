@@ -30,7 +30,7 @@ public:
     // Get the filename of the keymap file
     std::string get_keymap_filename() const;
     // Get the physical name for a key
-    std::string get_key_name(const xd::key& key) const {
+    std::string get_key_identifier(const xd::key& key) const {
         if (name_for_key.find(key) != name_for_key.end())
             return name_for_key.at(key);
         else

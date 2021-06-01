@@ -703,6 +703,7 @@ void Scripting_Interface::setup_scripts() {
     };
     game_type["begin_character_input"] = &Game::begin_character_input;
     game_type["end_character_input"] = &Game::end_character_input;
+    game_type["get_key_name"] = &Game::get_key_name;
     game_type["run_script"] = &Game::run_script;
     game_type["run_script_file"] = &Game::run_script_file;
     game_type["run_function"] = &Game::run_function;

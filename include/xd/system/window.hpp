@@ -69,6 +69,7 @@ namespace xd
         void bind_key(const key& physical_key, const std::string& virtual_key);
         void unbind_key(const key& key);
         void unbind_key(const std::string& key);
+        std::string key_name(const key& physical_key);
 
         bool pressed(const key& key, int joystick_id = -1) const;
         bool pressed(const std::string& key, int joystick_id = -1) const;

@@ -562,7 +562,7 @@ std::vector<std::string> Game::triggered_keys() const {
     for (xd::key key : keys) {
         if (key.type == xd::input_type::INPUT_GAMEPAD && key.device_id != get_gamepad_id()) continue;
         key.device_id = -1;
-        results.push_back(pimpl->key_binder->get_key_name(key));
+        results.push_back(pimpl->key_binder->get_key_identifier(key));
     }
     return results;
 }
@@ -582,6 +582,13 @@ void Game::unbind_virtual_key(const std::string& virtual_name) {
 
 std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) const {
     return pimpl->key_binder->get_bound_keys(virtual_name);
+}
+
+
+std::string Game::get_key_name(const std::string& physical_key) const {
+    auto keys = pimpl->key_binder->get_keys(physical_key);
+    if (keys.empty()) return "";
+    return window->key_name(keys.front());
 }
 
 void Game::run_script(const std::string& script) {
@@ -795,9 +802,10 @@ int Game::get_gamepad_id() const {
 }
 
 std::optional<std::string> Game::get_gamepad_name() const {
-    if (!window || !gamepad_enabled()) return "";
-    auto current_id = get_gamepad_id();
     std::optional<std::string> current_name = std::nullopt;
+    if (!window || !gamepad_enabled()) return current_name;
+
+    auto current_id = get_gamepad_id();
     if (current_id == -1) {
         current_name = window->first_joystick_name();
     }  else {
