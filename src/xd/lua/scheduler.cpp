@@ -9,13 +9,13 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 {
 }
 
-void xd::lua::scheduler::start(const std::string& code_or_filename, bool is_file)
+void xd::lua::scheduler::start(const std::string& code_or_filename, const std::string& context, bool is_file)
 {
-    start(std::make_shared<scheduler_cothread>(state, code_or_filename, is_file));
+    start(std::make_shared<scheduler_cothread>(state, code_or_filename, context, is_file));
 }
 
-void xd::lua::scheduler::start(const sol::protected_function& function) {
-    start(std::make_shared<scheduler_cothread>(state, function));
+void xd::lua::scheduler::start(const sol::protected_function& function, const std::string& context) {
+    start(std::make_shared<scheduler_cothread>(state, function, context));
 }
 
 void xd::lua::scheduler::run()
@@ -38,6 +38,7 @@ void xd::lua::scheduler::run()
             m_thread_stack.push(thread_task.thread);
             m_current_thread = thread_task.thread;
             // resume the thread
+            m_current_thread->thread.state().globals()["SCRIPT_CONTEXT"] = m_current_thread->context;
             auto result = thread_task.thread->coroutine();
             if (!result.valid()) {
                 sol::error err = result;
@@ -73,6 +74,7 @@ void xd::lua::scheduler::start(const std::shared_ptr<xd::lua::scheduler::schedul
     // set the current thread
     m_thread_stack.push(cothread);
     m_current_thread = m_thread_stack.top();
+    m_current_thread->thread.state().globals()["SCRIPT_CONTEXT"] = m_current_thread->context;
     // start the thread
     auto result = m_current_thread->coroutine();
     if (!result.valid()) {
@@ -87,7 +89,7 @@ void xd::lua::scheduler::start(const std::shared_ptr<xd::lua::scheduler::schedul
         m_current_thread = m_thread_stack.top();
 }
 
-xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code, bool is_file) {
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code, const std::string& context, bool is_file) {
     thread = sol::thread::create(state);
     auto load_result = is_file ? thread.state().load_file(code) : thread.state().load(code);
     if (!load_result.valid()) {
@@ -95,9 +97,11 @@ xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, co
         throw panic_error(err.what());
     }
     coroutine = load_result;
+    this->context = context;
 }
 
-xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::protected_function& function) {
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::protected_function& function, const std::string& context) {
     thread = sol::thread::create(state);
     coroutine = { thread.state(), function };
+    this->context = context;
 }

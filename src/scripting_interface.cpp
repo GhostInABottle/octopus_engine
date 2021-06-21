@@ -31,7 +31,7 @@ Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_v
 void Scripting_Interface::update() {
     // Execute pending commands
     for (auto i = commands.begin(); i < commands.end();) {
-        auto command = *i;
+        auto& command = *i;
         command->execute();
         if (command->is_complete()) {
             i = commands.erase(i);
@@ -43,20 +43,20 @@ void Scripting_Interface::update() {
         scheduler.run();
 }
 
-void Scripting_Interface::schedule_code(const std::string& script) {
+void Scripting_Interface::schedule_code(const std::string& script, const std::string& context) {
     if (script.empty()) {
-        LOGGER_W << "Tried to schedule an empty script starting with: " << script.substr(0, 50);
+        LOGGER_W << "Tried to schedule an empty script";
         return;
     };
-    scheduler.start(script);
+    scheduler.start(script, context);
 }
 
-void Scripting_Interface::schedule_file(const std::string& filename) {
-    scheduler.start_file(filename);
+void Scripting_Interface::schedule_file(const std::string& filename, const std::string& context) {
+    scheduler.start_file(filename, context);
 }
 
-void Scripting_Interface::schedule_function(const sol::protected_function& function) {
-    scheduler.start(function);
+void Scripting_Interface::schedule_function(const sol::protected_function& function, const std::string& context) {
+    scheduler.start(function, context);
 }
 
 void Scripting_Interface::set_globals() {
@@ -83,7 +83,7 @@ void Scripting_Interface::setup_scripts() {
     auto& vm = *game->get_lua_vm();
 
     if (Configurations::get<bool>("debug.seed-lua-rng")) {
-        scheduler.start("math.randomseed(os.time())");
+        scheduler.start("math.randomseed(os.time())", "");
     }
     auto result_wait = [](Command_Result* cmd) {
         auto& scheduler = game->get_current_scripting_interface()->scheduler;

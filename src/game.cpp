@@ -178,9 +178,9 @@ struct Game::Impl {
         auto old_interface = game.get_current_scripting_interface();
         game.set_current_scripting_interface(si.get());
         if (is_filename) {
-            si->schedule_file(script_or_filename);
+            si->schedule_file(script_or_filename, "GLOBAL");
         } else {
-            si->schedule_code(script_or_filename);
+            si->schedule_code(script_or_filename, "GLOBAL");
         }
         game.set_current_scripting_interface(old_interface);
     }
@@ -188,7 +188,7 @@ struct Game::Impl {
         auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
         auto old_interface = game.get_current_scripting_interface();
         game.set_current_scripting_interface(si.get());
-        si->schedule_function(function);
+        si->schedule_function(function, "GLOBAL");
         game.set_current_scripting_interface(old_interface);
     }
     // Audio system
