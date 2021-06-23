@@ -503,7 +503,7 @@ void Game::resume(const std::string& script) {
 
     if (!pimpl->was_stopped) clock->resume_time();
 
-    if (music && !pimpl->music_was_paused && Configurations::get<bool>("audio.mute-on-pause"))
+    if (music && music->paused() && !pimpl->music_was_paused)
         music->play();
 
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
