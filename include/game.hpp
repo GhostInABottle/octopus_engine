@@ -33,7 +33,7 @@ class Game {
 public:
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
-    explicit Game(xd::audio* audio, bool editor_mode = false);
+    explicit Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode = false);
     ~Game();
     // Get audio system pointer
     xd::audio* get_audio() const;

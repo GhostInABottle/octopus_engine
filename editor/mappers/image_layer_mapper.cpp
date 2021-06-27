@@ -42,7 +42,7 @@ void Image_Layer_Mapper::populate(QtTreePropertyBrowser* browser, QtVariantPrope
     // Pose
     item = manager->addProperty(QVariant::String, "Pose");
     if (layer->sprite) {
-        std::string pose_name = layer->sprite->get_pose().tags["NAME"];
+        std::string pose_name = layer->sprite->get_pose().name;
         item->setValue(QString::fromStdString(pose_name));
     }
     browser->addProperty(item);

@@ -3,12 +3,14 @@
 #include "../include/game.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
+#include <vector>
 #ifdef __APPLE__
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
 #endif
 
-int main() {
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
     try {
 #ifdef __APPLE__
         // Set current working directory to resources folder in OSX
@@ -26,7 +28,7 @@ int main() {
 
         xd::audio audio;
         LOGGER_I << "Reticulating Splines";
-        Game game(&audio);
+        Game game(args, &audio);
         game.run();
 
     } catch (const rapidxml::parse_error& e) {

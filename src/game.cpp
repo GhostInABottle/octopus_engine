@@ -29,7 +29,8 @@
 #include <unordered_set>
 
 struct Game::Impl {
-    explicit Impl(Game& game, xd::audio* audio, bool editor_mode) :
+    explicit Impl(Game& game, const std::vector<std::string>& args, xd::audio* audio, bool editor_mode) :
+            args(args),
             audio(audio),
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
@@ -191,6 +192,14 @@ struct Game::Impl {
         si->schedule_function(function, "GLOBAL");
         game.set_current_scripting_interface(old_interface);
     }
+    std::string get_startup_map() const {
+        if (args.size() < 2)
+            return Configurations::get<std::string>("startup.map");
+        else
+            return args[1];
+    }
+    // Program arguments
+    std::vector<std::string> args;
     // Audio system
     xd::audio* audio;
     // Was game started in editor mode?
@@ -252,8 +261,8 @@ struct Game::Impl {
     Shake_Decorator shake_decorator;
 };
 
-Game::Game(xd::audio* audio, bool editor_mode) :
-        pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
+Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode) :
+        pimpl(std::make_unique<Impl>(*this, args, audio, editor_mode)),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
             Configurations::get<int>("graphics.screen-width"),
@@ -323,7 +332,7 @@ Game::Game(xd::audio* audio, bool editor_mode) :
         return;
 
     window->set_gamma(Configurations::get<float>("graphics.gamma"));
-    map = Map::load(*this, Configurations::get<std::string>("startup.map"));
+    map = Map::load(*this, pimpl->get_startup_map());
     auto start_pos = map->get_starting_position();
     if (Configurations::has_value("startup.player-position-x")) {
         start_pos.x = Configurations::get<float>("startup.player-position-x");
