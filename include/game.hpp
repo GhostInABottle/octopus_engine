@@ -175,9 +175,14 @@ public:
     // Reset the scripting interface and run startup scripts again
     void reset_scripting() noexcept;
     // Play some music
-    void load_music(const std::string& filename);
+    void play_music(const std::string& filename, bool looping = true);
+    void play_music(const std::shared_ptr<xd::music>& new_music, bool looping = true);
     // Get the music currently playing
-    std::shared_ptr<xd::music> playing_music() noexcept { return music; }
+    std::shared_ptr<xd::music> get_playing_music() noexcept { return music; }
+    // Set the currently playing music
+    void set_playing_music(const std::shared_ptr<xd::music>& music) {
+        this->music = music;
+    }
     // Set or get the global volume for music
     float get_global_music_volume() const;
     void set_global_music_volume(float volume) const;

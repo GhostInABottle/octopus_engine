@@ -5,8 +5,8 @@
 
 Fade_Music_Command::Fade_Music_Command(Game& game, float volume, long duration) :
     Timed_Command(game, duration),
-    music(game.playing_music()),
-    old_volume(game.playing_music()->get_volume()),
+    music(game.get_playing_music()),
+    old_volume(game.get_playing_music()->get_volume()),
     new_volume(volume),
     complete(false) {}
 

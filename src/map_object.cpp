@@ -247,7 +247,7 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
         del_component(sprite);
     }
     sprite = std::make_shared<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), filename));
+        Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
     add_component(sprite);
     set_pose(new_pose_name);
 }

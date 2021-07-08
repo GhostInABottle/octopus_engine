@@ -615,9 +615,9 @@ void Scripting_Interface::setup_scripts() {
     // Sound effect
     auto sound = lua.new_usertype<xd::sound>("Sound",
         sol::call_constructor, sol::factories(
-            [&](const std::string& filename) {
-                return std::make_unique<xd::sound>(*game->get_audio(), filename);
-            }
+        [&](const std::string& filename) {
+            return std::make_unique<xd::sound>(*game->get_audio(), filename);
+        }
     ));
     sound["playing"] = sol::property(&xd::sound::playing);
     sound["paused"] = sol::property(&xd::sound::paused);
@@ -633,7 +633,12 @@ void Scripting_Interface::setup_scripts() {
     sound["set_loop_points"] = &xd::sound::set_loop_points;
 
     // Background music
-    auto music = lua.new_usertype<xd::music>("Music");
+    auto music = lua.new_usertype<xd::music>("Music",
+        sol::call_constructor, sol::factories(
+        [&](const std::string& filename) {
+            return std::make_shared<xd::music>(*game->get_audio(), filename);
+        }
+    ));
     music["playing"] = sol::property(&xd::music::playing);
     music["paused"] = sol::property(&xd::music::paused);
     music["stopped"] = sol::property(&xd::music::stopped);
@@ -668,7 +673,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["paused"] = sol::property(&Game::is_paused);
     game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
-    game_type["playing_music"] = sol::readonly_property(&Game::playing_music);
+    game_type["playing_music"] = sol::property(&Game::get_playing_music, &Game::set_playing_music);
     game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
     game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
     game_type["debug"] = sol::property(&Game::is_debug);
@@ -754,14 +759,20 @@ void Scripting_Interface::setup_scripts() {
     };
     game_type["save_config_file"] = &Game::save_config_file;
     game_type["save_keymap_file"] = &Game::save_keymap_file;
-    game_type["load_music"] = [&](Game* game, const std::string& filename) {
-        game->load_music(filename);
-        return game->playing_music();
-    };
-    game_type["play_music"] = [&](Game* game, const std::string& filename) {
-        game->load_music(filename);
-        game->playing_music()->play();
-    };
+    game_type["play_music"] = sol::overload(
+        [](Game* game, const std::string& filename) {
+            game->play_music(filename);
+        },
+        [](Game* game, const std::string& filename, bool looping) {
+            game->play_music(filename, looping);
+        },
+        [](Game* game, const std::shared_ptr<xd::music>& music) {
+            game->play_music(music);
+        },
+        [](Game* game, const std::shared_ptr<xd::music>& music, bool looping) {
+            game->play_music(music, looping);
+        }
+    );
     game_type["wait_for_input"] = sol::yielding(sol::overload(
         [](Game* game, const std::string& key) {
             auto& scheduler = game->get_current_scripting_interface()->scheduler;

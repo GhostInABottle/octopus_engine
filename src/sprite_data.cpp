@@ -6,6 +6,7 @@
 #include "../include/utility/direction.hpp"
 #include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
+#include "../include/xd/audio.hpp"
 #include "../include/log.hpp"
 #include <iostream>
 
@@ -25,20 +26,20 @@ Sprite_Data::~Sprite_Data() {
     }
 }
 
-std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename) {
+std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename, xd::audio* audio) {
     auto doc = std::make_unique<rapidxml::xml_document<>>();
     auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
     doc->parse<0>(content);
     auto sprite_node = doc->first_node("Sprite");
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing Sprite node.");
-    auto sprite_data = load(manager, *sprite_node);
+    auto sprite_data = load(manager, *sprite_node, audio);
     sprite_data->filename = filename;
     file_utilities::normalize_slashes(sprite_data->filename);
     return sprite_data;
 }
 
-std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node) {
+std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node, xd::audio* audio) {
     auto sprite_ptr = std::make_unique<Sprite_Data>(manager);
     // Image and transparent color
     bool image_loaded = false;
@@ -158,8 +159,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             }
 
             // Sound effect
-            if (auto attr = frame_node->first_attribute("Sound")) {
-                frame.sound_file = attr->value();
+            auto sound_file_attr = frame_node->first_attribute("Sound");
+            if (audio && sound_file_attr) {
+                frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
             }
 
             pose.frames.push_back(frame);

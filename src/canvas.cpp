@@ -82,7 +82,7 @@ void Canvas::set_sprite(Game& game, const std::string& sprite_filename, const st
     type = Canvas::Type::SPRITE;
     filename = sprite_filename;
     sprite = std::make_unique<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), sprite_filename));
+        Sprite_Data::load(game.get_asset_manager(), sprite_filename, game.get_audio()));
     set_pose(pose_name, "", Direction::NONE);
     redraw_needed = true;
 }

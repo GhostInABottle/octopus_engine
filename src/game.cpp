@@ -355,9 +355,7 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     // Play background music
     auto bg_music = map->get_bg_music_filename();
     if (pimpl->audio && !bg_music.empty() && bg_music != "false") {
-        load_music(map->get_bg_music_filename());
-        music->set_looping(true);
-        music->play();
+        play_music(map->get_bg_music_filename());
     }
     // Track player by camera
     camera->set_object(player.get());
@@ -620,11 +618,17 @@ void Game::reset_scripting() noexcept {
     pimpl->reset_scripting = true;
 }
 
-void Game::load_music(const std::string& filename) {
+void Game::play_music(const std::string& filename, bool looping) {
     if (!pimpl->audio) return;
+    play_music(std::make_shared<xd::music>(*pimpl->audio, filename), looping);
+}
+
+void Game::play_music(const std::shared_ptr<xd::music>& new_music, bool looping) {
     if (music)
         music->stop();
-    music = std::make_unique<xd::music>(*pimpl->audio, filename);
+    set_playing_music(new_music);
+    music->set_looping(looping);
+    music->play();
 }
 
 float Game::get_global_music_volume() const {
@@ -781,9 +785,7 @@ void Game::load_map(const std::string& filename) {
     if (bg_music == "false") {
         music.reset();
     } else if (!bg_music.empty() && bg_music != playing_music) {
-        load_music(bg_music);
-        music->set_looping(true);
-        music->play();
+        play_music(bg_music);
     }
     // Run map startup scripts
     map->run_startup_scripts();

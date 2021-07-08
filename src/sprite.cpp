@@ -61,8 +61,6 @@ struct Sprite::Impl {
     float speed;
     // Maximum possible speed modifier
     const static float max_speed;
-    // List of playing sounds
-    std::vector<std::shared_ptr<xd::sound>> playing_sounds;
 
     Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
         game(game),
@@ -107,13 +105,6 @@ struct Sprite::Impl {
     }
 
     void update() {
-        // Remove finished sounds
-        if (!playing_sounds.empty()) {
-            auto removed = std::remove_if(playing_sounds.begin(), playing_sounds.end(),
-                [](const std::shared_ptr<xd::sound>& s) { return s->stopped(); });
-            playing_sounds.erase(removed, playing_sounds.end());
-        }
-
         if (frame_count == 0 || finished)
             return;
 
@@ -121,10 +112,8 @@ struct Sprite::Impl {
         int frame_time = get_frame_time(*current_frame);
 
         auto audio = game.get_audio();
-        if (audio && !current_frame->sound_file.empty() && last_sound_frame != frame_index) {
-            auto sound = std::make_shared<xd::sound>(*audio, current_frame->sound_file);
-            sound->play();
-            playing_sounds.push_back(sound);
+        if (audio && current_frame->sound_file && last_sound_frame != frame_index) {
+            current_frame->sound_file->play();
             last_sound_frame = frame_index;
         }
 

@@ -11,6 +11,8 @@
 
 namespace xd {
     class asset_manager;
+    class audio;
+    class sound;
 }
 
 struct Frame {
@@ -30,8 +32,8 @@ struct Frame {
     std::shared_ptr<xd::texture> image;
     // Transparent color
     xd::vec4 transparent_color;
-    // Frame sound effect filename
-    std::string sound_file;
+    // Frame sound effect
+    std::shared_ptr<xd::sound> sound_file;
 
     Frame() noexcept : duration(-1), magnification(1.0f, 1.0f), angle(0),
         opacity(1.0f), tween_frame(false) {}
@@ -83,8 +85,8 @@ struct Sprite_Data {
     explicit Sprite_Data(xd::asset_manager& manager);
     ~Sprite_Data();
 
-    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, const std::string& filename);
-    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, rapidxml::xml_node<>& node);
+    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, const std::string& filename, xd::audio* audio);
+    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, rapidxml::xml_node<>& node, xd::audio* audio);
 };
 
 #endif
