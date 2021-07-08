@@ -795,12 +795,22 @@ void Scripting_Interface::setup_scripts() {
 
     // Image layer
     auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer");
+    image_layer_type["name"] = sol::readonly(&Image_Layer::name);
+    image_layer_type["visible"] = &Image_Layer::visible;
+    image_layer_type["opacity"] = &Image_Layer::opacity;
     image_layer_type["velocity"] = &Image_Layer::velocity;
     image_layer_type["sprite"] = sol::property(
         &Image_Layer::get_sprite_filename,
         [&](Image_Layer* layer, const std::string& filename) {
             layer->set_sprite(*game, filename);
         });
+    image_layer_type["get_property"] = &Image_Layer::get_property;
+    image_layer_type["set_property"] = &Image_Layer::set_property;
+    image_layer_type["update_opacity"] = [&](Image_Layer* layer, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Update_Layer_Command>(
+            *game, *layer, opacity, duration);
+    };
     image_layer_type["reset"] = &Image_Layer::reset;
     image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {
         layer->set_sprite(*game, filename, pose.value_or(""));
