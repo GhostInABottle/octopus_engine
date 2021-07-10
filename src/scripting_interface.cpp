@@ -565,6 +565,7 @@ void Scripting_Interface::setup_scripts() {
         }
     );
     object_type["sprite_magnification"] = sol::property(&Map_Object::get_sprite_magnification);
+    object_type["sfx_attenuation"] = sol::property(&Map_Object::is_sound_attenuation_enabled, &Map_Object::set_sound_attenuation_enabled);
     object_type["get_property"] = &Map_Object::get_property;
     object_type["set_property"] = &Map_Object::set_property;
     object_type["move_to"] = sol::overload(

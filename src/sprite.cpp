@@ -6,10 +6,12 @@
 #include "../include/object_layer_renderer.hpp"
 #include "../include/image_layer.hpp"
 #include "../include/game.hpp"
+#include "../include/configurations.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/string.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
+#include "../include/xd/graphics.hpp"
 #include <algorithm>
 #include <iostream>
 #include <optional>
@@ -61,6 +63,10 @@ struct Sprite::Impl {
     float speed;
     // Maximum possible speed modifier
     const static float max_speed;
+    // Volume of the sprite's sound effects
+    float sfx_volume;
+    // How fast sound volume falls off
+    float sound_attenuation_factor;
 
     Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
         game(game),
@@ -75,7 +81,9 @@ struct Sprite::Impl {
         paused(false),
         pause_start(-1),
         last_sound_frame(-1),
-        speed(1.0f)
+        speed(1.0f),
+        sfx_volume(1.0f),
+        sound_attenuation_factor(Configurations::get<float>("audio.sound-attenuation-factor"))
     {
         set_default_pose();
     }
@@ -113,6 +121,7 @@ struct Sprite::Impl {
 
         auto audio = game.get_audio();
         if (audio && current_frame->sound_file && last_sound_frame != frame_index) {
+            current_frame->sound_file->set_volume(sfx_volume);
             current_frame->sound_file->play();
             last_sound_frame = frame_index;
         }
@@ -289,6 +298,19 @@ struct Sprite::Impl {
             }
         }
     }
+
+    void update_sound_attenuation(Map_Object& object) {
+        auto player_rect = game.get_player()->get_bounding_box();
+        auto player_pos = game.get_player()->get_real_position();
+        player_pos += xd::vec2(player_rect.w / 2, player_rect.h / 2);
+        auto object_rect = object.get_bounding_box();
+        auto object_pos = object.get_real_position();
+        object_pos += xd::vec2(object_rect.w / 2, object_rect.h / 2);
+
+        auto distance = xd::length(object_pos - player_pos);
+        // Sound is 1 within [factor] pixels, then falls off based on distance
+        sfx_volume = std::min(1.0f, sound_attenuation_factor / (1.0f + distance));
+    }
 };
 
 const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
@@ -338,7 +360,10 @@ void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, con
         image_layer.position);
 }
 
-void Sprite::update(Map_Object&) {
+void Sprite::update(Map_Object& object) {
+    if (object.is_sound_attenuation_enabled()) {
+        pimpl->update_sound_attenuation(object);
+    }
     pimpl->update();
 }
 
@@ -431,4 +456,12 @@ void Sprite::set_speed(float speed) {
 
 bool Sprite::is_eight_directional() const {
     return pimpl->data->has_diagonal_directions;
+}
+
+float Sprite::get_sfx_volume() const {
+    return pimpl->sfx_volume;
+}
+
+void Sprite::set_sfx_volume(float volume) {
+    pimpl->sfx_volume = volume;
 }

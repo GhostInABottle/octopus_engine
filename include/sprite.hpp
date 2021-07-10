@@ -62,6 +62,10 @@ public:
     void set_speed(float speed);
     // Does the sprite support diagonal directions?
     bool is_eight_directional() const;
+    // Get the volume of the sprite's sound effects (0 to 1)
+    float get_sfx_volume() const;
+    // Set the volume of the sprite's sound effects (0 to 1)
+    void set_sfx_volume(float volume);
 private:
     struct Impl;
     friend struct Impl;

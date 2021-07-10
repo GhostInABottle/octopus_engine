@@ -359,6 +359,14 @@ public:
     void run_leave_script() {
         run_script(leave_script);
     }
+    // Get whether sprite sfx attenuation is enabled
+    bool is_sound_attenuation_enabled() const {
+        return sound_attenuation_enabled;
+    }
+    // Set whether sprite sfx attenuation is enabled
+    void set_sound_attenuation_enabled(bool enabled) {
+        sound_attenuation_enabled = enabled;
+    }
     // Serialize object to TMX data
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load the object from TMX data
@@ -446,6 +454,8 @@ private:
     std::shared_ptr<Sprite> sprite;
     // Object speed
     float speed;
+    // Whether the object's sprite sfx volume goes down based on distance to player
+    bool sound_attenuation_enabled;
     // Run a script
     void run_script(const std::string& script);
     // Load the script and add the preamble

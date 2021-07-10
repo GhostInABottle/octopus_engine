@@ -45,7 +45,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         collision_area(nullptr),
         triggered_object(nullptr),
         draw_order(Draw_Order::NORMAL),
-        speed(1.0f) {
+        speed(1.0f),
+        sound_attenuation_enabled(false) {
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
@@ -338,7 +339,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (auto width_node = node.first_attribute("width"))
         object_ptr->size.x = std::stof(width_node->value());
     if (auto height_node = node.first_attribute("height"))
-        object_ptr->size.y= std::stof(height_node->value());
+        object_ptr->size.y = std::stof(height_node->value());
 
     if (auto gid_node = node.first_attribute("gid"))
         object_ptr->gid = std::stoi(gid_node->value());
@@ -386,7 +387,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_touch_script(properties["touch-script"]);
 
     if (properties.contains("leave-script"))
-        object_ptr->set_leave_script (properties["leave-script"]);
+        object_ptr->set_leave_script(properties["leave-script"]);
 
     if (properties.contains("player-facing"))
         object_ptr->set_player_facing(string_utilities::string_to_bool(properties["player-facing"]));
@@ -446,8 +447,17 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             object_ptr->set_draw_order(Draw_Order::BELOW);
         else if (order == "ABOVE")
             object_ptr->set_draw_order(Draw_Order::ABOVE);
-        else if (order != "NORMAL") 
+        else if (order != "NORMAL")
             LOGGER_W << "Unknown object draw order '" << order << "' - defaulting to NORMAL";
+    }
+
+    if (properties.contains("sfx-attenuation")) {
+        auto attenuation{properties["sfx-attenuation"]};
+        string_utilities::capitalize(attenuation);
+        if (attenuation == "TRUE")
+            object_ptr->set_sound_attenuation_enabled(true);
+        else if (attenuation != "FALSE")
+            LOGGER_W << "Invalid object sfx-attenuation value '" << attenuation << "' - defaulting to false";
     }
 
     object_ptr->set_pose();

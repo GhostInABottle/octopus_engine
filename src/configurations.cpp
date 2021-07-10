@@ -51,6 +51,7 @@ void Configurations::load_defaults() {
     defaults["audio.choice-confirm-sfx"] = std::string();
     defaults["audio.choice-cancel-sfx"] = std::string();
     defaults["audio.mute-on-pause"] = true;
+    defaults["audio.sound-attenuation-factor"] = 50.0f;
 
     defaults["font.default"] = std::string();
     defaults["font.bold"] = std::string();
