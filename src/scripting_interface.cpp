@@ -483,6 +483,15 @@ void Scripting_Interface::setup_scripts() {
             {"receiver", Map_Object::Passthrough_Type::RECEIVER},
             {"both", Map_Object::Passthrough_Type::BOTH}
         });
+    // Outline conditions
+    lua.new_enum<Map_Object::Outline_Condition>("Outline_Condition",
+        {
+            {"none", Map_Object::Outline_Condition::NONE},
+            {"touched", Map_Object::Outline_Condition::TOUCHED},
+            {"solid", Map_Object::Outline_Condition::SOLID},
+            {"script", Map_Object::Outline_Condition::SCRIPT},
+            {"never", Map_Object::Outline_Condition::NEVER},
+        });
 
     // Map object
     auto object_type = lua.new_usertype<Map_Object>("Map_Object");
@@ -531,6 +540,7 @@ void Scripting_Interface::setup_scripts() {
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
     object_type["outlined"] = sol::property(&Map_Object::is_outlined, &Map_Object::set_outlined);
+    object_type["outline_conditions"] = sol::property(&Map_Object::get_outline_conditions, &Map_Object::set_outline_conditions);
     object_type["outline_color"] = sol::property(&Map_Object::get_outline_color, &Map_Object::set_outline_color);
     object_type["outlined_object"] = sol::property(
         [&](Map_Object* object) {
