@@ -116,11 +116,13 @@ struct Sprite::Impl {
         if (frame_count == 0 || finished)
             return;
 
-        Frame* current_frame = &pose->frames[frame_index];
+        auto current_frame = &pose->frames[frame_index];
         int frame_time = get_frame_time(*current_frame);
 
         auto audio = game.get_audio();
-        if (audio && current_frame->sound_file && last_sound_frame != frame_index) {
+        auto play_sfx = audio && current_frame->sound_file
+            && (last_sound_frame != frame_index || current_frame->sound_file->stopped());
+        if (play_sfx) {
             current_frame->sound_file->set_volume(sfx_volume);
             current_frame->sound_file->play();
             last_sound_frame = frame_index;
@@ -310,6 +312,10 @@ struct Sprite::Impl {
         auto distance = xd::length(object_pos - player_pos);
         // Sound is 1 within [factor] pixels, then falls off based on distance
         sfx_volume = std::min(1.0f, sound_attenuation_factor / (1.0f + distance));
+        auto current_frame = &pose->frames[frame_index];
+        if (current_frame->sound_file && current_frame->sound_file->playing()) {
+            current_frame->sound_file->set_volume(sfx_volume);
+        }
     }
 };
 
