@@ -99,12 +99,25 @@ void Scripting_Interface::setup_scripts() {
         });
     };
 
+    auto wait_func = [](Game& game, const sol::protected_function& func) {
+        auto& scheduler = game.get_current_scripting_interface()->scheduler;
+        scheduler.yield([&game, func]() {
+            auto result = func();
+            if (!result.valid()) {
+                sol::error err = result;
+                throw err;
+            }
+            return result.get_type() != sol::type::lua_nil
+                && (result.get_type() != sol::type::boolean || result.get<bool>());
+        });
+    };
+
     auto& lua = vm.lua_state();
 
-    lua["wait"] = sol::yielding([&](int duration) {
-        wait(*game, duration);
-        }
-    );
+    lua["wait"] = sol::yielding(sol::overload(
+        [&](int duration) { wait(*game, duration); },
+        [&](const sol::protected_function& func) { wait_func(*game, func); }
+    ));
 
     auto filesystem = lua["filesystem"].get_or_create<sol::table>();
     filesystem["exists"] = &file_utilities::file_exists;
