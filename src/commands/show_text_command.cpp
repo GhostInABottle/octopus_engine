@@ -178,9 +178,10 @@ struct Show_Text_Command::Impl : Timed_Command {
             pressed_dir = Direction::UP;
 
         if (pressed_dir != Direction::NONE) {
+            auto ticks = game.is_paused() ? game.window_ticks() : game.ticks();
             if (pressed_dir == pressed_direction) {
                 static int delay = Configurations::get<int>("text.choice-press-delay");
-                if (game.ticks() - press_start > delay) {
+                if (ticks - press_start > delay) {
                     pressed_direction = Direction::NONE;
                     press_start = 0;
                     dir = pressed_dir;
@@ -188,7 +189,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             }
             else {
                 pressed_direction = pressed_dir;
-                press_start = game.ticks();
+                press_start = ticks;
             }
         }
         else {
