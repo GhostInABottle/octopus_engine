@@ -108,7 +108,8 @@ xd::window::window(const std::string& title, int width, int height, const window
     m_joystick_enabled = options.enable_joystick;
     m_gamepad_detection = options.gamepad_detection;
     m_axis_as_dpad = options.axis_as_dpad;
-    m_axis_sensitivity = options.axis_sensitivity;
+    m_stick_sensitivity = options.stick_sensitivity;
+    m_trigger_sensitivity = options.trigger_sensitivity;
 
     for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
         add_joystick(joystick);
@@ -128,7 +129,8 @@ bool xd::window::joystick_is_gamepad(int id) const {
 
 void xd::window::add_joystick(int id) {
     if (glfwJoystickPresent(id)) {
-        for (int button = 0; button < GLFW_GAMEPAD_BUTTON_LAST + 1; ++button) {
+        // + 3 because we add two pseudo-buttons for the triggers
+        for (int button = 0; button < GLFW_GAMEPAD_BUTTON_LAST + 3; ++button) {
             m_joystick_states[id].buttons[button] = GLFW_RELEASE;
         }
         for (int axis = 0; axis < GLFW_GAMEPAD_AXIS_LAST + 1; ++axis) {
@@ -253,6 +255,10 @@ void xd::window::update_joysticks()
             auto button_state = glfwGetJoystickButtons(0, &button_count);
             auto axis_state = glfwGetJoystickAxes(0, &axes_count);
 
+            if (button_count > GLFW_GAMEPAD_BUTTON_LAST + 1) {
+                button_count = GLFW_GAMEPAD_BUTTON_LAST + 1;
+            }
+
             for (int button = 0; button < button_count; button++)
             {
                 buttons[button] = button_state[button];
@@ -274,13 +280,13 @@ void xd::window::update_joysticks()
 
         if (m_axis_as_dpad) {
             buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] |=
-                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -m_axis_sensitivity);
+                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -m_stick_sensitivity);
             buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT] |=
-                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= m_axis_sensitivity);
+                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= m_stick_sensitivity);
             buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN] |=
-                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= m_axis_sensitivity);
+                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= m_stick_sensitivity);
             buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT] |=
-                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -m_axis_sensitivity);
+                static_cast<unsigned char>(axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -m_stick_sensitivity);
         }
 
         for (int button = 0; button < button_count; button++) {
@@ -289,6 +295,21 @@ void xd::window::update_joysticks()
                 joystick_state.prev_buttons[button] = buttons[button];
             }
         }
+
+        // Triggers as buttons
+        process_trigger(GLFW_GAMEPAD_AXIS_LEFT_TRIGGER, joystick_state, joystick_id);
+        process_trigger(GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER, joystick_state, joystick_id);
+    }
+}
+
+void xd::window::process_trigger(int axis, xd::window::joystick_state& state, int joystick_id) {
+    int index = axis == GLFW_GAMEPAD_AXIS_LEFT_TRIGGER
+        ? GAMEPAD_BUTTON_LEFT_TRIGGER_INDEX
+        : GAMEPAD_BUTTON_RIGHT_TRIGGER_INDEX;
+    state.buttons[index] = static_cast<unsigned char>(state.axes[axis] >= m_trigger_sensitivity);
+    if (state.buttons[index] != state.prev_buttons[index]) {
+        on_input(input_type::INPUT_GAMEPAD, index, state.buttons[index], joystick_id);
+        state.prev_buttons[index] = state.buttons[index];
     }
 }
 

@@ -242,6 +242,8 @@ namespace xd
     extern const key GAMEPAD_BUTTON_Y;
     extern const key GAMEPAD_BUTTON_LEFT_BUMPER;
     extern const key GAMEPAD_BUTTON_RIGHT_BUMPER;
+    extern const key GAMEPAD_BUTTON_LEFT_TRIGGER;
+    extern const key GAMEPAD_BUTTON_RIGHT_TRIGGER;
     extern const key GAMEPAD_BUTTON_BACK;
     extern const key GAMEPAD_BUTTON_START;
     extern const key GAMEPAD_BUTTON_GUIDE;
@@ -257,6 +259,8 @@ namespace xd
     extern const key GAMEPAD_AXIS_RIGHT_Y;
     extern const key GAMEPAD_AXIS_LEFT_TRIGGER;
     extern const key GAMEPAD_AXIS_RIGHT_TRIGGER;
+    extern const int GAMEPAD_BUTTON_LEFT_TRIGGER_INDEX;
+    extern const int GAMEPAD_BUTTON_RIGHT_TRIGGER_INDEX;
 }
 
 // specialize hash<> for xd::key

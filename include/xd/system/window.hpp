@@ -145,7 +145,8 @@ namespace xd
         bool m_joystick_enabled;
         bool m_gamepad_detection;
         bool m_axis_as_dpad;
-        float m_axis_sensitivity;
+        float m_stick_sensitivity;
+        float m_trigger_sensitivity;
         // stored character input
         std::string m_character_buffer;
 
@@ -178,8 +179,8 @@ namespace xd
         // joystick/gamepad state
         struct joystick_state {
             float axes[6];
-            unsigned char buttons[15];
-            unsigned char prev_buttons[15];
+            unsigned char buttons[17];
+            unsigned char prev_buttons[17];
         };
 
         std::unordered_map<int, joystick_state> m_joystick_states;
@@ -192,6 +193,7 @@ namespace xd
 
         // private functions
         void update_joysticks();
+        void process_trigger(int axis, joystick_state& state, int joystick_id);
     };
 }
 

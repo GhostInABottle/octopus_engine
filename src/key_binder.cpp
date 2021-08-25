@@ -105,6 +105,8 @@ Key_Binder::Key_Binder(Game& game)
     keys_for_name["GAMEPAD-RIGHT"] = { xd::GAMEPAD_BUTTON_DPAD_RIGHT };
     keys_for_name["GAMEPAD-DOWN"] = { xd::GAMEPAD_BUTTON_DPAD_DOWN };
     keys_for_name["GAMEPAD-LEFT"] = { xd::GAMEPAD_BUTTON_DPAD_LEFT };
+    keys_for_name["GAMEPAD-LT"] = { xd::GAMEPAD_BUTTON_LEFT_TRIGGER };
+    keys_for_name["GAMEPAD-RT"] = { xd::GAMEPAD_BUTTON_RIGHT_TRIGGER };
     // Map the other side of the relationship
     for (auto& [name, keys] : keys_for_name) {
         for (auto& key : keys) {

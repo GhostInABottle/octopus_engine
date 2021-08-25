@@ -275,7 +275,8 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
                 Configurations::get<bool>("controls.gamepad-enabled"),
                 Configurations::get<bool>("controls.gamepad-detection"),
                 Configurations::get<bool>("controls.axis-as-dpad"),
-                Configurations::get<float>("controls.axis-sensitivity"),
+                Configurations::get<float>("controls.stick-sensitivity"),
+                Configurations::get<float>("controls.trigger-sensitivity"),
                 8, // depth
                 0, // stencil
                 0, // antialiasing

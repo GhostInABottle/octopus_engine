@@ -69,7 +69,8 @@ void Configurations::load_defaults() {
     defaults["controls.gamepad-detection"] = true;
     defaults["controls.gamepad-number"] = -1;
     defaults["controls.axis-as-dpad"] = true;
-    defaults["controls.axis-sensitivity"] = 0.5f;
+    defaults["controls.stick-sensitivity"] = 0.5f;
+    defaults["controls.trigger-sensitivity"] = 0.5f;
     defaults["controls.action-button"] = std::string("a");
     defaults["controls.cancel-button"] = std::string("b");
     defaults["controls.pause-button"] = std::string("pause");
