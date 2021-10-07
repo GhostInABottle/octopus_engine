@@ -28,7 +28,8 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color"))),
     background_visible(false),
     background_color{hex_to_color(Configurations::get<std::string>("text.background-color"))},
-    paused_game_canvas(game.is_paused()) {}
+    paused_game_canvas(game.is_paused()),
+    last_camera_position(0.0f, 0.0f) {}
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(game, position) {
     camera_relative = false;
@@ -170,7 +171,7 @@ void Canvas::link_font(const std::string& font_type, const std::string& font_fil
     }
 }
 
-bool Canvas::should_update() const noexcept {
+bool Canvas::should_update() const {
     if (!visible) return false;
     return game.is_paused() == paused_game_canvas;
 }
@@ -187,7 +188,7 @@ bool Canvas::should_redraw(int time) const {
     return redraw_needed || redraw_children || time_to_update;
 }
 
-void Canvas::mark_as_drawn(int time) noexcept {
+void Canvas::mark_as_drawn(int time) {
     redraw_needed = false;
     last_drawn_time = time;
 }

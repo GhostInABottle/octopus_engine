@@ -70,6 +70,7 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
         camera.disable_scissor_test();
     }
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     batch.add(canvas.get_fbo_texture(), 0, 0, xd::vec4(1.0f));
     camera.update_viewport();
     xd::transform_geometry geometry;
@@ -80,7 +81,16 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
             -1, 1 // near, far
             )
     );
-    geometry.model_view().push(xd::mat4());
+
+    geometry.model_view().identity();
+    if (!canvas.is_camera_relative()) {
+        // Since the camera might have moved since last draw, we need to update
+        // the position of non-camera-relative canvases
+        auto camera_pos = camera.get_position();
+        auto last_pos = canvas.get_last_camera_position();
+        geometry.model_view().translate(last_pos.x - camera_pos.x, camera_pos.y - last_pos.y, 0.0f);
+    }
+    
     draw(geometry.mvp(), root);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -90,7 +100,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
         canvas.mark_as_drawn(game.window_ticks());
         return;
     }
-    // Draw text background
+
     render_background(canvas, parent);
 
     // Drawing to a framebuffer that updates less frequently improves performance,
@@ -107,25 +117,29 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
         || (!is_text && (individual || !fbo_supported));
 
     if (redraw) {
-        // Setup framebuffer for top parent canvas
         if (using_fbo) {
             setup_framebuffer(canvas);
+            canvas.set_last_camera_position(camera.get_position());
         }
+
         // Render canvas and children
         if (canvas.get_type() == Canvas::Type::TEXT) {
             render_text(canvas, parent);
         } else {
             render_image(canvas, parent);
         }
+
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
             auto& child = *canvas.get_child(i);
             render_canvas(child, &canvas, &root_parent);
         }
+
         // Mark children and parent as drawn. Children are marked separately
         // to avoid changing parent's should_draw while iterating children
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
             canvas.get_child(i)->mark_as_drawn(game.window_ticks());
         }
+
         if (!parent) {
             canvas.mark_as_drawn(game.window_ticks());
             if (!batch.empty()) {
@@ -133,6 +147,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
             }
         }
     }
+
     if (using_fbo) {
         render_framebuffer(canvas, root_parent);
     }
