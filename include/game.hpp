@@ -157,6 +157,7 @@ public:
     std::string character_input() const { return window->character_input(); }
     // Get printable name for a key
     std::string get_key_name(const std::string& physical_key) const;
+    xd::input_type get_last_input_type() const { return window->last_input_type(); }
     // Run a script
     void run_script(const std::string& script);
     // Run a script file

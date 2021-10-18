@@ -773,9 +773,6 @@ void Game::load_map(const std::string& filename) {
     player->set_outlining_object(nullptr);
     player->clear_linked_objects();
     auto start_pos{pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position()};
-    auto bounding_box = player->get_bounding_box();
-    start_pos.x -= bounding_box.x;
-    start_pos.y -= bounding_box.y;
     player->set_position(start_pos);
     player->face(pimpl->next_direction);
     map->add_object(player);

@@ -59,6 +59,22 @@ namespace xd
             return !(*this == other);
         }
 
+        xd::vec2 position() const {
+            return xd::vec2{ x, y };
+        }
+        void position(xd::vec2 new_pos) {
+            x = new_pos.x;
+            y = new_pos.y;
+        }
+
+        xd::vec2 size() const {
+            return xd::vec2{ w, h };
+        }
+        void size(xd::vec2 new_size) {
+            w = new_size.x;
+            h = new_size.y;
+        }
+
         float x, y, w, h;
     };
 }

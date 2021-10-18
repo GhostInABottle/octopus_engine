@@ -474,6 +474,10 @@ void Scripting_Interface::setup_scripts() {
     rect_type["y"] = &xd::rect::y;
     rect_type["w"] = &xd::rect::w;
     rect_type["h"] = &xd::rect::h;
+    rect_type["position"] = sol::property(sol::resolve<xd::vec2() const>(&xd::rect::position),
+        sol::resolve<void (xd::vec2)>(&xd::rect::position));
+    rect_type["size"] = sol::property(sol::resolve<xd::vec2() const>(&xd::rect::size),
+        sol::resolve<void(xd::vec2)>(&xd::rect::size));
     rect_type["intersects"] = &xd::rect::intersects;
 
     // Object draw order
@@ -482,20 +486,23 @@ void Scripting_Interface::setup_scripts() {
             {"below", Map_Object::Draw_Order::BELOW},
             {"normal", Map_Object::Draw_Order::NORMAL},
             {"above", Map_Object::Draw_Order::ABOVE}
-        });
+        }
+    );
     // Script context
     lua.new_enum<Map_Object::Script_Context>("Script_Context",
         {
             {"global", Map_Object::Script_Context::GLOBAL},
             {"map", Map_Object::Script_Context::MAP}
-        });
+        }
+    );
     // Passthrough type
     lua.new_enum<Map_Object::Passthrough_Type>("Passthrough_Type",
         {
             {"initiator", Map_Object::Passthrough_Type::INITIATOR},
             {"receiver", Map_Object::Passthrough_Type::RECEIVER},
             {"both", Map_Object::Passthrough_Type::BOTH}
-        });
+        }
+    );
     // Outline conditions
     lua.new_enum<Map_Object::Outline_Condition>("Outline_Condition",
         {
@@ -504,7 +511,8 @@ void Scripting_Interface::setup_scripts() {
             {"solid", Map_Object::Outline_Condition::SOLID},
             {"script", Map_Object::Outline_Condition::SCRIPT},
             {"never", Map_Object::Outline_Condition::NEVER},
-        });
+        }
+    );
 
     // Map object
     auto object_type = lua.new_usertype<Map_Object>("Map_Object");
@@ -680,6 +688,15 @@ void Scripting_Interface::setup_scripts() {
         return si->register_command<Fade_Music_Command>(*game, volume, duration);
     };
 
+    // Input type
+    lua.new_enum<xd::input_type>("Input_Type",
+        {
+            {"keyboard", xd::input_type::INPUT_KEYBOARD},
+            {"mouse", xd::input_type::INPUT_MOUSE},
+            {"gamepad", xd::input_type::INPUT_GAMEPAD}
+        }
+    );
+
     // Game object
     auto game_type = lua.new_usertype<Game>("Game");
     game_type["width"] = sol::property(&Game::window_width);
@@ -703,6 +720,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
+    game_type["last_input_type"] = sol::property(&Game::get_last_input_type);
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
     game_type["gamepad_name"] = sol::property(&Game::get_gamepad_name);
@@ -716,7 +734,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["exit"] = &Game::exit;
     game_type["pause"] = &Game::pause;
     game_type["resume"] = [](Game* game, std::optional<std::string> script) {
-        return game->resume(script.value_or(""));
+        game->resume(script.value_or(""));
     };
     game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
     game_type["triggered"] = sol::overload(
@@ -981,7 +999,8 @@ void Scripting_Interface::setup_scripts() {
             {"text", Token_Type::TEXT},
             {"opening_tag", Token_Type::OPENING_TAG},
             {"closing_tag", Token_Type::CLOSING_TAG}
-        });
+        }
+    );
 
     // Parsed text token
     auto token_type = lua.new_usertype<Token>("Token");

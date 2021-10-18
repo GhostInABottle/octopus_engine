@@ -110,6 +110,7 @@ namespace xd
         std::optional<std::string> first_joystick_name() const;
         std::unordered_map<int, std::string> joystick_names() const;
         void reset_joystick_states();
+        input_type last_input_type() const { return m_last_input_type; }
 
         event_link bind_input_event(const std::string& event_name, input_event_callback_t callback,
                 const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND) {
@@ -149,6 +150,7 @@ namespace xd
         float m_trigger_sensitivity;
         // stored character input
         std::string m_character_buffer;
+        input_type m_last_input_type;
 
         // keep track of ticks
         std::uint32_t m_current_ticks;

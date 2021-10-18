@@ -50,9 +50,6 @@ Map_Object::Map_Object(Game& game, const std::string& name,
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
-    const auto bounding_box = get_bounding_box();
-    position.x -= bounding_box.x;
-    position.y -= bounding_box.y;
     set_speed(1.0f);
 }
 

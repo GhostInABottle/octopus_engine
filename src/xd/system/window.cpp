@@ -43,6 +43,7 @@ xd::window::window(const std::string& title, int width, int height, const window
     , m_height(height)
     , m_windowed_pos(0, 0)
     , m_windowed_size(0, 0)
+    , m_last_input_type(input_type::INPUT_KEYBOARD)
     , m_in_update(false)
     , m_tick_handler_counter(0)
     , m_tick_handler_interval(0)
@@ -176,6 +177,8 @@ void xd::window::on_input(input_type type, int key, int action, int device_id)
     } else {
         m_input_events["key_up"](args);
     }
+
+    m_last_input_type = type;
 }
 
 void xd::window::on_character_input(unsigned int codepoint) {
