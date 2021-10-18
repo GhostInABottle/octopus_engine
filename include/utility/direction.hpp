@@ -28,7 +28,7 @@ inline xd::vec2 direction_to_vector(Direction dir) noexcept {
         1.0f : (dir & Direction::LEFT) != Direction::NONE ? -1.0f : 0.0f;
     const float y = (dir & Direction::DOWN) != Direction::NONE ?
         1.0f : (dir & Direction::UP) != Direction::NONE ? -1.0f : 0.0f;
-    return xd::vec2(x, y);
+    return xd::normalize(xd::vec2(x, y));
 }
 
 // Convert a 2D vector to a direction

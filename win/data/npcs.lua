@@ -7,8 +7,8 @@ return {
                 keypoints = {
                     {
                         map = 'data/test_tiled.tmx',
-                        x = 70,
-                        y = 25,
+                        x = 68,
+                        y = 20,
                         sequential = true,
                         day = 'odd',
                         timestamp = '0:0:3',
@@ -17,7 +17,7 @@ return {
                             {
                                 type = 'move',
                                 x = 0,
-                                y = 200,
+                                y = 206,
                             },
                             {
                                 type = 'wait',
@@ -39,7 +39,7 @@ return {
                             {
                                 type = 'teleport',
                                 x = 0,
-                                y = 200,
+                                y = 206,
                                 map = 'data/test_tiled2.tmx',
                             },
                         },
@@ -47,7 +47,7 @@ return {
                     {
                         map = 'data/test_tiled2.tmx',
                         x = 0,
-                        y = 200,
+                        y = 206,
                         sequential = true,
                         direction = RIGHT,
                     },

@@ -109,18 +109,12 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     if (bounding_box.w < 1 || bounding_box.h < 1)
         return result;
 
-    const float x_change = (direction & Direction::RIGHT) != Direction::NONE ?
-            speed : (direction & Direction::LEFT) != Direction::NONE ?
-            -speed : 0.0f;
-    const float y_change = (direction & Direction::DOWN) != Direction::NONE ?
-            speed : (direction & Direction::UP) != Direction::NONE ?
-            -speed : 0.0f;
-    xd::rect this_box(
-        position.x + x_change + bounding_box.x,
-        position.y + y_change + bounding_box.y,
-        bounding_box.w,
-        bounding_box.h
-    );
+    const auto movement_vector = direction_to_vector(direction);
+    const auto change = movement_vector * speed;
+    xd::rect this_box{
+        position + bounding_box.position() + change,
+        bounding_box.size()
+    };
 
     bool check_tile_collision = check_type & Collision_Check_Type::TILE;
 
@@ -136,8 +130,9 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             const auto box = other_object->get_bounding_box();
             if (box.w < 1 || box.h < 1)
                 continue;
+
             const auto other_pos = other_object->get_position();
-            xd::rect object_box{other_pos.x + box.x, other_pos.y + box.y, box.w, box.h};
+            xd::rect object_box { other_pos + box.position(), box.size() };
             const auto intersects = this_box.intersects(object_box);
 
             // Special case for skipping tile collision detection

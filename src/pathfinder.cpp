@@ -98,9 +98,6 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
     }
     auto dir = facing_direction(parent.pos, pos, true);
     auto obj_pos = parent.pos;
-    auto obj_box = object.get_bounding_box();
-    obj_pos.x -= obj_box.x;
-    obj_pos.y -= obj_box.y;
     auto collision = map.passable(object, dir, obj_pos, static_cast<float>(tile_width), check_type);
     if (collision.passable()) {
         int g = parent.g + 1;

@@ -86,10 +86,13 @@ struct Move_Object_To_Command::Impl {
 
         if (index <= max_index) {
             auto collision = move_object(path[index]);
-            if (collision.passable())
-                pixels += object.get_fps_independent_speed();
-            else
+            if (collision.passable()) {
+                // Diagonal paths are normalized, so we multiply by 1 / sqrt(1 + 1)
+                const float correction = is_diagonal(path[index]) ? 0.70710678f : 1.0f;
+                pixels += object.get_fps_independent_speed() * correction;
+            } else {
                 blocked = true;
+                }
 
             if ((complete = check_completion(stopped))) {
                 object.set_state(old_state);

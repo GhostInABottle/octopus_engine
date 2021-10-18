@@ -126,13 +126,13 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         if (change_facing) {
             if (sprite && sprite->is_eight_directional()) {
                 direction = move_dir;
-            } else if (check_close(change.y, -pixels)) {
+            } else if (change.y < 0) {
                 direction = Direction::UP;
-            } else if (check_close(change.y, pixels)) {
+            } else if (change.y > 0) {
                 direction = Direction::DOWN;
-            } else if (check_close(change.x, -pixels)) {
+            } else if (change.x < 0) {
                 direction = Direction::LEFT;
-            } else if (check_close(change.x, pixels)) {
+            } else if (change.x > 0) {
                 direction = Direction::RIGHT;
             } else {
                 direction = move_dir;
