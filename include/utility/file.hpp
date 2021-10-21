@@ -3,8 +3,13 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 namespace file_utilities {
+    // Open the file with the given UTF8 name for reading
+    std::ifstream open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in);
+    // Open the file with the given UTF8 name for writing
+    std::ofstream open_ofstream(std::string filename, std::ios_base::openmode mode = std::ios_base::out);
     // Check if a file exists
     bool file_exists(const std::string& filename);
     // Read file content into a string

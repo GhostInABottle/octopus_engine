@@ -7,32 +7,45 @@
 #include "string.hpp"
 
 // Combine two directions
-inline Direction operator|(Direction a, Direction b) noexcept {
+constexpr Direction operator|(Direction a, Direction b) noexcept {
     return static_cast<Direction>(static_cast<int>(a) | static_cast<int>(b));
 }
 
 // Check if a direction is set
-inline Direction operator&(Direction a, Direction b) noexcept {
+constexpr Direction operator&(Direction a, Direction b) noexcept {
     return static_cast<Direction>(static_cast<int>(a) & static_cast<int>(b));
 }
 
 // Get the opposite direction
-inline constexpr Direction opposite_direction(Direction dir) noexcept {
+constexpr Direction opposite_direction(Direction dir) noexcept {
     const int dir_int = static_cast<int>(dir);
     return static_cast<Direction>((dir_int + dir_int * 3) % 15);
 }
 
+// Check if it's a diagonal direction
+constexpr bool is_diagonal(Direction dir) noexcept {
+    const Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
+    return (dir & dir_minus_1) != Direction::NONE;
+}
+
 // Convert a direction to a normalized 2D vector
-inline xd::vec2 direction_to_vector(Direction dir) noexcept {
+constexpr xd::vec2 direction_to_vector(Direction dir) noexcept {
     const float x = (dir & Direction::RIGHT) != Direction::NONE ?
         1.0f : (dir & Direction::LEFT) != Direction::NONE ? -1.0f : 0.0f;
     const float y = (dir & Direction::DOWN) != Direction::NONE ?
         1.0f : (dir & Direction::UP) != Direction::NONE ? -1.0f : 0.0f;
-    return xd::normalize(xd::vec2(x, y));
+    const xd::vec2 result{ x, y };
+
+    if (is_diagonal(dir)) {
+        const float one_over_sqrt_2 = 0.70710678118f;
+        return result * one_over_sqrt_2;
+    }
+
+    return result;
 }
 
 // Convert a 2D vector to a direction
-inline Direction vector_to_direction(xd::vec2 vec) noexcept {
+constexpr Direction vector_to_direction(xd::vec2 vec) noexcept {
     auto dir = Direction::NONE;
     if (vec.x > 0)
         dir = dir | Direction::RIGHT;
@@ -69,6 +82,7 @@ inline std::string direction_to_string(Direction dir) {
     return direction_names[direction_int];
 }
 
+// Map a direction name to a direction
 inline Direction string_to_direction(std::string str) {
     auto dir = Direction::NONE;
     if (str.empty()) return dir;
@@ -93,7 +107,7 @@ inline Direction string_to_direction(std::string str) {
 }
 
 // Get direction for object at pos1 to face pos2
-inline Direction facing_direction(xd::vec2 pos1, xd::vec2 pos2, bool diagonal = false) noexcept {
+constexpr Direction facing_direction(xd::vec2 pos1, xd::vec2 pos2, bool diagonal = false) noexcept {
     float x_change = pos2.x - pos1.x;
     float y_change = pos2.y - pos1.y;
     if (!diagonal) {
@@ -127,16 +141,12 @@ inline Direction facing_direction(xd::vec2 pos1, xd::vec2 pos2, bool diagonal = 
 
     return direction;
 }
-inline Direction facing_direction(xd::ivec2 pos1, xd::ivec2 pos2) {
+
+constexpr Direction facing_direction(xd::ivec2 pos1, xd::ivec2 pos2) {
     return facing_direction(xd::vec2(pos1.x, pos1.y), xd::vec2(pos2.x, pos2.y));
 }
 
-inline bool is_diagonal(Direction dir) noexcept {
-    const Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
-    return (dir & dir_minus_1) != Direction::NONE;
-}
-
-inline Direction diagonal_to_four_directions(Direction dir) {
+constexpr Direction diagonal_to_four_directions(Direction dir) {
     if ((dir & Direction::UP) != Direction::NONE)
         return Direction::UP;
     else if ((dir & Direction::DOWN) != Direction::NONE)

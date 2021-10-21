@@ -119,6 +119,7 @@ HEADERS  += main_window.hpp \
     ../include/vendor/rapidxml.hpp \
     ../include/vendor/rapidxml_print.hpp \
     ../include/vendor/unidata.h \
+    ../include/vendor/utf8conv.h \
     ../include/camera.hpp \
     ../include/canvas.hpp \
     ../include/canvas_renderer.hpp \

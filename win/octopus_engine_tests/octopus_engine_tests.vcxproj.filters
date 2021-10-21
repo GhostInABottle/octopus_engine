@@ -692,5 +692,8 @@
     <ClInclude Include="..\..\include\commands\timed_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\vendor\utf8conv.h">
+      <Filter>Header Files\vendor</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -158,9 +158,9 @@ struct Game::Impl {
         LOGGER_I << "Running game startup scripts";
         std::string scripts_list =
             Configurations::get<std::string>("startup.scripts-list");
-        file_utilities::normalize_slashes(scripts_list);
+
         if (!scripts_list.empty()) {
-            std::ifstream scripts_file(scripts_list);
+           auto scripts_file = file_utilities::open_ifstream(scripts_list);
             if (scripts_file) {
                 std::string filename;
                 while (std::getline(scripts_file, filename)) {
@@ -710,12 +710,12 @@ std::string Game::get_save_directory() const {
 void Game::save(std::string filename, Save_File& save_file) const {
     pimpl->cleanup_save_filename(filename);
     try {
-        std::ofstream ofs(filename, std::ios::binary);
-        if (!ofs) {
+        auto stream = file_utilities::open_ofstream(filename, std::ios::out | std::ios::binary);
+        if (!stream) {
             throw std::runtime_error("Unable to open file for writing");
         }
-        ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-        ofs << save_file;
+        stream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+        stream << save_file;
         LOGGER_I << "Saved file " << filename;
     } catch (const std::ios_base::failure & e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
@@ -731,12 +731,12 @@ std::unique_ptr<Save_File> Game::load(std::string filename) {
     auto& state = pimpl->scripting_interface->lua_state();
     auto file = std::make_unique<Save_File>(state);
     try {
-        std::ifstream ifs(filename, std::ios::binary);
-        if (!ifs) {
+        auto stream = file_utilities::open_ifstream(filename, std::ios::in | std::ios::binary);
+        if (!stream) {
             throw std::runtime_error("File doesn't exist or can't be opened");
         }
-        ifs.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        ifs >> *file;
+        stream.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+        stream >> *file;
         LOGGER_I << "Loaded file " << filename;
     } catch (const std::ios_base::failure& e) {
         LOGGER_E << "Error loading file " << filename << " - error code: " << e.code() << " - message: " << e.what();

@@ -208,11 +208,12 @@ bool Key_Binder::process_keymap_file() {
     if (!file_utilities::file_exists(filename)) {
         filename = Configurations::get<std::string>("controls.mapping-file");
     }
-    std::ifstream input(filename);
+    auto input = file_utilities::open_ifstream(filename);
     if (!input) {
         LOGGER_W << "Couldn't read key mapping file \"" << filename << "\", using default key mapping.";
         return false;
     }
+
     LOGGER_I << "Processing keymap file " << filename;
     bound_keys.clear();
     // Read keymap file and bind keys based on name
@@ -257,7 +258,7 @@ bool Key_Binder::process_keymap_file() {
 bool Key_Binder::save_keymap_file() {
     if (!changed_since_save || !Configurations::get<bool>("debug.update-config-files")) return true;
     auto filename = get_keymap_filename();
-    std::ofstream output(filename);
+    auto output = file_utilities::open_ofstream(filename);
     if (!output) {
         LOGGER_E << "Unable to open keymap file " << filename << " for writing";
         return false;

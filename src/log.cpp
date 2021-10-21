@@ -26,7 +26,8 @@ void Log::open_log_file() {
         mode |= std::ios_base::trunc;
     else if (config_mode == "append")
         mode |= std::ios_base::app;
-    log_file.open(filename, static_cast<std::ios_base::openmode>(mode));
+
+    log_file = file_utilities::open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
     enabled = static_cast<bool>(log_file);
     std::string config_level = Configurations::get<std::string>("logging.level");
     string_utilities::capitalize(config_level);
