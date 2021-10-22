@@ -33,7 +33,7 @@ namespace xd
             attrib.offset = offset;
             attrib.normalized = normalized;
             attrib.stride = stride;
-            m_attribs.insert(std::make_pair(index, attrib));
+            m_attribs.emplace(index, attrib);
         }
 
         template <typename T, typename R>

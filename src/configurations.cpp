@@ -181,7 +181,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                 values[key] = std::visit(
                     [&value_string](auto&& arg) {
                         using T = std::decay_t<decltype(arg)>;
-                        return Configurations::value_type{ boost::lexical_cast<T>(value_string) };
+                        return Configurations::value_type{boost::lexical_cast<T>(value_string)};
                     },
                     defaults[key]);
             } else {

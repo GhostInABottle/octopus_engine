@@ -373,7 +373,7 @@ void xd::window::set_size(int width, int height)
 xd::vec2 xd::window::get_size() const
 {
     auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    return mode ? xd::vec2{ mode->width, mode->height } : xd::vec2{ 0.0f, 0.0f };
+    return mode ? xd::vec2{mode->width, mode->height} : xd::vec2{0.0f, 0.0f};
 }
 
 std::vector<xd::vec2> xd::window::get_sizes() const

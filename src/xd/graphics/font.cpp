@@ -4,7 +4,7 @@
 #include <harfbuzz/hb.h>
 #include <harfbuzz/hb-ft.h>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include "../../../include/xd/graphics/font.hpp"
 #include "../../../include/xd/graphics/exceptions.hpp"
@@ -85,7 +85,7 @@ namespace xd { namespace detail { namespace font {
         FT_Face handle;
         hb_font_t* hb_font;
         hb_buffer_t* hb_buffer;
-        std::map<int, FT_Size> sizes;
+        std::unordered_map<int, FT_Size> sizes;
     };
 
 } } }
@@ -154,7 +154,7 @@ void xd::font::load_size(int size, int load_flags)
         throw;
     }
     // insert the newly loaded size in the map
-    m_face->sizes.insert(std::make_pair(size, font_size));
+    m_face->sizes.emplace(size, font_size);
 }
 
 const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, int size, int load_flags)

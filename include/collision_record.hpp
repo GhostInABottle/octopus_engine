@@ -1,10 +1,6 @@
 #ifndef HPP_COLLISION_RECORD
 #define HPP_COLLISION_RECORD
 
-#include <string>
-#include <unordered_map>
-#include "direction.hpp"
-
 class Map_Object;
 
 // Types of collision events
@@ -18,7 +14,6 @@ enum class Collision_Type {
 
 // Structure returned after collision detection
 struct Collision_Record {
-    using object_map = std::unordered_map<std::string, Map_Object*>;
     // What triggered this collision
     Collision_Type type;
     // The object that triggered it (usually the player)
@@ -27,10 +22,7 @@ struct Collision_Record {
     Map_Object* other_object;
     // The first collision area
     Map_Object* other_area;
-    // Map of all objects we collided with
-    object_map other_objects;
-    // Map of all areas we collided with
-   object_map other_areas;
+
     // Does collision type allow passing through?
     bool passable() const noexcept {
         return type == Collision_Type::NONE || type == Collision_Type::AREA;

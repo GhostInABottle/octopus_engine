@@ -81,6 +81,7 @@ public:
     }
     void set_size(xd::vec2 new_size) {
         size = new_size;
+        bounding_box = xd::rect{0, 0, size[0], size[1]};
     }
     xd::vec4 get_color() const {
         return color;
@@ -306,16 +307,22 @@ public:
         return speed;
     }
     // Get bounding box
-    xd::rect get_bounding_box() const {
-        if (sprite)
-            return get_sprite()->get_bounding_box();
-        else
-            return xd::rect(0, 0, size[0], size[1]);
+    const xd::rect& get_bounding_box() const {
+        return bounding_box;
     }
     // Get position with bounding box
     xd::vec2 get_real_position() const {
-        const auto box = get_bounding_box();
-        return xd::vec2(position.x + box.x, position.y + box.y);
+        return xd::vec2{position.x + bounding_box.x, position.y + bounding_box.y};
+    }
+    // Get bounding box with real position
+    xd::rect get_positioned_bounding_box() const {
+        return xd::rect{position.x + bounding_box.x, position.y + bounding_box.y,
+            bounding_box.w, bounding_box.h};
+    }
+    // Get the center of the object's positioned box
+    xd::vec2 get_centered_position() {
+        return xd::vec2{position.x + bounding_box.x + bounding_box.w * 0.5f,
+            position.y + bounding_box.y + bounding_box.h * 0.5f};
     }
     // Get sprite angle
     int get_angle() const;
@@ -338,6 +345,10 @@ public:
         Sprite_Holder::set_pose(pose_name, state, direction);
         for (auto obj : linked_objects) {
             obj->set_pose(new_pose_name, new_state, new_direction);
+        }
+        
+        if (sprite) {
+            bounding_box = sprite->get_bounding_box();
         }
     }
     // Face another object
@@ -456,6 +467,8 @@ private:
     float speed;
     // Whether the object's sprite sfx volume goes down based on distance to player
     bool sound_attenuation_enabled;
+    // Bounding box
+    xd::rect bounding_box;
     // Run a script
     void run_script(const std::string& script);
     // Load the script and add the preamble

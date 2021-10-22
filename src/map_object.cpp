@@ -93,14 +93,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     } else {
         if (multiple_directions && !strict_multidirectional_movement) {
             // Check if we can move in either direction
-            collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN),
-                check_type, std::move(collision));
+            collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
             if (collision.passable()) {
                 change.x = 0.0f;
             }
             else {
-                collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT),
-                    check_type, std::move(collision));
+                collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
                 if (collision.passable()) {
                     change.y = 0.0f;
                 }
@@ -185,9 +183,8 @@ xd::vec2 Map_Object::get_sprite_magnification() const {
 
 xd::vec2 Map_Object::get_text_position() const
 {
-    auto box = get_bounding_box();
     auto offset = xd::vec2{
-        box.x + box.w / 2,
+        bounding_box.x + bounding_box.w / 2,
         -game.get_font_style().line_height() / 2
     };
     return get_position() + offset;
@@ -363,6 +360,12 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_face_state(properties["face-state"]);
     if (properties.contains("walk-state"))
         object_ptr->set_walk_state(properties["walk-state"]);
+
+    if (object_ptr->sprite) {
+        object_ptr->bounding_box = object_ptr->sprite->get_bounding_box();
+    } else {
+        object_ptr->bounding_box = xd::rect{0, 0, object_ptr->size[0], object_ptr->size[1]};
+    }
 
     if (properties.contains("script-context")) {
         auto context_string{properties["script-context"]};

@@ -32,9 +32,9 @@ fs::path string_to_utf8_path(const std::string& str) {
 std::ifstream file_utilities::open_ifstream(std::string filename, std::ios_base::openmode mode) {
     normalize_slashes(filename);
 #ifdef _WIN32
-    std::ifstream stream{ win32::Utf8ToUtf16(filename), mode };
+    std::ifstream stream{win32::Utf8ToUtf16(filename), mode};
 #else
-    std::ifstream stream{ filename, mode };
+    std::ifstream stream{filename, mode};
 #endif
 
     return stream;
@@ -43,9 +43,9 @@ std::ifstream file_utilities::open_ifstream(std::string filename, std::ios_base:
 std::ofstream file_utilities::open_ofstream(std::string filename, std::ios_base::openmode mode) {
     normalize_slashes(filename);
 #ifdef _WIN32
-    std::ofstream stream{ win32::Utf8ToUtf16(filename) , mode };
+    std::ofstream stream{win32::Utf8ToUtf16(filename) , mode};
 #else
-    std::ofstream stream{ filename, mode };
+    std::ofstream stream{filename, mode};
 #endif
 
     return stream;
@@ -183,7 +183,7 @@ std::vector<std::string> file_utilities::list_directory_files(const std::string&
         }
         for (auto& p : fs::directory_iterator(utf8_path)) {
             if (fs::is_regular_file(p) || fs::is_directory(p)) {
-                result.push_back(p.path().filename().string());
+                result.emplace_back(p.path().filename().string());
             }
         }
     } catch (fs::filesystem_error& e) {
@@ -218,13 +218,13 @@ bool file_utilities::remove_file(const std::string& filename) {
 }
 
 bool file_utilities::is_absolute_path(const std::string& path_str) {
-    return fs::path{ string_to_utf8_path(path_str) }.is_absolute();
+    return fs::path{string_to_utf8_path(path_str)}.is_absolute();
 }
 
 std::string file_utilities::get_filename_component(const std::string& path_str) {
-    return fs::path{ string_to_utf8_path(path_str) }.filename().string();
+    return fs::path{string_to_utf8_path(path_str)}.filename().string();
 }
 
 std::string file_utilities::get_stem_component(const std::string& path_str) {
-    return fs::path{ string_to_utf8_path(path_str) }.stem().string();
+    return fs::path{string_to_utf8_path(path_str)}.stem().string();
 }

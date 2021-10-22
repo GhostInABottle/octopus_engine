@@ -302,14 +302,9 @@ struct Sprite::Impl {
     }
 
     void update_sound_attenuation(Map_Object& object) {
-        auto player_rect = game.get_player()->get_bounding_box();
-        auto player_pos = game.get_player()->get_real_position();
-        player_pos += xd::vec2(player_rect.w / 2, player_rect.h / 2);
-        auto object_rect = object.get_bounding_box();
-        auto object_pos = object.get_real_position();
-        object_pos += xd::vec2(object_rect.w / 2, object_rect.h / 2);
+        auto player_position{game.get_player()->get_centered_position()};
+        auto distance = xd::length(object.get_centered_position() - player_position);
 
-        auto distance = xd::length(object_pos - player_pos);
         // Sound is 1 within [factor] pixels, then falls off based on distance
         sfx_volume = std::min(1.0f, sound_attenuation_factor / (1.0f + distance));
         auto current_frame = &pose->frames[frame_index];

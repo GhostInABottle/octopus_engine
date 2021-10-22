@@ -54,15 +54,16 @@ void Player_Controller::update(Map_Object& object) {
         auto passable = false;
         for (int i = 1; i <= 8; i *= 2) {
             auto dir = static_cast<Direction>(i);
-            if (dir == direction) continue;
-            auto rec = map->passable(object, dir);
-            auto& others = rec.other_objects;
-            if (others.find(collision.other_object->get_name()) == others.end()) {
+            // Only try directions other than the blocked one
+            if ((dir & direction) != Direction::NONE) continue;
+
+            auto other_collision = map->passable(object, dir, Collision_Check_Type::BOTH);
+            if (other_collision.passable()) {
                 passable = true;
                 break;
             }
         }
-        // If surrounded by object in all directions, ignore object collisions
+        // If surrounded by objects in all directions, ignore object collisions
         if (!passable) {
             check_type = Collision_Check_Type::TILE;
             collision = map->passable(object, direction, check_type);

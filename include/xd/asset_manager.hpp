@@ -36,7 +36,7 @@ namespace xd
             }
             // not loaded in either map, create it
             auto resource = std::make_shared<T>(std::forward<Args>(args)...);
-            loaded_assets.insert(std::make_pair(cache_key, resource));
+            loaded_assets.emplace(cache_key, resource);
             return resource;
         }
 
@@ -53,7 +53,7 @@ namespace xd
                 return it->second;
             // not loaded in either map, create it
             auto resource = std::make_shared<T>(std::forward<Args>(args)...);
-            persistent_assets.insert(std::make_pair(cache_key, resource));
+            persistent_assets.emplace(cache_key, resource);
             return resource;
         }
 
@@ -83,7 +83,7 @@ namespace xd
             std::size_t hash = typeid(T).hash_code();
             auto it = m_asset_type_map.find(hash);
             if (it == m_asset_type_map.end())
-                m_asset_type_map.insert(std::make_pair(hash, asset_map_type()));
+                m_asset_type_map.emplace(hash, asset_map_type());
             return *std::any_cast<asset_map_type>(&m_asset_type_map[hash]);
         }
 
@@ -94,7 +94,7 @@ namespace xd
             std::size_t hash = typeid(T).hash_code();
             auto it = m_persistent_asset_type_map.find(hash);
             if (it == m_persistent_asset_type_map.end())
-                m_persistent_asset_type_map.insert(std::make_pair(hash, asset_map_type()));
+                m_persistent_asset_type_map.emplace(hash, asset_map_type());
             return *std::any_cast<asset_map_type>(&m_persistent_asset_type_map[hash]);
         }
     };

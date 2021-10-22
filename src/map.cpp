@@ -91,57 +91,50 @@ void Map::run_startup_scripts() {
     }
 }
 
-Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        Collision_Check_Type check_type, Collision_Record&& previous_record) {
+Collision_Record Map::passable(const Map_Object& object, Direction direction, Collision_Check_Type check_type) {
     return passable(object, direction, object.get_position(),
-        object.get_fps_independent_speed(), check_type, std::move(previous_record));
+        object.get_fps_independent_speed(), check_type);
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed, Collision_Check_Type check_type,
-        Collision_Record&& previous_record) {
-    Collision_Record result{std::move(previous_record)};
-    result.type = Collision_Type::NONE;
+        xd::vec2 position, float speed, Collision_Check_Type check_type) {
+    Collision_Record result;
 
     if (object.initiates_passthrough())
         return result;
-    const auto bounding_box = object.get_bounding_box();
-    if (bounding_box.w < 1 || bounding_box.h < 1)
+
+    const auto& bounding_box = object.get_bounding_box();
+    if (bounding_box.w <= 0.0f || bounding_box.h <= 0.0f)
         return result;
 
-    const auto movement_vector = direction_to_vector(direction);
-    const auto change = movement_vector * speed;
-    xd::rect this_box{
-        position + bounding_box.position() + change,
-        bounding_box.size()
-    };
+    auto change = direction_to_vector(direction) * speed;
+    xd::rect this_box{position + bounding_box.position() + change, bounding_box.size()};
 
     bool check_tile_collision = check_type & Collision_Check_Type::TILE;
 
     // Check object collisions
     if (check_type & Collision_Check_Type::OBJECT) {
         for (auto& object_pair : objects) {
-            auto other_id = object_pair.first;
             auto other_object = object_pair.second.get();
-            const auto visible = other_object->is_visible();
-            const auto passthrough = other_object->receives_passthrough();
 
             // Skip objects with no bounding box
-            const auto box = other_object->get_bounding_box();
-            if (box.w < 1 || box.h < 1)
+            const auto& box = other_object->get_bounding_box();
+            if (box.w <= 0.0f || box.h <= 0.0f)
                 continue;
 
-            const auto other_pos = other_object->get_position();
-            xd::rect object_box { other_pos + box.position(), box.size() };
-            const auto intersects = this_box.intersects(object_box);
+            const auto intersects = this_box.intersects(other_object->get_positioned_bounding_box());
 
             // Special case for skipping tile collision detection
+            const auto visible = other_object->is_visible();
+            const auto passthrough = other_object->receives_passthrough();
             if (other_object->overrides_tile_collision() && visible && passthrough && intersects)
                 check_tile_collision = false;
+
             // Areas are passthrough objects with a script
+            auto other_id = object_pair.first;
             const auto is_area = passthrough && other_object->has_any_script();
             // Skip self, invisible, or passthrough objects (except areas)
-            if (other_id == object.get_id()|| !visible|| (!is_area && passthrough))
+            if (other_id == object.get_id() || !visible || (!is_area && passthrough))
                 continue;
 
             if (intersects) {
@@ -149,14 +142,12 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
                     if (result.type == Collision_Type::NONE)
                         result.type = Collision_Type::AREA;
                     result.other_area = other_object;
-                    result.other_areas[other_object->get_name()] = other_object;
                 } else {
                     result.type = Collision_Type::OBJECT;
                     // Prefer objects with scripts
                     if (!result.other_object || other_object->has_any_script()) {
                         result.other_object = other_object;
                     }
-                    result.other_objects[other_object->get_name()] = other_object;
                     check_tile_collision = false;
                 }
             }

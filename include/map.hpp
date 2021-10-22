@@ -66,12 +66,10 @@ public:
     void run_startup_scripts();
     // Check if object can move in given direction
     Collision_Record passable(const Map_Object& object, Direction direction,
-        Collision_Check_Type check_type = Collision_Check_Type::BOTH,
-        Collision_Record&& previous_record = Collision_Record{});
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     Collision_Record passable(const Map_Object& object, Direction direction,
         xd::vec2 position, float speed,
-        Collision_Check_Type check_type = Collision_Check_Type::BOTH,
-        Collision_Record&& previous_record = Collision_Record{});
+        Collision_Check_Type check_type = Collision_Check_Type::BOTH);
     // Check if a particular tile is passable
     bool tile_passable(int x, int y) const noexcept;
     // Get number of objects

@@ -37,6 +37,7 @@ struct Game::Impl {
             show_time(Configurations::get<bool>("debug.show-time")),
             next_direction(Direction::DOWN),
             focus_pause(false),
+            pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
             music_was_paused(false),
             was_stopped(false),
             pause_start_time(0),
@@ -74,6 +75,9 @@ struct Game::Impl {
     // Process configuration changes
     void process_config_changes(Game& game, xd::window* window) {
         if (config_changes.empty()) return;
+        if (config_changed("game.pause-unfocused")) {
+            pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
+        }
         if (config_changed("graphics.screen-width") || config_changed("graphics.screen-height")) {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
@@ -222,6 +226,8 @@ struct Game::Impl {
     std::string next_map;
     // Was it paused because screen got unfocused?
     bool focus_pause;
+    // Should the game be paused while unfocused?
+    bool pause_unfocused;
     // was music already paused when game got paused?
     bool music_was_paused;
     // Was time stopped when game got paused?
@@ -418,7 +424,7 @@ void Game::frame_update() {
     } else if (!paused && pausing_enabled) {
         if (triggered_pause)
             pause();
-        else if (Configurations::get<bool>("game.pause-unfocused") && !window->focused()) {
+        else if (pimpl->pause_unfocused && !window->focused()) {
             pause();
             pimpl->focus_pause = true;
         }
@@ -660,7 +666,7 @@ void Game::set_next_map(const std::string& filename, Direction dir) {
 
 void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {
     set_next_map(filename, dir);
-    pimpl->next_position = xd::vec2{ x, y };
+    pimpl->next_position = xd::vec2{x, y};
 }
 
 xd::asset_manager& Game::get_asset_manager() {

@@ -34,7 +34,7 @@ constexpr xd::vec2 direction_to_vector(Direction dir) noexcept {
         1.0f : (dir & Direction::LEFT) != Direction::NONE ? -1.0f : 0.0f;
     const float y = (dir & Direction::DOWN) != Direction::NONE ?
         1.0f : (dir & Direction::UP) != Direction::NONE ? -1.0f : 0.0f;
-    const xd::vec2 result{ x, y };
+    const xd::vec2 result{x, y};
 
     if (is_diagonal(dir)) {
         const float one_over_sqrt_2 = 0.70710678118f;

@@ -583,6 +583,8 @@ void Scripting_Interface::setup_scripts() {
     object_type["outlining_object"] = sol::property(&Map_Object::get_outlining_object);
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
+    object_type["positioned_bounding_box"] = sol::property(&Map_Object::get_positioned_bounding_box);
+    object_type["centered_position"] = sol::property(&Map_Object::get_centered_position);
     object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box);
     object_type["speed"] = sol::property(&Map_Object::get_speed, &Map_Object::set_speed);
     object_type["fps_independent_speed"] = sol::property(&Map_Object::get_fps_independent_speed);

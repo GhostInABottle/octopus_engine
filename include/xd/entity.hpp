@@ -56,7 +56,7 @@ namespace xd
             std::size_t hash = typeid(T).hash_code();
             auto i = m_type_to_data.find(hash);
             if (i == m_type_to_data.end())
-                i = m_type_to_data.insert(std::make_pair(hash, T())).first;
+                i = m_type_to_data.emplace(hash, T()).first;
             return *std::any_cast<T>(&i->second);
         }
 
@@ -65,7 +65,7 @@ namespace xd
         {
             auto i = m_key_to_data.find(key);
             if (i == m_key_to_data.end())
-                i = m_key_to_data.insert(std::make_pair(key, T())).first;
+                i = m_key_to_data.emplace(key, T()).first;
             return *std::any_cast<T>(&i->second);
         }
 
