@@ -207,7 +207,7 @@ public:
     Map_Object* get_player() noexcept { return player.get(); }
     // Get global asset manager
     xd::asset_manager& get_asset_manager();
-    // Craete a font
+    // Create a font
     std::shared_ptr<xd::font> create_font(const std::string& filename);
     // Render some text
     void render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text);

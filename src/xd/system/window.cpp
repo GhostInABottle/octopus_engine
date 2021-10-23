@@ -95,7 +95,7 @@ xd::window::window(const std::string& title, int width, int height, const window
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1.0f);
 
-    // intialize ticks
+    // initialize ticks
     m_current_ticks = m_last_ticks = m_last_fps_update = static_cast<std::uint32_t>(glfwGetTime() * 1000);
     m_fps = m_frame_count = 0;
 

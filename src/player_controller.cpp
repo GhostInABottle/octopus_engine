@@ -75,27 +75,32 @@ void Player_Controller::update(Map_Object& object) {
     auto check_edges = moved && !is_diagonal(direction) && !collision.passable()
         && (!collision.other_object || !collision.other_object->has_any_script());
     if (check_edges) {
-        auto vertical = direction == Direction::UP || direction == Direction::DOWN;
-        auto pos1{object.get_position()};
-        auto pos2{pos1};
-        if (vertical) {
-            pos1.x -= edge_tolerance_pixels;
-            pos2.x += edge_tolerance_pixels;
-        } else {
-            pos1.y -= edge_tolerance_pixels;
-            pos2.y += edge_tolerance_pixels;
-        }
+        for (auto tolerance = edge_tolerance_pixels; tolerance > 0; tolerance--) {
+            auto vertical = direction == Direction::UP || direction == Direction::DOWN;
+            auto pos1{object.get_position()};
+            auto pos2{pos1};
+            if (vertical) {
+                pos1.x -= tolerance;
+                pos2.x += tolerance;
+            }
+            else {
+                pos1.y -= tolerance;
+                pos2.y += tolerance;
+            }
 
-        auto new_dir = Direction::NONE;
-        if (map->passable(object, direction, pos1, speed).passable()) {
-            new_dir = vertical ? Direction::LEFT : Direction::UP;
-        } else if (map->passable(object, direction, pos2, speed).passable()) {
-            new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
-        }
+            auto new_dir = Direction::NONE;
+            if (map->passable(object, direction, pos1, speed).passable()) {
+                new_dir = vertical ? Direction::LEFT : Direction::UP;
+            }
+            else if (map->passable(object, direction, pos2, speed).passable()) {
+                new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
+            }
 
-        if (new_dir != Direction::NONE) {
-            change_facing = object.get_direction() != direction;
-            direction = new_dir;
+            if (new_dir != Direction::NONE) {
+                change_facing = object.get_direction() != direction;
+                direction = new_dir;
+                break;
+            }
         }
     }
 

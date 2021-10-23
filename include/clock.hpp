@@ -14,7 +14,7 @@ public:
     void stop_time();
     // Resume game time
     void resume_time();
-    // Get total time in seconds without applying a multipler
+    // Get total time in seconds without applying a multiplier
     int seconds() const;
 private:
     Game& game;

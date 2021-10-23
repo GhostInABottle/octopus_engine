@@ -105,7 +105,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
 
     // Drawing to a framebuffer that updates less frequently improves performance,
     // especially for text. For sprites/images the improvement isn't as significant.
-    // and they are more likely to be moved/animated. Therefore we ristrict this
+    // and they are more likely to be moved/animated. Therefore we restrict this
     // optimization for images/sprites in a child/parent hierarchy
     auto& root_parent = root ? *root : canvas;
     bool has_children = canvas.get_child_count() > 0;

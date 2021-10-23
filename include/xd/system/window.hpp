@@ -190,7 +190,7 @@ namespace xd
         // to keep track whether we're in update or not
         bool m_in_update;
 
-        // event busses
+        // event buses
         event_bus<input_args> m_input_events;
 
         // private functions
