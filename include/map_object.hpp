@@ -35,7 +35,7 @@ public:
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
         bool change_facing = true);
     // Getters and setters
-    Object_Layer* get_layer() const {
+    Object_Layer* get_layer() {
         return layer;
     }
     void set_layer(Object_Layer* new_layer) {
@@ -230,19 +230,19 @@ public:
     void set_player_facing(bool facing) {
         player_facing = facing;
     }
-    Map_Object* get_collision_object() const {
+    Map_Object* get_collision_object() {
         return collision_object;
     }
     void set_collision_object(Map_Object* object) {
         collision_object = object;
     }
-    Map_Object* get_collision_area() const {
+    Map_Object* get_collision_area() {
         return collision_area;
     }
     void set_collision_area(Map_Object* area) {
         collision_area = area;
     }
-    Map_Object* get_triggered_object() const {
+    Map_Object* get_triggered_object() {
         return triggered_object;
     }
     void set_triggered_object(Map_Object* obj) {
@@ -282,7 +282,7 @@ public:
     void set_outlined_object_id(int id) {
         outlined_object_id = id;
     }
-    Map_Object* get_outlining_object() const {
+    Map_Object* get_outlining_object() {
         return outlining_object;
     }
     void set_outlining_object(Map_Object* object) {

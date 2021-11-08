@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="8" tileheight="8">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="2">
  <properties>
   <property name="music" value="data/music.ogg"/>
   <property name="name" value="testmap2"/>
-  <property name="player-position-x" value="20"/>
-  <property name="player-position-y" value="192"/>
+  <property name="player-position-x" value="18"/>
+  <property name="player-position-y" value="160"/>
  </properties>
- <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8" tilecount="512" columns="16">
   <properties>
    <property name="prop1" value="1"/>
   </properties>
@@ -23,10 +23,10 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8">
+ <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8" tilecount="8" columns="8">
   <image source="data/obstruction.png" trans="ff00ff" width="64" height="8"/>
  </tileset>
- <layer name="ground" width="40" height="40">
+ <layer id="1" name="ground" width="40" height="40">
   <properties>
    <property name="@Description" value="ground layer"/>
   </properties>
@@ -34,26 +34,26 @@
    eJztl0tOAkEQhnu2IhxAHu7V7WyMgmufe1FxxQbXbPQOcgHUC/i4gRzNqqQrqRTlqx/pIoHkS/VMZsg3/xSkq3bO1QF0kMq5rqcjKrIV+N0pQL8TcDgUHLF1aT/uRa6nwJkRvxE4DAW3wJWntN8YmHrG7JjWFvx+wpKflqElP2v51YrPVByXdNP8JKX96D1vC0q/11XzewDuWbXmdwdMfH006Mfzezbox/ObGPRbpf5Lnd9uJHtKfjvKda1Avwbs0zaBJquNb9ZU+boFzER+G+K+ZsResM3mBaQtZgh+Xp5DesCL7L+Es4icH5ADtkcnLpTrkH613H/7CWcRvHdQ6bPEXzivlvvvOOEsQrMCZ+jrSDl3La69UfK7TDiL8OfG+gq8Kedja6gff+6cNVV+uWru/N6BD8P5fQILw/mt+0+Hf2LymQNPGfIjtH3cf+pv/5sp/GJ+n7n6j/stIvLL1X/cz+LvV/Yf9bm1/Lr+OanPU+fXi/RbE8YXWdWxwA==
   </data>
  </layer>
- <layer name="upper" width="40" height="40">
+ <layer id="2" name="upper" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJztwQENAAAAwqD3T20PBxQAAAAAAMCXARkAAAE=
   </data>
  </layer>
- <objectgroup name="objects" width="40" height="40">
-  <object name="exit" type="area" x="0" y="192" width="8" height="48">
+ <objectgroup id="3" name="objects">
+  <object id="1" name="exit" type="area" x="0" y="192" width="8" height="48">
    <properties>
-    <property name="script-context" value="global"/>
     <property name="passthrough" value="true"/>
-    <property name="touch-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled.tmx', 20, 215, RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
+    <property name="script-context" value="global"/>
+    <property name="touch-script" value="player.disabled = true;camera:tint_screen(Color('clear'), 500):wait();game:load_map('data/test_tiled.tmx', 18, 183, RIGHT);wait(250);camera:tint_screen(Color('none'), 500):wait();player.disabled = false"/>
    </properties>
   </object>
  </objectgroup>
- <layer name="above" width="40" height="40">
+ <layer id="4" name="above" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJzt1ysOgDAQBNDVlBMQ4Ba9/9WoqKMVFXyavJeM2TFrJwKAEUdJKlkb3VK789WP7nLJ3rhvtQMAAJhJiv4O+4Mc/R0GzCM9GL5xAV2PAq0=
   </data>
  </layer>
- <layer name="collision" width="40" height="40" visible="0" opacity="0.27">
+ <layer id="5" name="collision" width="40" height="40" visible="0" opacity="0.27">
   <data encoding="base64" compression="zlib">
    eJzt1kEKACAIRNHQ+9+5E4SLFEf8i7+NFwOR2zlONDALwocPn67v5ez24MOnFD58+PDhy/dFf6Ss8Gn7fu+z3ae+73RfdF73W6juq9oXX66vyrrFp7yvYhcyeB10
   </data>

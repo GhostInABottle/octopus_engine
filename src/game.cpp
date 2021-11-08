@@ -314,25 +314,26 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
         .force_autohint(true);
     pimpl->debug_style.line_height(12.0f).force_autohint(true);
     auto font_file = Configurations::get<std::string>("font.default");
-    auto bold_font_file = Configurations::get<std::string>("font.bold");
-    auto italic_font_file = Configurations::get<std::string>("font.italic");
+
     if (!file_utilities::file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
     font = create_font(font_file);
+
+    auto bold_font_file = Configurations::get<std::string>("font.bold");
     if (!bold_font_file.empty()) {
-        if (file_utilities::file_exists(bold_font_file)) {
-            font->link_font("bold", create_font(bold_font_file));
-        } else {
-            LOGGER_W << "Couldn't read bold font file " << bold_font_file;
+        if (!file_utilities::file_exists(bold_font_file)) {
+            throw std::runtime_error("Couldn't read bold font file " + bold_font_file);
         }
+        font->link_font("bold", create_font(bold_font_file));
     }
+
+    auto italic_font_file = Configurations::get<std::string>("font.italic");
     if (!italic_font_file.empty()) {
-        if (file_utilities::file_exists(italic_font_file)) {
-            font->link_font("italic", create_font(italic_font_file));
-        } else {
-            LOGGER_W << "Couldn't read italic font file " << bold_font_file;
+        if (!file_utilities::file_exists(italic_font_file)) {
+            throw std::runtime_error("Couldn't read bold font file " + italic_font_file);
         }
+        font->link_font("italic", create_font(italic_font_file));
     }
 
     if (editor_mode)
@@ -390,7 +391,7 @@ Game::~Game() {
     Configurations::remove_observer("Game");
 }
 
-xd::audio* Game::get_audio() const {
+xd::audio* Game::get_audio() {
     return pimpl->audio;
 }
 

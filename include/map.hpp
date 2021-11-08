@@ -83,9 +83,9 @@ public:
         std::optional<Direction> dir = std::nullopt,
         std::optional<Object_Layer*> layer = std::nullopt);
     // Get object by name
-    Map_Object* get_object(std::string name) const;
+    Map_Object* get_object(std::string name);
     // Get object by ID
-    Map_Object* get_object(int id) const;
+    Map_Object* get_object(int id);
     // Get all objects
     std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
         return objects;
@@ -97,13 +97,13 @@ public:
     // Get number of layers
     int layer_count() const;
     // Get layer by index (starting from 1, lua convention)
-    Layer* get_layer(int id) const;
+    Layer* get_layer(int id);
     // Get layer by name
-    Layer* get_layer(std::string name) const;
+    Layer* get_layer(std::string name);
     // Get image layer by index (starting from 1, lua convention)
-    Image_Layer* get_image_layer(int id) const;
+    Image_Layer* get_image_layer(int id);
     // Get image layer by name
-    Image_Layer* get_image_layer(const std::string& name) const;
+    Image_Layer* get_image_layer(const std::string& name);
     // Add a new layer
     void add_layer(Layer_Type type);
     // Delete layer with given name

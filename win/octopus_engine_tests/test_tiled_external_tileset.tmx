@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="40" tilewidth="8" tileheight="8" nextobjectid="1">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="40" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="1">
  <properties>
   <property name="name" value="testmap"/>
   <property name="player-position-x" value="5"/>
  </properties>
  <tileset firstgid="1" source="test_sheet.tsx"/>
- <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8">
+ <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8" tilecount="8" columns="8">
   <image source="../data/obstruction.png" trans="ff00ff" width="64" height="8"/>
  </tileset>
- <layer name="ground" width="50" height="40">
+ <layer id="1" name="ground" width="50" height="40">
   <properties>
    <property name="@Description" value="ground layer"/>
   </properties>
@@ -16,5 +16,5 @@
    eJzNmctLVVEUxrePCsqCrAzKCvEFPWjgo2EoNOhJoEGlPUYNgihBkgID81FTu0o19FXZrMLKZlE2rzTsv2ktXB9n3e0+++xzPffS4OPcvb13n/Xb31r7gY3GmEbSfku1pBHSYxF/HlZ9w+rJffscY5RSzNBCarB4mGNGNCHKiSbUE99xcWwnHUmpHRtkqRcWF0eIXBw8xpB4liT2dDQDX5mjVfnCMUyLNsIxLt49E+Wstu6bzICjURiYhfPsJOlDCvk4wDormpH5mVV/m86Qo0U4WIukshQK4UA9zap2zmTrB1jgSxxHNWlXCo53KTxdyIhD+3LcEetu0p4YnjiO06QzpLOkC/K8R7pjolpsU8py/UadbwnwpIm02cNxhXSV1CPx87OXdJM0KHOmWbLeh2pl/GaHFzp+1FOIH8xxXnxhjosmWlfAUgyOthhPED/nxcMEDvhxVziuka6LFzeUL+ApFgdYmiwPEH+rzGWSH/YT9cIcj8SbwSJx1JhoDQMTYm8w+ftmkh9xT2bpVU97nNCzjY+jTFjaFIveL8HA+XDYMfZRjx+oE/blnFlbv247ODgOPo9+JX0kPVd6YaJzbBIHWDjWesUC1YuG5F0jSqMBfvQIwwOzlqsuDn3+Actr0hvV7zqzsw6QtnlUJfHjrPyFtEL6ocaelHhZWxPGgw46OHIOlk+kz9JeMlGdFlo/yLG3pD8eDp7nQwW+B+dK8OSsPtaiiWo37fjtJqqTKZmXGeHJkiPkTIMzIXw5ZsLWB65h1A7/ls9RP2XMXyY6L4HDtQ6EvudWgBZF86RVk78efDfRemBrVDjaxQ/slycsgWPIMxavD99i3jdqxXvfw/FSnpqBa4jzhHPEvk/x5znFAS9dez84poz7/sUaM+vXH2guJn67PS8M8ALrwIow6PuBfXfjOLtIl0inRN2kyw4eH8cr4eD3P5Xxx8SfSU/sur0qsSP+JcWg5x9PfIYf2hNeg3l/aTbrOcbVPNj3W6yjzPGX9MREOQE/fF5we9ms1ed7k1//rrbuW7DiRL3rM7KW7z6F9eG3mtNl9R7EW+dh4ffvNVFduu4aO0W4c9jf49zqFiHHXLnV75nPuph+3e60+vTnNHdXn7pMVCOQZun3xIAYfWsS93U4+iE7ZrTTsuD72OPttUufS6ocMXeY/Lxxqc/zN9f867a+B27yMCDv9B6v60Sf/2od894Z40mch7ZnoXkVx1BJKheOcuVJawCHjqnPuOMLFd5j37/j+nx+gAPrl86tOI6QuOPqX68NOmfT1HUcS4XJz69m+ZyUV1oDJn8NxN5qf0/noevelJVqEjhsloEUntjSY2Mu03iQ9Bvkls0Rkk8+Lh+Hzg2d60lrVIgnmiPprlmI7LwqZA908dl1X6r/V220Pqol7gqLA3lXag49n2nrpVJx2L8tJUe1iWrXFWfcXhiiUvsRMv/YH9PU0v9WH/Y5PpSl2Bz/ACW8z8g=
   </data>
  </layer>
- <objectgroup name="objects"/>
+ <objectgroup id="2" name="objects"/>
 </map>

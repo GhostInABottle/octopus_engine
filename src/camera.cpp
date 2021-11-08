@@ -17,6 +17,7 @@
     #include <GL/gl.h>
 #endif
 #include <algorithm>
+#include <stdexcept>
 
 struct Camera::Impl {
     explicit Impl()
@@ -66,8 +67,7 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
             vsrc = file_utilities::read_file(vertex);
             fsrc = file_utilities::read_file(fragment);
         } catch (const std::runtime_error& err) {
-            LOGGER_W << "Error loading shaders: " << err.what();
-            vsrc = fsrc = "";
+            throw std::runtime_error("Error loading shaders: " + std::string{err.what()});
         }
     }
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="50" height="40" tilewidth="8" tileheight="8">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="40" tilewidth="8" tileheight="8" infinite="0" nextlayerid="7" nextobjectid="2">
  <properties>
   <property name="music" value="../data/music.ogg"/>
   <property name="name" value="testmap"/>
   <property name="player-position-x" value="5"/>
  </properties>
- <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="test sheet" tilewidth="8" tileheight="8" tilecount="512" columns="16">
   <properties>
    <property name="prop1" value="1"/>
   </properties>
@@ -22,10 +22,10 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8">
+ <tileset firstgid="513" name="collision" tilewidth="8" tileheight="8" tilecount="8" columns="8">
   <image source="../data/obstruction.png" trans="ff00ff" width="64" height="8"/>
  </tileset>
- <layer name="ground" width="50" height="40">
+ <layer id="1" name="ground" width="50" height="40">
   <properties>
    <property name="@Description" value="ground layer"/>
   </properties>
@@ -33,16 +33,16 @@
    eJy9mctLVVEUxpePahAFWRmUEeILetDAR8NQaNCTQINMe4waBFGBKAUG5qOmplINfVU2q7CyWZTNKw37b1oL1+Ksu9x7n3303Hvh45yzvXef9dvfWvtRDQDQgDpkVIMaQT1h0f2wahtWV2o76OijlCKGZlS94SGOWdYka4I1qa7yHRfHLtSxjNq9RZY6ZnFxxMjFQX0MsWdpIk9Hc/CVOFqULxTDDGsrHOPs3XPWhHnWbVM5cDQwA7FQnp1GfcygEIewzrFmeXzm1N9mcuRoZg7SEqosg2I4pJ7m1PME5OuHsIgvPo4q1N4MHO8zeLqYE4f25aQj1n2o/R4eH8dZ1DnUedQlvt5H3YWkFluV8py/pc53RHjSiNoe4OhGXUP1cPx07UXdQg3ymGmWvNehGu6/yeGFjl/qKcYP4rjIvhDHZUjmFWEpBkerxxOJn/LiUQqH+HGPOa6jbrAXN5UvwlMsDmFpNB5I/C08lml+2KvUC3E8Zm8Gi8RRDckcJkwSez0UrptpfviuxNKrrraf2L1NiKOMWVoVi14vhYHy4aij7+MBP6ROyJcLsD5/3XFwUBy0H/2G+oR6ofQSkn1sGoewUKx1ikVUxxrid40ojUb40cMMD2E9V10cev8jLG9Qb1W7a89OivnUQbJX/opaRf1UfU9xvN2R/cnHckw4WD6jvvDzMiR1uhmOakhy7B3qbxE5ZD85C4V7TblfgqR2s84DbZDUyTSsj8ss81gOypcjGd8h74nZ08ieUHw5AXHzA9Ww1A79lvZRv7jP35Dsl4TDNQ/Evud2hJZYC6g1KJwPfkAyH1iNMkcb+yHr5Skj4RgK9EXzw3fP+0ZNvP0Bjld81QxUQ5QnlCP2PEX384pDvHSt/cIxDe7zF2kMNs4/onlP/PZ5gRnEC5kHVplBnw/s2Y3i7ERdQZ1hdaGuOnhCHK+Zg97/jPsfY3+mArHr5zWOXeJfVgx6/OUq9+KH9oTmYFpfmmAjx7gaB3u+lXmUOP6hnkKSE+JHyAt6XoH1+vwAhfXvetZtiyZOqXe9R9YKnadkfvijxnRFvUfirQ2w0PsPQFKXrrPGHpacOez3KLe6WJJjrtzqC4xnraddP3eYNn2f5ewaUickNSLSLH2BGCTG0JxEbe2OdpGNWZ6zssj3ZY23c5f92JjboTBvXHoQ+Jtr/PWzPgduCzBI3uk1XteJi0OPe4fHE5+H1rPYvPIxVKLKmaNcedJiOPQ+tsbE0K/G2rfOpUneY8/fvraQH8Ih85fOLR9HTNy++tdzg/5kqWsfSwUU5lcT37s4fAwDUDgHytpqv6fzMC8Ol6pTOCzLQAZPrHTfMpZZPEj7jeSW5YjJpxBXiEPnhs71tDkqxhPNcRi102irH3se38wa6OKzdZ/27zl5c2wlfoq7wnBI3pXq/920HxJH1nqpVBz2t6XkqIKkdl1x+tbCGJXaj5jxl/UxSy2VmiNLHWfZTxab4z9o6sk7
   </data>
  </layer>
- <layer name="upper" width="50" height="40">
+ <layer id="2" name="upper" width="50" height="40">
   <data encoding="base64" compression="zlib">
    eJzt1bsKwkAQBdCdTstgY1pF7cVorfjoxUedQv2B+P+5IRMIgQXBIs54DwzsQCB32N0kBCIiIiIiIuoaSAhDifdWjJE5lXj/6wRZZ6g5aiF1L9qPDM2RIGuGWqM2UveJ9pbmaByR+dTKPcF6qnvzqQLPvnue/Yb331sZllivdG8seSLvq5M5R38wNkfMw8kcRN7scDfPTu7n1skce/329/1//UaV/4K6Gp6h0pyp3NE9ISL6JyXXawrz
   </data>
  </layer>
- <imagelayer name="some image" width="50" height="40" visible="0" opacity="0.25">
-  <image source="../data/test_tileset.gif" trans="ff00ff"/>
+ <imagelayer id="3" name="some image" visible="0" opacity="0.25">
+  <image source="../data/test_tileset.gif" trans="ff00ff" width="128" height="256"/>
  </imagelayer>
- <objectgroup name="objects" width="50" height="40">
-  <object name="jimbo" type="npc" x="168" y="192">
+ <objectgroup id="4" name="objects">
+  <object id="1" name="jimbo" type="npc" x="168" y="192">
    <properties>
     <property name="direction" value="left"/>
     <property name="script" value="../data/script.lua"/>
@@ -51,12 +51,12 @@
    </properties>
   </object>
  </objectgroup>
- <layer name="above" width="50" height="40">
+ <layer id="5" name="above" width="50" height="40">
   <data encoding="base64" compression="zlib">
    eJzt1zsKgDAUBEBr9QT+7n9MtQikkHzAItEZ2HZJkWLfMAAAAL3ar0yJzJV9Y6Yv5Hjh7bE1k62ybynoDAEA2hTvktpN05J4l9RuGvrzhT9782d5UnIrptKK0lvRDQn/dQKSswaK
   </data>
  </layer>
- <layer name="collision" width="50" height="40" visible="0" opacity="0.27">
+ <layer id="6" name="collision" width="50" height="40" visible="0" opacity="0.27">
   <data encoding="base64" compression="zlib">
    eJzt1UsOwCAIBFCjTXr/G3ff2A9xGCidxewM4Ymf0VsbiqL8Nt2Q6F7leOe4Wr8VcTAt3g7WeWQ4GHNhObw9bIfXOWM6dicD0+FpYDm8DVbn05roXuXgOVbrR7+nX3Oca6D3Rg6MA2VhO+5qW3pRlGxZuVuZgngrMmTWfyUHysKaMeofyuhAziTDPCo5kJFDDjlqOg4jgCOx
   </data>

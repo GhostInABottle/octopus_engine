@@ -5,7 +5,6 @@
 #include "../include/utility/string.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
-#include "../include/log.hpp"
 
 Layer::Layer() : id(-1), width(0), height(0), opacity(1.0f), visible(true) {}
 
@@ -35,15 +34,25 @@ rapidxml::xml_node<>* Layer::save(rapidxml::xml_document<>& doc,
 }
 
 void Layer::load(rapidxml::xml_node<>& node) {
-    name = node.first_attribute("name")->value();
-    if (node.first_attribute("id"))
-        id = std::stoi(node.first_attribute("id")->value());
-    if (node.first_attribute("width"))
-        width = std::stoi(node.first_attribute("width")->value());
-    if (node.first_attribute("height"))
-        height = std::stoi(node.first_attribute("height")->value());
+    if (auto name_node = node.first_attribute("name"))
+        name = name_node->value();
+    else
+        throw tmx_exception("Missing layer name");
+
+    if (auto id_node = node.first_attribute("id"))
+        id = std::stoi(id_node->value());
+    else
+        throw tmx_exception("Missing layer ID for layer: " + name);
+
+    if (auto width_node = node.first_attribute("width"))
+        width = std::stoi(width_node->value());
+
+    if (auto height_node = node.first_attribute("height"))
+        height = std::stoi(height_node->value());
+
     if (auto opacity_node = node.first_attribute("opacity"))
         opacity = std::stof(opacity_node->value());
+
     if (auto visible_node = node.first_attribute("visible"))
         visible = string_utilities::string_to_bool(visible_node->value());
 
@@ -55,7 +64,7 @@ void Layer::load(rapidxml::xml_node<>& node) {
         vertex_shader = properties["vertex-shader"];
         fragment_shader = properties["fragment-shader"];
     } else if (has_vert || has_frag) {
-        LOGGER_W << "Must define both shader types for layer " << name;
+        throw tmx_exception("Must define both shader types for layer " + name);
     }
 }
 

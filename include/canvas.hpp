@@ -232,7 +232,7 @@ public:
         return text_lines;
     }
     float get_text_width(const std::string& text);
-    xd::font_style* get_style() const {
+    xd::font_style* get_style() {
         return style.get();
     }
     bool is_camera_relative() const {

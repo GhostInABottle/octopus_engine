@@ -14,7 +14,7 @@ BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)
 
 BOOST_AUTO_TEST_CASE(tile_layer_load) {
     char text[] =
-        "<layer name=\"ground\" width=\"40\" height=\"40\"> \
+        "<layer id =\"1\" name=\"ground\" width=\"40\" height=\"40\"> \
             <properties> \
                 <property name=\"@Description\" value=\"ground layer\"/> \
             </properties> \
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
 
 BOOST_AUTO_TEST_CASE(image_layer_load) {
     char text[] =
-        "<imagelayer name=\"some image\" width=\"40\" height=\"40\" opacity=\"0.55\" visible=\"0\" > \
+        "<imagelayer id=\"1\" name=\"some image\" width=\"40\" height=\"40\" opacity=\"0.55\" visible=\"0\" > \
             <image source=\"../data/test_tileset.gif\" trans=\"ff5fff\"/> \
             <properties> \
                 <property name=\"test\" value=\"1\"/> \
@@ -64,11 +64,11 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
 
 BOOST_AUTO_TEST_CASE(object_layer_load) {
     char text[] =
-        "<objectgroup color=\"#ff0000\" name=\"obj layer\" width=\"40\" height=\"40\"> \
+        "<objectgroup  id=\"1\" color=\"#ff0000\" name=\"obj layer\" width=\"40\" height=\"40\"> \
             <properties> \
                 <property name=\"jimbo\" value=\"yeah right\"/> \
             </properties> \
-            <object id =\"5\"name=\"cool\" type=\"dragon\" x=\"168\" y=\"208\"> \
+            <object id =\"5\" name=\"cool\" type=\"dragon\" x=\"168\" y=\"208\"> \
                 <properties> \
                     <property name=\"elf\" value=\"qui\"/> \
                     <property name=\"direction\" value=\"right\"/> \
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
                     <property name=\"walk-state\" value=\"walking\"/> \
                 </properties> \
             </object> \
-            <object name=\"collision\" x=\"146\" y=\"0\" width=\"8\" height=\"16\"/> \
+            <object id =\"6\" name=\"collision\" x=\"146\" y=\"0\" width=\"8\" height=\"16\"/> \
         </objectgroup>";
     auto doc = std::make_unique<rapidxml::xml_document<>>();
     doc->parse<0>(text);

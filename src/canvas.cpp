@@ -1,4 +1,5 @@
 #include <cmath>
+#include <stdexcept>
 #include "../include/xd/graphics/framebuffer.hpp"
 #include "../include/canvas.hpp"
 #include "../include/utility/color.hpp"
@@ -9,7 +10,6 @@
 #include "../include/sprite_data.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/configurations.hpp"
-#include "../include/log.hpp"
 
 Canvas::Canvas(Game& game, xd::vec2 position) :
     game(game),
@@ -164,11 +164,11 @@ void Canvas::set_font(const std::string& font_file) {
 }
 
 void Canvas::link_font(const std::string& font_type, const std::string& font_file) {
-    if (file_utilities::file_exists(font_file)) {
-        font->link_font(font_type, game.create_font(font_file));
-    } else {
-        LOGGER_W << "Couldn't read '" << font_type << "' font file " << font_file;
+    if (!file_utilities::file_exists(font_file)) {
+        throw std::runtime_error("Couldn't read font file " + font_file);
     }
+
+    font->link_font(font_type, game.create_font(font_file));
 }
 
 bool Canvas::should_update() const {

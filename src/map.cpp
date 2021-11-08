@@ -251,7 +251,7 @@ Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<s
         pos.value_or(xd::vec2{}), dir.value_or(Direction::DOWN)), layer.value_or(nullptr));
 }
 
-Map_Object* Map::get_object(std::string name) const {
+Map_Object* Map::get_object(std::string name) {
     string_utilities::capitalize(name);
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
         return get_object(object_name_to_id.at(name));
@@ -259,7 +259,7 @@ Map_Object* Map::get_object(std::string name) const {
     return nullptr;
 }
 
-Map_Object* Map::get_object(int id) const {
+Map_Object* Map::get_object(int id) {
     auto obj = objects.find(id);
     return obj != objects.end() ? obj->second.get() : nullptr;
 }
@@ -308,14 +308,14 @@ int Map::layer_count() const {
     return layers.size();
 }
 
-Layer* Map::get_layer(int id) const {
+Layer* Map::get_layer(int id) {
     if (id >= 1 && id <= layer_count())
         return layers[id - 1].get();
     else
         return nullptr;
 }
 
-Layer* Map::get_layer(std::string name) const {
+Layer* Map::get_layer(std::string name) {
     string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
@@ -329,11 +329,11 @@ Layer* Map::get_layer(std::string name) const {
         return nullptr;
 }
 
-Image_Layer* Map::get_image_layer(int id) const {
+Image_Layer* Map::get_image_layer(int id) {
     return dynamic_cast<Image_Layer*>(get_layer(id));
 }
 
-Image_Layer* Map::get_image_layer(const std::string& name) const {
+Image_Layer* Map::get_image_layer(const std::string& name) {
     return dynamic_cast<Image_Layer*>(get_layer(name));
 }
 
@@ -496,10 +496,25 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     if (node.first_attribute("orientation")->value() != std::string("orthogonal"))
         throw tmx_exception("Invalid map orientation, expected orthogonal");
 
-    map_ptr->width = std::stoi(node.first_attribute("width")->value());
-    map_ptr->height = std::stoi(node.first_attribute("height")->value());
-    map_ptr->tile_width = std::stoi(node.first_attribute("tilewidth")->value());
-    map_ptr->tile_height = std::stoi(node.first_attribute("tileheight")->value());
+    if (auto width_node = node.first_attribute("width"))
+        map_ptr->width = std::stoi(width_node->value());
+    else
+        throw tmx_exception("Map width is missing");
+
+    if (auto height_node = node.first_attribute("height"))
+        map_ptr->height = std::stoi(height_node->value());
+    else
+        throw tmx_exception("Map height is missing");
+
+    if (auto tile_width_node = node.first_attribute("tilewidth"))
+        map_ptr->tile_width = std::stoi(tile_width_node->value());
+    else
+        throw tmx_exception("Map tile width is missing");
+
+    if (auto tile_height_node = node.first_attribute("tileheight"))
+        map_ptr->tile_height = std::stoi(tile_height_node->value());
+    else
+        throw tmx_exception("Map tile height is missing");
 
     // Map properties
     map_ptr->properties.read(node);
@@ -507,7 +522,12 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     // Background music
     if (map_ptr->properties.contains("music")) {
         map_ptr->background_music = map_ptr->properties["music"];
-    } else if (map_ptr->properties.contains("music-script")) {
+    }
+    
+    if (map_ptr->properties.contains("music-script")) {
+        if (!map_ptr->background_music.empty())
+            throw tmx_exception("Tried to set a map music script, but music was already specified as: " + map_ptr->background_music);
+
         auto si = game.get_current_scripting_interface();
         map_ptr->background_music = si->call<std::string>(map_ptr->properties["music-script"]);
     }
@@ -524,14 +544,13 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     // Player position
     if (map_ptr->properties.contains("player-position-x")) {
         map_ptr->starting_position.x = std::stof(map_ptr->properties["player-position-x"]);
-    }
-    else {
+    } else {
         map_ptr->starting_position.x = static_cast<float>(map_ptr->get_pixel_width() / 2);
     }
+
     if (map_ptr->properties.contains("player-position-y")) {
         map_ptr->starting_position.y = std::stof(map_ptr->properties["player-position-y"]);
-    }
-    else {
+    } else {
         map_ptr->starting_position.y = static_cast<float>(map_ptr->get_pixel_height() / 2);
     }
 
@@ -563,12 +582,10 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
                 layer->visible = false;
                 map_ptr->collision_layer = static_cast<Tile_Layer*>(layer.get());
             }
-        }
-        else if (node_name == "imagelayer") {
+        } else if (node_name == "imagelayer") {
             layer = std::shared_ptr<Layer>(Image_Layer::load(*layer_node, game,
                 *game.get_camera()));
-        }
-        else if (node_name == "objectgroup") {
+        } else if (node_name == "objectgroup") {
             layer = std::shared_ptr<Layer>(Object_Layer::load(*layer_node, game, *game.get_camera(), *map_ptr));
             map_ptr->object_layers.push_back(static_cast<Object_Layer*>(layer.get()));
         }

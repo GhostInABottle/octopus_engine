@@ -36,7 +36,7 @@ public:
     explicit Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode = false);
     ~Game();
     // Get audio system pointer
-    xd::audio* get_audio() const;
+    xd::audio* get_audio();
     // Main game loop
     void run();
     // Logic update

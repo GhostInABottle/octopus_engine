@@ -9,27 +9,26 @@
 #include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/sprite_data.hpp"
-#include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include "../include/xd/system.hpp"
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
     if (!file_utilities::file_exists(filename)) {
-        LOGGER_W << "Tried to set sprite for layer " << name <<
-                    " to nonexistent file " << filename;
-        return;
+        throw std::runtime_error("Tried to set sprite for layer " + name +
+                    " to nonexistent file " + filename);
     }
+
     sprite = std::make_unique<Sprite>(game, Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
     set_pose(pose_name, "", Direction::NONE);
 }
 
 void Image_Layer::set_image(const std::string& filename) {
     if (!file_utilities::file_exists(filename)) {
-        LOGGER_W << "Tried to set image for layer " << name <<
-                    " to nonexistent file " << filename;
-        return;
+        throw std::runtime_error("Tried to set image for layer " + name +
+            " to nonexistent file " + filename);
     }
+
     image_source = filename;
     file_utilities::normalize_slashes(image_source);
     image_texture = std::make_shared<xd::texture>(

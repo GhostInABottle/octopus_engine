@@ -7,7 +7,6 @@
 #include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/audio.hpp"
-#include "../include/log.hpp"
 #include <iostream>
 
 Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager), has_diagonal_directions(false) {}
@@ -33,9 +32,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     auto sprite_node = doc->first_node("Sprite");
     if (!sprite_node)
         throw xml_exception("Invalid sprite data file. Missing Sprite node.");
+
     auto sprite_data = load(manager, *sprite_node, audio);
     sprite_data->filename = filename;
     file_utilities::normalize_slashes(sprite_data->filename);
+
     return sprite_data;
 }
 
@@ -196,14 +197,14 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                     sprite_ptr->has_diagonal_directions = is_diagonal(dir);
                 }
             } else {
-                LOGGER_W << "Unsupported tag " << key << " with value " << value;
+                throw tmx_exception("Unsupported pose tag " + key + " with value " + value);
             }
         }
     }
 
     if (!default_pose_found && sprite_ptr->default_pose != "") {
-        LOGGER_W << "Could not find default pose " << sprite_ptr->default_pose << " when loading " << sprite_ptr->filename;
-        sprite_ptr->default_pose = "";
+        throw tmx_exception("Could not find default pose " + sprite_ptr->default_pose +
+            " when loading " + sprite_ptr->filename);
     }
 
     if (sprite_ptr->poses.empty())

@@ -9,7 +9,6 @@
 #include "../include/utility/xml.hpp"
 #include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
-#include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include <utility>
 
@@ -230,10 +229,10 @@ Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
     if (!file_utilities::file_exists(filename)) {
-        LOGGER_W << "Tried to set sprite for map object " << name <<
-                    " to nonexistent file " << filename;
-        return;
+        throw std::runtime_error("Tried to set sprite for map object " + name +
+            " to nonexistent file " + filename);
     }
+
     if (sprite) {
         auto normalized_filename{filename};
         file_utilities::normalize_slashes(normalized_filename);
@@ -320,6 +319,8 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (auto id_node = node.first_attribute("id"))
         object_ptr->id = std::stoi(id_node->value());
+    else
+        throw tmx_exception("Missing map object ID");
 
     if (auto name_node = node.first_attribute("name"))
         object_ptr->set_name(name_node->value());
@@ -327,8 +328,15 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (auto type_node = node.first_attribute("type"))
         object_ptr->set_type(type_node->value());
 
-    object_ptr->position.x = std::stof(node.first_attribute("x")->value());
-    object_ptr->position.y = std::stof(node.first_attribute("y")->value());
+    if (auto x_node = node.first_attribute("x"))
+        object_ptr->position.x = std::stof(x_node->value());
+    else
+        throw tmx_exception("Missing X coordinate for object with ID " + std::to_string(object_ptr->id));
+
+    if (auto y_node = node.first_attribute("y"))
+        object_ptr->position.y = std::stof(y_node->value());
+    else
+        throw tmx_exception("Missing Y coordinate for object with ID " + std::to_string(object_ptr->id));
 
     if (auto width_node = node.first_attribute("width"))
         object_ptr->size.x = std::stof(width_node->value());
@@ -371,10 +379,12 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         auto context_string{properties["script-context"]};
         string_utilities::capitalize(context_string);
         auto context = Script_Context::MAP;
+
         if (context_string == "GLOBAL")
             context = Script_Context::GLOBAL;
         else if (context_string != "MAP")
-            LOGGER_W << "Unknown object script context '" << context_string << "' - defaulting to MAP";
+            throw tmx_exception("Unknown object script context: " + context_string);
+
         object_ptr->set_script_context(context);
     }
 
@@ -391,22 +401,28 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (properties.contains("player-facing"))
         object_ptr->set_player_facing(string_utilities::string_to_bool(properties["player-facing"]));
+
     if (properties.contains("passthrough"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));
+
     if (properties.contains("passthrough-type")) {
         auto type_string{properties["passthrough-type"]};
         string_utilities::capitalize(type_string);
+
         auto type = Passthrough_Type::BOTH;
         if (type_string == "INITIATOR")
             type = Passthrough_Type::INITIATOR;
         else if (type_string == "RECEIVER")
             type = Passthrough_Type::RECEIVER;
         else if (type_string != "BOTH")
-            LOGGER_W << "Unknown object passthrough type '" << type_string << "' - defaulting to BOTH";
+            throw tmx_exception("Unknown object passthrough type: " + type_string);
+
         object_ptr->set_passthrough_type(type);
     }
+
     if (properties.contains("override-tile-collision"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
+
     if (properties.contains("outlined")) {
         auto outlined{properties["outlined"]};
         string_utilities::capitalize(outlined);
@@ -417,7 +433,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         } else {
             auto parts = string_utilities::split(outlined, ",");
             if (parts.empty()) {
-                LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
+                throw tmx_exception("Unknown object outlined value: " + outlined);
             } else {
                 auto conditions = Outline_Condition::NONE;
                 for (auto& part : parts) {
@@ -428,18 +444,18 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
                     } else if (part == "SCRIPT") {
                         conditions = conditions | Outline_Condition::SCRIPT;
                     } else {
-                        LOGGER_W << "Unknown object outlined '" << outlined << "' - defaulting to TOUCHED,SOLID,SCRIPT";
-                        conditions = object_ptr->get_default_outline_conditions();
-                        break;
+                        throw tmx_exception("Unknown object outlined value: " + outlined);
                     }
                 }
                 object_ptr->set_outline_conditions(conditions);
             }
         }
     }
+
     if (properties.contains("outlined-object")) {
         object_ptr->set_outlined_object_id(std::stoi(properties["outlined-object"]));
     }
+
     if (properties.contains("draw-order")) {
         auto order{properties["draw-order"]};
         string_utilities::capitalize(order);
@@ -448,7 +464,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         else if (order == "ABOVE")
             object_ptr->set_draw_order(Draw_Order::ABOVE);
         else if (order != "NORMAL")
-            LOGGER_W << "Unknown object draw order '" << order << "' - defaulting to NORMAL";
+            throw tmx_exception("Unknown object draw order: " + order);
     }
 
     if (properties.contains("sfx-attenuation")) {
@@ -457,7 +473,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         if (attenuation == "TRUE")
             object_ptr->set_sound_attenuation_enabled(true);
         else if (attenuation != "FALSE")
-            LOGGER_W << "Invalid object sfx-attenuation value '" << attenuation << "' - defaulting to false";
+            throw tmx_exception("Invalid object sfx-attenuation value: " + attenuation);
     }
 
     object_ptr->set_pose();

@@ -54,23 +54,46 @@ std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& came
     auto data_node = node.first_node("data");
     if (!data_node)
         throw tmx_exception("Missing layer data");
+
     auto enc_node = data_node->first_attribute("encoding");
     if (!enc_node || enc_node->value() != std::string("base64"))
         throw tmx_exception("Invalid layer data encoding, expected base64");
+
     auto comp_node = data_node->first_attribute("compression");
     if (!comp_node || comp_node->value() != std::string("zlib"))
         throw tmx_exception("Invalid layer data compression, expected zlib");
+
     // Get raw base 64 encoded and compressed layer data
     std::string raw_data = data_node->value();
     string_utilities::trim(raw_data);
-    // Decode layer data
+
+    // Decode and compress layer data
     std::string decoded_data = base64_decode(raw_data);
-    // Decompress layer data
     int num_tiles = layer_ptr->width * layer_ptr->height;
     uLongf size = num_tiles * 4;
     const std::unique_ptr<unsigned int> tile_array(new unsigned int[num_tiles]);
-    uncompress((Bytef*) tile_array.get(), &size,
+    auto result = uncompress((Bytef*) tile_array.get(), &size,
         (const Bytef*) decoded_data.c_str(), decoded_data.size());
+
+    if (result != Z_OK) {
+        std::string error;
+        switch (result) {
+        case Z_MEM_ERROR:
+            error = "insufficient memory";
+            break;
+        case Z_BUF_ERROR:
+            error = "insufficient space in output buffer";
+            break;
+        case Z_DATA_ERROR:
+            error = "incomplete or corrupt tile data";
+            break;
+        default:
+            error = "Unknown error " + std::to_string(result);
+            break;
+        }
+        throw tmx_exception("Error while uncompressing tile layer. Error code: " + error);
+    }
+
     // Put decopressed and decoded  data in the tiles vector
     layer_ptr->tiles = std::vector<unsigned int>(tile_array.get(), tile_array.get() + num_tiles);
 

@@ -25,6 +25,7 @@ rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
 std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera, Map& map) {
     auto layer_ptr = std::make_unique<Object_Layer>();
     layer_ptr->Layer::load(node);
+
     if (auto color_node = node.first_attribute("color"))
         layer_ptr->color = hex_to_color(color_node->value());
     else
