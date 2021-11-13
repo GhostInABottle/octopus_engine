@@ -163,6 +163,12 @@ public:
     void set_strict_multidirectional_movement(bool strict) {
         strict_multidirectional_movement = strict;
     }
+    bool uses_layer_color() const {
+        return use_layer_color;
+    }
+    void set_use_layer_color(bool new_value) {
+        use_layer_color = new_value;
+    }
     Direction get_direction() const {
         return direction;
     }
@@ -431,6 +437,8 @@ private:
     // When moving in multiple directions and hitting an obstacle, movement is corrected
     // to a single direction along the obstacle by default, unless this flag is set 
     bool strict_multidirectional_movement;
+    // Does the object use the layer tint color? Defaults to true
+    bool use_layer_color;
     // Object direction
     Direction direction;
     // Current pose name

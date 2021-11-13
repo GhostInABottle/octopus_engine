@@ -104,6 +104,10 @@ public:
     Image_Layer* get_image_layer(int id);
     // Get image layer by name
     Image_Layer* get_image_layer(const std::string& name);
+    // Get object layer by index (starting from 1, lua convention)
+    Object_Layer* get_object_layer(int id);
+    // Get object layer by name
+    Object_Layer* get_object_layer(const std::string& name);
     // Add a new layer
     void add_layer(Layer_Type type);
     // Delete layer with given name

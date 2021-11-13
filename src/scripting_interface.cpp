@@ -6,6 +6,7 @@
 #include "../include/canvas.hpp"
 #include "../include/collision_record.hpp"
 #include "../include/image_layer.hpp"
+#include "../include/object_layer.hpp"
 #include "../include/map_object.hpp"
 #include "../include/command_result.hpp"
 #include "../include/commands.hpp"
@@ -556,6 +557,7 @@ void Scripting_Interface::setup_scripts() {
     object_type["leave_script"] = sol::property(&Map_Object::get_leave_script, &Map_Object::set_leave_script);
     object_type["overrides_tile_collision"] = sol::property(&Map_Object::overrides_tile_collision, &Map_Object::set_override_tile_collision);
     object_type["strict_multidirectional_movement"] = sol::property(&Map_Object::get_strict_multidirectional_movement, &Map_Object::set_strict_multidirectional_movement);
+    object_type["uses_layer_color"] = sol::property(&Map_Object::uses_layer_color, &Map_Object::set_use_layer_color);
     object_type["player_facing"] = sol::property(&Map_Object::is_player_facing, &Map_Object::set_player_facing);
     object_type["triggered_object"] = sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object);
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
@@ -875,6 +877,23 @@ void Scripting_Interface::setup_scripts() {
             state.value_or(""), dir.value_or(Direction::NONE)));
     };
 
+    // Object layer
+    auto object_layer_type = lua.new_usertype<Object_Layer>("Layer");
+    object_layer_type["name"] = sol::readonly(&Object_Layer::name);
+    object_layer_type["visible"] = &Object_Layer::visible;
+    object_layer_type["opacity"] = &Object_Layer::opacity;
+    object_layer_type["tint_color"] = &Object_Layer::tint_color;
+    object_layer_type["objects"] = sol::property([&](Object_Layer* layer) {
+        return sol::as_table(layer->objects);
+    });
+    object_layer_type["get_property"] = &Object_Layer::get_property;
+    object_layer_type["set_property"] = &Object_Layer::set_property;
+    object_layer_type["update_opacity"] = [&](Object_Layer* layer, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Update_Layer_Command>(
+            *game, *layer, opacity, duration);
+    };
+
     // Current map / scene
     auto map_type = lua.new_usertype<Map>("Map");
     map_type[sol::meta_function::index] = &Map::get_lua_property;
@@ -908,6 +927,10 @@ void Scripting_Interface::setup_scripts() {
     map_type["get_image_layer"] = sol::overload(
         (Image_Layer* (Map::*)(int)) &Map::get_image_layer,
         (Image_Layer* (Map::*)(const std::string&)) &Map::get_image_layer
+    );
+    map_type["get_object_layer"] = sol::overload(
+        (Object_Layer * (Map::*)(int)) &Map::get_object_layer,
+        (Object_Layer * (Map::*)(const std::string&)) &Map::get_object_layer
     );
     map_type["run_script"] = &Map::run_script;
     map_type["run_script_file"] = &Map::run_script_file;

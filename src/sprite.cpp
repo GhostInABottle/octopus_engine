@@ -329,10 +329,14 @@ void Sprite::render(Map_Object& object) {
 
     auto layer =  object.get_layer();
     auto& batch = layer->renderer->get_batch();
+    auto color = object.uses_layer_color()
+        ? object.get_color() * layer->tint_color
+        : object.get_color();
+
     pimpl->render(batch, object.get_position(),
            layer->opacity * object.get_opacity(),
            object.get_magnification(),
-           layer->color * object.get_color());
+           color);
 }
 
 void Sprite::render(xd::sprite_batch& batch, const Canvas& canvas, const xd::vec2 pos) {

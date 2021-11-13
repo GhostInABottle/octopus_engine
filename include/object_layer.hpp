@@ -12,8 +12,8 @@ class Map;
 class Map_Object;
 
 struct Object_Layer : public Layer {
-    // Display color for objects
-    xd::vec4 color;
+    // Color multiplied by object colors when rendering objects
+    xd::vec4 tint_color;
     // List of objects
     std::vector<Map_Object*> objects;
 

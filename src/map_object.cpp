@@ -34,6 +34,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         passthrough_type(Passthrough_Type::BOTH),
         override_tile_collision(false),
         strict_multidirectional_movement(false),
+        use_layer_color(true),
         direction(dir),
         state("FACE"),
         face_state("FACE"),
@@ -422,6 +423,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (properties.contains("override-tile-collision"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
+
+    if (properties.contains("use-layer-color"))
+        object_ptr->set_use_layer_color(string_utilities::string_to_bool(properties["use-layer-color"]));
 
     if (properties.contains("outlined")) {
         auto outlined{properties["outlined"]};

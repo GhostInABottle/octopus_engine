@@ -12,9 +12,9 @@
 #include "../include/game.hpp"
 #include "../include/scripting_interface.hpp"
 #include "../include/xd/vendor/sol/sol.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/xml.hpp"
-#include "../include/utility/direction.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/vendor/rapidxml_print.hpp"
 #include "../include/xd/system.hpp"
@@ -335,6 +335,14 @@ Image_Layer* Map::get_image_layer(int id) {
 
 Image_Layer* Map::get_image_layer(const std::string& name) {
     return dynamic_cast<Image_Layer*>(get_layer(name));
+}
+
+Object_Layer* Map::get_object_layer(int id) {
+    return dynamic_cast<Object_Layer*>(get_layer(id));
+}
+
+Object_Layer* Map::get_object_layer(const std::string& name) {
+    return dynamic_cast<Object_Layer*>(get_layer(name));
 }
 
 void Map::add_layer(Layer_Type layer_type) {
