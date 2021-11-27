@@ -91,23 +91,27 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     if (collision.passable()) {
         position += change;
     } else {
+        Collision_Record one_dir_collision{collision};
         if (multiple_directions && !strict_multidirectional_movement) {
             // Check if we can move in either direction
-            collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
-            if (collision.passable()) {
+            one_dir_collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
+            if (one_dir_collision.passable()) {
                 change.x = 0.0f;
-            }
-            else {
-                collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
-                if (collision.passable()) {
+            } else {
+                one_dir_collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
+                if (one_dir_collision.passable()) {
                     change.y = 0.0f;
                 }
             }
         }
-        if (collision.passable()) {
+
+        if (one_dir_collision.passable()) {
+            // Move in the single passable direction
             position += change;
             move_dir = vector_to_direction(change);
+            collision = one_dir_collision;
         } else {
+            // Update facing direction and state
             if (movement && change_facing) {
                 direction = move_dir;
                 if (sprite && is_diagonal(direction) && !sprite->is_eight_directional()) {
@@ -115,6 +119,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
                 }
             }
             set_state(face_state);
+
             return collision;
         }
     }
@@ -147,6 +152,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
             obj->move(move_dir, pixels, check_type, change_facing);
         }
     }
+
     return collision;
 }
 

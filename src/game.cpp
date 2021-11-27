@@ -385,6 +385,7 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     // Setup shader, if any
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
+    camera->update();
 }
 
 Game::~Game() {
