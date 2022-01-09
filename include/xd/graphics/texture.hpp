@@ -14,6 +14,7 @@ namespace xd
     public:
         texture(const texture&) = delete;
         texture& operator=(const texture&) = delete;
+        texture();
         texture(int width, int height, const void *data = 0, vec4 ck = vec4(0),
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
             GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);

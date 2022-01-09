@@ -474,7 +474,7 @@ void Game::render() {
     // Draw FPS
     if (pimpl->show_fps) {
         pimpl->text_renderer.render(*font, pimpl->debug_style,
-            camera->get_geometry().projection().get(),5, 10,
+            camera->get_geometry().projection().get(), 5, 10,
             "FPS: " + std::to_string(fps()));
     }
 

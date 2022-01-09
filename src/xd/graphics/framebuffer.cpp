@@ -48,15 +48,15 @@ void xd::framebuffer::attach_color_texture(const xd::texture& texture, int slot)
     glDrawBuffers(1, draw_buffers);
 }
 
-void xd::framebuffer::attach_depth_buffer(unsigned int id) const
+void xd::framebuffer::attach_depth_buffer(const xd::texture& texture) const
 {
     if (!extension_supported())
         return;
 
     bind();
 
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-        GL_RENDERBUFFER_EXT, id);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+        GL_TEXTURE_2D, texture.texture_id(), 0);
 
     GLenum error = glGetError();
     if (error == GL_INVALID_OPERATION) {
@@ -69,7 +69,7 @@ std::tuple<bool, std::string> xd::framebuffer::check_complete() const
     auto result = std::tuple(true, std::string(""));
     if (!extension_supported())
         return result;
-    GLenum status = glGetError();
+    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
     if (status != GL_FRAMEBUFFER_COMPLETE_EXT && status != GL_NO_ERROR) {
         std::get<0>(result) = false;
         std::string error = "Unknown framebuffer error";

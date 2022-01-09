@@ -7,6 +7,10 @@ namespace xd { namespace detail { namespace texture {
 
 } } }
 
+xd::texture::texture() {
+    init();
+}
+
 xd::texture::texture(int width, int height, const void *data, xd::vec4 ck,
     GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter)
 {

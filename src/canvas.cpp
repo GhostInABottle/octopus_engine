@@ -56,14 +56,20 @@ Canvas::Canvas(Game& game, xd::vec2 position, const std::string& text, bool came
 }
 
 void Canvas::setup_fbo() {
-    if (Configurations::get<bool>("debug.use-fbo")
-            && xd::framebuffer::extension_supported()) {
-        int width = static_cast<int>(Configurations::get<float>("debug.width"));
-        int height = static_cast<int>(Configurations::get<float>("debug.height"));
-        framebuffer = std::make_shared<xd::framebuffer>();
-        fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
-            xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+    if (!Configurations::get<bool>("debug.use-fbo") || !xd::framebuffer::extension_supported()) {
+        return;
     }
+
+    int width = static_cast<int>(Configurations::get<float>("debug.width"));
+    int height = static_cast<int>(Configurations::get<float>("debug.height"));
+
+    fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
+        xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+    framebuffer = std::make_shared<xd::framebuffer>();
+    framebuffer->attach_color_texture(*fbo_texture, 0);
+
+    auto [complete, error] = framebuffer->check_complete();
+    if (!complete) throw std::runtime_error(error);
 }
 
 void Canvas::set_image(std::string image_filename, xd::vec4 trans) {
