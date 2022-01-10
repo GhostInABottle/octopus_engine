@@ -50,12 +50,17 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
         camera.enable_scissor_test(scissor_box, viewport);
     }
 
-    canvas.get_framebuffer()->bind();
+    auto framebuffer = canvas.get_framebuffer();
+    framebuffer->attach_color_texture(*canvas.get_fbo_texture(), 0);
+    auto [complete, error] = framebuffer->check_complete();
+    if (!complete) throw std::runtime_error(error);
+
     glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     camera.set_clear_color();
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {
@@ -64,29 +69,33 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
         // Scissor test was already applied when drawing to FBO
         camera.disable_scissor_test();
     }
+
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    batch.add(canvas.get_fbo_texture(), 0, 0, xd::vec4(1.0f));
+    float x = 0.0f, y = 0.0f;
+    if (!canvas.is_camera_relative()) {
+        // Since the camera might have moved since last draw, we need to update
+        // the position of non-camera-relative canvases
+        auto camera_pos = camera.get_pixel_position();
+        auto last_pos = canvas.get_last_camera_position();
+        x = last_pos.x - camera_pos.x;
+        y = camera_pos.y - last_pos.y;
+    }
+    batch.add(canvas.get_fbo_texture(), x, y, xd::vec4(1.0f));
+
     camera.update_viewport();
+
     xd::transform_geometry geometry;
     geometry.projection().load(
         xd::ortho<float>(
             0, static_cast<float>(game.game_width()), // left, right
             0, static_cast<float>(game.game_height()), // bottom, top
-            -1, 1 // near, far
-            )
+            -1, 1) // near, far
     );
-
     geometry.model_view().identity();
-    if (!canvas.is_camera_relative()) {
-        // Since the camera might have moved since last draw, we need to update
-        // the position of non-camera-relative canvases
-        auto camera_pos = camera.get_position();
-        auto last_pos = canvas.get_last_camera_position();
-        geometry.model_view().translate(last_pos.x - camera_pos.x, camera_pos.y - last_pos.y, 0.0f);
-    }
-    
+
     draw(geometry.mvp(), root);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -114,7 +123,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
     if (redraw) {
         if (using_fbo) {
             setup_framebuffer(canvas);
-            canvas.set_last_camera_position(camera.get_position());
+            canvas.set_last_camera_position(camera.get_pixel_position());
         }
 
         // Render canvas and children
@@ -153,7 +162,7 @@ void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
     style->color().a = canvas.get_opacity();
     auto& lines = canvas.get_text_lines();
     xd::vec2 pos = canvas.get_position();
-    auto camera_pos = camera.get_position();
+    auto camera_pos = camera.get_pixel_position();
     if (parent) {
         pos += parent->get_position();
     }
@@ -173,7 +182,7 @@ void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
 
 void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
     xd::vec2 pos = canvas.get_position();
-    auto camera_pos = camera.get_position();
+    auto camera_pos = camera.get_pixel_position();
     pos += camera_pos;
     if (parent) {
         pos += parent->get_position();
@@ -205,7 +214,7 @@ void Canvas_Renderer::render_background(Canvas& canvas, Canvas* parent) {
     }
 
     if (canvas.is_camera_relative()) {
-        auto camera_pos = camera.get_position();
+        auto camera_pos = camera.get_pixel_position();
         rect.x += camera_pos.x;
         rect.y += camera_pos.y;
     }

@@ -57,51 +57,54 @@ public:
     // Cease shaking screen
     void cease_shaking();
     // Getters and setters
-    xd::vec2 get_position() const noexcept {
+    xd::vec2 get_position() const {
         return position;
     }
-    xd::rect get_viewport() const noexcept {
+    xd::vec2 get_pixel_position() const {
+        return xd::round(position);
+    }
+    xd::rect get_viewport() const {
         return viewport;
     }
-    xd::transform_geometry& get_geometry() noexcept {
+    xd::transform_geometry& get_geometry() {
         return geometry;
     }
     // Modelview projection matrix
     xd::mat4 get_mvp() const {
         return geometry.mvp();
     }
-    xd::vec4 get_screen_tint() const noexcept {
+    xd::vec4 get_screen_tint() const {
         return screen_tint;
     }
-    void set_screen_tint(xd::vec4 color) noexcept {
+    void set_screen_tint(xd::vec4 color) {
         screen_tint = color;
     }
-    xd::vec4 get_map_tint() const noexcept {
+    xd::vec4 get_map_tint() const {
         return map_tint;
     }
-    void set_map_tint(xd::vec4 color) noexcept {
+    void set_map_tint(xd::vec4 color) {
         map_tint = color;
     }
-    float get_brightness() const noexcept {
+    float get_brightness() const {
         return brightness;
     }
-    void set_brightness(float brightness) noexcept {
+    void set_brightness(float brightness) {
         this->brightness = brightness;
     }
-    float get_contrast() const noexcept {
+    float get_contrast() const {
         return contrast;
     }
-    void set_contrast(float contrast) noexcept {
+    void set_contrast(float contrast) {
         this->contrast = contrast;
     }
-    const Map_Object* get_object() const noexcept {
+    const Map_Object* get_object() const {
         return object;
     }
-    void set_object(Map_Object* obj) noexcept {
+    void set_object(Map_Object* obj) {
         object = obj;
     }
     // Is the camera shaking?
-    bool is_shaking() const noexcept {
+    bool is_shaking() const {
         return shaker != nullptr;
     }
     // Get current shake offset
@@ -135,7 +138,7 @@ private:
 
 class Camera_Renderer : public xd::render_component<Camera> {
 public:
-    explicit Camera_Renderer(Game& game) noexcept : game(game) {}
+    explicit Camera_Renderer(Game& game) : game(game) {}
     void render(Camera& camera);
 private:
     Game& game;
@@ -149,7 +152,7 @@ public:
 class Screen_Shaker : public xd::logic_component<Camera> {
 public:
     Screen_Shaker(float strength, float speed);
-    float shake_offset() noexcept { return offset; }
+    float shake_offset() { return offset; }
     void update(Camera& camera);
 private:
     // Shake strength

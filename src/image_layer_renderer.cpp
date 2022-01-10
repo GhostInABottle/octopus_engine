@@ -11,7 +11,7 @@ void Image_Layer_Renderer::render(Map& map) {
     auto& image_layer = static_cast<const Image_Layer&>(layer);
     xd::vec2 pos;
     if (image_layer.fixed)
-        pos = camera.get_position();
+        pos = camera.get_pixel_position();
     if (image_layer.sprite) {
         image_layer.sprite->render(batch, image_layer, pos);
     } else {

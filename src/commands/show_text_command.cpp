@@ -69,7 +69,7 @@ struct Show_Text_Command::Impl : Timed_Command {
         bool always_visible = (options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
 
         if (!camera_relative && always_visible) {
-            pos -= game.get_camera()->get_position();
+            pos -= game.get_camera()->get_pixel_position();
         }
 
         if ((options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {

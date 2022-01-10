@@ -60,16 +60,12 @@ void Canvas::setup_fbo() {
         return;
     }
 
-    int width = static_cast<int>(Configurations::get<float>("debug.width"));
-    int height = static_cast<int>(Configurations::get<float>("debug.height"));
+    auto width = static_cast<int>(game.game_width());
+    auto height = static_cast<int>(game.game_height());
 
     fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
         xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
     framebuffer = std::make_shared<xd::framebuffer>();
-    framebuffer->attach_color_texture(*fbo_texture, 0);
-
-    auto [complete, error] = framebuffer->check_complete();
-    if (!complete) throw std::runtime_error(error);
 }
 
 void Canvas::set_image(std::string image_filename, xd::vec4 trans) {
@@ -159,7 +155,7 @@ void Canvas::set_text(const std::string& new_text) {
 }
 
 void Canvas::render_text(const std::string& text_to_render, float x, float y) const {
-    game.render_text(*font, *style, std::round(x), std::round(y), text_to_render);
+    game.render_text(*font, *style, x, y, text_to_render);
 }
 
 void Canvas::set_font(const std::string& font_file) {

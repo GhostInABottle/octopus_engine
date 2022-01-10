@@ -312,7 +312,8 @@ void Camera::draw_map_tint() const {
     auto width = static_cast<float>(game.game_width());
     auto height = static_cast<float>(game.game_height());
     if (map_tint.a > 0.0f) {
-        xd::rect rect{position.x, position.y, width, height};
+        auto cam_pos = get_pixel_position();
+        xd::rect rect{cam_pos.x, cam_pos.y, width, height};
         draw_rect(rect, map_tint);
     }
 }
@@ -320,15 +321,15 @@ void Camera::draw_map_tint() const {
 void Camera_Renderer::render(Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-     auto width = static_cast<float>(game.game_width());
-     auto height = static_cast<float>(game.game_height());
+    auto width = static_cast<float>(game.game_width());
+    auto height = static_cast<float>(game.game_height());
 
     auto& geometry = camera.get_geometry();
     // left, right, bottom, top, near, far
     geometry.projection().load(xd::ortho<float>(0, width, height, 0, -1, 1));
 
     geometry.model_view().identity();
-    auto cam_pos = camera.get_position();
+    auto cam_pos = camera.get_pixel_position();
     geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
 
     if (camera.is_shaking()) {
@@ -339,8 +340,7 @@ void Camera_Renderer::render(Camera& camera) {
 
     auto tint_color = camera.get_screen_tint();
     if (!check_close(tint_color.a, 0.0f)) {
-        auto pos = camera.get_position();
-        xd::rect rect{pos.x, pos.y, width, height};
+        xd::rect rect{cam_pos.x, cam_pos.y, width, height};
         camera.draw_rect(rect, tint_color);
     }
 
