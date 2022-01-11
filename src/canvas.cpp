@@ -65,7 +65,6 @@ void Canvas::setup_fbo() {
 
     fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
         xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
-    framebuffer = std::make_shared<xd::framebuffer>();
 }
 
 void Canvas::set_image(std::string image_filename, xd::vec4 trans) {

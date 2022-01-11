@@ -5,10 +5,11 @@
 #include <memory>
 #include <string>
 #include <optional>
-#include "xd/system.hpp"
-#include "xd/graphics/types.hpp"
-#include "xd/graphics/simple_text_renderer.hpp"
+#include "xd/graphics/framebuffer.hpp"
 #include "xd/graphics/font.hpp"
+#include "xd/graphics/simple_text_renderer.hpp"
+#include "xd/graphics/types.hpp"
+#include "xd/system.hpp"
 #include "xd/vendor/sol/forward.hpp"
 #include "direction.hpp"
 
@@ -46,17 +47,17 @@ public:
     // Is the game running in editor mode?
     bool in_editor_mode() const;
     // Is the game currently paused?
-    bool is_paused() const noexcept { return paused; }
+    bool is_paused() const { return paused; }
     // Check if pausing is possible
-    bool is_pausing_enabled() const noexcept { return pausing_enabled; }
+    bool is_pausing_enabled() const { return pausing_enabled; }
     // Set whether the game will pause on button press or unfocus
-    void set_pausing_enabled(bool value) noexcept { pausing_enabled = value; }
+    void set_pausing_enabled(bool value) { pausing_enabled = value; }
     // Pause game
     void pause();
     // Resume game
     void resume(const std::string& script = "");
     // Exit game
-    void exit() noexcept;
+    void exit();
     // Window dimensions in screen coordinates
     int window_width() const {
         return window ? window->width() : editor_size.x;
@@ -72,7 +73,7 @@ public:
         return window ? window->framebuffer_height() : editor_size.y;
     }
     // Was the executable build in debug mode?
-    bool is_debug() const noexcept {
+    bool is_debug() const {
 #ifdef NDEBUG
         return false;
 #else
@@ -92,20 +93,20 @@ public:
     // Toggle fullscreen mode
     void set_fullscreen(bool fullscreen);
     // Game dimensions
-    float game_width(bool magnified = true) const noexcept;
-    float game_height(bool magnified = true) const noexcept;
+    float game_width(bool magnified = true) const;
+    float game_height(bool magnified = true) const;
     // Get screen magnification
-    float get_magnification() const noexcept {
+    float get_magnification() const {
         return magnification;
     }
     // Set screen magnification
     void set_magnification(float mag);
     // Frames per seconds
-    int fps() const noexcept {
+    int fps() const {
         return window->fps();
     }
     // Number of frames since the beginning
-    int frame_count() const noexcept {
+    int frame_count() const {
         return window->frame_count();
     }
     // Is key currently pressed
@@ -116,7 +117,7 @@ public:
         return window->pressed(key, get_gamepad_id());
     }
     // Was any key triggered since last update?
-    bool triggered() const noexcept {
+    bool triggered() const {
         return window->triggered();
     }
     // Was key triggered since last update?
@@ -165,21 +166,21 @@ public:
     // Run a Lua function
     void run_function(const sol::protected_function& function);
     // Set or get the current scripting interface
-    void set_current_scripting_interface(Scripting_Interface* si) noexcept {
+    void set_current_scripting_interface(Scripting_Interface* si) {
         current_scripting_interface = si;
     }
-    Scripting_Interface* get_current_scripting_interface() noexcept {
+    Scripting_Interface* get_current_scripting_interface() {
         return current_scripting_interface;
     }
     // Get the shared Lua virtual machine
-    xd::lua::virtual_machine* get_lua_vm() noexcept;
+    xd::lua::virtual_machine* get_lua_vm();
     // Reset the scripting interface and run startup scripts again
-    void reset_scripting() noexcept;
+    void reset_scripting();
     // Play some music
     void play_music(const std::string& filename, bool looping = true);
     void play_music(const std::shared_ptr<xd::music>& new_music, bool looping = true);
     // Get the music currently playing
-    std::shared_ptr<xd::music> get_playing_music() noexcept { return music; }
+    std::shared_ptr<xd::music> get_playing_music() { return music; }
     // Set the currently playing music
     void set_playing_music(const std::shared_ptr<xd::music>& music) {
         this->music = music;
@@ -196,43 +197,45 @@ public:
     // Load the map right away
     void load_map(const std::string& filename);
     // Get the map
-    Map* get_map() noexcept { return map.get(); }
+    Map* get_map() { return map.get(); }
     // Create a new map
     void new_map(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Add a canvas to current map
     void add_canvas(std::shared_ptr<Canvas> canvas);
     // Get the camera
-    Camera* get_camera() noexcept { return camera.get(); }
+    Camera* get_camera() { return camera.get(); }
     // Get the player
-    Map_Object* get_player() noexcept { return player.get(); }
+    Map_Object* get_player() { return player.get(); }
     // Get global asset manager
     xd::asset_manager& get_asset_manager();
+    // Get the framebuffer object
+    xd::framebuffer& get_framebuffer() const { return *framebuffer; }
     // Create a font
     std::shared_ptr<xd::font> create_font(const std::string& filename);
     // Render some text
     void render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text);
     // Get font
-    std::shared_ptr<xd::font> get_font() noexcept { return font; }
+    std::shared_ptr<xd::font> get_font() { return font; }
     // Get style
-    const xd::font_style& get_font_style() noexcept { return style; }
+    const xd::font_style& get_font_style() { return style; }
     // Get width of text, in pixels
     float text_width(const std::string& text, xd::font* font = nullptr, const xd::font_style* style = nullptr);
     // Reset any active text decorators (e.g. {typewriter})
     void reset_text_decorators();
     // Get clock
-    Clock* get_clock() noexcept { return clock.get(); }
+    Clock* get_clock() { return clock.get(); }
     // Is time stopped
     bool stopped() const;
     // Total game time in seconds
     int seconds() const;
     // Time elapsed since game started (in ms) not including pauses
-    int ticks() const noexcept;
+    int ticks() const;
     // Manually set ticks
-    void set_ticks(int ticks) noexcept {
+    void set_ticks(int ticks) {
         editor_ticks = ticks;
     }
     // Total time elapsed since game started (in ms)
-    int window_ticks() noexcept { return window ? window->ticks() : editor_ticks; }
+    int window_ticks() { return window ? window->ticks() : editor_ticks; }
     // Get save file directory and creates it if needed
     std::string get_save_directory() const;
     // Save game
@@ -266,6 +269,7 @@ private:
     std::unique_ptr<Clock> clock;
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
+    std::unique_ptr<xd::framebuffer> framebuffer;
     Scripting_Interface* current_scripting_interface;
     std::shared_ptr<Map_Object> player;
     std::shared_ptr<xd::music> music;

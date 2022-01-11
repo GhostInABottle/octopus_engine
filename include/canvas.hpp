@@ -12,7 +12,6 @@
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/font.hpp"
 #include "xd/graphics/text_formatter.hpp"
-#include "xd/graphics/framebuffer.hpp"
 #include "sprite_holder.hpp"
 #include "sprite.hpp"
 #include "text_parser.hpp"
@@ -45,7 +44,8 @@ public:
         }
         child->set_priority(get_priority() + children.size());
         child->inherit_properties(*this);
-        if (type != Type::TEXT && !framebuffer) {
+
+        if (type != Type::TEXT && !fbo_texture) {
             setup_fbo();
         }
 
@@ -224,9 +224,6 @@ public:
     }
     std::shared_ptr<xd::texture> get_fbo_texture() const {
         return fbo_texture;
-    }
-    std::shared_ptr<xd::framebuffer> get_framebuffer() const {
-        return framebuffer;
     }
     std::vector<std::string>& get_text_lines() {
         return text_lines;
@@ -442,7 +439,6 @@ private:
     std::shared_ptr<xd::texture> image_texture;
     // Used when FBO is supported for faster rendering
     std::shared_ptr<xd::texture> fbo_texture;
-    std::shared_ptr<xd::framebuffer> framebuffer;
     // Optional sprite
     std::unique_ptr<Sprite> sprite;
     // Text to print

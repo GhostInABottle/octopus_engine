@@ -50,9 +50,9 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
         camera.enable_scissor_test(scissor_box, viewport);
     }
 
-    auto framebuffer = canvas.get_framebuffer();
-    framebuffer->attach_color_texture(*canvas.get_fbo_texture(), 0);
-    auto [complete, error] = framebuffer->check_complete();
+    auto& framebuffer = game.get_framebuffer();
+    framebuffer.attach_color_texture(*canvas.get_fbo_texture(), 0);
+    auto [complete, error] = framebuffer.check_complete();
     if (!complete) throw std::runtime_error(error);
 
     glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
@@ -64,7 +64,7 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
 }
 
 void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {
-    canvas.get_framebuffer()->unbind();
+    game.get_framebuffer().unbind();
     if (canvas.get_scissor_box().w > 0) {
         // Scissor test was already applied when drawing to FBO
         camera.disable_scissor_test();

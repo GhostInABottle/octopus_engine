@@ -298,6 +298,7 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     // Set members
     clock = std::make_unique<Clock>(*this);
     camera = std::make_unique<Camera>(*this);
+    framebuffer = std::make_unique<xd::framebuffer>();
     // Listen to config changes
     Configurations::add_observer("Game",
         [this](const std::string& key) {
@@ -528,7 +529,7 @@ void Game::resume(const std::string& script) {
     if (!script.empty()) run_script(script);
 }
 
-void Game::exit() noexcept {
+void Game::exit() {
     pimpl->exit_requested = true;
 }
 
@@ -558,11 +559,11 @@ void Game::set_fullscreen(bool fullscreen) {
     camera->set_size(framebuffer_width(), framebuffer_height());
 }
 
-float Game::game_width(bool magnified) const noexcept {
+float Game::game_width(bool magnified) const {
     return magnified ? pimpl->game_width / magnification : pimpl->game_width;
 }
 
-float Game::game_height(bool magnified) const noexcept {
+float Game::game_height(bool magnified) const {
     return magnified ? pimpl->game_height / magnification : pimpl->game_height;
 }
 
@@ -619,11 +620,11 @@ void Game::run_function(const sol::protected_function& function) {
     pimpl->run_function(*this, function);
 }
 
-xd::lua::virtual_machine* Game::get_lua_vm() noexcept {
+xd::lua::virtual_machine* Game::get_lua_vm() {
     return &pimpl->vm;
 }
 
-void Game::reset_scripting() noexcept {
+void Game::reset_scripting() {
     pimpl->reset_scripting = true;
 }
 
@@ -703,7 +704,7 @@ int Game::seconds() const {
     return clock->seconds();
 }
 
-int Game::ticks() const noexcept {
+int Game::ticks() const {
     if (!window)
         return editor_ticks;
     int stopped_time = pimpl->total_paused_time + (paused ?
