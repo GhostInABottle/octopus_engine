@@ -30,14 +30,18 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
     doc->parse<0>(content);
     auto sprite_node = doc->first_node("Sprite");
-    if (!sprite_node)
-        throw xml_exception("Invalid sprite data file. Missing Sprite node.");
+    if (!sprite_node) {
+        throw xml_exception("Invalid sprite data file " + filename + ": Missing Sprite node.");
+    }
 
-    auto sprite_data = load(manager, *sprite_node, audio);
-    sprite_data->filename = filename;
-    file_utilities::normalize_slashes(sprite_data->filename);
-
-    return sprite_data;
+    try {
+        auto sprite_data = load(manager, *sprite_node, audio);
+        sprite_data->filename = filename;
+        file_utilities::normalize_slashes(sprite_data->filename);
+        return sprite_data;
+    } catch (xml_exception& ex) {
+        throw xml_exception("Error reading sprite data file " + filename + ": " + ex.what());
+    }
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node, xd::audio* audio) {
@@ -160,9 +164,33 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             }
 
             // Sound effect
-            auto sound_file_attr = frame_node->first_attribute("Sound");
-            if (audio && sound_file_attr) {
-                frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
+            if (audio) {
+                if (auto sound_file_attr = frame_node->first_attribute("Sound")) {
+                    frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
+                }
+
+                if (auto node = frame_node->first_node("Sound")) {
+                    if (frame.sound_file) {
+                        throw xml_exception("Both frame sound attribute and node are defined for " + frame.sound_file->get_filename());
+                    }
+
+                    if (auto sound_file_attr = node->first_attribute("Filename")) {
+                        frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
+                    } else {
+                        throw xml_exception("Frame has a sound node but the filename is missing");
+                    }
+
+                    if (auto pitch_attr = node->first_attribute("Pitch")) {
+                        auto pitch = std::stof(pitch_attr->value());
+                        frame.sound_file->set_pitch(pitch);
+                    }
+
+                    if (auto volume_attr = node->first_attribute("Volume")) {
+                        auto volume = std::stof(volume_attr->value());
+                        frame.sound_file->set_volume(volume);
+                        frame.sound_volume = volume;
+                    }
+                }
             }
 
             pose.frames.push_back(frame);

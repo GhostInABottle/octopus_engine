@@ -120,11 +120,12 @@ struct Sprite::Impl {
         int frame_time = get_frame_time(*current_frame);
 
         auto audio = game.get_audio();
-        auto play_sfx = audio && current_frame->sound_file
-            && (last_sound_frame != frame_index || current_frame->sound_file->stopped());
+        auto sound_file = current_frame->sound_file.get();
+        auto play_sfx = audio && sound_file
+            && (last_sound_frame != frame_index || sound_file->stopped());
         if (play_sfx) {
-            current_frame->sound_file->set_volume(sfx_volume);
-            current_frame->sound_file->play();
+            sound_file->set_volume(current_frame->sound_volume * sfx_volume);
+            sound_file->play();
             last_sound_frame = frame_index;
         }
 

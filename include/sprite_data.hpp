@@ -34,9 +34,11 @@ struct Frame {
     xd::vec4 transparent_color;
     // Frame sound effect
     std::shared_ptr<xd::sound> sound_file;
+    // Original sound file volume (before attenuation)
+    float sound_volume;
 
     Frame() noexcept : duration(-1), magnification(1.0f, 1.0f), angle(0),
-        opacity(1.0f), tween_frame(false) {}
+        opacity(1.0f), tween_frame(false), sound_volume(1.0f) {}
 };
 
 struct Pose {
