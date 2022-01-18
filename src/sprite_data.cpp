@@ -26,20 +26,20 @@ Sprite_Data::~Sprite_Data() {
 }
 
 std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename, xd::audio* audio) {
-    auto doc = std::make_unique<rapidxml::xml_document<>>();
-    auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
-    doc->parse<0>(content);
-    auto sprite_node = doc->first_node("Sprite");
-    if (!sprite_node) {
-        throw xml_exception("Invalid sprite data file " + filename + ": Missing Sprite node.");
-    }
-
     try {
+        auto doc = std::make_unique<rapidxml::xml_document<>>();
+        auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
+        doc->parse<0>(content);
+        auto sprite_node = doc->first_node("Sprite");
+        if (!sprite_node) {
+            throw xml_exception("Missing Sprite node.");
+        }
+
         auto sprite_data = load(manager, *sprite_node, audio);
         sprite_data->filename = filename;
         file_utilities::normalize_slashes(sprite_data->filename);
         return sprite_data;
-    } catch (xml_exception& ex) {
+    } catch (std::exception& ex) {
         throw xml_exception("Error reading sprite data file " + filename + ": " + ex.what());
     }
 }

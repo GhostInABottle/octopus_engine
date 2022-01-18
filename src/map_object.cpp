@@ -245,10 +245,16 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
         file_utilities::normalize_slashes(normalized_filename);
         if (sprite->get_filename() == normalized_filename)
             return;
+    }
+
+    auto new_sprite = std::make_shared<Sprite>(game,
+        Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
+
+    if (sprite) {
         del_component(sprite);
     }
-    sprite = std::make_shared<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
+
+    sprite = new_sprite;
     add_component(sprite);
     set_pose(new_pose_name);
 }
