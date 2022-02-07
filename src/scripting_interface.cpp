@@ -734,6 +734,9 @@ void Scripting_Interface::setup_scripts() {
     });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
     game_type["character_input"] = sol::property(&Game::character_input);
+    game_type["command_line_args"] = sol::property([&](Game& game) {
+        return sol::as_table(game.get_command_line_args());
+    });
     game_type["set_size"] = &Game::set_size;
     game_type["exit"] = &Game::exit;
     game_type["pause"] = &Game::pause;

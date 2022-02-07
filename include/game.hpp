@@ -258,6 +258,10 @@ public:
     std::optional<std::string> get_gamepad_name() const;
     // Get string to be added to map object scripts
     std::string get_object_script_preamble() const;
+    // Get arguments used to launch the game
+    const std::vector<std::string>& get_command_line_args() const {
+        return command_line_args;
+    }
 private:
     struct Impl;
     friend struct Impl;
@@ -277,6 +281,7 @@ private:
     xd::font_style style;
     int editor_ticks;
     xd::ivec2 editor_size;
+    std::vector<std::string> command_line_args;
 };
 
 #endif
