@@ -409,7 +409,7 @@ void Game::frame_update() {
 
     // Toggle fullscreen when ALT+Enter is pressed
     if ((pressed(xd::KEY_RALT) || pressed(xd::KEY_LALT)) && triggered_once(xd::KEY_ENTER)) {
-        set_fullscreen(!is_fullscreen());
+        Configurations::set<bool>("graphics.fullscreen", !is_fullscreen());
     }
 
     // Pause or resume game if needed
