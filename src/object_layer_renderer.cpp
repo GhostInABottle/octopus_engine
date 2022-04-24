@@ -48,9 +48,11 @@ void Object_Layer_Renderer::render(Map& map) {
                 a->get_id() < b->get_id() : a_order < b_order;
     });
 
+    bool draw_outlines = map.get_draw_outlines();
     xd::shader_uniforms uniforms{camera.get_mvp(), map.get_game().ticks()};
+
     for (auto& object : object_layer.objects) {
-        if (object->is_outlined()) {
+        if (draw_outlines && object->is_outlined()) {
             auto color = object->get_outline_color();
             batch.set_outline_color(color.value_or(default_outline_color));
             batch.draw(uniforms);

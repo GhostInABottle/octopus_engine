@@ -166,7 +166,13 @@ public:
     const Tileset& get_tileset(int index) const {
         return tilesets.at(index);
     }
-    bool get_objects_moved() const noexcept {
+    bool get_draw_outlines() const {
+        return draw_object_outlines;
+    }
+    void set_draw_outlines(bool draw) {
+        draw_object_outlines = draw;
+    }
+    bool get_objects_moved() const {
         return objects_moved;
     }
     std::string get_bg_music_filename() const {
@@ -184,7 +190,7 @@ public:
     void set_objects_moved(bool moved) {
         objects_moved = moved;
     }
-    bool is_changed() noexcept {
+    bool is_changed() {
         return needs_redraw;
     }
 private:
@@ -226,6 +232,8 @@ private:
     std::string background_music;
     // Startup script filenames
     std::vector<std::string> start_scripts;
+    // Should object outlines be drawn?
+    bool draw_object_outlines;
     // Do we need to redraw static elements?
     bool needs_redraw;
     // Did any objects move?

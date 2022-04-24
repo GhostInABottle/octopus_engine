@@ -915,6 +915,7 @@ void Scripting_Interface::setup_scripts() {
     });
     map_type["layer_count"] = sol::property(&Map::layer_count);
     map_type["object_count"] = sol::property(&Map::object_count);
+    map_type["draw_outlines"] = sol::property(&Map::get_draw_outlines, &Map::set_draw_outlines);
     map_type["get_property"] = &Map::get_property;
     map_type["set_property"] = &Map::set_property;
     map_type["get_object"] = sol::overload(

@@ -50,6 +50,7 @@ Map::Map(Game& game) :
         scripting_interface(std::make_unique<Scripting_Interface>(game)),
         collision_tileset(nullptr),
         collision_layer(nullptr),
+        draw_object_outlines(true),
         needs_redraw(true),
         objects_moved(true),
         canvases_sorted(false) {
