@@ -81,8 +81,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             rect.y = std::stof(bb_node->first_attribute("Y")->value());
             rect.w = std::stof(bb_node->first_attribute("Width")->value());
             rect.h = std::stof(bb_node->first_attribute("Height")->value());
-            if (rect.x > 0) pose.bounding_box.x = rect.x;
-            if (rect.y > 0) pose.bounding_box.y = rect.y;
+            pose.bounding_box.x = rect.x;
+            pose.bounding_box.y = rect.y;
             if (rect.w > 0) pose.bounding_box.w = rect.w;
             if (rect.h > 0) pose.bounding_box.h = rect.h;
         }
