@@ -25,7 +25,7 @@ class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public E
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
-    enum class Passthrough_Type { INITIATOR = 1, RECEIVER, BOTH };
+    enum class Passthrough_Type { INITIATOR = 1, RECEIVER = 2, BOTH = 3 };
     enum class Outline_Condition { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
     // Map object onstructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
