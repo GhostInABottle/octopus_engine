@@ -253,12 +253,52 @@ elseif c.selected == 6 then
    text(o, "You entered: " .. char_input):wait()
 elseif c.selected == 7 then
     -- Other
-    local files = filesystem.list_directory('.')
-    print('Files in current folder:')
-    for _, file in ipairs(files) do
-        local file_type = filesystem.is_directory(file) and 'directory' or 'file'
-        print('\t- ' .. file .. ' - ' .. file_type)
+    local function test_list(method, processor)
+        print('Files in current folder (' .. method .. '):')
+        local files = filesystem[method]('.')
+        local processed_files = {}
+        for _, file in ipairs(files) do
+            table.insert(processed_files, processor(file))
+        end
+        table.sort(processed_files, function(a, b) return a.timestamp < b.timestamp end)
+        for _, f in ipairs(processed_files) do
+            print('\t- ' .. f.timestamp .. '\t' .. f.date_time .. ' ' .. f.is_dst .. '\t' .. f.name .. ' (' .. f.type .. ')')
+        end
     end
+    local function process_tm(tm)
+        local date_str = string.format('%d-%02d-%02d %02d:%02d:%02d', tm.year, tm.month, tm.month_day,
+            tm.hour, tm.minute, tm.second)
+        local dst = tm.is_dst and '(DST!)' or (tm.is_dst == false and '(NDST)' or '(UNK?)')
+        return date_str, dst
+    end
+    local function basic_processor(file_name)
+        local file_type = filesystem.is_directory(file_name) and 'directory' or 'file'
+        local ms, tm = filesystem.last_write_time(file_name)
+        local date_str, dst = process_tm(tm)
+        return {
+            name = file_name,
+            type = file_type,
+            timestamp = ms,
+            date_time = date_str,
+            is_dst = dst
+        }
+    end
+    function detailed_processor(file_info)
+        local file_type = file_info.is_directory and 'directory' or 'file'
+        local ms = file_info.timestamp
+        local tm = file_info.calendar_time
+        local date_str, dst = process_tm(tm)
+        return {
+            name = file_info.name,
+            type = file_type,
+            timestamp = ms,
+            date_time = date_str,
+            is_dst = dst
+        }  
+    end
+    test_list('list_directory', basic_processor)
+    test_list('list_detailed_directory', detailed_processor)
+
     text(o, "Are we in debug mode? " .. (game.debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')

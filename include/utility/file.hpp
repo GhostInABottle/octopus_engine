@@ -3,9 +3,19 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include <fstream>
+#include <ctime>
 
 namespace file_utilities {
+    // Basic file/dir info
+    struct Path_Info {
+        std::string name;
+        bool is_regular;
+        bool is_directory;
+        unsigned long long timestamp;
+        std::tm calendar_time;
+    };
     // Open the file with the given UTF8 name for reading
     std::ifstream open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in);
     // Open the file with the given UTF8 name for writing
@@ -26,8 +36,12 @@ namespace file_utilities {
     bool is_regular_file(const std::string& path);
     // Check if path is a directory
     bool is_directory(const std::string& path);
+    // Get the last modification time (milliseconds and std::time)
+    std::tuple<unsigned long long, std::tm> last_write_time(const std::string& path);
     // Get file names in a directory
-    std::vector<std::string> list_directory_files(const std::string& path);
+    std::vector<std::string> directory_content_names(const std::string& path);
+    // Get file information in a directory
+    std::vector<Path_Info> directory_content_details(const std::string& path);
     // Copy a file, returns a boolean indicating success
     bool copy_file(const std::string& source, const std::string& destination);
     // Remove a file, returns a boolean indicating success

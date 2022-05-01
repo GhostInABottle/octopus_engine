@@ -19,6 +19,7 @@
 #include "../include/log.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/lua.hpp"
+#include <ctime>
 
 Game* Scripting_Interface::game = nullptr;
 
@@ -120,16 +121,38 @@ void Scripting_Interface::setup_scripts() {
         [&](const sol::protected_function& func) { wait_func(*game, func); }
     ));
 
+    auto tm_type = lua.new_usertype<std::tm>("Calendar_Time");
+    tm_type["second"] = sol::readonly(&std::tm::tm_sec);
+    tm_type["minute"] = sol::readonly(&std::tm::tm_min);
+    tm_type["hour"] = sol::readonly(&std::tm::tm_hour);
+    tm_type["month_day"] = sol::readonly(&std::tm::tm_mday);
+    tm_type["month"] = sol::readonly(&std::tm::tm_mon);
+    tm_type["year"] = sol::property([](std::tm& val) { return val.tm_year + 1900; });
+    tm_type["week_day"] = sol::readonly(&std::tm::tm_wday);
+    tm_type["year_day"] = sol::readonly(&std::tm::tm_yday);
+    tm_type["is_dst"] = sol::property([](std::tm& val) {
+        return val.tm_isdst < 0 ? std::nullopt : std::optional<bool>{ val.tm_isdst > 0 };
+    });
+
+    auto info_type = lua.new_usertype<file_utilities::Path_Info>("Path_Info");
+    info_type["name"] = sol::readonly(&file_utilities::Path_Info::name);
+    info_type["is_regular"] = sol::readonly(&file_utilities::Path_Info::is_regular);
+    info_type["is_directory"] = sol::readonly(&file_utilities::Path_Info::is_directory);
+    info_type["timestamp"] = sol::readonly(&file_utilities::Path_Info::timestamp);
+    info_type["calendar_time"] = sol::readonly(&file_utilities::Path_Info::calendar_time);
+
     auto filesystem = lua["filesystem"].get_or_create<sol::table>();
     filesystem["exists"] = &file_utilities::file_exists;
     filesystem["is_regular_file"] = &file_utilities::is_regular_file;
     filesystem["is_directory"] = &file_utilities::is_directory;
-    filesystem["list_directory"] = &file_utilities::list_directory_files;
+    filesystem["list_directory"] = &file_utilities::directory_content_names;
+    filesystem["list_detailed_directory"] = &file_utilities::directory_content_details;
     filesystem["copy"] = &file_utilities::copy_file;
     filesystem["remove"] = &file_utilities::remove_file;
     filesystem["is_absolute"] = &file_utilities::is_absolute_path;
     filesystem["get_basename"] = &file_utilities::get_filename_component;
     filesystem["get_stem"] = &file_utilities::get_stem_component;
+    filesystem["last_write_time"] = &file_utilities::last_write_time;
 
     // Logging
     auto log = lua["logger"].get_or_create<sol::table>();
