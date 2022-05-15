@@ -409,7 +409,7 @@ void Game::frame_update() {
 
     // Toggle fullscreen when ALT+Enter is pressed
     if ((pressed(xd::KEY_RALT) || pressed(xd::KEY_LALT)) && triggered_once(xd::KEY_ENTER)) {
-        Configurations::set<bool>("graphics.fullscreen", !is_fullscreen());
+        Configurations::set("graphics.fullscreen", !is_fullscreen());
     }
 
     // Pause or resume game if needed
@@ -623,6 +623,7 @@ xd::lua::virtual_machine* Game::get_lua_vm() {
 }
 
 void Game::reset_scripting() {
+    pimpl->scripting_interface->get_scheduler().pause();
     pimpl->reset_scripting = true;
 }
 

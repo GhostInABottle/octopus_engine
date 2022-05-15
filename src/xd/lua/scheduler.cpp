@@ -6,6 +6,7 @@
 xd::lua::scheduler::scheduler(virtual_machine& vm)
     : state(vm.lua_state())
     , m_current_thread(0)
+    , m_paused(false)
 {
 }
 
@@ -20,8 +21,13 @@ void xd::lua::scheduler::start(const sol::protected_function& function, const st
 
 void xd::lua::scheduler::run()
 {
+    if (m_paused) return;
+
     // iterate through all pending tasks
     for (auto i = m_tasks.begin(); i != m_tasks.end();) {
+        // Stop processing threads if paused
+        if (m_paused) break;
+
         // if the thread is dead, remove it
         if (i->thread->coroutine.status() != sol::call_status::yielded) {
             i = m_tasks.erase(i);

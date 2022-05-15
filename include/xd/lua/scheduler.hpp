@@ -31,6 +31,9 @@ namespace xd
             }
             void start(const sol::protected_function& function, const std::string& context);
             void run();
+            void pause() { m_paused = true; }
+            void resume() { m_paused = false;  }
+            bool paused() const { return m_paused; }
             void yield(std::shared_ptr<scheduler_task> task);
             int pending_tasks();
 
@@ -103,6 +106,7 @@ namespace xd
             std::shared_ptr<scheduler_cothread> m_current_thread;
             std::stack<std::shared_ptr<scheduler_cothread>> m_thread_stack;
             std::list<scheduler_thread_task> m_tasks;
+            bool m_paused;
         };
     }
 }
