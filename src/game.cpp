@@ -785,6 +785,7 @@ void Game::load_map(const std::string& filename) {
     player->face(pimpl->next_direction);
     map->add_object(player);
     camera->set_object(player.get());
+    camera->update();
     // Play background music
     auto bg_music = map->get_bg_music_filename();
     auto playing_music{music ? music->get_filename() : ""};
