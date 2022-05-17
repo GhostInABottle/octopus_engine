@@ -92,6 +92,18 @@ void Map::run_startup_scripts() {
     }
 }
 
+bool Map::is_script_scheduler_paused() const {
+    return scripting_interface->get_scheduler().paused();
+}
+
+void Map::set_script_scheduler_paused(bool paused) {
+    auto& scheduler = scripting_interface->get_scheduler();
+    if (paused)
+        scheduler.pause();
+    else
+        scheduler.resume();
+}
+
 Collision_Record Map::passable(const Map_Object& object, Direction direction, Collision_Check_Type check_type) {
     return passable(object, direction, object.get_position(),
         object.get_fps_independent_speed(), check_type);

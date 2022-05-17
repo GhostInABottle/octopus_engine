@@ -741,6 +741,7 @@ void Scripting_Interface::setup_scripts() {
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["paused"] = sol::property(&Game::is_paused);
     game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
+    game_type["script_scheduler_paused"] = sol::property(&Game::is_script_scheduler_paused, &Game::set_script_scheduler_paused);
     game_type["playing_music"] = sol::property(&Game::get_playing_music, &Game::set_playing_music);
     game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
     game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
@@ -941,6 +942,7 @@ void Scripting_Interface::setup_scripts() {
     map_type["draw_outlines"] = sol::property(&Map::get_draw_outlines, &Map::set_draw_outlines);
     map_type["get_property"] = &Map::get_property;
     map_type["set_property"] = &Map::set_property;
+    map_type["script_scheduler_paused"] = sol::property(&Map::is_script_scheduler_paused, &Map::set_script_scheduler_paused);
     map_type["get_object"] = sol::overload(
         (Map_Object* (Map::*)(int)) &Map::get_object,
         (Map_Object* (Map::*)(std::string)) &Map::get_object

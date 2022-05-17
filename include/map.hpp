@@ -64,6 +64,10 @@ public:
     void run_function(const sol::protected_function& function);
     // Run map's startup scripts
     void run_startup_scripts();
+    // Is the Lua scheduler paused?
+    bool is_script_scheduler_paused() const;
+    // Pause or resume the Lua scheduler
+    void set_script_scheduler_paused(bool paused);
     // Check if object can move in given direction
     Collision_Record passable(const Map_Object& object, Direction direction,
         Collision_Check_Type check_type = Collision_Check_Type::BOTH);

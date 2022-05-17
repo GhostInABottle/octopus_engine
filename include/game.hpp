@@ -176,6 +176,10 @@ public:
     xd::lua::virtual_machine* get_lua_vm();
     // Reset the scripting interface and run startup scripts again
     void reset_scripting();
+    // Is the Lua scheduler paused?
+    bool is_script_scheduler_paused() const;
+    // Pause or resume the Lua scheduler
+    void set_script_scheduler_paused(bool paused);
     // Play some music
     void play_music(const std::string& filename, bool looping = true);
     void play_music(const std::shared_ptr<xd::music>& new_music, bool looping = true);

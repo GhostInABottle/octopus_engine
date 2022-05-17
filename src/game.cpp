@@ -627,6 +627,18 @@ void Game::reset_scripting() {
     pimpl->reset_scripting = true;
 }
 
+bool Game::is_script_scheduler_paused() const {
+    return pimpl->scripting_interface->get_scheduler().paused();
+}
+
+void Game::set_script_scheduler_paused(bool paused) {
+    auto& scheduler = pimpl->scripting_interface->get_scheduler();
+    if (paused)
+        scheduler.pause();
+    else
+        scheduler.resume();
+}
+
 void Game::play_music(const std::string& filename, bool looping) {
     if (!pimpl->audio) return;
     play_music(std::make_shared<xd::music>(*pimpl->audio, filename), looping);
