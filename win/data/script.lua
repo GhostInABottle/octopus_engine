@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Other', 'Nothing' }, true)
+    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Filesystem', 'Other', 'Nothing' }, true)
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -252,7 +252,7 @@ elseif c.selected == 6 then
    local char_input = game:end_character_input()
    text(o, "You entered: " .. char_input):wait()
 elseif c.selected == 7 then
-    -- Other
+    -- Filesystem
     local function test_list(method, processor)
         print('Files in current folder (' .. method .. '):')
         local files = filesystem[method]('.')
@@ -298,7 +298,57 @@ elseif c.selected == 7 then
     end
     test_list('list_directory', basic_processor)
     test_list('list_detailed_directory', detailed_processor)
+    local tbl = {
+        a = 'aa',
+        b = 'ba',
+        c = 'ca',
+        d = 6.5,
+        e = false,
+        f = {
+            x = 1,
+            y = true,
+            z = 'w',
+        },
+        g = nil,
+        x = function() end
+    }
+    local header = {
+        n = 5,
+        m = { w = 'z' }
+    }
 
+    text(o, "Saving a table where f.x = 1"):wait()
+    print('Original table:')
+    print(print_table(tbl))
+    print('Original header:')
+    print(print_table(header))
+    game:save('data/test_save.txt', tbl)
+    game:save('data/test_save_header.txt', tbl, header)
+
+    print('Loaded file without header:')
+    local tbl2, header2 = game:load('data/test_save.txt')
+    text(o, "And loading it back. Loaded f.x = " .. tbl2.f.x):wait()
+    print(print_table(tbl2))
+    print(print_table(header2))
+    print('Loaded file with header:')
+    tbl2, header2 = game:load('data/test_save_header.txt')
+    print(print_table(tbl2))
+    print(print_table(header2))
+    print('Loaded header only:')
+    print(print_table(game:load_header('data/test_save_header.txt')))
+
+    text(o, "Copying file"):wait()
+    local copy_name = "data/test_save2.txt"
+    filesystem.copy("data/test_save.txt", copy_name)
+    local tbl3 = game:load(copy_name)
+    print('Loaded copied file:')
+    print(print_table(tbl3))
+    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
+    text(o, 'Removing the copy'):wait()
+    filesystem.remove(copy_name)
+    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
+elseif c.selected == 8 then
+    -- Other
     text(o, "Are we in debug mode? " .. (game.debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')
     text(o, "Config title: " .. game:get_config('game.title')
@@ -315,38 +365,6 @@ elseif c.selected == 7 then
     game:set_int_config('graphics.screen-height', game_size.y)
     text(o, "Toggling game.pause-unfocused config"):wait()
     game:set_bool_config('game.pause-unfocused', pause_unfocused == "0")
-    local tbl = {
-        a = 'aa',
-        b = 'ba',
-        c = 'ca',
-        d = 6.5,
-        e = false,
-        f = {
-            x = 1,
-            y = true,
-            z = 'w',
-        },
-        g = nil,
-        x = function() end
-    }
-    text(o, "Saving a table where f.x = 1"):wait()
-    print('Original table:')
-    print(print_table(tbl))
-    game:save('data/test_save.txt', tbl)
-    local tbl2 = game:load('data/test_save.txt')
-    text(o, "And loading it back. Loaded f.x = " .. tbl2.f.x):wait()
-    print('Loaded file:')
-    print(print_table(tbl2))
-    text(o, "Copying file"):wait()
-    local copy_name = "data/test_save2.txt"
-    filesystem.copy("data/test_save.txt", copy_name)
-    local tbl3 = game:load(copy_name)
-    print('Loaded copied file:')
-    print(print_table(tbl3))
-    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
-    text(o, 'Removing the copy'):wait()
-    filesystem.remove(copy_name)
-    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
     text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
     text(o, "UP | RIGHT = " .. bit.bor(UP, RIGHT)):wait()
 end

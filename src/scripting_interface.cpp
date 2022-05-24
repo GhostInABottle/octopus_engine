@@ -818,15 +818,22 @@ void Scripting_Interface::setup_scripts() {
     game_type["set_string_config"] = [](Game*, const std::string& key, const std::string& value) {
         Configurations::set(key, value);
     };
-    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj) {
-        Save_File file(vm.lua_state(), obj);
+    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj, std::optional<sol::table> header) {
+        Save_File file(vm.lua_state(), obj, header);
         game->save(filename, file);
         return file.is_valid();
     };
     game_type["load"] = [&](Game* game, const std::string& filename) {
         auto file = game->load(filename);
         if (file->is_valid())
-            return file->lua_data();
+            return std::make_tuple(file->lua_data(), file->header_data());
+        else
+            return std::make_tuple(sol::object(sol::lua_nil), sol::object(sol::lua_nil));
+    };
+    game_type["load_header"] = [&](Game* game, const std::string& filename) {
+        auto file = game->load(filename, true);
+        if (file->is_valid())
+            return file->header_data();
         else
             return sol::object(sol::lua_nil);
     };

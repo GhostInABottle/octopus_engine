@@ -245,7 +245,7 @@ public:
     // Save game
     void save(std::string filename, Save_File& save_file) const;
     // Load game
-    std::unique_ptr<Save_File> load(std::string filename);
+    std::unique_ptr<Save_File> load(std::string filename, bool header_only = false);
     // Save configurations file
     bool save_config_file() const;
     // Save key binding file

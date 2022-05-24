@@ -2,6 +2,7 @@ ipch
 Release
 Debug
 data/test_save.txt
+data/test_save_header.txt
 *.sdf
 *.suo
 *.user

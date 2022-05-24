@@ -1,6 +1,7 @@
 #include "../include/save_file.hpp"
 #include "../include/configurations.hpp"
 #include <iostream>
+#include <cstdio>
 #include <string>
 #include <stdexcept>
 
@@ -35,12 +36,13 @@ namespace detail {
     const sol::type end_table_marker = sol::type::none;
     void write_object(std::ostream& stream, sol::table obj) {
         for (auto& kv : obj) {
-            auto key = kv.first;
-            auto val = kv.second;
+            const auto& key = kv.first;
+            const auto& val = kv.second;
             if (!valid_type(key.get_type(), true))
                 continue;
             if (!valid_type(val.get_type(), false))
                 continue;
+
             // Write key
             write(stream, key.get_type());
             switch(key.get_type()) {
@@ -53,6 +55,7 @@ namespace detail {
             default:
                 continue;
             }
+
             // Write value
             write(stream, val.get_type());
             switch(val.get_type()) {
@@ -118,19 +121,29 @@ namespace detail {
     }
 }
 
-Save_File::Save_File(sol::state& state) :
-    state(state), data(state, sol::create), valid(false) {}
+Save_File::Save_File(sol::state& state, bool header_only) :
+    state(state),
+    data(state, sol::create),
+    header(state, sol::create),
+    valid(false),
+    header_only(header_only) {}
 
-Save_File::Save_File(sol::state& state, const sol::table& data) :
-    state(state), data(data), valid(true) {}
+Save_File::Save_File(sol::state& state, const sol::table& data, std::optional<sol::table> header) :
+    state(state),
+    data(data),
+    header(header.value_or(sol::table(state, sol::create))),
+    valid(true),
+    header_only(false) {}
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
     save_file.valid = false;
     detail::write(stream, Configurations::get<unsigned int>("debug.save-signature"));
+    detail::write_object(stream, save_file.header);
     detail::write_object(stream, save_file.data);
     save_file.valid = true;
     return stream;
 }
+
 std::istream& operator>>(std::istream& stream, Save_File& save_file) {
     save_file.valid = false;
     unsigned int signature;
@@ -139,7 +152,22 @@ std::istream& operator>>(std::istream& stream, Save_File& save_file) {
         throw std::runtime_error("Invalid file signature");
     }
 
-    save_file.data = detail::read_object(stream, save_file.state);
+    auto first_table = detail::read_object(stream, save_file.state);
+
+    if (save_file.header_only) {
+        save_file.header = first_table;
+        save_file.valid = true;
+        return stream;
+    }
+
+    if (stream.peek() != EOF) {
+        // Headers are optional since they were introduced later
+        save_file.header = first_table;
+        save_file.data = detail::read_object(stream, save_file.state);
+    } else {
+        save_file.data = first_table;
+    }
+
     save_file.valid = true;
     return stream;
 }

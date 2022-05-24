@@ -746,10 +746,10 @@ void Game::save(std::string filename, Save_File& save_file) const {
     }
 }
 
-std::unique_ptr<Save_File> Game::load(std::string filename) {
+std::unique_ptr<Save_File> Game::load(std::string filename, bool header_only) {
     pimpl->cleanup_save_filename(filename);
     auto& state = pimpl->scripting_interface->lua_state();
-    auto file = std::make_unique<Save_File>(state);
+    auto file = std::make_unique<Save_File>(state, header_only);
     try {
         auto stream = file_utilities::open_ifstream(filename, std::ios::in | std::ios::binary);
         if (!stream) {
