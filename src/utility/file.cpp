@@ -24,7 +24,7 @@ namespace file_utilities::detail {
 #ifdef _WIN32
         return fs::path(win32::Utf8ToUtf16(str));
 #else
-        return fs::path(str)
+        return fs::path(str);
 #endif
 #else
         return fs::u8path(str);
@@ -33,10 +33,16 @@ namespace file_utilities::detail {
 
     std::tuple<unsigned long long, std::tm> last_write_time(const fs::path& path) {
         auto file_time = fs::last_write_time(path);
+#ifdef OCB_USE_BOOST_FILESYSTEM
+        auto duration = file_time;
+        auto time_t = file_time;
+        auto time_point = std::chrono::system_clock::from_time_t(file_time);
+#else
         auto duration = file_time - fs::file_time_type::clock::now()
             + std::chrono::system_clock::now();
         auto time_point = std::chrono::time_point_cast<std::chrono::system_clock::duration>(duration);
         auto time_t = std::chrono::system_clock::to_time_t(time_point);
+#endif
         auto since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count();
 #pragma warning(push)
 #pragma warning(disable: 4996)
@@ -226,11 +232,13 @@ std::vector<file_utilities::Path_Info> file_utilities::directory_content_details
             return result;
 }
         for (auto& p : fs::directory_iterator(utf8_path)) {
-            if (fs::is_regular_file(p) || fs::is_directory(p)) {
+            auto is_regular = fs::is_regular_file(p);
+            auto is_directory = fs::is_directory(p);
+            if (is_regular || is_directory) {
                 Path_Info path_info;
                 path_info.name = p.path().filename().string();
-                path_info.is_regular = p.is_regular_file();
-                path_info.is_directory = p.is_directory();
+                path_info.is_regular = is_regular;
+                path_info.is_directory = is_directory;
                 auto [ timestamp, tm ] = detail::last_write_time(p);
                 path_info.timestamp = timestamp;
                 path_info.calendar_time = tm;
@@ -247,7 +255,7 @@ std::vector<file_utilities::Path_Info> file_utilities::directory_content_details
 bool file_utilities::copy_file(const std::string& source, const std::string& destination) {
     try {
 #ifdef OCB_USE_BOOST_FILESYSTEM
-        fs::copy_file(string_to_utf8_path(source), string_to_utf8_path(destination),
+        fs::copy_file(detail::string_to_utf8_path(source), detail::string_to_utf8_path(destination),
             fs::copy_option::overwrite_if_exists);
 #else
         fs::copy(detail::string_to_utf8_path(source), detail::string_to_utf8_path(destination),

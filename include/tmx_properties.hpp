@@ -2,6 +2,7 @@
 #define HPP_TMX_PROPERTIES
 
 #include "vendor/rapidxml.hpp"
+#include <vector>
 #include <string>
 #include <unordered_map>
 #include <algorithm>
