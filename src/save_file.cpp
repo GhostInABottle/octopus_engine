@@ -4,23 +4,81 @@
 #include <cstdio>
 #include <string>
 #include <stdexcept>
+#include <cmath>
+#include <limits>
 
 namespace detail {
+
+    enum class type_tag : int {
+        boolean = 1,
+        double_number = 3,
+        string = 4,
+        table = 5,
+        byte_number = 20,
+        short_number = 21,
+        long_number = 23,
+        long_long_number = 24,
+        float_number = 30,
+        small_string = 31,
+        unknown = 127,
+        end_of_table = -1,
+    };
+
+    type_tag get_numeric_type_tag(double value, bool compact) {
+        if (!compact) return type_tag::double_number;
+
+        auto can_be_int = !std::isnan(value) && !std::isinf(value)
+            && std::trunc(value) == value;
+
+        if (can_be_int) {
+            if (value <= std::numeric_limits<signed char>().max())
+                return type_tag::byte_number;
+            else if (value <= std::numeric_limits<short>().max())
+                return type_tag::short_number;
+            else if (value <= std::numeric_limits<long>().max())
+                return type_tag::long_number;
+            else if (value <= std::numeric_limits<long long>().max())
+                return type_tag::long_long_number;
+        }
+
+        return value <= std::numeric_limits<float>().max()
+            ? type_tag::float_number
+            : type_tag::double_number;
+    }
+
+    type_tag get_string_type_tag(const std::string& value, bool compact) {
+        if (!compact) return type_tag::string;
+
+        constexpr auto small_size = std::numeric_limits<unsigned char>().max();
+        return value.length() <= small_size
+            ? type_tag::small_string
+            : type_tag::string;
+    }
+
+    type_tag sol_type_to_type_tag(sol::type sol_type, const sol::object& value, bool compact) {
+        switch (sol_type) {
+        case sol::type::boolean:
+            return type_tag::boolean;
+        case sol::type::number:
+            return get_numeric_type_tag(value.as<double>(), compact);
+        case sol::type::string:
+            return get_string_type_tag(value.as<std::string>(), compact);
+        case sol::type::table:
+            return type_tag::table;
+        default:
+            return type_tag::unknown;
+        }
+    }
+
     template<typename T>
     void write(std::ostream& stream, const T& value) {
         stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
     }
 
-    void write(std::ostream& stream, const std::string& value, bool compact){
+    void write(std::ostream& stream, const std::string& value, type_tag tag) {
         auto length = value.length();
-        auto small = false;
 
-        if (compact) {
-            small = length < 255;
-            write(stream, static_cast<unsigned char>(small ? 1 : 0));
-        }
-
-        if (small)
+        if (tag == type_tag::small_string)
             write(stream, static_cast<unsigned char>(length));
         else
             write(stream, length);
@@ -28,11 +86,47 @@ namespace detail {
         stream.write(value.c_str(), length);
     }
 
-    void write_type_tag(std::ostream& stream, sol::type type_tag, bool compact) {
+    void write_type_tag(std::ostream& stream, type_tag tag, bool compact) {
         if (compact)
-            write(stream, static_cast<signed char>(type_tag));
+            write(stream, static_cast<signed char>(tag));
         else
-            write(stream, type_tag);
+            write(stream, tag);
+    }
+
+    template <typename T>
+    T object_to_number(const sol::object& value) {
+        auto double_value = value.as<double>();
+        return static_cast<T>(double_value);
+    }
+
+    void write_value(std::ostream& stream, type_tag tag, const sol::object& value) {
+        switch (tag) {
+        case type_tag::boolean:
+            write(stream, value.as<bool>());
+            break;
+        case type_tag::string:
+        case type_tag::small_string:
+            write(stream, value.as<std::string>(), tag);
+            break;
+        case type_tag::byte_number:
+            write(stream, object_to_number<signed char>(value));
+            break;
+        case type_tag::short_number:
+            write(stream, object_to_number<short>(value));
+            break;
+        case type_tag::long_number:
+            write(stream, object_to_number<long>(value));
+            break;
+        case type_tag::long_long_number:
+            write(stream, object_to_number<long long>(value));
+            break;
+        case type_tag::float_number:
+            write(stream, object_to_number<float>(value));
+            break;
+        case type_tag::double_number:
+            write(stream, value.as<double>());
+            break;
+        }
     }
 
     template<typename T>
@@ -40,14 +134,10 @@ namespace detail {
         stream.read(reinterpret_cast<char*>(&value), sizeof(T));
     }
 
-    void read(std::istream& stream, std::string& value, bool compact) {
+    void read(std::istream& stream, std::string& value, type_tag tag) {
         std::string::size_type length;
-        unsigned char small = 0;
-        if (compact) {
-            read(stream, small);
-        }
 
-        if (small == 1) {
+        if (tag == type_tag::small_string) {
             unsigned char uc_length;
             read(stream, uc_length);
             length = static_cast<std::string::size_type>(uc_length);
@@ -59,14 +149,49 @@ namespace detail {
         stream.read(&value[0], length);
     }
 
-    void read_type_tag(std::istream& stream, sol::type& type_tag, bool compact) {
+    void read_type_tag(std::istream& stream, type_tag& tag, bool compact) {
         if (compact) {
             signed char type;
             read(stream, type);
-            type_tag = static_cast<sol::type>(type);
+            tag = static_cast<type_tag>(type);
         }
         else {
-            read(stream, type_tag);
+            read(stream, tag);
+        }
+    }
+
+    template <typename T>
+    sol::object read_numeric_value(std::istream& stream, const sol::state& state) {
+        T temp{};
+        read(stream, temp);
+        return sol::make_object(state, static_cast<double>(temp));
+    }
+
+    sol::object read_value(std::istream& stream, const sol::state& state, type_tag tag) {
+        std::string temp_str;
+        bool temp_bool;
+        switch (tag) {
+        case type_tag::boolean:
+            read(stream, temp_bool);
+            return sol::make_object(state, temp_bool);
+        case type_tag::byte_number:
+            return read_numeric_value<signed char>(stream, state);
+        case type_tag::short_number:
+            return read_numeric_value<short>(stream, state);
+        case type_tag::long_number:
+            return read_numeric_value<long>(stream, state);
+        case type_tag::long_long_number:
+            return read_numeric_value<long long>(stream, state);
+        case type_tag::float_number:
+            return read_numeric_value<float>(stream, state);
+        case type_tag::double_number:
+            return read_numeric_value<double>(stream, state);
+        case type_tag::string:
+        case type_tag::small_string:
+            read(stream, temp_str, tag);
+            return sol::make_object(state, temp_str);
+        default:
+            throw std::runtime_error("Unexpected value type");
         }
     }
 
@@ -81,46 +206,33 @@ namespace detail {
             || type == sol::type::table;
     }
 
-    const sol::type end_table_marker = sol::type::none;
-
     void write_object(std::ostream& stream, sol::table obj, bool compact) {
         for (auto& kv : obj) {
             const auto& key = kv.first;
             const auto& val = kv.second;
 
-            auto key_type = key.get_type();
-            auto val_type = val.get_type();
-            if (!valid_key_type(key_type))
+            auto sol_key_type = key.get_type();
+            auto sol_val_type = val.get_type();
+            if (!valid_key_type(sol_key_type))
                 continue;
-            if (!valid_value_type(val_type))
+            if (!valid_value_type(sol_val_type))
                 continue;
 
             // Write the key
+            auto key_type = sol_type_to_type_tag(sol_key_type, key, compact);
             write_type_tag(stream, key_type, compact);
+            write_value(stream, key_type, key);
 
-            switch(key_type) {
-            case sol::type::number:
-                write(stream, key.as<double>());
-                break;
-            case sol::type::string:
-                write(stream, key.as<std::string>(), compact);
-                break;
-            default:
-                continue;
-            }
 
             // Write the value
+            auto val_type = sol_type_to_type_tag(sol_val_type, val, compact);
             write_type_tag(stream, val_type, compact);
 
-            switch(val_type) {
+            switch(sol_val_type) {
             case sol::type::boolean:
-                write(stream, val.as<bool>());
-                break;
             case sol::type::number:
-                write(stream, val.as<double>());
-                break;
             case sol::type::string:
-                write(stream, val.as<std::string>(), compact);
+                write_value(stream, val_type, val);
                 break;
             case sol::type::table:
                 write_object(stream, val, compact);
@@ -132,51 +244,33 @@ namespace detail {
 
         // Write end of table marker
         if (compact)
-            write(stream, static_cast<signed char>(end_table_marker));
+            write(stream, static_cast<signed char>(type_tag::end_of_table));
         else
-            write(stream, end_table_marker);
+            write(stream, type_tag::end_of_table);
     }
 
     sol::table read_object(std::istream& stream, const sol::state& state, bool compact);
 
-    sol::object read_value(std::istream& stream, const sol::state& state, sol::type type_tag, bool compact) {
-        double temp_num;
-        std::string temp_str;
-        bool temp_bool;
-        switch(type_tag) {
-        case sol::type::boolean:
-            read(stream, temp_bool);
-            return sol::make_object(state, temp_bool);
-        case sol::type::number:
-            read(stream, temp_num);
-            return sol::make_object(state, temp_num);
-        case sol::type::string:
-            read(stream, temp_str, compact);
-            return sol::make_object(state, temp_str);
-        case sol::type::table:
-            return read_object(stream, state, compact);
-        default:
-            throw std::runtime_error("Unexpected value type");
-        }
-    }
-
     sol::table read_object(std::istream& stream, const sol::state& state, bool compact) {
         sol::table obj(state, sol::create);
-        sol::type type_tag;
+        type_tag tag;
         while (stream) {
             // Read the key
-            read_type_tag(stream, type_tag, compact);
+            read_type_tag(stream, tag, compact);
 
-            if (type_tag == end_table_marker)
+            if (tag == type_tag::end_of_table)
                 return obj;
 
-            auto key = read_value(stream, state, type_tag, compact);
+            auto key = read_value(stream, state, tag);
             if (!key.valid())
                 throw std::runtime_error("Invalid object key");
 
             // Read the value
-            read_type_tag(stream, type_tag, compact);
-            auto val = read_value(stream, state, type_tag, compact);
+            read_type_tag(stream, tag, compact);
+
+            auto val = tag == type_tag::table
+                ? read_object(stream, state, compact)
+                : read_value(stream, state, tag);
 
             // Set key and value
             obj[key] = val;
