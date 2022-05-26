@@ -818,20 +818,20 @@ void Scripting_Interface::setup_scripts() {
     game_type["set_string_config"] = [](Game*, const std::string& key, const std::string& value) {
         Configurations::set(key, value);
     };
-    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj, std::optional<sol::table> header) {
-        Save_File file(vm.lua_state(), obj, header);
+    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj, std::optional<sol::table> header, std::optional<bool> compact) {
+        Save_File file(vm.lua_state(), obj, header, compact.value_or(true));
         game->save(filename, file);
         return file.is_valid();
     };
-    game_type["load"] = [&](Game* game, const std::string& filename) {
-        auto file = game->load(filename);
+    game_type["load"] = [&](Game* game, const std::string& filename, std::optional<bool> compact) {
+        auto file = game->load(filename, false, compact.value_or(true));
         if (file->is_valid())
             return std::make_tuple(file->lua_data(), file->header_data());
         else
             return std::make_tuple(sol::object(sol::lua_nil), sol::object(sol::lua_nil));
     };
-    game_type["load_header"] = [&](Game* game, const std::string& filename) {
-        auto file = game->load(filename, true);
+    game_type["load_header"] = [&](Game* game, const std::string& filename, std::optional<bool> compact) {
+        auto file = game->load(filename, true, compact.value_or(true));
         if (file->is_valid())
             return file->header_data();
         else

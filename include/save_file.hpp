@@ -6,8 +6,8 @@
 
 class Save_File {
 public:
-    Save_File(sol::state& state, bool header_only = false);
-    Save_File(sol::state& state, const sol::table& data, std::optional<sol::table> header = std::nullopt);
+    Save_File(sol::state& state, bool header_only = false, bool compact = true);
+    Save_File(sol::state& state, const sol::table& data, std::optional<sol::table> header = std::nullopt, bool compact = true);
     sol::object& lua_data() { return data; }
     sol::object& header_data() { return header; }
     bool is_valid() const { return valid; }
@@ -18,6 +18,7 @@ private:
     sol::table header;
     sol::table data;
     bool header_only;
+    bool compact;
     bool valid;
 };
 
