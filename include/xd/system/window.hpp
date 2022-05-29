@@ -24,6 +24,7 @@ namespace xd
         // typedefs
         typedef xd::event_bus<input_args>::callback_t input_event_callback_t;
         typedef std::function<void ()> tick_callback_t;
+        typedef std::function<void (int, const char*)> error_callback_t;
 
         // public interface
         window(const window&) = delete;
@@ -133,6 +134,17 @@ namespace xd
         // character input event handler, for internal use
         void on_character_input(unsigned int codepoint);
 
+        // handle errors
+        void on_error(int code, const char* description) const {
+            if (!m_error_handler) return;
+            m_error_handler(code, description);
+        }
+        void register_error_handler(error_callback_t callback) {
+            m_error_handler = callback;
+        }
+        void unregister_error_handler() noexcept {
+            m_error_handler = nullptr;
+        }
     private:
         GLFWwindow* m_window;
         // window width/height
@@ -151,6 +163,8 @@ namespace xd
         // stored character input
         std::string m_character_buffer;
         input_type m_last_input_type;
+        // error callback
+        error_callback_t m_error_handler;
 
         // keep track of ticks
         std::uint32_t m_current_ticks;

@@ -36,13 +36,17 @@ namespace
             window_instance->remove_joystick(id);
         }
     }
+
+    void on_error(int error, const char* description) {
+        window_instance->on_error(error, description);
+    }
 };
 
 xd::window::window(const std::string& title, int width, int height, const window_options& options)
     : m_width(width)
     , m_height(height)
-    , m_windowed_pos(0, 0)
-    , m_windowed_size(0, 0)
+    , m_windowed_pos(50, 50)
+    , m_windowed_size(options.default_windowed_width, options.default_windowed_height)
     , m_last_input_type(input_type::INPUT_KEYBOARD)
     , m_in_update(false)
     , m_tick_handler_counter(0)
@@ -103,6 +107,8 @@ xd::window::window(const std::string& title, int width, int height, const window
     glfwSetKeyCallback(m_window, &on_key_proxy);
     glfwSetMouseButtonCallback(m_window, &on_mouse_proxy);
     glfwSetJoystickCallback(&on_joystick_changed);
+
+    glfwSetErrorCallback(&::on_error);
 
     window_instance = this;
 
@@ -397,7 +403,8 @@ std::vector<xd::vec2> xd::window::get_sizes() const
 }
 
 bool xd::window::is_fullscreen() const {
-    return glfwGetWindowMonitor(m_window) != nullptr;
+    auto monitor = glfwGetWindowMonitor(m_window);
+    return monitor != nullptr;
 }
 
 void xd::window::set_fullscreen(bool fullscreen) {

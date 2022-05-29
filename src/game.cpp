@@ -267,6 +267,8 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
             Configurations::get<int>("graphics.screen-height"),
             xd::window_options(
                 Configurations::get<bool>("graphics.fullscreen"),
+                static_cast<int>(Configurations::get<float>("debug.width") * 3),
+                static_cast<int>(Configurations::get<float>("debug.height") * 3),
                 false, // allow resize
                 false, // display_cursor
                 Configurations::get<bool>("graphics.vsync"),
@@ -381,6 +383,10 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     // Set frame update function and frequency
     int logic_fps = Configurations::get<int>("debug.logic-fps");
     window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
+    // Log errors
+    window->register_error_handler([](int code, const char* description) {
+        LOGGER_E << "GLFW error (" << code << "): " << description;
+    });
     // Setup shader, if any
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));

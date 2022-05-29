@@ -803,6 +803,11 @@ void Scripting_Interface::setup_scripts() {
         }
     );
     game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
+    game_type["get_bool_config"] = [](Game*, const std::string& key) { return Configurations::get<bool>(key); };
+    game_type["get_float_config"] = [](Game*, const std::string& key) { return Configurations::get<float>(key); };
+    game_type["get_int_config"] = [](Game*, const std::string& key) { return Configurations::get<int>(key); };
+    game_type["get_unsigned_config"] = [](Game*, const std::string& key) { return Configurations::get<unsigned int>(key); };
+    game_type["get_string_config"] = [](Game*, const std::string& key) { return Configurations::get<std::string>(key); };
     game_type["set_bool_config"] = [](Game*, const std::string& key, bool value) {
         Configurations::set(key, value);
     };
