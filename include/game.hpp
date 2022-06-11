@@ -196,10 +196,12 @@ public:
     float get_global_sound_volume() const;
     void set_global_sound_volume(float volume) const;
     // Load map file and set as current map at the end of the frame
-    void set_next_map(const std::string& filename, Direction dir);
-    void set_next_map(const std::string& filename, float x, float y, Direction dir);
-    // Load the map right away
-    void load_map(const std::string& filename);
+    void set_next_map(const std::string& filename,
+        Direction dir = Direction::NONE,
+        std::optional<xd::vec2> pos = std::nullopt,
+        std::optional<std::string> music = std::nullopt);
+    // Load the map specified by set_next_map
+    void load_next_map();
     // Get the map
     Map* get_map() { return map.get(); }
     // Create a new map
@@ -240,6 +242,8 @@ public:
     }
     // Total time elapsed since game started (in ms)
     int window_ticks() { return window ? window->ticks() : editor_ticks; }
+    // Get configured directory for Lua scripts
+    std::string get_scripts_directory() const;
     // Get save file directory and creates it if needed
     std::string get_save_directory() const;
     // Save game

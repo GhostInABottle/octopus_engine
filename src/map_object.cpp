@@ -163,9 +163,11 @@ void Map_Object::set_name(const std::string& new_name) {
 
 std::string Map_Object::prepare_script(const std::string& script) const {
     if (script.empty()) return script;
-    auto result = game.get_object_script_preamble();
+    auto preamble = game.get_object_script_preamble();
     auto extension = script.substr(script.find_last_of(".") + 1);
-    return result + (extension == "lua" ? file_utilities::read_file(script) : script);
+    return extension == "lua"
+        ? preamble + file_utilities::read_file(game.get_scripts_directory() + script)
+        : preamble + script;
 }
 
 void  Map_Object::set_trigger_script(const std::string& script) {

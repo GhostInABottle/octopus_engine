@@ -66,7 +66,8 @@ void Map::run_script_impl(const std::string& script_or_filename, bool is_filenam
     auto old_interface = game.get_current_scripting_interface();
     game.set_current_scripting_interface(scripting_interface.get());
     if (is_filename) {
-        scripting_interface->schedule_file(script_or_filename, "MAP");
+        auto scripts_folder = game.get_scripts_directory();
+        scripting_interface->schedule_file(scripts_folder + script_or_filename, "MAP");
     } else {
         scripting_interface->schedule_code(script_or_filename, "MAP");
     }

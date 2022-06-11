@@ -49,6 +49,7 @@ struct Game::Impl {
             preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             save_path("not set"),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
+            scripts_folder(Configurations::get<std::string>("game.scripts-folder")),
             reset_scripting(false),
             text_formatter(
                 Configurations::get<std::string>("font.icon-image"),
@@ -56,13 +57,24 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game) {
+        // Register the shaking text decorator
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);
         });
+
+        // Scripts folder
+        if (!scripts_folder.empty() && scripts_folder.back() != '/') {
+            scripts_folder += '/';
+        }
+
+        // Script preamble
         auto preamble = string_utilities::trim(Configurations::get<std::string>("game.object-script-preamble"));
         if (preamble.empty()) return;
         auto extension = preamble.substr(preamble.find_last_of(".") + 1);
-        object_script_preamble = (extension == "lua" ? file_utilities::read_file(preamble) : preamble) + ";";
+        if (extension == "lua") {
+            preamble = file_utilities::read_file(scripts_folder + preamble);
+        }
+        object_script_preamble = preamble + ";";
     }
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
@@ -177,12 +189,12 @@ struct Game::Impl {
         }
         reset_scripting = false;
     }
-    void run_script(Game& game, const std::string script_or_filename, bool is_filename) {
+    void run_script(Game& game, const std::string& script_or_filename, bool is_filename) {
         auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
         auto old_interface = game.get_current_scripting_interface();
         game.set_current_scripting_interface(si.get());
         if (is_filename) {
-            si->schedule_file(script_or_filename, "GLOBAL");
+            si->schedule_file(scripts_folder + script_or_filename, "GLOBAL");
         } else {
             si->schedule_code(script_or_filename, "GLOBAL");
         }
@@ -215,6 +227,7 @@ struct Game::Impl {
     std::optional<xd::vec2> next_position;
     Direction next_direction;
     std::string next_map;
+    std::optional<std::string> next_music;
     // Was it paused because screen got unfocused?
     bool focus_pause;
     // Should the game be paused while unfocused?
@@ -246,6 +259,8 @@ struct Game::Impl {
     std::unique_ptr<Key_Binder> key_binder;
     // The button for pausing the game
     std::string pause_button;
+    // Base folder for startup and map scripts
+    std::string scripts_folder;
     // Should the scripting interface be reset?
     bool reset_scripting;
     // String added before every map object script
@@ -455,18 +470,23 @@ void Game::frame_update() {
 
     set_current_scripting_interface(pimpl->scripting_interface.get());
     pimpl->scripting_interface->update();
+
     if (pimpl->reset_scripting) {
         pimpl->reset_scripting_interface(*this);
     }
 
     camera->update();
-    if (pimpl->next_map.empty())
+
+    if (pimpl->next_map.empty()) {
         map->update();
+    }
+
     pimpl->process_config_changes(*this, window.get());
 
     // Switch map if needed
-    if (!pimpl->next_map.empty())
-        load_map(pimpl->next_map);
+    if (!pimpl->next_map.empty()) {
+        load_next_map();
+    }
 }
 
 void Game::render() {
@@ -678,15 +698,11 @@ void Game::set_global_sound_volume(float volume) const {
     pimpl->audio->set_sound_volume(volume);
 }
 
-void Game::set_next_map(const std::string& filename, Direction dir) {
+void Game::set_next_map(const std::string& filename, Direction dir, std::optional<xd::vec2> pos, std::optional<std::string> music) {
     pimpl->next_map = filename;
     pimpl->next_direction = dir == Direction::NONE ? player->get_direction() : dir;
-    pimpl->next_position = std::nullopt;
-}
-
-void Game::set_next_map(const std::string& filename, float x, float y, Direction dir) {
-    set_next_map(filename, dir);
-    pimpl->next_position = xd::vec2{x, y};
+    pimpl->next_position = pos;
+    pimpl->next_music = music;
 }
 
 xd::asset_manager& Game::get_asset_manager() {
@@ -727,6 +743,10 @@ int Game::ticks() const {
     int stopped_time = pimpl->total_paused_time + (paused ?
         window->ticks() - pimpl->pause_start_time : 0);
     return window->ticks() - stopped_time;
+}
+
+std::string Game::get_scripts_directory() const {
+    return pimpl->scripts_folder;
 }
 
 std::string Game::get_save_directory() const {
@@ -788,31 +808,35 @@ bool Game::save_keymap_file() const {
     return pimpl->key_binder->save_keymap_file();
 }
 
-void Game::load_map(const std::string& filename) {
-    map = Map::load(*this, filename);
+void Game::load_next_map() {
+    map = Map::load(*this, pimpl->next_map);
     if (pimpl->editor_mode) return;
-    // Add player to the map
+
+    // Reset the player's references
     player->set_id(-1);
     player->set_triggered_object(nullptr);
     player->set_collision_object(nullptr);
     player->set_collision_area(nullptr);
     player->set_outlining_object(nullptr);
     player->clear_linked_objects();
-    auto start_pos{pimpl->next_position ? pimpl->next_position.value() : map->get_starting_position()};
+
+    // Add the player to the map
+    auto start_pos = pimpl->next_position.value_or(map->get_starting_position());
     player->set_position(start_pos);
     player->face(pimpl->next_direction);
     map->add_object(player);
     camera->set_object(player.get());
     camera->update();
+
     // Play background music
-    auto bg_music = map->get_bg_music_filename();
+    auto bg_music = pimpl->next_music.value_or(map->get_bg_music_filename());
     auto playing_music{music ? music->get_filename() : ""};
     if (bg_music == "false") {
         music.reset();
     } else if (!bg_music.empty() && bg_music != playing_music) {
         play_music(bg_music);
     }
-    // Run map startup scripts
+
     map->run_startup_scripts();
     pimpl->next_map = "";
 }

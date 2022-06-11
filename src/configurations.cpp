@@ -15,6 +15,7 @@ void Configurations::load_defaults() {
     defaults["game.object-script-preamble"] = std::string();
     defaults["game.map-loaded-script"] = std::string();
     defaults["game.pause-script"] = std::string();
+    defaults["game.scripts-folder"] = std::string();
 
     defaults["text.fade-in-duration"] = 250;
     defaults["text.fade-out-duration"] = 250;

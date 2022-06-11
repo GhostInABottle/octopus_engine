@@ -790,16 +790,16 @@ void Scripting_Interface::setup_scripts() {
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };
     game_type["load_map"] = sol::overload(
         [](Game* game, const std::string& filename) {
-            game->set_next_map(filename, Direction::NONE);
+            game->set_next_map(filename);
         },
-        [](Game* game, const std::string& filename, int dir) {
-            game->set_next_map(filename, static_cast<Direction>(dir));
+        [](Game* game, const std::string& filename, int dir, std::optional<std::string> music) {
+            game->set_next_map(filename, static_cast<Direction>(dir), std::nullopt, music);
         },
         [](Game* game, const std::string& filename, float x, float y, int dir) {
-            game->set_next_map(filename, x, y, static_cast<Direction>(dir));
+            game->set_next_map(filename, static_cast<Direction>(dir), xd::vec2{x, y});
         },
-        [](Game* game, const std::string& filename, xd::vec2 pos, int dir) {
-            game->set_next_map(filename, pos.x, pos.y, static_cast<Direction>(dir));
+        [](Game* game, const std::string& filename, xd::vec2 pos, int dir, std::optional<std::string> music) {
+            game->set_next_map(filename, static_cast<Direction>(dir), pos, music);
         }
     );
     game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
