@@ -1,7 +1,7 @@
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/map_object.hpp"
-#include "../include/canvas.hpp"
+#include "../include/canvas/canvas.hpp"
 #include "../include/object_layer.hpp"
 #include "../include/object_layer_renderer.hpp"
 #include "../include/image_layer.hpp"

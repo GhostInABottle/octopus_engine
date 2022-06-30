@@ -1,6 +1,6 @@
 #include "../../include/commands/update_canvas_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/canvas.hpp"
+#include "../../include/canvas/canvas.hpp"
 #include "../../include/utility/math.hpp"
 
 Update_Canvas_Command::Update_Canvas_Command(Game& game, Canvas& canvas) :

@@ -3,7 +3,7 @@
 #include "../include/clock.hpp"
 #include "../include/camera.hpp"
 #include "../include/map.hpp"
-#include "../include/canvas.hpp"
+#include "../include/canvas/canvas.hpp"
 #include "../include/collision_record.hpp"
 #include "../include/image_layer.hpp"
 #include "../include/object_layer.hpp"

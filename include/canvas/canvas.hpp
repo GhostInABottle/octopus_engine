@@ -8,14 +8,14 @@
 #include <memory>
 #include <utility>
 #include <optional>
-#include "xd/graphics/types.hpp"
-#include "xd/graphics/texture.hpp"
-#include "xd/graphics/font.hpp"
-#include "xd/graphics/text_formatter.hpp"
-#include "sprite_holder.hpp"
-#include "sprite.hpp"
-#include "text_parser.hpp"
-#include "lua_object.hpp"
+#include "../xd/graphics/types.hpp"
+#include "../xd/graphics/texture.hpp"
+#include "../xd/graphics/font.hpp"
+#include "../xd/graphics/text_formatter.hpp"
+#include "../sprite_holder.hpp"
+#include "../sprite.hpp"
+#include "../text_parser.hpp"
+#include "../lua_object.hpp"
 
 class Game;
 namespace xd {

@@ -73,6 +73,12 @@
     <Filter Include="Header Files\utility">
       <UniqueIdentifier>{f2f400bc-deb0-431e-84ae-094cfb0bd3eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\canvas">
+      <UniqueIdentifier>{ac181b81-5918-4613-8362-3424a2f03160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\canvas">
+      <UniqueIdentifier>{e6aad5f5-b493-4516-b4a7-328b5dab4ea3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -132,16 +138,7 @@
     <ClCompile Include="..\..\src\image_layer_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\canvas_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\canvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\configurations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\canvas_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\command_result.cpp">
@@ -330,6 +327,15 @@
     <ClCompile Include="..\..\src\commands\timed_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\canvas\canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\canvas_renderer.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\canvas_updater.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -404,16 +410,7 @@
     <ClInclude Include="..\..\include\image_layer_updater.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\canvas.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\canvas_renderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\configurations.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\canvas_updater.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\pathfinder.hpp">
@@ -694,6 +691,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\vendor\utf8conv.h">
       <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\canvas_updater.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\canvas_renderer.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,15 +1,15 @@
 #include <cmath>
 #include <stdexcept>
-#include "../include/xd/graphics/framebuffer.hpp"
-#include "../include/canvas.hpp"
-#include "../include/utility/color.hpp"
-#include "../include/utility/direction.hpp"
-#include "../include/utility/file.hpp"
-#include "../include/game.hpp"
-#include "../include/map.hpp"
-#include "../include/sprite_data.hpp"
-#include "../include/xd/asset_manager.hpp"
-#include "../include/configurations.hpp"
+#include "../../include/canvas/canvas.hpp"
+#include "../../include/xd/graphics/framebuffer.hpp"
+#include "../../include/utility/color.hpp"
+#include "../../include/utility/direction.hpp"
+#include "../../include/utility/file.hpp"
+#include "../../include/game.hpp"
+#include "../../include/map.hpp"
+#include "../../include/sprite_data.hpp"
+#include "../../include/xd/asset_manager.hpp"
+#include "../../include/configurations.hpp"
 
 Canvas::Canvas(Game& game, xd::vec2 position) :
     game(game),

@@ -4,7 +4,7 @@
 #include "../../include/xd/audio/sound.hpp"
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
-#include "../../include/canvas.hpp"
+#include "../../include/canvas/canvas.hpp"
 #include "../../include/text_parser.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"

@@ -22,9 +22,9 @@ SOURCES += main.cpp\
     ../src/vendor/lutf8lib.cpp \
     ../src/vendor/platform_folders.cpp \
     ../src/camera.cpp \
-    ../src/canvas.cpp \
-    ../src/canvas_renderer.cpp \
-    ../src/canvas_updater.cpp \
+    ../src/canvas/canvas.cpp \
+    ../src/canvas/canvas_renderer.cpp \
+    ../src/canvas/canvas_updater.cpp \
     ../src/clock.cpp \
     ../src/command.cpp \
     ../src/command_result.cpp \
@@ -121,9 +121,9 @@ HEADERS  += main_window.hpp \
     ../include/vendor/unidata.h \
     ../include/vendor/utf8conv.h \
     ../include/camera.hpp \
-    ../include/canvas.hpp \
-    ../include/canvas_renderer.hpp \
-    ../include/canvas_updater.hpp \
+    ../include/canvas/canvas.hpp \
+    ../include/canvas/canvas_renderer.hpp \
+    ../include/canvas/canvas_updater.hpp \
     ../include/clock.hpp \
     ../include/collision_check_types.hpp \
     ../include/collision_record.hpp \

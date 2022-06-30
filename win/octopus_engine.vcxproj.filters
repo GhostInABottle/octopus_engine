@@ -70,6 +70,12 @@
     <Filter Include="Source Files\utility">
       <UniqueIdentifier>{821a3ce3-aab0-4281-9ac9-970d0eaa829c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\canvas">
+      <UniqueIdentifier>{e950f437-3545-4b02-a45e-b52e52b2cfce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\canvas">
+      <UniqueIdentifier>{0c2ef164-5c47-4e9a-85f9-d2e4f94265c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -186,16 +192,7 @@
     <ClCompile Include="..\src\image_layer_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\canvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\canvas_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\configurations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\canvas_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\command_result.cpp">
@@ -305,6 +302,15 @@
     </ClCompile>
     <ClCompile Include="..\src\commands\timed_command.cpp">
       <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\canvas\canvas_renderer.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\canvas\canvas_updater.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\canvas\canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,9 +452,6 @@
     <ClInclude Include="..\include\game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\camera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\sprite_data.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -504,12 +507,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\image_layer_updater.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\canvas.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\canvas_renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\configurations.hpp">
@@ -671,10 +668,17 @@
     <ClInclude Include="..\include\vendor\utf8conv.h">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\include\canvas_updater.hpp">
+    <ClInclude Include="..\include\canvas\canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\canvas\canvas_renderer.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\canvas\canvas_updater.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\camera.hpp">
       <Filter>Header Files</Filter>
-    </None>
+    </ClInclude>
   </ItemGroup>
 </Project>

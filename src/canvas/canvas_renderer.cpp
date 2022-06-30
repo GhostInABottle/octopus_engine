@@ -1,11 +1,11 @@
-#include "../include/canvas_renderer.hpp"
-#include "../include/canvas.hpp"
-#include "../include/map.hpp"
-#include "../include/game.hpp"
-#include "../include/camera.hpp"
-#include "../include/sprite_data.hpp"
-#include "../include/configurations.hpp"
-#include "../include/utility/math.hpp"
+#include "../../include/canvas/canvas_renderer.hpp"
+#include "../../include/canvas/canvas.hpp"
+#include "../../include/map.hpp"
+#include "../../include/game.hpp"
+#include "../../include/camera.hpp"
+#include "../../include/sprite_data.hpp"
+#include "../../include/configurations.hpp"
+#include "../../include/utility/math.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
     : game(game),

@@ -1,6 +1,6 @@
-#include "../include/canvas_updater.hpp"
-#include "../include/map.hpp"
-#include "../include/canvas.hpp"
+#include "../../include/canvas/canvas_updater.hpp"
+#include "../../include/canvas/canvas.hpp"
+#include "../../include/map.hpp"
 
 void Canvas_Updater::update(Map& map) {
     map.erase_canvases(

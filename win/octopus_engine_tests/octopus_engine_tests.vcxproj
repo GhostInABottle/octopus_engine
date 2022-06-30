@@ -95,9 +95,9 @@
     <ClCompile Include="..\..\src\utility\xml.cpp" />
     <ClCompile Include="..\..\src\vendor\base64.cpp" />
     <ClCompile Include="..\..\src\camera.cpp" />
-    <ClCompile Include="..\..\src\canvas.cpp" />
-    <ClCompile Include="..\..\src\canvas_renderer.cpp" />
-    <ClCompile Include="..\..\src\canvas_updater.cpp" />
+    <ClCompile Include="..\..\src\canvas\canvas.cpp" />
+    <ClCompile Include="..\..\src\canvas\canvas_renderer.cpp" />
+    <ClCompile Include="..\..\src\canvas\canvas_updater.cpp" />
     <ClCompile Include="..\..\src\clock.cpp" />
     <ClCompile Include="..\..\src\command.cpp" />
     <ClCompile Include="..\..\src\commands\fade_music_command.cpp" />
@@ -185,9 +185,9 @@
     <ClInclude Include="..\..\include\utility\xml.hpp" />
     <ClInclude Include="..\..\include\vendor\base64.hpp" />
     <ClInclude Include="..\..\include\camera.hpp" />
-    <ClInclude Include="..\..\include\canvas.hpp" />
-    <ClInclude Include="..\..\include\canvas_renderer.hpp" />
-    <ClInclude Include="..\..\include\canvas_updater.hpp" />
+    <ClInclude Include="..\..\include\canvas\canvas.hpp" />
+    <ClInclude Include="..\..\include\canvas\canvas_renderer.hpp" />
+    <ClInclude Include="..\..\include\canvas\canvas_updater.hpp" />
     <ClInclude Include="..\..\include\clock.hpp" />
     <ClInclude Include="..\..\include\collision_check_types.hpp" />
     <ClInclude Include="..\..\include\collision_record.hpp" />
