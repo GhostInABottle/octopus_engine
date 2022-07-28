@@ -1172,6 +1172,7 @@ void Scripting_Interface::setup_scripts() {
     canvas_type["width"] = sol::property(&Canvas::get_width);
     canvas_type["height"] = sol::property(&Canvas::get_height);
     canvas_type["font_size"] = sol::property(&Canvas::get_font_size, &Canvas::set_font_size);
+    canvas_type["camera_relative"] = sol::property(&Canvas::is_camera_relative, &Canvas::set_camera_relative);
     canvas_type["text_color"] = sol::property(&Canvas::get_text_color, &Canvas::set_text_color);
     canvas_type["line_height"] = sol::property(&Canvas::get_line_height, &Canvas::set_line_height);
     canvas_type["text_outline_width"] = sol::property(&Canvas::get_text_outline_width, &Canvas::set_text_outline_width);

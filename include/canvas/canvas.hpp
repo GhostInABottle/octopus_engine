@@ -235,6 +235,9 @@ public:
     bool is_camera_relative() const {
         return camera_relative;
     }
+    void set_camera_relative(bool new_value) {
+        camera_relative = new_value;
+    }
     const std::string get_font_filename() const {
         return font->filename();
     }
@@ -449,7 +452,7 @@ private:
     std::shared_ptr<xd::font> font;
     // Text style
     std::unique_ptr<xd::font_style> style;
-    // Render relative to camera? (by default: true for text, false otherwise)
+    // Render relative to camera? (true by default)
     bool camera_relative;
     // List of child canvases that are rendered with this one
     std::vector<std::unique_ptr<Canvas>> children;

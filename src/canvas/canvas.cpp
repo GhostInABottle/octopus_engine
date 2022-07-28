@@ -20,7 +20,7 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     magnification(1.0f, 1.0f),
     color(1.0f),
     visible(false),
-    camera_relative(false),
+    camera_relative(true),
     redraw_needed(true),
     last_drawn_time(0),
     permissive_tag_parsing(false),
@@ -32,13 +32,11 @@ Canvas::Canvas(Game& game, xd::vec2 position) :
     last_camera_position(0.0f, 0.0f) {}
 
 Canvas::Canvas(Game& game, const std::string& sprite, const std::string& pose_name, xd::vec2 position) : Canvas(game, position) {
-    camera_relative = false;
     children_type = Canvas::Type::SPRITE;
     set_sprite(game, sprite, pose_name);
 }
 
 Canvas::Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans) : Canvas(game, position) {
-    camera_relative = false;
     children_type = Canvas::Type::IMAGE;
     set_image(filename, trans);
 }

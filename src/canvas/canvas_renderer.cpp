@@ -167,7 +167,7 @@ void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
         pos += parent->get_position();
     }
 
-    for (auto line : lines) {
+    for (const auto& line : lines) {
         float draw_x = pos.x;
         float draw_y = pos.y;
         if (!canvas.is_camera_relative()) {
@@ -182,8 +182,10 @@ void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
 
 void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
     xd::vec2 pos = canvas.get_position();
-    auto camera_pos = camera.get_pixel_position();
-    pos += camera_pos;
+    if (canvas.is_camera_relative()) {
+        auto camera_pos = camera.get_pixel_position();
+        pos += camera_pos;
+    }
     if (parent) {
         pos += parent->get_position();
     }
