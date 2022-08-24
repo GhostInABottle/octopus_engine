@@ -792,6 +792,9 @@ void Scripting_Interface::setup_scripts() {
         [](Game* game, const std::string& filename) {
             game->set_next_map(filename);
         },
+        [](Game* game, const std::string& filename, int dir) {
+            game->set_next_map(filename, static_cast<Direction>(dir));
+        },
         [](Game* game, const std::string& filename, int dir, std::optional<std::string> music) {
             game->set_next_map(filename, static_cast<Direction>(dir), std::nullopt, music);
         },
