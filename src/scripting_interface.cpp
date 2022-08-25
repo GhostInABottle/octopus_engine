@@ -19,6 +19,7 @@
 #include "../include/log.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/lua.hpp"
+#include <sstream>
 #include <ctime>
 
 Game* Scripting_Interface::game = nullptr;
@@ -416,6 +417,13 @@ void Scripting_Interface::setup_scripts() {
         [](const xd::vec2& v1, float f) { return v1 * f; },
         [](float f, const xd::vec2& v1) { return f * v1; }
     );
+    vec2_type[sol::meta_function::to_string] = [](const xd::vec2& val) {
+        std::stringstream ss;
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss.precision(1);
+        ss << "Vec2(" << val.x << ", " << val.y << ")";
+        return ss.str();
+    };
 
     // 3D vector
     auto vec3_type = lua.new_usertype<xd::vec3>("Vec3",
@@ -431,6 +439,13 @@ void Scripting_Interface::setup_scripts() {
         [](const xd::vec3& v1, float f) { return v1 * f; },
         [](float f, const xd::vec3& v1) { return f * v1; }
     );
+    vec3_type[sol::meta_function::to_string] = [](const xd::vec3& val) {
+        std::stringstream ss;
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss.precision(1);
+        ss << "Vec3(" << val.x << ", " << val.y << ", " << val.z << ")";
+        return ss.str();
+    };
 
     // 4D vector (or color)
     auto vec4_type = lua.new_usertype<xd::vec4>("Vec4",
@@ -451,6 +466,13 @@ void Scripting_Interface::setup_scripts() {
         [](const xd::vec4& v1, float f) { return v1 * f; },
         [](float f, const xd::vec4& v1) { return f * v1; }
     );
+    vec4_type[sol::meta_function::to_string] = [](const xd::vec4& val) {
+        std::stringstream ss;
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss.precision(1);
+        ss << "Vec4(" << val.x << ", " << val.y << ", " << val.z << ", " << val.w << ")";
+        return ss.str();
+    };
     vec4_type["to_hex"] = [](const xd::vec4& color) { return color_to_hex(color); };
 
     // Aliases for creating a color
@@ -503,6 +525,13 @@ void Scripting_Interface::setup_scripts() {
     rect_type["size"] = sol::property(sol::resolve<xd::vec2() const>(&xd::rect::size),
         sol::resolve<void(xd::vec2)>(&xd::rect::size));
     rect_type["intersects"] = &xd::rect::intersects;
+    rect_type[sol::meta_function::to_string] = [](const xd::rect& val) {
+        std::stringstream ss;
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss.precision(0);
+        ss << "Rect (" << val.x << ", " << val.y << ") " << val.w << "x" << val.h;
+        return ss.str();
+    };
 
     // Object draw order
     lua.new_enum<Map_Object::Draw_Order>("Draw_Order",
@@ -670,6 +699,11 @@ void Scripting_Interface::setup_scripts() {
     object_type["run_leave_script"] = &Map_Object::run_leave_script;
     object_type["add_linked_object"] = &Map_Object::add_linked_object;
     object_type["remove_linked_object"] = &Map_Object::remove_linked_object;
+    object_type[sol::meta_function::to_string] = [](const Map_Object& val) {
+        std::stringstream ss;
+        ss << "Map_Object(id: " << val.get_id() << ", name: " << val.get_name() << ")";
+        return ss.str();
+    };
 
     // Sound effect
     auto sound = lua.new_usertype<xd::sound>("Sound",
