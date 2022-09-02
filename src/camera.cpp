@@ -2,6 +2,7 @@
 #include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
+#include "../include/sprite.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/color.hpp"
 #include "../include/utility/math.hpp"

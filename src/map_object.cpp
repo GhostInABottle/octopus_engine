@@ -53,6 +53,8 @@ Map_Object::Map_Object(Game& game, const std::string& name,
     set_speed(1.0f);
 }
 
+Map_Object::~Map_Object() {}
+
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
         Collision_Check_Type check_type, bool change_facing) {
     // Map relative directions
@@ -189,13 +191,19 @@ xd::vec2 Map_Object::get_sprite_magnification() const {
         return xd::vec2(1.0f, 1.0f);
 }
 
-xd::vec2 Map_Object::get_text_position() const
-{
+xd::vec2 Map_Object::get_text_position() const {
     auto offset = xd::vec2{
         bounding_box.x + bounding_box.w / 2,
         -game.get_font_style().line_height() / 2
     };
     return get_position() + offset;
+}
+
+xd::vec2 Map_Object::get_size() const {
+    if (size.x > 0 || size.y > 0 || !sprite)
+        return size;
+
+    return sprite->get_size();
 }
 
 void Map_Object::set_outlined(std::optional<bool> new_outlined) {
@@ -278,6 +286,28 @@ void Map_Object::set_speed(float new_speed) {
     speed = new_speed * 60.0f / Configurations::get<int>("debug.logic-fps");
     if (sprite)
         sprite->set_speed(new_speed);
+}
+
+void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state, Direction new_direction) {
+    if (!new_pose_name.empty())
+        pose_name = new_pose_name;
+    else if (pose_name.empty() && sprite)
+        pose_name = sprite->get_default_pose();
+
+    if (!new_state.empty())
+        state = new_state;
+
+    if (new_direction != Direction::NONE)
+        direction = new_direction;
+
+    Sprite_Holder::set_pose(pose_name, state, direction);
+    for (auto obj : linked_objects) {
+        obj->set_pose(new_pose_name, new_state, new_direction);
+    }
+
+    if (sprite) {
+        bounding_box = sprite->get_bounding_box();
+    }
 }
 
 void Map_Object::face(float x, float y) {

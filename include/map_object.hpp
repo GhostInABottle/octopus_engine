@@ -15,11 +15,11 @@
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
 #include "sprite_holder.hpp"
-#include "sprite.hpp"
 #include "editable.hpp"
 
 class Game;
 struct Object_Layer;
+class Sprite;
 
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable, public Tmx_Object {
 public:
@@ -27,9 +27,10 @@ public:
     enum class Script_Context { MAP, GLOBAL };
     enum class Passthrough_Type { INITIATOR = 1, RECEIVER = 2, BOTH = 3 };
     enum class Outline_Condition { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
-    // Map object onstructor
+    // Map object onstructor/destructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
+    ~Map_Object();
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
@@ -76,9 +77,7 @@ public:
         position.y = y;
     }
     xd::vec2 get_text_position() const;
-    xd::vec2 get_size() const {
-        return size;
-    }
+    xd::vec2 get_size() const;
     void set_size(xd::vec2 new_size) {
         size = new_size;
         bounding_box = xd::rect{0, 0, size[0], size[1]};
@@ -336,27 +335,7 @@ public:
     void set_angle(int angle);
     // Set pose
     void set_pose(const std::string& new_pose_name = "", const std::string& new_state = "",
-            Direction new_direction = Direction::NONE) override {
-        if (!new_pose_name.empty())
-            pose_name = new_pose_name;
-        else if (pose_name.empty() && sprite)
-            pose_name = sprite->get_default_pose();
-
-        if (!new_state.empty())
-            state = new_state;
-
-        if (new_direction != Direction::NONE)
-            direction = new_direction;
-
-        Sprite_Holder::set_pose(pose_name, state, direction);
-        for (auto obj : linked_objects) {
-            obj->set_pose(new_pose_name, new_state, new_direction);
-        }
-        
-        if (sprite) {
-            bounding_box = sprite->get_bounding_box();
-        }
-    }
+        Direction new_direction = Direction::NONE) override;
     // Face another object
     void face(const Map_Object& other);
     // Face a certain spot
