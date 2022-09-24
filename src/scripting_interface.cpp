@@ -1033,6 +1033,7 @@ void Scripting_Interface::setup_scripts() {
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
     camera_type["position_bounds"] = sol::readonly_property(&Camera::get_position_bounds);
     camera_type["tracked_object"] = sol::property(&Camera::get_object, &Camera::set_object);
+    camera_type["is_shaking"] = sol::property(&Camera::is_shaking);
     camera_type["get_centered_position"] = sol::overload(
             sol::resolve<xd::vec2(xd::vec2) const>(&Camera::get_centered_position),
             sol::resolve<xd::vec2(const Map_Object&) const>(&Camera::get_centered_position));
