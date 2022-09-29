@@ -312,6 +312,12 @@
     <ClCompile Include="..\src\canvas\canvas.cpp">
       <Filter>Source Files\canvas</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\canvas\base_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\canvas\base_image_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -679,6 +685,12 @@
     </ClInclude>
     <ClInclude Include="..\include\camera.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\canvas\base_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\canvas\base_image_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

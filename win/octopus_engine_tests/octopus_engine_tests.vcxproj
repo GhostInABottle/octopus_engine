@@ -85,6 +85,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\canvas\base_canvas.cpp" />
+    <ClCompile Include="..\..\src\canvas\base_image_canvas.cpp" />
     <ClCompile Include="..\..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\..\src\key_binder.cpp" />
     <ClCompile Include="..\..\src\lua_object.cpp" />
@@ -172,6 +174,8 @@
     <ClCompile Include="..\..\src\xd\system\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\canvas\base_canvas.hpp" />
+    <ClInclude Include="..\..\include\canvas\base_image_canvas.hpp" />
     <ClInclude Include="..\..\include\commands\timed_command.hpp" />
     <ClInclude Include="..\..\include\direction.hpp" />
     <ClInclude Include="..\..\include\exceptions.hpp" />

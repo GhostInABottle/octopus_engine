@@ -336,6 +336,12 @@
     <ClCompile Include="..\..\src\canvas\canvas_updater.cpp">
       <Filter>Source Files\canvas</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\canvas\base_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\base_image_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -699,6 +705,12 @@
       <Filter>Header Files\canvas</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\canvas\canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\base_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\base_image_canvas.hpp">
       <Filter>Header Files\canvas</Filter>
     </ClInclude>
   </ItemGroup>

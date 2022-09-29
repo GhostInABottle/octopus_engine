@@ -190,12 +190,12 @@ void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
         pos += parent->get_position();
     }
 
-    xd::vec2 mag = canvas.get_magnification();
     if (auto sprite = canvas.get_sprite()) {
         sprite->render(batch, canvas, pos);
     } else {
         auto angle = canvas.get_angle().value_or(0.0f);
         auto origin = canvas.get_origin().value_or(xd::vec2{0.5f, 0.5f});
+        xd::vec2 mag = canvas.get_magnification();
         batch.add(canvas.get_image_texture(), pos.x, pos.y,
             xd::radians(angle), mag, canvas.get_color(), origin);
     }
