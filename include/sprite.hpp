@@ -13,7 +13,7 @@ struct Frame;
 struct Pose;
 struct Sprite_Data;
 class Map_Object;
-class Canvas;
+class Sprite_Canvas;
 struct Image_Layer;
 
 class Sprite : public xd::component<Map_Object> {
@@ -22,7 +22,7 @@ public:
     ~Sprite();
     // Render a frame
     void render(Map_Object& object);
-    void render(xd::sprite_batch& batch, const Canvas& canvas, const xd::vec2 pos);
+    void render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const xd::vec2 pos);
     void render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos);
     // Frame update
     void update(Map_Object& object);

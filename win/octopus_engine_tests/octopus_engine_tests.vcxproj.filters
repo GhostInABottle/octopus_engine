@@ -79,6 +79,18 @@
     <Filter Include="Source Files\canvas">
       <UniqueIdentifier>{e6aad5f5-b493-4516-b4a7-328b5dab4ea3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\scripting">
+      <UniqueIdentifier>{1a9c4e53-e02d-48f5-b6e7-20abdfaad2b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripting">
+      <UniqueIdentifier>{92c68ddb-43c1-4d24-b516-e99c25b8658a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scripting\bindings">
+      <UniqueIdentifier>{462e116b-90b5-4264-9014-28c614599238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripting\bindings">
+      <UniqueIdentifier>{2cc5656f-584f-4341-bbcd-cc669a801d8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -130,9 +142,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scripting_interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\image_layer_updater.cpp">
@@ -189,10 +198,10 @@
     <ClCompile Include="..\..\src\commands\tint_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\commands\update_canvas_command.cpp">
+    <ClCompile Include="..\..\src\commands\update_image_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\commands\update_layer_command.cpp">
+    <ClCompile Include="..\..\src\commands\update_opacity_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\commands\wait_command.cpp">
@@ -300,9 +309,6 @@
     <ClCompile Include="..\..\src\vendor\base64.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lua_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vendor\platform_folders.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
@@ -327,9 +333,6 @@
     <ClCompile Include="..\..\src\commands\timed_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\canvas\canvas.cpp">
-      <Filter>Source Files\canvas</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\canvas\canvas_renderer.cpp">
       <Filter>Source Files\canvas</Filter>
     </ClCompile>
@@ -341,6 +344,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\canvas\base_image_canvas.cpp">
       <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scripting\lua_object.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scripting\scripting_interface.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\image_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\sprite_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\canvas\text_canvas.cpp">
+      <Filter>Source Files\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scripting\bindings\canvas_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\commands\move_canvas_command.cpp">
+      <Filter>Source Files\commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -410,9 +434,6 @@
     <ClInclude Include="..\..\include\log.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\scripting_interface.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\image_layer_updater.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -467,10 +488,10 @@
     <ClInclude Include="..\..\include\commands\tint_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\commands\update_canvas_command.hpp">
+    <ClInclude Include="..\..\include\commands\update_image_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\commands\update_layer_command.hpp">
+    <ClInclude Include="..\..\include\commands\update_opacity_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\commands\wait_command.hpp">
@@ -656,9 +677,6 @@
     <ClInclude Include="..\..\include\vendor\rapidxml.hpp">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\lua_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\vendor\platform_folders.hpp">
       <Filter>Header Files\vendor</Filter>
     </ClInclude>
@@ -704,14 +722,32 @@
     <ClInclude Include="..\..\include\canvas\canvas_renderer.hpp">
       <Filter>Header Files\canvas</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\canvas\canvas.hpp">
-      <Filter>Header Files\canvas</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\canvas\base_canvas.hpp">
       <Filter>Header Files\canvas</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\canvas\base_image_canvas.hpp">
       <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\scripting\lua_object.hpp">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\scripting\scripting_interface.hpp">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\image_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\sprite_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\canvas\text_canvas.hpp">
+      <Filter>Header Files\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\scripting\bindings\canvas_bindings.hpp">
+      <Filter>Header Files\scripting\bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\move_canvas_command.hpp">
+      <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

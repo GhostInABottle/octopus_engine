@@ -3,7 +3,7 @@
 
 #include <string>
 #include <memory>
-#include "xd/vendor/sol/forward.hpp"
+#include "../xd/vendor/sol/forward.hpp"
 
 class Lua_Object {
 public:

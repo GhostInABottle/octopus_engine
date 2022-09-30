@@ -1,24 +1,25 @@
-#include "../include/scripting_interface.hpp"
-#include "../include/game.hpp"
-#include "../include/clock.hpp"
-#include "../include/camera.hpp"
-#include "../include/map.hpp"
-#include "../include/canvas/canvas.hpp"
-#include "../include/collision_record.hpp"
-#include "../include/image_layer.hpp"
-#include "../include/object_layer.hpp"
-#include "../include/map_object.hpp"
-#include "../include/command_result.hpp"
-#include "../include/commands.hpp"
-#include "../include/utility/color.hpp"
-#include "../include/utility/direction.hpp"
-#include "../include/utility/file.hpp"
-#include "../include/configurations.hpp"
-#include "../include/sprite_data.hpp"
-#include "../include/save_file.hpp"
-#include "../include/log.hpp"
-#include "../include/xd/audio.hpp"
-#include "../include/xd/lua.hpp"
+#include "../../include/scripting/scripting_interface.hpp"
+#include "../../include/scripting/bindings/canvas_bindings.hpp"
+#include "../../include/game.hpp"
+#include "../../include/clock.hpp"
+#include "../../include/camera.hpp"
+#include "../../include/map.hpp"
+#include "../../include/collision_record.hpp"
+#include "../../include/image_layer.hpp"
+#include "../../include/object_layer.hpp"
+#include "../../include/map_object.hpp"
+#include "../../include/command_result.hpp"
+#include "../../include/commands.hpp"
+#include "../../include/text_parser.hpp"
+#include "../../include/utility/color.hpp"
+#include "../../include/utility/direction.hpp"
+#include "../../include/utility/file.hpp"
+#include "../../include/configurations.hpp"
+#include "../../include/sprite_data.hpp"
+#include "../../include/save_file.hpp"
+#include "../../include/log.hpp"
+#include "../../include/xd/audio.hpp"
+#include "../../include/xd/lua.hpp"
 #include <sstream>
 #include <ctime>
 
@@ -685,6 +686,11 @@ void Scripting_Interface::setup_scripts() {
             *game, *obj, static_cast<Direction>(dir), pixels,
             skip.value_or(true), change_facing.value_or(true));
     };
+    object_type["update_opacity"] = [&](Map_Object* obj, float opacity, long duration) {
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Update_Opacity_Command>(
+            *game, *obj, opacity, duration);
+    };
     object_type["face"] = sol::overload(
         (void (Map_Object::*)(xd::vec2)) &Map_Object::face,
         (void (Map_Object::*)(float, float)) &Map_Object::face,
@@ -922,7 +928,7 @@ void Scripting_Interface::setup_scripts() {
     layer_type["set_property"] = &Layer::set_property;
     layer_type["update_opacity"] = [&](Layer* layer, float opacity, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command<Update_Layer_Command>(
+        return si->register_command<Update_Opacity_Command>(
                 *game, *layer, opacity, duration);
     };
 
@@ -941,7 +947,7 @@ void Scripting_Interface::setup_scripts() {
     image_layer_type["set_property"] = &Image_Layer::set_property;
     image_layer_type["update_opacity"] = [&](Image_Layer* layer, float opacity, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command<Update_Layer_Command>(
+        return si->register_command<Update_Opacity_Command>(
             *game, *layer, opacity, duration);
     };
     image_layer_type["reset"] = &Image_Layer::reset;
@@ -966,7 +972,7 @@ void Scripting_Interface::setup_scripts() {
     object_layer_type["set_property"] = &Object_Layer::set_property;
     object_layer_type["update_opacity"] = [&](Object_Layer* layer, float opacity, long duration) {
         auto si = game->get_current_scripting_interface();
-        return si->register_command<Update_Layer_Command>(
+        return si->register_command<Update_Opacity_Command>(
             *game, *layer, opacity, duration);
     };
 
@@ -1123,235 +1129,5 @@ void Scripting_Interface::setup_scripts() {
         return sol::as_table(parser.parse(text, permissive));
     };
 
-    // A drawing canvas
-    auto image_ctor = [&](const std::string& filename, xd::vec2 pos, const std::string& color_or_pose) {
-        std::shared_ptr<Canvas> canvas;
-        auto extension = filename.substr(filename.find_last_of(".") + 1);
-        if (extension == "spr") {
-            canvas = std::make_shared<Canvas>(*game, filename, color_or_pose, pos);
-        }
-        else {
-            auto color = color_or_pose.empty() ? xd::vec4{ 0 } : hex_to_color(color_or_pose);
-            canvas = std::make_shared<Canvas>(*game, filename, pos, color);
-        }
-        game->add_canvas(canvas);
-        return canvas;
-    };
-    auto canvas_type = lua.new_usertype<Canvas>("Canvas",
-        sol::call_constructor, sol::factories(
-            // Canvas constructor (with position)
-            [&](const std::string& filename, float x, float y) {
-                return image_ctor(filename, xd::vec2{ x, y }, "");
-            },
-            [&](const std::string& filename, xd::vec2 pos) {
-                return image_ctor(filename, pos, "");
-            },
-            // Canvas constructor (with hex transparent color or sprite with pose name)
-            [&](const std::string& filename, float x, float y, const std::string& color_or_pose) {
-                return image_ctor(filename, xd::vec2{ x, y }, color_or_pose);
-            },
-            [&](const std::string& filename, xd::vec2 pos, const std::string& color_or_pose) {
-                return image_ctor(filename, pos, color_or_pose);
-            },
-            // Canvas constructor (with transparent color as vec4)
-            [&](const std::string& filename, float x, float y, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Canvas>(*game, filename, xd::vec2{ x, y }, transparent);
-                game->add_canvas(canvas);
-                return canvas;
-            },
-            [&](const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Canvas>(*game, filename, pos, transparent);
-                game->add_canvas(canvas);
-                return canvas;
-            },
-            // Canvas constructor (with text and position)
-            [&](float x, float y, const std::string& text) {
-                auto canvas = std::make_shared<Canvas>(*game, xd::vec2(x, y), text);
-                game->add_canvas(canvas);
-                return canvas;
-            },
-            [&](xd::vec2 pos, const std::string& text) {
-                auto canvas = std::make_shared<Canvas>(*game, pos, text);
-                game->add_canvas(canvas);
-                return canvas;
-            }
-        ));
-    canvas_type[sol::meta_function::index] = &Canvas::get_lua_property;
-    canvas_type[sol::meta_function::new_index] = &Canvas::set_lua_property;
-    canvas_type["name"] = sol::property(&Canvas::get_name, &Canvas::set_name);
-    canvas_type["priority"] = sol::property(&Canvas::get_priority, &Canvas::set_priority);
-    canvas_type["position"] = sol::property(&Canvas::get_position, &Canvas::set_position);
-    canvas_type["x"] = sol::property(&Canvas::get_x, &Canvas::set_x);
-    canvas_type["y"] = sol::property(&Canvas::get_y, &Canvas::set_y);
-    canvas_type["pose_name"] = sol::property(&Canvas::get_pose_name);
-    canvas_type["pose_state"] = sol::property(&Canvas::get_pose_state);
-    canvas_type["pose_direction"] = sol::property(&Canvas::get_pose_direction);
-    canvas_type["sprite"] = sol::property(
-        &Canvas::get_sprite_filename,
-        [&](Canvas* canvas, const std::string& filename) {
-            canvas->set_sprite(*game, filename);
-        });
-    canvas_type["reset"] = &Canvas::reset;
-    canvas_type["set_sprite"] = [&](Canvas* canvas, const std::string& filename, std::optional<std::string> pose) {
-        canvas->set_sprite(*game, filename, pose.value_or(""));
-    };
-    canvas_type["show_pose"] = [&](Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(canvas, pose_name,
-            state.value_or(""), dir.value_or(Direction::NONE)));
-    };
-    canvas_type["origin"] = sol::property(&Canvas::get_origin, &Canvas::set_origin);
-    canvas_type["magnification"] = sol::property(&Canvas::get_magnification, &Canvas::set_magnification);
-    canvas_type["scissor_box"] = sol::property(&Canvas::get_scissor_box, &Canvas::set_scissor_box);
-    canvas_type["angle"] = sol::property(&Canvas::get_angle, &Canvas::set_angle);
-    canvas_type["opacity"] = sol::property(&Canvas::get_opacity, &Canvas::set_opacity);
-    canvas_type["color"] = sol::property(&Canvas::get_color, &Canvas::set_color);
-    canvas_type["filename"] = sol::property(&Canvas::get_filename);
-    canvas_type["text"] = sol::property(&Canvas::get_text, &Canvas::set_text);
-    canvas_type["width"] = sol::property(&Canvas::get_width);
-    canvas_type["height"] = sol::property(&Canvas::get_height);
-    canvas_type["font_size"] = sol::property(&Canvas::get_font_size, &Canvas::set_font_size);
-    canvas_type["camera_relative"] = sol::property(&Canvas::is_camera_relative, &Canvas::set_camera_relative);
-    canvas_type["text_color"] = sol::property(&Canvas::get_text_color, &Canvas::set_text_color);
-    canvas_type["line_height"] = sol::property(&Canvas::get_line_height, &Canvas::set_line_height);
-    canvas_type["text_outline_width"] = sol::property(&Canvas::get_text_outline_width, &Canvas::set_text_outline_width);
-    canvas_type["text_outline_color"] = sol::property(&Canvas::get_text_outline_color, &Canvas::set_text_outline_color);
-    canvas_type["text_shadow_offset"] = sol::property(&Canvas::get_text_shadow_offset, &Canvas::set_text_shadow_offset);
-    canvas_type["text_shadow_color"] = sol::property(&Canvas::get_text_shadow_color, &Canvas::set_text_shadow_color);
-    canvas_type["text_type"] = sol::property(&Canvas::get_text_type, &Canvas::set_text_type);
-    canvas_type["child_count"] = sol::property(&Canvas::get_child_count);
-    canvas_type["permissive_tag_parsing"] = sol::property(&Canvas::get_permissive_tag_parsing, &Canvas::set_permissive_tag_parsing);
-    canvas_type["has_image_outline"] = sol::property(&Canvas::has_image_outline, &Canvas::set_image_outline);
-    canvas_type["image_outline_color"] = sol::property(&Canvas::get_image_outline_color, &Canvas::set_image_outline_color);
-    canvas_type["visible"] = sol::property(&Canvas::is_visible, &Canvas::set_visible);
-    canvas_type["has_background"] = sol::property(&Canvas::has_background, &Canvas::set_background_visible);
-    canvas_type["background_color"] = sol::property(&Canvas::get_background_color, &Canvas::set_background_color);
-    canvas_type["background_rect"] = sol::property(&Canvas::get_background_rect, &Canvas::set_background_rect);
-    canvas_type["reset_text_outline"] = &Canvas::reset_text_outline;
-    canvas_type["reset_text_shadow"] = &Canvas::reset_text_shadow;
-    canvas_type["reset_text_type"] = &Canvas::reset_text_type;
-    canvas_type["text_width"] = &Canvas::get_text_width;
-    canvas_type["set_font"] = &Canvas::set_font;
-    canvas_type["link_font"] = &Canvas::link_font;
-    canvas_type["remove_child"] = &Canvas::remove_child;
-    canvas_type["get_child"] = sol::overload(
-        (Canvas* (Canvas::*)(std::size_t)) &Canvas::get_child,
-        (Canvas* (Canvas::*)(const std::string&)) &Canvas::get_child
-    );
-    canvas_type["show"] = [](Canvas& canvas) {
-        canvas.set_visible(true);
-    };
-    canvas_type["hide"] = [](Canvas& canvas) {
-        canvas.set_visible(false);
-    };
-    canvas_type["set_image"] = [](Canvas& canvas, const std::string& filename, std::optional<xd::vec4> ck) {
-        canvas.set_image(filename, ck.value_or(xd::vec4{0}));
-    };
-    canvas_type["update"] = sol::overload(
-        [&](Canvas& canvas, float x, float y, float mag_x,
-                float mag_y, float angle, float opacity, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration, xd::vec2(x, y),
-                    xd::vec2(mag_x, mag_y), angle, opacity);
-        },
-        [&](Canvas& canvas, xd::vec2 pos, xd::vec2 mag,
-                float angle, float opacity, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration, pos, mag, angle, opacity);
-        }
-    );
-    canvas_type["move"] = sol::overload(
-        [&](Canvas& canvas, xd::vec2 pos, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    pos, canvas.get_magnification(),
-                    canvas.get_angle(), canvas.get_opacity());
-        },
-        [&](Canvas& canvas, float x, float y, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    xd::vec2(x, y), canvas.get_magnification(),
-                    canvas.get_angle(), canvas.get_opacity());
-        }
-    );
-    canvas_type["resize"] = sol::overload(
-        [&](Canvas& canvas, float mag, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    canvas.get_position(), xd::vec2(mag, mag),
-                    canvas.get_angle(), canvas.get_opacity());
-        },
-        [&](Canvas& canvas, float mag_x, float mag_y, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    canvas.get_position(), xd::vec2(mag_x, mag_y),
-                    canvas.get_angle(), canvas.get_opacity());
-        },
-        [&](Canvas& canvas, xd::vec2 mag, long duration) {
-            auto si = game->get_current_scripting_interface();
-            return si->register_command<Update_Canvas_Command>(
-                    *game, canvas, duration,
-                    canvas.get_position(), mag,
-                    canvas.get_angle(), canvas.get_opacity());
-        }
-    );
-    canvas_type["update_opacity"] = [&](Canvas& canvas, float opacity, long duration) {
-        auto si = game->get_current_scripting_interface();
-        return si->register_command<Update_Canvas_Command>(
-                *game, canvas, duration, canvas.get_position(),
-                canvas.get_magnification(), canvas.get_angle(), opacity);
-    };
-    canvas_type["rotate"] = [&](Canvas& canvas, float angle, long duration) {
-        auto si = game->get_current_scripting_interface();
-        return si->register_command<Update_Canvas_Command>(
-                *game, canvas, duration, canvas.get_position(),
-                canvas.get_magnification(), angle, canvas.get_opacity());
-    };
-    auto add_child_image = [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& color_or_pose) {
-        auto extension = filename.substr(filename.find_last_of(".") + 1);
-        if (extension == "spr") {
-            return parent.add_child(name, *game, filename, color_or_pose, pos);
-        }
-        else {
-            auto color = color_or_pose.empty() ? xd::vec4{ 0 } : hex_to_color(color_or_pose);
-            return parent.add_child(name, *game, filename, pos, color);
-        }
-    };
-    canvas_type["add_child_image"] = sol::overload(
-        // with position
-        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y) {
-            return add_child_image(parent, name, filename, xd::vec2{ x, y }, "");
-        },
-        [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
-            return add_child_image(parent, name, filename, pos, "");
-        },
-        // with hex transparent color or sprite with pose name
-        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& color_or_pose) {
-            return add_child_image(parent, name, filename, xd::vec2{ x, y }, color_or_pose);
-        },
-        [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& color_or_pose) {
-            return add_child_image(parent, name, filename, pos, color_or_pose);
-        },
-        // with transparent color as vec4
-        [&](Canvas& parent, const std::string& name, const std::string& filename, float x, float y, xd::vec4 transparent) {
-            return parent.add_child(name, *game, filename, xd::vec2(x, y), transparent);
-        },
-        [&](Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-            return parent.add_child(name, *game, filename, pos, transparent);
-        }
-    );
-    // with text and position
-    canvas_type["add_child_text"] = sol::overload(
-        [&](Canvas& parent, const std::string& name, float x, float y, const std::string& text) {
-            return parent.add_child(name, *game, xd::vec2(x, y), text, true, true);
-        },
-        [&](Canvas& parent, const std::string& name, xd::vec2 pos, const std::string& text) {
-            return parent.add_child(name, *game, pos, text, true, true);
-        }
-    );
+    bind_canvas_types(lua, *game);
 }

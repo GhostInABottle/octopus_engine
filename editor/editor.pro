@@ -22,15 +22,20 @@ SOURCES += main.cpp\
     ../src/vendor/lutf8lib.cpp \
     ../src/vendor/platform_folders.cpp \
     ../src/camera.cpp \
-    ../src/canvas/canvas.cpp \
+    ../src/canvas/base_canvas.cpp \
+    ../src/canvas/base_image_canvas.cpp \
     ../src/canvas/canvas_renderer.cpp \
     ../src/canvas/canvas_updater.cpp \
+    ../src/canvas/image_canvas.cpp \
+    ../src/canvas/sprite_canvas.cpp \
+    ../src/canvas/text_canvas.cpp \
     ../src/clock.cpp \
     ../src/command.cpp \
     ../src/command_result.cpp \
     ../src/commands/timed_command.cpp \
     ../src/commands/fade_music_command.cpp \
     ../src/commands/move_camera_command.cpp \
+    ../src/commands/move_canvas_command.cpp \
     ../src/commands/move_object_command.cpp \
     ../src/commands/move_object_to_command.cpp \
     ../src/commands/shake_screen_command.cpp \
@@ -38,8 +43,8 @@ SOURCES += main.cpp\
     ../src/commands/show_text_command.cpp \
     ../src/commands/text_options.cpp \
     ../src/commands/tint_command.cpp \
-    ../src/commands/update_canvas_command.cpp \
-    ../src/commands/update_layer_command.cpp \
+    ../src/commands/update_image_command.cpp \
+    ../src/commands/update_opacity_command.cpp \
     ../src/commands/wait_command.cpp \
     ../src/commands/zoom_command.cpp \
     ../src/configurations.cpp \
@@ -54,7 +59,6 @@ SOURCES += main.cpp\
     ../src/layer.cpp \
     ../src/layer_renderer.cpp \
     ../src/log.cpp \
-    ../src/lua_object.cpp \
     ../src/map.cpp \
     ../src/map_object.cpp \
     ../src/object_layer.cpp \
@@ -63,7 +67,9 @@ SOURCES += main.cpp\
     ../src/pathfinder.cpp \
     ../src/player_controller.cpp \
     ../src/save_file.cpp \
-    ../src/scripting_interface.cpp \
+    ../src/scripting/bindings/canvas_bindings.cpp \
+    ../src/scripting/lua_object.cpp \
+    ../src/scripting/scripting_interface.cpp \
     ../src/shake_decorator.cpp \
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
@@ -121,9 +127,13 @@ HEADERS  += main_window.hpp \
     ../include/vendor/unidata.h \
     ../include/vendor/utf8conv.h \
     ../include/camera.hpp \
-    ../include/canvas/canvas.hpp \
+    ../include/canvas/base_canvas.hpp \
+    ../include/canvas/base_image_canvas.hpp \
     ../include/canvas/canvas_renderer.hpp \
     ../include/canvas/canvas_updater.hpp \
+    ../include/canvas/image_canvas.hpp \
+    ../include/canvas/sprite_canvas.hpp \
+    ../include/canvas/text_canvas.hpp \
     ../include/clock.hpp \
     ../include/collision_check_types.hpp \
     ../include/collision_record.hpp \
@@ -133,6 +143,7 @@ HEADERS  += main_window.hpp \
     ../include/commands/timed_command.hpp \
     ../include/commands/fade_music_command.hpp \
     ../include/commands/move_camera_command.hpp \
+    ../include/commands/move_canvas_command.hpp \
     ../include/commands/move_object_command.hpp \
     ../include/commands/move_object_to_command.hpp \
     ../include/commands/shake_screen_command.hpp \
@@ -140,8 +151,8 @@ HEADERS  += main_window.hpp \
     ../include/commands/show_text_command.hpp \
     ../include/commands/text_options.hpp \
     ../include/commands/tint_command.hpp \
-    ../include/commands/update_canvas_command.hpp \
-    ../include/commands/update_layer_command.hpp \
+    ../include/commands/update_image_command.hpp \
+    ../include/commands/update_opacity_command.hpp \
     ../include/commands/wait_command.hpp \
     ../include/commands/zoom_command.hpp \
     ../include/configurations.hpp \
@@ -159,7 +170,6 @@ HEADERS  += main_window.hpp \
     ../include/layer_types.hpp \
     ../include/layer_updater.hpp \
     ../include/log.hpp \
-    ../include/lua_object.hpp \
     ../include/map.hpp \
     ../include/map_object.hpp \
     ../include/object_layer.hpp \
@@ -170,7 +180,9 @@ HEADERS  += main_window.hpp \
     ../include/vendor/rapidxml.hpp \
     ../include/vendor/rapidxml_print.hpp \
     ../include/save_file.hpp \
-    ../include/scripting_interface.hpp \
+    ../include/scripting/bindings/canvas_bindings.hpp \
+    ../include/scripting/lua_object.hpp \
+    ../include/scripting/scripting_interface.hpp \
     ../include/shake_decorator.hpp \
     ../include/sprite.hpp \
     ../include/sprite_data.hpp \
@@ -181,6 +193,7 @@ HEADERS  += main_window.hpp \
     ../include/tile_layer_renderer.hpp \
     ../include/tileset.hpp \
     ../include/tmx_properties.hpp \
+    ../include/translucent_object.hpp \
     ../include/utility/color.hpp \
     ../include/utility/direction.hpp \
     ../include/utility/file.hpp \

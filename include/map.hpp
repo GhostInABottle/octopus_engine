@@ -18,14 +18,14 @@
 #include "collision_check_types.hpp"
 #include "editable.hpp"
 #include "layer_types.hpp"
-#include "lua_object.hpp"
+#include "scripting/lua_object.hpp"
 
 namespace xd {
     class music;
 }
 class Game;
 class Map_Object;
-class Canvas;
+class Base_Canvas;
 struct Object_Layer;
 struct Tile_Layer;
 struct Image_Layer;
@@ -117,7 +117,7 @@ public:
     // Delete layer with given name
     void delete_layer(std::string name);
     // Add a canvas to the map
-    void add_canvas(std::shared_ptr<Canvas> canvas);
+    void add_canvas(std::shared_ptr<Base_Canvas> canvas);
     // Erase canvases that match a predicate function
     template<typename Predicate>
     void erase_canvases(Predicate func) {
@@ -125,7 +125,7 @@ public:
             std::begin(canvases), std::end(canvases), func), std::end(canvases));
     }
     // Return a sorted list of canvases
-    const std::vector<std::weak_ptr<Canvas>>& get_canvases();
+    const std::vector<std::weak_ptr<Base_Canvas>>& get_canvases();
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Save map to specified file name
@@ -231,7 +231,7 @@ private:
     // List of map layers
     std::vector<std::shared_ptr<Layer>> layers;
     // List of canvases to draw
-    std::vector<std::weak_ptr<Canvas>> canvases;
+    std::vector<std::weak_ptr<Base_Canvas>> canvases;
     // Background music
     std::string background_music;
     // Startup script filenames

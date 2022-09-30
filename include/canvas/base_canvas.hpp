@@ -8,7 +8,8 @@
 #include <optional>
 #include "../xd/graphics/types.hpp"
 #include "../xd/graphics/texture.hpp"
-#include "../lua_object.hpp"
+#include "../scripting/lua_object.hpp"
+#include "../translucent_object.hpp"
 
 class Game;
 class Camera;
@@ -17,7 +18,7 @@ namespace xd {
     class sprite_batch;
 }
 
-class Base_Canvas : public Lua_Object {
+class Base_Canvas : public Lua_Object, public Translucent_Object {
 public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     Base_Canvas(const Base_Canvas&) = delete;
@@ -25,12 +26,13 @@ public:
     // Base class destructor
     virtual ~Base_Canvas() = 0 {}
     // Update or render canvas
-    virtual void render(Camera& camera, xd::sprite_batch& batch, std::optional<Base_Canvas&> parent) = 0;
-    virtual void update() = 0 {}
+    virtual void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) = 0;
+    virtual void update() {}
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
-    template<class ...Args>
-    Base_Canvas* add_child(const std::string& child_name, Args&&... args) {
-        children.emplace_back(std::make_unique<Base_Canvas>(std::forward<Args>(args)...));
+    template<class CType, class ...Args>
+    CType* add_child(const std::string& child_name, Args&&... args) {
+        children.emplace_back(std::make_unique<CType>(std::forward<Args>(args)...));
+
         auto& child = children.back();
         child->set_name(child_name);
         if (child->get_type() != children_type) {
@@ -44,7 +46,7 @@ public:
         }
 
         redraw_needed = true;
-        return children.back().get();
+        return static_cast<CType*>(children.back().get());
     }
     // Remove a child
     void remove_child(const std::string& name);
@@ -121,21 +123,21 @@ public:
         scissor_box = new_scissor_box;
         redraw_needed = true;
     }
-    float get_opacity() const {
+    float get_opacity() const override {
         return color.a;
     }
-    void set_opacity(float opacity) {
-        if (color.a == opacity)
-            return;
+    void set_opacity(float opacity) override {
+        if (color.a == opacity) return;
+
         color.a = opacity;
         redraw_needed = true;
     }
-    xd::vec4 get_color() const {
+    virtual xd::vec4 get_color() const {
         return color;
     }
-    void set_color(xd::vec4 new_color) {
-        if (color == new_color)
-            return;
+    virtual void set_color(xd::vec4 new_color) {
+        if (color == new_color) return;
+
         color = new_color;
         redraw_needed = true;
     }

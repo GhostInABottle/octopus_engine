@@ -5,12 +5,12 @@
 #include "../include/object_layer.hpp"
 #include "../include/layer_renderer.hpp"
 #include "../include/layer_updater.hpp"
-#include "../include/canvas/canvas.hpp"
+#include "../include/canvas/base_canvas.hpp"
 #include "../include/canvas/canvas_renderer.hpp"
 #include "../include/canvas/canvas_updater.hpp"
 #include "../include/tileset.hpp"
 #include "../include/game.hpp"
-#include "../include/scripting_interface.hpp"
+#include "../include/scripting/scripting_interface.hpp"
 #include "../include/xd/vendor/sol/sol.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
@@ -422,17 +422,17 @@ void Map::delete_layer(std::string name) {
     ), layers.end());
 }
 
-void Map::add_canvas(std::shared_ptr<Canvas> canvas) {
+void Map::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
     canvases_sorted = false;
     canvas->set_priority(canvases.size());
     canvases.push_back(canvas);
 }
 
-const std::vector<std::weak_ptr<Canvas>>& Map::get_canvases() {
+const std::vector<std::weak_ptr<Base_Canvas>>& Map::get_canvases() {
     if (!canvases_sorted) {
         canvases_sorted = true;
         std::sort(canvases.begin(), canvases.end(),
-            [](std::weak_ptr<Canvas>& weak_a, std::weak_ptr<Canvas> weak_b) {
+            [](std::weak_ptr<Base_Canvas>& weak_a, std::weak_ptr<Base_Canvas> weak_b) {
                 auto a = weak_a.lock();
                 auto b = weak_b.lock();
                 if (a && b) {

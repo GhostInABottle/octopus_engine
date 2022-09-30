@@ -11,6 +11,14 @@ Timed_Command::Timed_Command(Game& game, int duration, int start_time) :
 
 Timed_Command::~Timed_Command() {}
 
+void Timed_Command::reset(int duration, int start_time) {
+    this->start_time = start_time < 0 ? game.ticks() : start_time;
+    this->duration = duration;
+    pause_start = -1;
+    stopped = false;
+    paused = false;
+}
+
 void Timed_Command::pause(int ticks) noexcept {
     Command::pause();
     pause_start = ticks < 0 ?  game.ticks() : ticks;

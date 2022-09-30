@@ -5,7 +5,7 @@
 #include "../include/object_layer.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
-#include "../include/scripting_interface.hpp"
+#include "../include/scripting/scripting_interface.hpp"
 #include "../include/command.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/color.hpp"
@@ -847,7 +847,7 @@ void Game::new_map(xd::ivec2 map_size, xd::ivec2 tile_size) {
     map->add_layer(Layer_Type::OBJECT);
 }
 
-void Game::add_canvas(std::shared_ptr<Canvas> canvas) {
+void Game::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
     map->add_canvas(canvas);
 }
 

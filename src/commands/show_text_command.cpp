@@ -1,10 +1,10 @@
 #include "../../include/commands/show_text_command.hpp"
 #include "../../include/commands/timed_command.hpp"
-#include "../../include/commands/update_canvas_command.hpp"
+#include "../../include/commands/update_opacity_command.hpp"
 #include "../../include/xd/audio/sound.hpp"
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
-#include "../../include/canvas/canvas.hpp"
+#include "../../include/canvas/text_canvas.hpp"
 #include "../../include/text_parser.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"
@@ -64,23 +64,23 @@ struct Show_Text_Command::Impl : Timed_Command {
         // Set text position based on size estimation
         float char_height = font_style.line_height();
         float text_height = char_height * (text_lines.size() - 1);
-        auto pos{options.position};
-        bool camera_relative = (options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
-        bool always_visible = (options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
+        auto pos{this->options.position};
+        bool camera_relative = (this->options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
+        bool always_visible = (this->options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
 
         if (!camera_relative && always_visible) {
             pos -= game.get_camera()->get_pixel_position();
         }
 
-        if ((options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
+        if ((this->options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
             pos.y -= text_height;
         } else {
             pos.y += char_height;
         }
 
-        if (options.centered) {
+        if (this->options.centered) {
             pos.x = game.game_width() / 2 - text_width / 2;
-        } else if ((options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+        } else if ((this->options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
             pos.x -= text_width / 2;
         }
 
@@ -99,11 +99,11 @@ struct Show_Text_Command::Impl : Timed_Command {
         game.reset_text_decorators();
 
         // Create the text canvas and show it
-        canvas = std::make_shared<Canvas>(game, pos, full, camera_relative || always_visible);
+        canvas = std::make_shared<Text_Canvas>(game, pos, full, camera_relative || always_visible);
         canvas->set_opacity(0.0f);
-        if (options.background_visible) {
+        if (this->options.background_visible) {
             canvas->set_background_visible(true);
-            canvas->set_background_color(options.background_color);
+            canvas->set_background_color(this->options.background_color);
             canvas->set_background_rect(xd::rect{pos.x, pos.y - char_height,
                 text_width, text_height + char_height});
         }
@@ -116,12 +116,10 @@ struct Show_Text_Command::Impl : Timed_Command {
             options.canvas_priority;
         canvas->set_priority(priority);
 
-        canvas_updater = std::make_unique<Update_Canvas_Command>(game, *canvas);
-        canvas_updater->set_new_opacity(1.0f);
         int duration = options.fade_in_duration == -1 ?
             Configurations::get<int>("text.fade-in-duration") :
             options.fade_in_duration;
-        canvas_updater->set_duration(duration);
+        canvas_updater = std::make_unique<Update_Opacity_Command>(game, *canvas, 1.0f, duration);
 
         if (options.duration == -1) {
             was_disabled = game.get_player()->is_disabled();
@@ -272,12 +270,10 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         if (text_complete) {
-            canvas_updater->reset();
             int duration = options.fade_out_duration == -1 ?
                 Configurations::get<int>("text.fade-out-duration") :
                 options.fade_out_duration;
-            canvas_updater->set_duration(duration);
-            canvas_updater->set_new_opacity(0.0f);
+            canvas_updater->restart(0.0f, duration);
         }
     }
 
@@ -286,8 +282,8 @@ struct Show_Text_Command::Impl : Timed_Command {
     }
 
     Text_Options options;
-    std::shared_ptr<Canvas> canvas;
-    std::unique_ptr<Update_Canvas_Command> canvas_updater;
+    std::shared_ptr<Text_Canvas> canvas;
+    std::unique_ptr<Update_Opacity_Command> canvas_updater;
     bool complete;
     bool text_complete;
     bool was_disabled;

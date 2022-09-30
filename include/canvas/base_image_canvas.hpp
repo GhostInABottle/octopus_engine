@@ -51,6 +51,8 @@ public:
 protected:
     // Sets shared default values
     Base_Image_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position, const std::string& filename);
+    // Image filename
+    std::string filename;
 private:
     // Drawing origin
     std::optional<xd::vec2> origin;
@@ -58,8 +60,6 @@ private:
     xd::vec2 magnification;
     // Rotation angle in degrees
     std::optional<float> angle;
-    // Image filename
-    std::string filename;
     // Color of image outline
     std::optional<xd::vec4> outline_color;
 };

@@ -6,7 +6,7 @@ Base_Image_Canvas::Base_Image_Canvas(Game& game, Base_Canvas::Type type, xd::vec
 	: Base_Canvas(game, type, position),
     filename(filename),
     magnification(1.0f, 1.0f),
-    outline_color(hex_to_color(Configurations::get<std::string>("game.object-outline-color")))
+    outline_color(std::nullopt)
 {}
 
 

@@ -1,17 +1,17 @@
-#ifndef HPP_UPDATE_CANVAS_COMMAND
-#define HPP_UPDATE_CANVAS_COMMAND
+#ifndef HPP_UPDATE_IMAGE_COMMAND
+#define HPP_UPDATE_IMAGE_COMMAND
 
 #include<optional>
 #include "../xd/graphics/types.hpp"
 #include "timed_command.hpp"
 
 class Game;
-class Canvas;
+class Base_Image_Canvas;
 
-class Update_Canvas_Command : public Timed_Command {
+class Update_Image_Command : public Timed_Command {
 public:
-    Update_Canvas_Command(Game& game, Canvas& canvas);
-    Update_Canvas_Command(Game& game, Canvas& canvas, long duration,
+    Update_Image_Command(Game& game, Base_Image_Canvas& canvas);
+    Update_Image_Command(Game& game, Base_Image_Canvas& canvas, long duration,
         xd::vec2 pos, xd::vec2 mag, std::optional<float> angle, float opacity);
     void reset(bool reset_new = true);
     void set_new_position(xd::vec2 position) { new_position = position;  }
@@ -23,7 +23,7 @@ public:
     bool is_complete() const override;
 private:
     void update_canvas(float alpha) const;
-    Canvas& canvas;
+    Base_Image_Canvas& canvas;
     xd::vec2 old_position;
     xd::vec2 old_magnification;
     std::optional<float> old_angle;
@@ -34,6 +34,5 @@ private:
     float new_opacity;
     bool complete;
 };
-
 
 #endif

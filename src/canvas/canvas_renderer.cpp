@@ -1,5 +1,6 @@
 #include "../../include/canvas/canvas_renderer.hpp"
-#include "../../include/canvas/canvas.hpp"
+#include "../../include/canvas/base_canvas.hpp"
+#include "../../include/canvas/base_image_canvas.hpp"
 #include "../../include/map.hpp"
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
@@ -42,7 +43,7 @@ void Canvas_Renderer::render(Map& map) {
     }
 }
 
-void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
+void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     auto scissor_box = canvas.get_scissor_box();
     if (scissor_box.w > 0) {
         // Use a texture-sized viewport when calculating scissor box
@@ -63,7 +64,7 @@ void Canvas_Renderer::setup_framebuffer(const Canvas& canvas) {
         GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& root) {
+void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_Canvas& root) {
     game.get_framebuffer().unbind();
     if (canvas.get_scissor_box().w > 0) {
         // Scissor test was already applied when drawing to FBO
@@ -99,7 +100,7 @@ void Canvas_Renderer::render_framebuffer(const Canvas& canvas, const Canvas& roo
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root) {
+void Canvas_Renderer::render_canvas(Base_Canvas& canvas, Base_Canvas* parent, Base_Canvas* root) {
     if (!canvas.is_visible() || check_close(canvas.get_opacity(), 0.0f)) {
         canvas.mark_as_drawn(game.window_ticks());
         return;
@@ -113,7 +114,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
     // optimization for images/sprites in a child/parent hierarchy
     auto& root_parent = root ? *root : canvas;
     bool has_children = canvas.get_child_count() > 0;
-    bool is_text = canvas.get_type() == Canvas::Type::TEXT;
+    bool is_text = canvas.get_type() == Base_Canvas::Type::TEXT;
     bool using_fbo = !parent && fbo_supported && (is_text || has_children);
     bool individual = !parent && !has_children;
     bool redraw = should_redraw(canvas)
@@ -127,11 +128,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
         }
 
         // Render canvas and children
-        if (canvas.get_type() == Canvas::Type::TEXT) {
-            render_text(canvas, parent);
-        } else {
-            render_image(canvas, parent);
-        }
+        canvas.render(camera, batch, parent);
 
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
             auto& child = *canvas.get_child(i);
@@ -157,51 +154,7 @@ void Canvas_Renderer::render_canvas(Canvas& canvas, Canvas* parent, Canvas* root
     }
 }
 
-void Canvas_Renderer::render_text(Canvas& canvas, Canvas* parent) {
-    auto style = canvas.get_style();
-    style->color().a = canvas.get_opacity();
-    auto& lines = canvas.get_text_lines();
-    xd::vec2 pos = canvas.get_position();
-    auto camera_pos = camera.get_pixel_position();
-    if (parent) {
-        pos += parent->get_position();
-    }
-
-    for (const auto& line : lines) {
-        float draw_x = pos.x;
-        float draw_y = pos.y;
-        if (!canvas.is_camera_relative()) {
-            draw_x -= camera_pos.x;
-            draw_y -= camera_pos.y;
-        }
-
-        canvas.render_text(line, draw_x, draw_y);
-        pos.y += style->line_height();
-    }
-}
-
-void Canvas_Renderer::render_image(Canvas& canvas, Canvas* parent) {
-    xd::vec2 pos = canvas.get_position();
-    if (canvas.is_camera_relative()) {
-        auto camera_pos = camera.get_pixel_position();
-        pos += camera_pos;
-    }
-    if (parent) {
-        pos += parent->get_position();
-    }
-
-    if (auto sprite = canvas.get_sprite()) {
-        sprite->render(batch, canvas, pos);
-    } else {
-        auto angle = canvas.get_angle().value_or(0.0f);
-        auto origin = canvas.get_origin().value_or(xd::vec2{0.5f, 0.5f});
-        xd::vec2 mag = canvas.get_magnification();
-        batch.add(canvas.get_image_texture(), pos.x, pos.y,
-            xd::radians(angle), mag, canvas.get_color(), origin);
-    }
-}
-
-void Canvas_Renderer::render_background(Canvas& canvas, Canvas* parent) {
+void Canvas_Renderer::render_background(Base_Canvas& canvas, Base_Canvas* parent) {
     if (!canvas.has_background()) return;
     auto rect = canvas.get_background_rect();
     rect.x -= background_margins.x;
@@ -226,17 +179,21 @@ void Canvas_Renderer::render_background(Canvas& canvas, Canvas* parent) {
     if (check_close(color.a, 0.0f)) return;
     camera.draw_rect(rect, color);
 }
-bool Canvas_Renderer::should_redraw(const Canvas& canvas) {
+bool Canvas_Renderer::should_redraw(const Base_Canvas& canvas) {
     return canvas.should_redraw(game.window_ticks()) || !fbo_supported;
 }
 
-void Canvas_Renderer::draw(const xd::mat4 mvp, const Canvas& root) {
+void Canvas_Renderer::draw(const xd::mat4 mvp, const Base_Canvas& root) {
     xd::shader_uniforms uniforms{mvp};
-    if (root.has_image_outline()) {
-        batch.set_outline_color(root.get_image_outline_color());
+
+    auto root_image = dynamic_cast<const Base_Image_Canvas*>(&root);
+    auto outline_color = root_image ? root_image->get_outline_color() : std::nullopt;
+    if (outline_color.has_value()) {
+        batch.set_outline_color(outline_color.value());
         batch.draw_outlined(uniforms);
     } else {
         batch.draw(uniforms);
     }
+
     batch.clear();
 }

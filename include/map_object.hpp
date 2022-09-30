@@ -16,12 +16,14 @@
 #include "collision_check_types.hpp"
 #include "sprite_holder.hpp"
 #include "editable.hpp"
+#include "translucent_object.hpp"
 
 class Game;
 struct Object_Layer;
 class Sprite;
 
-class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder, public Editable, public Tmx_Object {
+class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder,
+    public Editable, public Tmx_Object, public Translucent_Object {
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
@@ -98,10 +100,10 @@ public:
     unsigned int get_gid() const {
         return gid;
     }
-    float get_opacity() const {
+    float get_opacity() const override {
         return opacity;
     }
-    void set_opacity(float new_opacity) {
+    void set_opacity(float new_opacity) override {
         opacity = new_opacity;
     }
     bool is_visible() const {

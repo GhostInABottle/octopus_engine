@@ -3,15 +3,16 @@
 
 #include<memory>
 #include <string>
-#include "xd/graphics/types.hpp"
 #include "tmx_properties.hpp"
 #include "editable.hpp"
+#include "translucent_object.hpp"
+#include "xd/graphics/types.hpp"
 #include "vendor/rapidxml.hpp"
 
 class Layer_Renderer;
 class Layer_Updater;
 
-struct Layer : public Editable, public Tmx_Object {
+struct Layer : public Editable, public Tmx_Object, public Translucent_Object {
     // Layer ID
     int id;
     // Layer name
@@ -36,6 +37,9 @@ struct Layer : public Editable, public Tmx_Object {
     Layer();
     // Resize layer (width and height in tiles)
     virtual void resize(xd::ivec2 new_size);
+    // Get and set opacity (for the translucent interface)
+    float get_opacity() const override { return opacity; }
+    void set_opacity(float new_opacity) override { opacity = new_opacity;  }
     // Serialize layer to XML node
     virtual rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) = 0;
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc,

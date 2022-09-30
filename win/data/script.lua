@@ -43,7 +43,7 @@ if c.selected == 1 then
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
     wait(500)
     text(o, 'Manually showing text with a canvas'):wait()
-    local text_canvas = Canvas(40, 40, "{type=bold2}This{/type} is a {bold}Canvas{/bold} {italic}test{/italic},\n will it work?")
+    local text_canvas = Text_Canvas(40, 40, "{type=bold2}This{/type} is a {bold}Canvas{/bold} {italic}test{/italic},\n will it work?")
     text_canvas.scissor_box = Rect(30, 20, 140, 60)
     text_canvas:link_font('bold2', 'data/Roboto-Bold.ttf')
     text_canvas:show()
@@ -54,21 +54,21 @@ if c.selected == 1 then
     function color_to_s(color)
      return '(' .. color.r .. ', ' .. color.g .. ', ' .. color.b .. ', ' .. color.a .. ')'
     end
-    print('Text color ' .. color_to_s(text_canvas.text_color))
-    text_canvas.text_color = Color('red')
+    print('Text color ' .. color_to_s(text_canvas.color))
+    text_canvas.color = Color('red')
     print('Line height ' .. text_canvas.line_height)
     text_canvas.line_height = 20
-    print('Outline width ' .. text_canvas.text_outline_width)
-    text_canvas.text_outline_width = 2
-    print('Outline color ' .. color_to_s(text_canvas.text_outline_color))
-    text_canvas.text_outline_color = Color('yellow')
-    print('Shadow offset (' .. text_canvas.text_shadow_offset.x .. ', ' .. text_canvas.text_shadow_offset.y .. ')')
-    text_canvas.text_shadow_offset = Vec2(-18, -18)
-    print('Shadow color ' .. color_to_s(text_canvas.text_shadow_color))
-    text_canvas.text_shadow_color = Color('blue')
+    print('Outline width ' .. text_canvas.outline_width)
+    text_canvas.outline_width = 2
+    print('Outline color ' .. color_to_s(text_canvas.outline_color))
+    text_canvas.outline_color = Color('yellow')
+    print('Shadow offset (' .. text_canvas.shadow_offset.x .. ', ' .. text_canvas.shadow_offset.y .. ')')
+    text_canvas.shadow_offset = Vec2(-18, -18)
+    print('Shadow color ' .. color_to_s(text_canvas.shadow_color))
+    text_canvas.shadow_color = Color('blue')
     wait(2000)
-    print('Type: ' .. text_canvas.text_type)
-    text_canvas.text_type = 'bold'
+    print('Type: ' .. text_canvas.font_type)
+    text_canvas.font_type = 'bold'
     wait(2000)
     print('Setting font')
     text_canvas:set_font('data/Roboto-Bold.ttf')
@@ -86,7 +86,7 @@ if c.selected == 1 then
 elseif c.selected == 2 then
     -- Canvas
     text(o, "Showing a canvas"):wait()
-    local canvas = Canvas("data/player.png", 100, 100, "#FF00FF")
+    local canvas = Image_Canvas("data/player.png", 100, 100, "#FF00FF")
     canvas.has_image_outline = true
     canvas.image_outline_color = Color('blue')
     canvas.magnification = Vec2(0, 0)

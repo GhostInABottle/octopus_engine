@@ -1,7 +1,7 @@
-#include "../include/lua_object.hpp"
-#include "../include/xd/lua.hpp"
+#include "../../include/scripting/lua_object.hpp"
+#include "../../include/xd/lua.hpp"
+#include "../../include/log.hpp"
 #include <unordered_map>
-#include "../include/log.hpp"
 
 struct Lua_Object::Impl {
     std::unordered_map<std::string, sol::main_object> table;

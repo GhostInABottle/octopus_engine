@@ -17,7 +17,7 @@ class Camera;
 class Map;
 class Map_Object;
 class Scripting_Interface;
-class Canvas;
+class Base_Canvas;
 class Clock;
 class Save_File;
 
@@ -207,7 +207,7 @@ public:
     // Create a new map
     void new_map(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Add a canvas to current map
-    void add_canvas(std::shared_ptr<Canvas> canvas);
+    void add_canvas(std::shared_ptr<Base_Canvas> canvas);
     // Get the camera
     Camera* get_camera() { return camera.get(); }
     // Get the player

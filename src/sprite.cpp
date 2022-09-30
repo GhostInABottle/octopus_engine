@@ -1,7 +1,7 @@
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/map_object.hpp"
-#include "../include/canvas/canvas.hpp"
+#include "../include/canvas/sprite_canvas.hpp"
 #include "../include/object_layer.hpp"
 #include "../include/object_layer_renderer.hpp"
 #include "../include/image_layer.hpp"
@@ -340,7 +340,7 @@ void Sprite::render(Map_Object& object) {
            color);
 }
 
-void Sprite::render(xd::sprite_batch& batch, const Canvas& canvas, const xd::vec2 pos) {
+void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const xd::vec2 pos) {
     if (!canvas.is_visible()) return;
 
     pimpl->render(batch,
