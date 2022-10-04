@@ -84,6 +84,8 @@ SOURCES += main.cpp\
     ../src/utility/string.cpp \
     ../src/utility/color.cpp \
     ../src/utility/xml.cpp \
+    ../src/xd/audio/detail/fmod_audio_handle.cpp \
+    ../src/xd/audio/detail/fmod_sound_handle.cpp \
     ../src/xd/audio/audio.cpp \
     ../src/xd/audio/music.cpp \
     ../src/xd/audio/sound.cpp \
@@ -205,6 +207,10 @@ HEADERS  += main_window.hpp \
     ../include/xd/audio.hpp \
     ../include/xd/audio/audio.hpp \
     ../include/xd/audio/detail/audio_handle.hpp \
+    ../include/xd/audio/detail/sound_handle.hpp \
+    ../include/xd/audio/detail/fmod_audio_handle.hpp \
+    ../include/xd/audio/detail/fmod_sound_handle.hpp \
+    ../include/xd/audio/channel_group_type.hpp \
     ../include/xd/audio/exceptions.hpp \
     ../include/xd/audio/music.hpp \
     ../include/xd/audio/sound.hpp \

@@ -4,12 +4,13 @@
 #include <string>
 #include <utility>
 #include <memory>
+#include "channel_group_type.hpp"
 
 namespace xd
 {
     namespace detail
     {
-        struct sound_handle;
+        class sound_handle;
     }
     class audio;
 
@@ -19,7 +20,7 @@ namespace xd
 
         sound(const sound&) = delete;
         sound& operator=(const sound&) = delete;
-        sound(audio& audio, const std::string& filename, unsigned int flags = 0);
+        sound(audio& audio, const std::string& filename, channel_group_type group_type);
         virtual ~sound();
 
         void play();
@@ -39,14 +40,13 @@ namespace xd
         unsigned int get_offset() const;
         float get_volume() const;
         float get_pitch() const;
-        bool get_looping() const;
+        bool looping() const;
         std::pair<unsigned int, unsigned int> get_loop_points() const;
 
         std::string get_filename() const;
 
     private:
         std::unique_ptr<detail::sound_handle> m_handle;
-        void create_channel();
     };
 }
 

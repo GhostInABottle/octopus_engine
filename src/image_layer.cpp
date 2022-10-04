@@ -19,7 +19,12 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
                     " to nonexistent file " + filename);
     }
 
-    sprite = std::make_unique<Sprite>(game, Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
+    auto& asset_manager = game.get_asset_manager();
+    auto audio = game.get_audio();
+    auto channel_group = game.get_sound_group_type();
+    sprite = std::make_unique<Sprite>(game,
+        Sprite_Data::load(filename, asset_manager, audio, channel_group));
+
     set_pose(pose_name, "", Direction::NONE);
 }
 

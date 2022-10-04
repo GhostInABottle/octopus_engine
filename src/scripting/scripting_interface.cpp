@@ -715,7 +715,14 @@ void Scripting_Interface::setup_scripts() {
     auto sound = lua.new_usertype<xd::sound>("Sound",
         sol::call_constructor, sol::factories(
         [&](const std::string& filename) {
-            return std::make_unique<xd::sound>(*game->get_audio(), filename);
+            auto group_type = game->get_sound_group_type();
+            return std::make_unique<xd::sound>(*game->get_audio(), filename, group_type);
+        },
+        [&](const std::string& filename, bool pausable) {
+            auto group_type = pausable
+                ? channel_group_type::sound
+                : channel_group_type::non_pausable_sound;
+            return std::make_unique<xd::sound>(*game->get_audio(), filename, group_type);
         }
     ));
     sound["playing"] = sol::property(&xd::sound::playing);
@@ -724,7 +731,7 @@ void Scripting_Interface::setup_scripts() {
     sound["offset"] = sol::property(&xd::sound::get_offset, &xd::sound::set_offset);
     sound["volume"] = sol::property(&xd::sound::get_volume, &xd::sound::set_volume);
     sound["pitch"] = sol::property(&xd::sound::get_pitch, &xd::sound::set_pitch);
-    sound["looping"] = sol::property(&xd::sound::get_looping, &xd::sound::set_looping);
+    sound["looping"] = sol::property(&xd::sound::looping, &xd::sound::set_looping);
     sound["filename"] = sol::property(&xd::sound::get_filename);
     sound["play"] = &xd::sound::play;
     sound["pause"] = &xd::sound::pause;
@@ -744,7 +751,7 @@ void Scripting_Interface::setup_scripts() {
     music["offset"] = sol::property(&xd::music::get_offset, &xd::music::set_offset);
     music["volume"] = sol::property(&xd::music::get_volume, &xd::music::set_volume);
     music["pitch"] = sol::property(&xd::music::get_pitch, &xd::music::set_pitch);
-    music["looping"] = sol::property(&xd::music::get_looping, &xd::music::set_looping);
+    music["looping"] = sol::property(&xd::music::looping, &xd::music::set_looping);
     music["filename"] = sol::property(&xd::music::get_filename);
     music["play"] = &xd::music::play;
     music["pause"] = &xd::music::pause;

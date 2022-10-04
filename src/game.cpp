@@ -207,7 +207,7 @@ struct Game::Impl {
         si->schedule_function(function, "GLOBAL");
         game.set_current_scripting_interface(old_interface);
     }
-    // Audio system
+    // Audio system (pointer because it's null for editor)
     xd::audio* audio;
     // Was game started in editor mode?
     bool editor_mode;
@@ -528,6 +528,9 @@ void Game::pause() {
         if (!pimpl->music_was_paused)
             music->pause();
     }
+    if (pimpl->audio) {
+        pimpl->audio->pause_sounds();
+    }
 
     camera->set_shader(Configurations::get<std::string>("graphics.pause-vertex-shader"),
         Configurations::get<std::string>("graphics.pause-fragment-shader"));
@@ -544,8 +547,12 @@ void Game::resume(const std::string& script) {
 
     if (!pimpl->was_stopped) clock->resume_time();
 
-    if (music && music->paused() && !pimpl->music_was_paused)
+    if (music && music->paused() && !pimpl->music_was_paused) {
         music->play();
+    }
+    if (pimpl->audio) {
+        pimpl->audio->resume_sounds();
+    }
 
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));

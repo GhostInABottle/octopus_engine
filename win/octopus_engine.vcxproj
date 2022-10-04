@@ -106,6 +106,8 @@
     <ClCompile Include="..\src\vendor\lutf8lib.cpp" />
     <ClCompile Include="..\src\vendor\platform_folders.cpp" />
     <ClCompile Include="..\src\xd\audio\audio.cpp" />
+    <ClCompile Include="..\src\xd\audio\detail\fmod_audio_handle.cpp" />
+    <ClCompile Include="..\src\xd\audio\detail\fmod_sound_handle.cpp" />
     <ClCompile Include="..\src\xd\audio\music.cpp" />
     <ClCompile Include="..\src\xd\audio\sound.cpp" />
     <ClCompile Include="..\src\xd\graphics\font.cpp" />
@@ -198,7 +200,11 @@
     <ClInclude Include="..\include\xd\asset_serializer.hpp" />
     <ClInclude Include="..\include\xd\audio.hpp" />
     <ClInclude Include="..\include\xd\audio\audio.hpp" />
+    <ClInclude Include="..\include\xd\audio\channel_group_type.hpp" />
     <ClInclude Include="..\include\xd\audio\detail\audio_handle.hpp" />
+    <ClInclude Include="..\include\xd\audio\detail\fmod_audio_handle.hpp" />
+    <ClInclude Include="..\include\xd\audio\detail\fmod_sound_handle.hpp" />
+    <ClInclude Include="..\include\xd\audio\detail\sound_handle.hpp" />
     <ClInclude Include="..\include\xd\audio\exceptions.hpp" />
     <ClInclude Include="..\include\xd\audio\music.hpp" />
     <ClInclude Include="..\include\xd\audio\sound.hpp" />

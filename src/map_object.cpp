@@ -257,8 +257,11 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
             return;
     }
 
+    auto& asset_manager = game.get_asset_manager();
+    auto audio = game.get_audio();
+    auto channel_group = game.get_sound_group_type();
     auto new_sprite = std::make_shared<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), filename, game.get_audio()));
+        Sprite_Data::load(filename, asset_manager, audio, channel_group));
 
     if (sprite) {
         del_component(sprite);

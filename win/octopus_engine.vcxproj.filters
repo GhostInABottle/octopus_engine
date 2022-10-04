@@ -88,6 +88,9 @@
     <Filter Include="Header Files\scripting\bindings">
       <UniqueIdentifier>{077b758c-a56f-4539-8a11-966f02625747}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\xd\audio\detail">
+      <UniqueIdentifier>{7a6c8431-cb92-45b7-ac0f-6de5386d9d70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -342,6 +345,12 @@
     <ClCompile Include="..\src\commands\move_canvas_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\xd\audio\detail\fmod_audio_handle.cpp">
+      <Filter>Source Files\xd\audio\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\xd\audio\detail\fmod_sound_handle.cpp">
+      <Filter>Source Files\xd\audio\detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -458,7 +467,7 @@
     <ClInclude Include="..\include\xd\audio\audio.hpp">
       <Filter>Header Files\xd\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\audio\detail\audio_handle.hpp">
+    <ClInclude Include="..\include\xd\audio\detail\fmod_audio_handle.hpp">
       <Filter>Header Files\xd\audio\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\include\xd\graphics\framebuffer.hpp">
@@ -730,6 +739,18 @@
     </ClInclude>
     <ClInclude Include="..\include\commands\move_canvas_command.hpp">
       <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xd\audio\detail\fmod_sound_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xd\audio\channel_group_type.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xd\audio\detail\audio_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xd\audio\detail\sound_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

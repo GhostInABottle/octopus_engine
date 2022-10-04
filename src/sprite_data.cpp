@@ -25,7 +25,8 @@ Sprite_Data::~Sprite_Data() {
     }
 }
 
-std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const std::string& filename, xd::audio* audio) {
+std::unique_ptr<Sprite_Data> Sprite_Data::load(const std::string& filename, xd::asset_manager& manager,
+        xd::audio* audio, channel_group_type channel_group) {
     try {
         auto doc = std::make_unique<rapidxml::xml_document<>>();
         auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
@@ -35,7 +36,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
             throw xml_exception("Missing Sprite node.");
         }
 
-        auto sprite_data = load(manager, *sprite_node, audio);
+        auto sprite_data = load(*sprite_node, manager, audio, channel_group);
         sprite_data->filename = filename;
         file_utilities::normalize_slashes(sprite_data->filename);
         return sprite_data;
@@ -44,7 +45,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, const
     }
 }
 
-std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapidxml::xml_node<>& node, xd::audio* audio) {
+std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::asset_manager& manager,
+        xd::audio* audio, channel_group_type channel_group) {
     auto sprite_ptr = std::make_unique<Sprite_Data>(manager);
     // Image and transparent color
     bool image_loaded = false;
@@ -166,7 +168,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
             // Sound effect
             if (audio) {
                 if (auto sound_file_attr = frame_node->first_attribute("Sound")) {
-                    frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
+                    frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value(), channel_group);
                 }
 
                 if (auto node = frame_node->first_node("Sound")) {
@@ -175,7 +177,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(xd::asset_manager& manager, rapid
                     }
 
                     if (auto sound_file_attr = node->first_attribute("Filename")) {
-                        frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value());
+                        frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value(), channel_group);
                     } else {
                         throw xml_exception("Frame has a sound node but the filename is missing");
                     }

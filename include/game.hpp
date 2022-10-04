@@ -10,6 +10,7 @@
 #include "xd/graphics/simple_text_renderer.hpp"
 #include "xd/graphics/types.hpp"
 #include "xd/system.hpp"
+#include "xd/audio/channel_group_type.hpp"
 #include "xd/vendor/sol/forward.hpp"
 #include "direction.hpp"
 
@@ -38,6 +39,12 @@ public:
     ~Game();
     // Get audio system pointer
     xd::audio* get_audio();
+    // Get the active channel group for sound effects
+    channel_group_type get_sound_group_type() const {
+        return is_paused()
+            ? channel_group_type::non_pausable_sound
+            : channel_group_type::sound;
+    }
     // Main game loop
     void run();
     // Logic update

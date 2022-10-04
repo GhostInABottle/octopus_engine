@@ -1187,8 +1187,13 @@ function Engine_Music:set_loop_points(loop_start, loop_end) end
 --- Sound
 
 ---@class Engine_Sound
+---@field playing boolean
+---@field paused boolean
+---@field stopped boolean
+---@field offset number
 ---@field volume number # between 0 and 1
 ---@field pitch number # defaults to 1.0
+---@field looping boolean
 ---@field filename string
 local Engine_Sound = {}
 
@@ -1198,9 +1203,14 @@ function Engine_Sound:pause() end
 
 function Engine_Sound:stop() end
 
+---@param loop_start number
+---@param loop_end number
+function Engine_Sound:set_loop_points(loop_start, loop_end) end
+
 ---@param filename string
+---@param pausable? boolean
 ---@return Engine_Sound
-function Sound(filename) end
+function Sound(filename, pausable) end
 
 -- Game
 

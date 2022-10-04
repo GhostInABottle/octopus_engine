@@ -7,7 +7,8 @@ namespace xd
 {
     namespace detail
     {
-        struct audio_handle;
+        class audio_handle;
+        class sound_handle;
     }
 
     class audio
@@ -22,13 +23,10 @@ namespace xd
         float get_music_volume() const;
         void set_sound_volume(float volume) const;
         float get_sound_volume() const;
-        detail::audio_handle* get_handle() noexcept {
-            return m_audio_handle.get();
-        }
+        void pause_sounds();
+        void resume_sounds();
+        detail::audio_handle* get_handle();
     private:
-        enum class channel_group_type { music, sound };
-        void set_channel_group_volume(channel_group_type group_type, float volume) const;
-        float get_channel_group_volume(channel_group_type group_type) const;
         std::unique_ptr<detail::audio_handle> m_audio_handle;
     };
 }

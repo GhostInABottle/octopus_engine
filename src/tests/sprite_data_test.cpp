@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_SUITE(sprite_data_tests)
 
 BOOST_AUTO_TEST_CASE(sprite_data_load_file) {
     xd::asset_manager manager;
-    auto sprite_data = Sprite_Data::load(manager, "sprite.spr", nullptr);
+    auto sprite_data = Sprite_Data::load("sprite.spr", manager, nullptr, channel_group_type::sound);
     Pose& main_pose = sprite_data->poses[0];
     BOOST_CHECK_EQUAL(main_pose.duration, 180);
     BOOST_CHECK_EQUAL(main_pose.repeats, -1);
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     auto node = doc->first_node("Sprite");
     BOOST_CHECK(node);
     xd::asset_manager manager;
-    auto sprite_data = Sprite_Data::load(manager, *node, nullptr);
+    auto sprite_data = Sprite_Data::load(*node, manager, nullptr, channel_group_type::sound);
     Pose& main_pose = sprite_data->poses[0];
     BOOST_CHECK_EQUAL(main_pose.duration, 100);
     BOOST_CHECK_EQUAL(main_pose.repeats, 3);

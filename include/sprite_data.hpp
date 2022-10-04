@@ -6,6 +6,7 @@
 #include <vector>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
+#include "xd/audio/channel_group_type.hpp"
 #include "vendor/rapidxml.hpp"
 #include "direction.hpp"
 
@@ -87,8 +88,10 @@ struct Sprite_Data {
     explicit Sprite_Data(xd::asset_manager& manager);
     ~Sprite_Data();
 
-    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, const std::string& filename, xd::audio* audio);
-    static std::unique_ptr<Sprite_Data> load(xd::asset_manager& manager, rapidxml::xml_node<>& node, xd::audio* audio);
+    static std::unique_ptr<Sprite_Data> load(const std::string& filename, xd::asset_manager& manager,
+        xd::audio* audio, channel_group_type channel_group);
+    static std::unique_ptr<Sprite_Data> load(rapidxml::xml_node<>& node, xd::asset_manager& manager,
+        xd::audio* audio, channel_group_type channel_group);
 };
 
 #endif

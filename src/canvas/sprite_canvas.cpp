@@ -14,8 +14,11 @@ void Sprite_Canvas::set_sprite(Game& game, const std::string& sprite_filename, c
         return;
 
     filename = sprite_filename;
+    auto& asset_manager = game.get_asset_manager();
+    auto audio = game.get_audio();
+    auto channel_group = game.get_sound_group_type();
     sprite = std::make_unique<Sprite>(game,
-        Sprite_Data::load(game.get_asset_manager(), sprite_filename, game.get_audio()));
+        Sprite_Data::load(sprite_filename, asset_manager, audio, channel_group));
     set_pose(pose_name, "", Direction::NONE);
 
     redraw();

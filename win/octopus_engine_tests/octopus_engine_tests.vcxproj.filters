@@ -91,6 +91,9 @@
     <Filter Include="Source Files\scripting\bindings">
       <UniqueIdentifier>{2cc5656f-584f-4341-bbcd-cc669a801d8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\xd\audio\detail">
+      <UniqueIdentifier>{05655483-c042-4a41-8a78-c039ee66db0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -366,6 +369,12 @@
     <ClCompile Include="..\..\src\commands\move_canvas_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\xd\audio\detail\fmod_audio_handle.cpp">
+      <Filter>Source Files\xd\audio\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xd\audio\detail\fmod_sound_handle.cpp">
+      <Filter>Source Files\xd\audio\detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -550,9 +559,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\xd\audio\sound.hpp">
       <Filter>Header Files\xd\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\audio\detail\audio_handle.hpp">
-      <Filter>Header Files\xd\audio\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\detail\entity.hpp">
       <Filter>Header Files\xd\detail</Filter>
@@ -748,6 +754,21 @@
     </ClInclude>
     <ClInclude Include="..\..\include\commands\move_canvas_command.hpp">
       <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\channel_group_type.hpp">
+      <Filter>Header Files\xd\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\detail\fmod_audio_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\detail\fmod_sound_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\detail\audio_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xd\audio\detail\sound_handle.hpp">
+      <Filter>Header Files\xd\audio\detail</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

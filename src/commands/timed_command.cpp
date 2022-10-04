@@ -8,7 +8,6 @@ Timed_Command::Timed_Command(Game& game, int duration, int start_time) :
     duration(duration),
     pause_start(-1) {}
 
-
 Timed_Command::~Timed_Command() {}
 
 void Timed_Command::reset(int duration, int start_time) {
