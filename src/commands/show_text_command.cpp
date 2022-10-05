@@ -235,6 +235,9 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         if (!canvas_updater->is_complete()) {
+            if (stopped) {
+                canvas_updater->stop();
+            }
             canvas_updater->execute();
             return;
         }

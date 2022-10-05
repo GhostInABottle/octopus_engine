@@ -555,6 +555,7 @@ local Engine_Color = {}
 ---@return string
 function Engine_Color:to_hex() end
 
+---@overload fun(color : Engine_Color) : Engine_Color
 ---@overload fun(color_name : string) : Engine_Color
 ---@param r number
 ---@param g number

@@ -478,34 +478,31 @@ void Scripting_Interface::setup_scripts() {
 
     // Aliases for creating a color
     lua["Color"] = sol::overload(
-        [](float r, float g, float b, float a) { return std::make_unique<xd::vec4>(r, g, b, a); },
-        [](float r, float g, float b) { return std::make_unique<xd::vec4>(r, g, b, 1.0f); },
+        [](xd::vec4 other) { return xd::vec4{ other }; },
+        [](float r, float g, float b, float a) { return xd::vec4{ r, g, b, a }; },
+        [](float r, float g, float b) { return xd::vec4{ r, g, b, 1.0f }; },
         [](std::string name) {
             if (name == "clear") {
-                auto clear = hex_to_color(
-                    Configurations::get<std::string>("startup.clear-color"));
-                return std::make_unique<xd::vec4>(clear);
-            } else if (name == "none")
-                return std::make_unique<xd::vec4>();
-            else if (name == "black")
-                return std::make_unique<xd::vec4>(0.0f, 0.0f, 0.0f, 1.0f);
-            else if (name == "red")
-                return std::make_unique<xd::vec4>(1.0f, 0.0f, 0.0f, 1.0f);
-            else if (name == "green")
-                return std::make_unique<xd::vec4>(0.0f, 1.0f, 0.0f, 1.0f);
-            else if (name == "blue")
-                return std::make_unique<xd::vec4>(0.0f, 0.0f, 1.0f, 1.0f);
-            else if (name == "yellow")
-                return std::make_unique<xd::vec4>(1.0f, 1.0f, 0.0f, 1.0f);
-            else if (name == "white")
-                return std::make_unique<xd::vec4>(1.0f, 1.0f, 1.0f, 1.0f);
-            else {
-                try {
-                    auto color = hex_to_color(name);
-                    return std::make_unique<xd::vec4>(color);
-                } catch (std::runtime_error&) {}
+                auto clear = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
+                return xd::vec4{ clear };
+            } else if (name == "none") {
+                return xd::vec4{};
+            } else if (name == "black") {
+                return xd::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+            } else if (name == "red") {
+                return xd::vec4{ 1.0f, 0.0f, 0.0f, 1.0f };
+            } else if (name == "green") {
+                return xd::vec4{ 0.0f, 1.0f, 0.0f, 1.0f };
+            } else if (name == "blue") {
+                return xd::vec4{ 0.0f, 0.0f, 1.0f, 1.0f };
+            } else if (name == "yellow") {
+                return xd::vec4{ 1.0f, 1.0f, 0.0f, 1.0f };
+            } else if (name == "white") {
+                return xd::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
             }
-            return std::make_unique<xd::vec4>();
+
+            // Throws if name is not a valid hex
+            return xd::vec4{ hex_to_color(name) };
         }
     );
     // Rectangle
