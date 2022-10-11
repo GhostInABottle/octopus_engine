@@ -13,10 +13,19 @@
 
 struct Move_Object_To_Command::Impl {
     Impl(Map& map, Map_Object& object, float x, float y,
-        Collision_Check_Type check_type, bool keep_trying)
-        : map(map), object(object), destination(x, y), path_found(false), pixels(0.0f),
-        keep_trying(keep_trying), last_attempt_time(0), blocked(false),
-        complete(false), check_type(check_type), nearest(nullptr), old_state(object.get_state()) {}
+            Collision_Check_Type check_type, bool keep_trying)
+            : map(map)
+            , object(object)
+            , destination(x, y)
+            , path_found(false)
+            , pixels(0.0f)
+            , keep_trying(keep_trying)
+            , last_attempt_time(0)
+            , blocked(false)
+            , complete(false)
+            , check_type(check_type)
+            , nearest(nullptr)
+            , old_state(object.get_state()) {}
     Map& map;
     Map_Object& object;
     xd::vec2 destination;
@@ -126,8 +135,10 @@ struct Move_Object_To_Command::Impl {
 };
 
 Move_Object_To_Command::Move_Object_To_Command(Map& map, Map_Object& object,
-    float x, float y, Collision_Check_Type check_type, bool keep_trying)
-    :  pimpl(std::make_unique<Impl>(map, object, x, y, check_type, keep_trying)) {}
+        float x, float y, Collision_Check_Type check_type, bool keep_trying)
+        :  pimpl(std::make_unique<Impl>(map, object, x, y, check_type, keep_trying)) {
+    map_ptr = &map;
+}
 
 Move_Object_To_Command::~Move_Object_To_Command() {}
 

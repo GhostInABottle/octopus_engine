@@ -8,7 +8,8 @@
 class Game;
 class Sprite;
 
-struct Sprite_Holder {
+class Sprite_Holder {
+public:
     virtual ~Sprite_Holder() = 0;
     virtual void set_pose(const std::string& pose_name,
             const std::string& state, Direction direction);

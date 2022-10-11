@@ -4,11 +4,13 @@
 #include "../../include/utility/math.hpp"
 
 Move_Canvas_Command::Move_Canvas_Command(Game& game, Base_Canvas& canvas, xd::vec2 pos, long duration)
-    : Timed_Command(game, duration),
-    canvas(canvas),
-    old_position(canvas.get_position()),
-    new_position(pos),
-    complete(false) {}
+        : Timed_Command(game, duration)
+        , canvas(canvas)
+        , old_position(canvas.get_position())
+        , new_position(pos)
+        , complete(false) {
+    map_ptr = game.get_map();
+}
 
 void Move_Canvas_Command::execute() {
     complete = stopped || is_done();

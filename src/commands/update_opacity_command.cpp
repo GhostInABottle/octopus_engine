@@ -4,14 +4,19 @@
 #include "../../include/utility/math.hpp"
 
 Update_Opacity_Command::Update_Opacity_Command(Game& game, Translucent_Object& obj, float opacity, long duration)
-    : Timed_Command(game, duration),
-    translucent_object(obj),
-    old_opacity(obj.get_opacity()),
-    new_opacity(opacity),
-    complete(false) {}
+        : Timed_Command(game, duration)
+        , translucent_object(obj)
+        , old_opacity(obj.get_opacity())
+        , new_opacity(opacity)
+        , complete(false) {
+    map_ptr = game.get_map();
+}
 
 void Update_Opacity_Command::execute() {
-    complete = stopped || game.is_paused() || is_done();
+    if (complete) return;
+
+    complete = stopped|| game.is_paused() || is_done();
+
     auto opacity = lerp(old_opacity, new_opacity, get_alpha(complete));
     translucent_object.set_opacity(opacity);
 }

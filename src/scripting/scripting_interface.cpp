@@ -34,10 +34,19 @@ Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_v
 
 void Scripting_Interface::update() {
     // Execute pending commands
+    auto current_map = game->get_map();
     for (auto i = commands.begin(); i < commands.end();) {
         auto& command = *i;
-        command->execute();
-        if (command->is_complete()) {
+
+        // Don't execute commands if they belong to a different map
+        auto command_map = command->get_map_ptr();
+        auto map_changed = command_map && command_map != current_map;
+
+        if (!map_changed) {
+            command->execute();
+        }
+
+        if (map_changed || command->is_complete()) {
             i = commands.erase(i);
             continue;
         }
@@ -274,7 +283,7 @@ void Scripting_Interface::setup_scripts() {
     // A command to show an object's pose (used in NPC scheduling)
     lua["Pose_Command"] = [&](Map_Object* object, const std::string& pose, const std::string& state, Direction direction) {
         return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(
-            object, pose, state, direction));
+            *game->get_map(), object, pose, state, direction));
     };
 
     // Text positioning
@@ -593,8 +602,8 @@ void Scripting_Interface::setup_scripts() {
         obj->set_sprite(*game, filename, pose.value_or(""));
     };
     object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(obj, pose_name,
-            state.value_or(""), dir.value_or(Direction::NONE)));
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(
+            *game->get_map(), obj, pose_name, state.value_or(""), dir.value_or(Direction::NONE)));
     };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
@@ -959,8 +968,8 @@ void Scripting_Interface::setup_scripts() {
         layer->set_sprite(*game, filename, pose.value_or(""));
     };
     image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(layer, pose_name,
-            state.value_or(""), dir.value_or(Direction::NONE)));
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(*game->get_map(),
+            layer, pose_name, state.value_or(""), dir.value_or(Direction::NONE)));
     };
 
     // Object layer

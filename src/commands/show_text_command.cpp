@@ -308,7 +308,9 @@ struct Show_Text_Command::Impl : Timed_Command {
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :
-    pimpl(std::make_unique<Impl>(game, std::move(options))) {}
+        pimpl(std::make_unique<Impl>(game, std::move(options))) {
+    map_ptr = game.get_map();
+}
 
 Show_Text_Command::~Show_Text_Command() {}
 

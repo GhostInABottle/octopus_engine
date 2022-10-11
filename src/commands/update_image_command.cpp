@@ -5,6 +5,7 @@
 
 Update_Image_Command::Update_Image_Command(Game& game, Base_Image_Canvas& canvas) :
         Timed_Command(game, 0), canvas(canvas) {
+    map_ptr = game.get_map();
     reset();
 }
 
@@ -17,7 +18,7 @@ Update_Image_Command::Update_Image_Command(Game& game, Base_Image_Canvas& canvas
         new_magnification(mag),
         new_angle(angle),
         new_opacity(opacity) {
-
+    map_ptr = game.get_map();
     reset(false);
 }
 
@@ -44,6 +45,8 @@ void Update_Image_Command::set_duration(int ms) {
 }
 
 void Update_Image_Command::execute() {
+    if (complete) return;
+
     complete = stopped || is_done();
     update_canvas(get_alpha(complete));
 }

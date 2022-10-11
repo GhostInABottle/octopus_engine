@@ -277,8 +277,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         canvas->set_sprite(game, filename, pose.value_or(""));
     };
     sprite_canvas_type["show_pose"] = [&](Sprite_Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(canvas, pose_name,
-            state.value_or(""), dir.value_or(Direction::NONE)));
+        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(*game.get_map(),
+            canvas, pose_name, state.value_or(""), dir.value_or(Direction::NONE)));
     };
 
     // A canvas for displaying text

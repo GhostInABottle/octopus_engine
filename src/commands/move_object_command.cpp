@@ -6,8 +6,11 @@
 
 
 Move_Object_Command::Move_Object_Command(Game& game, Map_Object& object, Direction dir,
-    float pixels, bool skip_blocking, bool change_facing)
-    : game(game), object_id(object.get_id()), direction(dir), pixels(pixels),
+        float pixels, bool skip_blocking, bool change_facing)
+        : game(game)
+        , object_id(object.get_id())
+        , direction(dir)
+        , pixels(pixels),
     skip_blocking(skip_blocking), change_facing(change_facing),
     old_state(object.get_state()), complete(false) {
     if (direction == Direction::FORWARD)
@@ -16,6 +19,7 @@ Move_Object_Command::Move_Object_Command(Game& game, Map_Object& object, Directi
         direction = opposite_direction(object.get_direction());
         this->change_facing = false;
     }
+    map_ptr = game.get_map();
 }
 
 void Move_Object_Command::execute() {

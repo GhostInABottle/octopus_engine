@@ -5,11 +5,12 @@
 #include "../direction.hpp"
 #include "../command.hpp"
 
-struct Sprite_Holder;
+class Map;
+class Sprite_Holder;
 
 class Show_Pose_Command : public Command {
 public:
-    Show_Pose_Command(Sprite_Holder* holder, const std::string& pose_name,
+    Show_Pose_Command(Map& map, Sprite_Holder* holder, const std::string& pose_name,
         const std::string& state = "", Direction dir = Direction::NONE);
     void execute() override {}
     bool is_complete() const override;

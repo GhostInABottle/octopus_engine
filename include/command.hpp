@@ -1,9 +1,11 @@
 #ifndef HPP_COMMAND
 #define HPP_COMMAND
 
+class Map;
+
 class Command {
 public:
-    Command() noexcept : stopped(false), paused(false) {}
+    Command() noexcept : stopped(false), paused(false), map_ptr(nullptr) {}
     // Called while the command isn't completed
     virtual void execute() = 0;
     // Version with specific time
@@ -23,11 +25,14 @@ public:
     virtual void resume() noexcept { paused = false; }
     // Is the command paused
     virtual bool is_paused() const noexcept { return paused;  }
+    // Get the map associated with the command, if any
+    const Map* get_map_ptr() const { return map_ptr; }
     // Virtual destructor
     virtual ~Command() = 0;
 protected:
     bool stopped;
     bool paused;
+    Map* map_ptr;
 };
 
 #endif

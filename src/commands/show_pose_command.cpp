@@ -5,10 +5,11 @@
 
 
 
-Show_Pose_Command::Show_Pose_Command(Sprite_Holder* holder,
-    const std::string& pose_name, const std::string& state,
-    Direction dir) : holder(holder) {
+Show_Pose_Command::Show_Pose_Command(Map& map, Sprite_Holder* holder,
+        const std::string& pose_name, const std::string& state,
+        Direction dir) : holder(holder) {
     holder->set_pose(pose_name, state, dir);
+    map_ptr = &map;
 }
 
 bool Show_Pose_Command::is_complete() const {
