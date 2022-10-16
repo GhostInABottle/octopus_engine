@@ -423,6 +423,7 @@ void Game::run() {
             break;
         render();
     }
+    save_config_file();
 }
 
 void Game::frame_update() {
