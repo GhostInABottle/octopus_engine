@@ -24,8 +24,7 @@ namespace detail {
 
     template <typename T>
     void bind_base_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
-        canvas_type[sol::meta_function::index] = &T::get_lua_property;
-        canvas_type[sol::meta_function::new_index] = &T::set_lua_property;
+        canvas_type["data"] = sol::property(&T::get_lua_data);
         canvas_type["name"] = sol::property(&T::get_name, &T::set_name);
         canvas_type["priority"] = sol::property(&T::get_priority, &T::set_priority);
         canvas_type["position"] = sol::property(&T::get_position, &T::set_position);

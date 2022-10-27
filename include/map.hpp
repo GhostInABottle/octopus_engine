@@ -34,7 +34,7 @@ class Scripting_Interface;
 class Map_Renderer;
 class Map_Updater;
 
-class Map : public xd::entity<Map>, public Editable, public Lua_Object, public Tmx_Object {
+class Map : public xd::entity<Map>, public Editable, public Tmx_Object {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;
@@ -140,6 +140,9 @@ public:
     Game& get_game() {
         return game;
     }
+    Lua_Object& get_lua_data() {
+        return lua_data;
+    }
     int get_width() const {
         return width;
     }
@@ -200,6 +203,8 @@ public:
 private:
     // Game instance
     Game& game;
+    // Allows defining extra Lua properties on the object
+    Lua_Object lua_data;
     // Width in tiles
     int width;
     // Height in tiles

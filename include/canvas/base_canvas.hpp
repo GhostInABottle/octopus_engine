@@ -18,7 +18,7 @@ namespace xd {
     class sprite_batch;
 }
 
-class Base_Canvas : public Lua_Object, public Translucent_Object {
+class Base_Canvas : public Translucent_Object {
 public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     Base_Canvas(const Base_Canvas&) = delete;
@@ -72,6 +72,9 @@ public:
     // Setup FBO texture
     void setup_fbo();
     // Getters and setters
+    Lua_Object& get_lua_data() {
+        return lua_data;
+    }
     std::string get_name() const {
         return name;
     }
@@ -204,6 +207,8 @@ protected:
     // The game instance
     Game& game;
 private:
+    // Allows defining extra Lua properties on the object
+    Lua_Object lua_data;
     // Optional name used to identify the canvas
     std::string name;
     // Canvas priority, higher priority canvases are drawn on top

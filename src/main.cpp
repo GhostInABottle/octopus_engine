@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
         LOGGER_I << "Reticulating Splines";
         Game game(args, &audio);
         game.run();
+        LOGGER_I << "Splines Reticulated";
 
     } catch (const rapidxml::parse_error& e) {
         std::string where = e.where<char>();

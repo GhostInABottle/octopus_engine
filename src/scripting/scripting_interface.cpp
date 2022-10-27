@@ -989,10 +989,15 @@ void Scripting_Interface::setup_scripts() {
             *game, *layer, opacity, duration);
     };
 
+    // A data bag for defining custom properties on maps/canvases
+    auto lua_object_type = lua.new_usertype<Lua_Object>("Lua_Object");
+    lua_object_type[sol::meta_function::index] = &Lua_Object::get_lua_property;
+    lua_object_type[sol::meta_function::new_index] = &Lua_Object::set_lua_property;
+
+
     // Current map / scene
     auto map_type = lua.new_usertype<Map>("Map");
-    map_type[sol::meta_function::index] = &Map::get_lua_property;
-    map_type[sol::meta_function::new_index] = &Map::set_lua_property;
+    map_type["data"] = sol::property(&Map::get_lua_data);
     map_type["width"] = sol::property(&Map::get_width);
     map_type["height"] = sol::property(&Map::get_height);
     map_type["tile_width"] = sol::property(&Map::get_tile_width);
