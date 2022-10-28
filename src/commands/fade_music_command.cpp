@@ -20,5 +20,5 @@ void Fade_Music_Command::execute() {
 }
 
 bool Fade_Music_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }

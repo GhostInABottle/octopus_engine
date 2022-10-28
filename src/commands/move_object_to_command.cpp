@@ -148,5 +148,5 @@ void Move_Object_To_Command::execute() {
 }
 
 bool Move_Object_To_Command::is_complete() const noexcept {
-    return pimpl->is_complete(stopped);
+    return pimpl->is_complete(stopped) || force_stopped;
 }

@@ -13,6 +13,7 @@ public:
     void execute() { command->execute(); }
     void execute(int ticks) { command->execute(ticks); }
 	void stop() { command->stop(); }
+    void force_stop() { command->force_stop(); }
     bool is_stopped() const { return command->is_stopped(); }
     void pause() { command->pause(); }
     void resume() { command->resume(); }

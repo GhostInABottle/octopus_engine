@@ -46,7 +46,13 @@ void Scripting_Interface::update() {
             command->execute();
         }
 
-        if (map_changed || command->is_complete()) {
+        auto command_complete = command->is_complete();
+        if (map_changed || command_complete) {
+            if (!command_complete) {
+                // If map changed, mark the command as complete to let any Lua
+                // results waiting on it know that it's done
+                command->force_stop();
+            }
             i = commands.erase(i);
             continue;
         }
@@ -218,6 +224,9 @@ void Scripting_Interface::setup_scripts() {
 
     // Returned from commands that allow yielding
     auto cmd_result_type = lua.new_usertype<Command_Result>("Command_Result");
+    cmd_result_type["completed"] = sol::property((bool (Command_Result::*)() const) &Command_Result::is_complete);
+    cmd_result_type["stopped"] = sol::property(&Command_Result::is_stopped);
+    cmd_result_type["paused"] = sol::property(&Command_Result::is_paused);
     cmd_result_type["is_complete"] = sol::overload(
         &Command_Result::operator(),
         (bool (Command_Result::*)(int) const) &Command_Result::is_complete
@@ -228,10 +237,9 @@ void Scripting_Interface::setup_scripts() {
     );
     cmd_result_type["wait"] = sol::yielding(result_wait);
     cmd_result_type["stop"] = &Command_Result::stop;
-    cmd_result_type["is_stopped"] = &Command_Result::is_stopped;
+    cmd_result_type["force_stop"] = &Command_Result::force_stop;
     cmd_result_type["pause"] = &Command_Result::pause;
     cmd_result_type["resume"] = &Command_Result::resume;
-    cmd_result_type["is_paused"] = &Command_Result::is_paused;
 
     // Like Command_Result but stores the index of selected choice
     auto choice_result_type = lua.new_usertype<Choice_Result>("Choice_Result",
@@ -602,8 +610,9 @@ void Scripting_Interface::setup_scripts() {
         obj->set_sprite(*game, filename, pose.value_or(""));
     };
     object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(
-            *game->get_map(), obj, pose_name, state.value_or(""), dir.value_or(Direction::NONE)));
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Show_Pose_Command>(
+            *game->get_map(), obj, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
@@ -968,8 +977,9 @@ void Scripting_Interface::setup_scripts() {
         layer->set_sprite(*game, filename, pose.value_or(""));
     };
     image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
-        return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(*game->get_map(),
-            layer, pose_name, state.value_or(""), dir.value_or(Direction::NONE)));
+        auto si = game->get_current_scripting_interface();
+        return si->register_command<Show_Pose_Command>(*game->get_map(),
+            layer, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
 
     // Object layer
@@ -993,7 +1003,6 @@ void Scripting_Interface::setup_scripts() {
     auto lua_object_type = lua.new_usertype<Lua_Object>("Lua_Object");
     lua_object_type[sol::meta_function::index] = &Lua_Object::get_lua_property;
     lua_object_type[sol::meta_function::new_index] = &Lua_Object::set_lua_property;
-
 
     // Current map / scene
     auto map_type = lua.new_usertype<Map>("Map");

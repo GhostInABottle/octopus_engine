@@ -12,12 +12,13 @@ class Show_Pose_Command : public Command {
 public:
     Show_Pose_Command(Map& map, Sprite_Holder* holder, const std::string& pose_name,
         const std::string& state = "", Direction dir = Direction::NONE);
-    void execute() override {}
+    void execute() override;
     bool is_complete() const override;
-    void pause() noexcept override;
-    void resume() noexcept override;
+    void pause() override;
+    void resume() override;
 private:
     Sprite_Holder* holder;
+    bool complete;
 };
 
 #endif

@@ -22,7 +22,7 @@ void Update_Opacity_Command::execute() {
 }
 
 bool Update_Opacity_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }
 
 void Update_Opacity_Command::restart(float opacity, long duration) {

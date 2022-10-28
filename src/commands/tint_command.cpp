@@ -23,5 +23,5 @@ void Tint_Command::execute() {
 }
 
 bool Tint_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }

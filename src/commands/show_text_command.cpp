@@ -323,11 +323,13 @@ void Show_Text_Command::execute(int ticks) {
 }
 
 bool Show_Text_Command::is_complete() const {
-    return pimpl->is_complete();
+    return pimpl->is_complete() || force_stopped;
 }
+
 int Show_Text_Command::choice_index() {
     return pimpl->selected_choice;
 }
+
 void Show_Text_Command::set_start_time(int start) {
     pimpl->set_start_time(start);
 }

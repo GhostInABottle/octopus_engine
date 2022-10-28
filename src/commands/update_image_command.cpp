@@ -52,7 +52,7 @@ void Update_Image_Command::execute() {
 }
 
 bool Update_Image_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }
 
 void Update_Image_Command::update_canvas(float alpha) const {

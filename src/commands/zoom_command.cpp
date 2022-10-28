@@ -15,5 +15,5 @@ void Zoom_Command::execute() {
 }
 
 bool Zoom_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }

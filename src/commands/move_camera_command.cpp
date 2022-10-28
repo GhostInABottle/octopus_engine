@@ -35,5 +35,5 @@ void Move_Camera_Command::execute() {
 }
 
 bool Move_Camera_Command::is_complete() const {
-    return pixels < 0.01f;
+    return pixels < 0.01f || force_stopped;
 }

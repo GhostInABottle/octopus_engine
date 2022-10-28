@@ -45,5 +45,5 @@ void Move_Object_Command::execute() {
 }
 
 bool Move_Object_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }

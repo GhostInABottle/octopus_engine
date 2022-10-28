@@ -22,5 +22,5 @@ void Move_Canvas_Command::execute() {
 }
 
 bool Move_Canvas_Command::is_complete() const {
-    return complete;
+    return complete || force_stopped;
 }

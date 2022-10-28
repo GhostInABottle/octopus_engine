@@ -92,7 +92,6 @@ Outline_Condition = {
     never = 8
 }
 
-
 -- Global functions
 
 ---@overload fun(function : fun() : boolean)
@@ -252,7 +251,6 @@ function Engine_Text_Options:set_background_color(color) end
 ---@param position Engine_Vec2
 ---@return Engine_Text_Options
 function Text_Options(position) end
-
 
 ---@overload fun(text_options : Engine_Text_Options) : Engine_Command_Result
 ---@overload fun(position : Engine_Vec2, text : string, duration? : integer) : Engine_Command_Result
@@ -594,6 +592,9 @@ function Engine_Rect:intersects(other) end
 -- Command_Result
 
 ---@class Engine_Command_Result
+---@field completed boolean # readonly
+---@field stopped boolean # readonly
+---@field paused boolean # readonly
 ---@field selected integer # 1-based choice index, -1 if canceled
 local Engine_Command_Result = {}
 
@@ -603,7 +604,11 @@ function Engine_Command_Result:pause() end
 
 function Engine_Command_Result:resume() end
 
+-- Completes command to desired state
 function Engine_Command_Result:stop() end
+
+-- Stops the command immediately
+function Engine_Command_Result:force_stop() end
 
 ---@param ticks? integer
 function Engine_Command_Result:execute(ticks) end
@@ -611,12 +616,6 @@ function Engine_Command_Result:execute(ticks) end
 ---@param ticks? integer
 ---@return boolean
 function Engine_Command_Result:is_complete(ticks) end
-
----@return boolean
-function Engine_Command_Result:is_paused() end
-
----@return boolean
-function Engine_Command_Result:is_stopped() end
 
 ---@param ms_duration integer
 ---@param seconds_start_time integer
@@ -666,9 +665,13 @@ Text_Parser = {}
 ---@return Engine_Token[]
 function Text_Parser:parse(text, permissive) end
 
+
+---@class Engine_Map_Data
+
 -- Shared canvas properties and methods
 
 ---@class Engine_Base_Canvas
+---@field data Engine_Map_Data
 ---@field name string
 ---@field position Engine_Vec2
 ---@field x number
@@ -764,7 +767,6 @@ function Engine_Text_Canvas:set_font(font_filename) end
 ---@param type string
 ---@param font_filename string
 function Engine_Text_Canvas:link_font(type, font_filename) end
-
 
 ---@param text string
 ---@return number
@@ -974,7 +976,6 @@ function Engine_Map_Object:run_trigger_script() end
 
 function Engine_Map_Object:run_touch_script() end
 
-
 function Engine_Map_Object:run_leave_script() end
 
 ---@type Engine_Map_Object
@@ -1019,6 +1020,7 @@ function Engine_Layer:reset() end
 -- Map
 
 ---@class Engine_Map
+---@field data Engine_Map_Data
 ---@field name string # from TMX file
 ---@field filename string
 ---@field filename_stem string
