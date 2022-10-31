@@ -34,6 +34,8 @@ public:
         children.emplace_back(std::make_unique<CType>(std::forward<Args>(args)...));
 
         auto& child = children.back();
+        child->parent = this;
+        child->root_parent = this->root_parent ? this->root_parent : this;
         child->set_name(child_name);
         if (child->get_type() != children_type) {
             children_type = Type::MIXED;
@@ -53,13 +55,27 @@ public:
     // Inherit certain properties from another canvas
     virtual void inherit_properties(const Base_Canvas& parent) = 0;
     // Find a child by name
-    Base_Canvas* get_child(const std::string& child_name) {
+    Base_Canvas* get_child_by_name(const std::string& child_name) {
         auto child = std::find_if(children.begin(), children.end(),
-            [&](auto& child) { return child->name == child_name; });
+            [&](auto& child) {
+                return child->name == child_name
+                    || child->get_child_by_name(child_name);
+            }
+        );
+        return child != children.end() ? child->get() : nullptr;
+    }
+    // Find a child by ID
+    Base_Canvas* get_child_by_id(int id) {
+        auto child = std::find_if(children.begin(), children.end(),
+            [&](auto& child) {
+                return child->id == id
+                    || child->get_child_by_id(id);
+            }
+        );
         return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by index
-    Base_Canvas* get_child(std::size_t index) {
+    Base_Canvas* get_child_by_index(std::size_t index) {
         if (index >= 0 && index < children.size()) {
             return children[index].get();
         }
@@ -71,9 +87,22 @@ public:
     }
     // Setup FBO texture
     void setup_fbo();
+    // Reset the canvas IDs
+    static void reset_last_child_id() {
+        last_canvas_id = -1;
+    }
     // Getters and setters
+    Base_Canvas* get_root_parent() {
+        return root_parent;
+    }
+    Base_Canvas* get_parent() {
+        return parent;
+    }
     Lua_Object& get_lua_data() {
         return lua_data;
+    }
+    int get_id() const {
+        return id;
     }
     std::string get_name() const {
         return name;
@@ -207,8 +236,14 @@ protected:
     // The game instance
     Game& game;
 private:
+    // The top-most parent of this canvas
+    Base_Canvas* root_parent;
+    // The direct parent of this canvas
+    Base_Canvas* parent;
     // Allows defining extra Lua properties on the object
     Lua_Object lua_data;
+    // Unique incremental ID
+    int id;
     // Optional name used to identify the canvas
     std::string name;
     // Canvas priority, higher priority canvases are drawn on top
@@ -243,6 +278,8 @@ private:
     xd::vec4 background_color;
     // Was canvas created when game was paused
     bool paused_game_canvas;
+    // The ID of the most recently created canvas
+    inline static int last_canvas_id = -1;
 };
 
 #endif

@@ -101,17 +101,23 @@ public:
     // Get number of layers
     int layer_count() const;
     // Get layer by index (starting from 1, lua convention)
-    Layer* get_layer(int id);
+    Layer* get_layer_by_index(int index);
+    // Get layer by unique TMX ID
+    Layer* get_layer_by_id(int id);
     // Get layer by name
-    Layer* get_layer(std::string name);
+    Layer* get_layer_by_name(std::string name);
     // Get image layer by index (starting from 1, lua convention)
-    Image_Layer* get_image_layer(int id);
+    Image_Layer* get_image_layer_by_index(int index);
+    // Get image layer by unique TMX ID
+    Image_Layer* get_image_layer_by_id(int id);
     // Get image layer by name
-    Image_Layer* get_image_layer(const std::string& name);
+    Image_Layer* get_image_layer_by_name(const std::string& name);
     // Get object layer by index (starting from 1, lua convention)
-    Object_Layer* get_object_layer(int id);
+    Object_Layer* get_object_layer_by_index(int index);
+    // Get object layer by unique TMX ID
+    Object_Layer* get_object_layer_by_id(int id);
     // Get object layer by name
-    Object_Layer* get_object_layer(const std::string& name);
+    Object_Layer* get_object_layer_by_name(const std::string& name);
     // Add a new layer
     void add_layer(Layer_Type type);
     // Delete layer with given name
@@ -126,6 +132,8 @@ public:
     }
     // Return a sorted list of canvases
     const std::vector<std::weak_ptr<Base_Canvas>>& get_canvases();
+    // Get a canvas by its ID
+    Base_Canvas* get_canvas(int id);
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Save map to specified file name

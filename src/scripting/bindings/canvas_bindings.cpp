@@ -14,10 +14,10 @@ namespace detail {
     void bind_get_child(sol::state& lua, sol::usertype<T> canvas_type, const char* method) {
         canvas_type[method] = sol::overload(
             [](Base_Canvas* cvs, std::size_t index) {
-                return dynamic_cast<CT*>(cvs->get_child(index));
+                return dynamic_cast<CT*>(cvs->get_child_by_index(index));
             },
             [](Base_Canvas* cvs, const std::string& name) {
-                return dynamic_cast<CT*>(cvs->get_child(name));
+                return dynamic_cast<CT*>(cvs->get_child_by_name(name));
             }
         );
     }
@@ -25,6 +25,7 @@ namespace detail {
     template <typename T>
     void bind_base_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
         canvas_type["data"] = sol::property(&T::get_lua_data);
+        canvas_type["id"] = sol::property(&T::get_id);
         canvas_type["name"] = sol::property(&T::get_name, &T::set_name);
         canvas_type["priority"] = sol::property(&T::get_priority, &T::set_priority);
         canvas_type["position"] = sol::property(&T::get_position, &T::set_position);
@@ -277,8 +278,13 @@ void bind_canvas_types(sol::state& lua, Game& game) {
     };
     sprite_canvas_type["show_pose"] = [&](Sprite_Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game.get_current_scripting_interface();
+        auto holder_type = Show_Pose_Command::Holder_Type::CANVAS;
+        auto id = canvas->get_id();
+        auto root_parent = canvas->get_root_parent();
+        auto parent_id = root_parent ? root_parent->get_id() : -1;
+        Show_Pose_Command::Holder_Info holder_info{holder_type, id, parent_id};
         return si->register_command<Show_Pose_Command>(*game.get_map(),
-            canvas, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
 
     // A canvas for displaying text

@@ -290,8 +290,10 @@ void Scripting_Interface::setup_scripts() {
         );
     // A command to show an object's pose (used in NPC scheduling)
     lua["Pose_Command"] = [&](Map_Object* object, const std::string& pose, const std::string& state, Direction direction) {
+        auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;
+        Show_Pose_Command::Holder_Info holder_info{ holder_type, object->get_id() };
         return std::make_unique<Command_Result>(std::make_shared<Show_Pose_Command>(
-            *game->get_map(), object, pose, state, direction));
+            *game->get_map(), holder_info, pose, state, direction));
     };
 
     // Text positioning
@@ -611,8 +613,10 @@ void Scripting_Interface::setup_scripts() {
     };
     object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game->get_current_scripting_interface();
+        auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;
+        Show_Pose_Command::Holder_Info holder_info{ holder_type, obj->get_id() };
         return si->register_command<Show_Pose_Command>(
-            *game->get_map(), obj, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            *game->get_map(), holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
@@ -978,8 +982,10 @@ void Scripting_Interface::setup_scripts() {
     };
     image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game->get_current_scripting_interface();
+        auto holder_type = Show_Pose_Command::Holder_Type::LAYER;
+        Show_Pose_Command::Holder_Info holder_info{ holder_type, layer->id};
         return si->register_command<Show_Pose_Command>(*game->get_map(),
-            layer, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
 
     // Object layer
@@ -1032,16 +1038,16 @@ void Scripting_Interface::setup_scripts() {
     map_type["add_new_object"] = &Map::add_new_object;
     map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;
     map_type["get_layer"] = sol::overload(
-        (Layer* (Map::*)(int)) &Map::get_layer,
-        (Layer* (Map::*)(std::string)) &Map::get_layer
+        &Map::get_layer_by_id,
+        &Map::get_layer_by_name
     );
     map_type["get_image_layer"] = sol::overload(
-        (Image_Layer* (Map::*)(int)) &Map::get_image_layer,
-        (Image_Layer* (Map::*)(const std::string&)) &Map::get_image_layer
+        &Map::get_image_layer_by_id,
+        &Map::get_image_layer_by_name
     );
     map_type["get_object_layer"] = sol::overload(
-        (Object_Layer * (Map::*)(int)) &Map::get_object_layer,
-        (Object_Layer * (Map::*)(const std::string&)) &Map::get_object_layer
+        &Map::get_object_layer_by_id,
+        &Map::get_object_layer_by_name
     );
     map_type["run_script"] = &Map::run_script;
     map_type["run_script_file"] = &Map::run_script_file;

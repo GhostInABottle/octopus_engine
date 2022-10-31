@@ -2,7 +2,6 @@
 #define HPP_SPRITE_HOLDER
 
 #include <string>
-#include <unordered_map>
 #include "direction.hpp"
 
 class Game;

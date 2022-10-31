@@ -54,6 +54,7 @@ Map::Map(Game& game) :
         needs_redraw(true),
         objects_moved(true),
         canvases_sorted(false) {
+    Base_Canvas::reset_last_child_id();
     add_component(std::make_shared<Map_Renderer>());
     add_component(std::make_shared<Map_Updater>());
     add_component(std::make_shared<Canvas_Renderer>(game, *game.get_camera()));
@@ -219,7 +220,7 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
     // If layer isn't specified try getting a layer named "objects",
     // if none is found use the 'middle' object layer
     if (!layer) {
-        layer = static_cast<Object_Layer*>(get_layer("objects"));
+        layer = static_cast<Object_Layer*>(get_layer_by_name("objects"));
         if (!layer) {
             int index = static_cast<int>(std::floor(object_layers.size() / 2.0));
             layer = object_layers[index];
@@ -322,14 +323,25 @@ int Map::layer_count() const {
     return layers.size();
 }
 
-Layer* Map::get_layer(int id) {
-    if (id >= 1 && id <= layer_count())
-        return layers[id - 1].get();
+Layer* Map::get_layer_by_index(int index) {
+    if (index >= 1 && index <= layer_count())
+        return layers[index - 1].get();
     else
         return nullptr;
 }
 
-Layer* Map::get_layer(std::string name) {
+Layer* Map::get_layer_by_id(int id) {
+    auto layer = std::find_if(layers.begin(), layers.end(),
+        [&id](std::shared_ptr<Layer> layer) {
+            return layer->id == id;
+        });
+    if (layer != layers.end())
+        return layer->get();
+    else
+        return nullptr;
+}
+
+Layer* Map::get_layer_by_name(std::string name) {
     string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
@@ -343,20 +355,28 @@ Layer* Map::get_layer(std::string name) {
         return nullptr;
 }
 
-Image_Layer* Map::get_image_layer(int id) {
-    return dynamic_cast<Image_Layer*>(get_layer(id));
+Image_Layer* Map::get_image_layer_by_index(int index) {
+    return dynamic_cast<Image_Layer*>(get_layer_by_index(index));
 }
 
-Image_Layer* Map::get_image_layer(const std::string& name) {
-    return dynamic_cast<Image_Layer*>(get_layer(name));
+Image_Layer* Map::get_image_layer_by_id(int id) {
+    return dynamic_cast<Image_Layer*>(get_layer_by_id(id));
 }
 
-Object_Layer* Map::get_object_layer(int id) {
-    return dynamic_cast<Object_Layer*>(get_layer(id));
+Image_Layer* Map::get_image_layer_by_name(const std::string& name) {
+    return dynamic_cast<Image_Layer*>(get_layer_by_name(name));
 }
 
-Object_Layer* Map::get_object_layer(const std::string& name) {
-    return dynamic_cast<Object_Layer*>(get_layer(name));
+Object_Layer* Map::get_object_layer_by_index(int index) {
+    return dynamic_cast<Object_Layer*>(get_layer_by_index(index));
+}
+
+Object_Layer* Map::get_object_layer_by_id(int id) {
+    return dynamic_cast<Object_Layer*>(get_layer_by_id(id));
+}
+
+Object_Layer* Map::get_object_layer_by_name(const std::string& name) {
+    return dynamic_cast<Object_Layer*>(get_layer_by_name(name));
 }
 
 void Map::add_layer(Layer_Type layer_type) {
@@ -446,6 +466,18 @@ const std::vector<std::weak_ptr<Base_Canvas>>& Map::get_canvases() {
         );
     }
     return canvases;
+}
+
+Base_Canvas* Map::get_canvas(int id) {
+    auto result = std::find_if(canvases.begin(), canvases.end(),
+        [&id](std::weak_ptr<Base_Canvas> canvas) {
+            return canvas.lock() && canvas.lock()->get_id() == id;
+        });
+
+    if (result != canvases.end())
+        return result->lock().get();
+    else
+        return nullptr;
 }
 
 void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {

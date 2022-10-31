@@ -2,22 +2,33 @@
 #define HPP_SHOW_POSE_COMMAND
 
 #include <string>
+#include <functional>
 #include "../direction.hpp"
 #include "../command.hpp"
 
 class Map;
 class Sprite_Holder;
 
+
 class Show_Pose_Command : public Command {
 public:
-    Show_Pose_Command(Map& map, Sprite_Holder* holder, const std::string& pose_name,
+    enum class Holder_Type { MAP_OBJECT, LAYER, CANVAS };
+    struct Holder_Info {
+        Holder_Type type;
+        int id;
+        int parent_id;
+        Holder_Info(Holder_Type type, int id, int parent_id = -1)
+            : type(type), id(id), parent_id(parent_id) {}
+    };
+    Show_Pose_Command(Map& map, Holder_Info holder_info, const std::string& pose_name,
         const std::string& state = "", Direction dir = Direction::NONE);
     void execute() override;
     bool is_complete() const override;
     void pause() override;
     void resume() override;
 private:
-    Sprite_Holder* holder;
+    Sprite_Holder* get_holder();
+    Holder_Info holder_info;
     bool complete;
 };
 

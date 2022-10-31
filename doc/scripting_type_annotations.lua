@@ -672,6 +672,7 @@ function Text_Parser:parse(text, permissive) end
 
 ---@class Engine_Base_Canvas
 ---@field data Engine_Map_Data
+---@field id integer
 ---@field name string
 ---@field position Engine_Vec2
 ---@field x number
@@ -1051,17 +1052,17 @@ function current_map:add_new_object(name, sprite, position, direction, layer) en
 ---@param object Engine_Map_Object
 function current_map:delete_object(object) end
 
----@overload fun(self : Engine_Map, index : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
 ---@return Engine_Layer
 function current_map:get_layer(name) end
 
----@overload fun(self : Engine_Map, index : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
 ---@return Engine_Layer
 function current_map:get_object_layer(name) end
 
----@overload fun(self : Engine_Map, index : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
 ---@return Engine_Layer
 function current_map:get_image_layer(name) end

@@ -131,14 +131,14 @@ void Canvas_Renderer::render_canvas(Base_Canvas& canvas, Base_Canvas* parent, Ba
         canvas.render(camera, batch, parent);
 
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
-            auto& child = *canvas.get_child(i);
+            auto& child = *canvas.get_child_by_index(i);
             render_canvas(child, &canvas, &root_parent);
         }
 
         // Mark children and parent as drawn. Children are marked separately
         // to avoid changing parent's should_draw while iterating children
         for (size_t i = 0; i < canvas.get_child_count(); ++i) {
-            canvas.get_child(i)->mark_as_drawn(game.window_ticks());
+            canvas.get_child_by_index(i)->mark_as_drawn(game.window_ticks());
         }
 
         if (!parent) {

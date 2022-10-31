@@ -4,6 +4,9 @@
 #include "../../include/configurations.hpp"
 
 Base_Canvas::Base_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position) :
+    root_parent(nullptr),
+    parent(nullptr),
+    id(++last_canvas_id),
     game(game),
     priority(0),
     type(type),
