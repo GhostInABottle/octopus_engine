@@ -331,12 +331,10 @@ Layer* Map::get_layer_by_index(int index) {
 }
 
 Layer* Map::get_layer_by_id(int id) {
-    auto layer = std::find_if(layers.begin(), layers.end(),
-        [&id](std::shared_ptr<Layer> layer) {
-            return layer->id == id;
-        });
-    if (layer != layers.end())
-        return layer->get();
+    auto result = layers_by_id.find(id);
+
+    if (result != layers_by_id.end())
+        return result->second;
     else
         return nullptr;
 }
@@ -399,9 +397,15 @@ void Map::add_layer(Layer_Type layer_type) {
         names.insert(layer->name);
     }
     new_layer->name = detail::generate_unique_name(names);
-    layers.push_back(new_layer);
-    if (layer_type == Layer_Type::OBJECT)
+    add_layer(new_layer);
+    if (layer_type == Layer_Type::OBJECT) {
         object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));
+    }
+}
+
+void Map::add_layer(std::shared_ptr<Layer> layer) {
+    layers.push_back(layer);
+    layers_by_id[layer->id] = layer.get();
 }
 
 void Map::delete_layer(std::string name) {
@@ -433,28 +437,36 @@ void Map::delete_layer(std::string name) {
         }
     }
     // Delete matching layers
-    layers.erase(std::remove_if(layers.begin(), layers.end(),
+    auto erase_start = std::remove_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
             auto layer_name{layer->name};
             string_utilities::capitalize(layer_name);
             return layer_name == name;
         }
-    ), layers.end());
+    );
+    auto erase_end = std::end(layers);
+    for (auto i = erase_start; i != erase_end; ++i) {
+        layers_by_id.erase((*i)->id);
+    }
+    layers.erase(erase_start, erase_end);
 }
 
 void Map::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
     canvases_sorted = false;
     canvas->set_priority(canvases.size());
-    canvases.push_back(canvas);
+    auto id = canvas->get_id();
+    auto ref = Canvas_Ref{ id, canvas };
+    canvases.push_back(ref);
+    canvases_by_id[id] = ref.ptr;
 }
 
-const std::vector<std::weak_ptr<Base_Canvas>>& Map::get_canvases() {
+const std::vector<Map::Canvas_Ref>& Map::get_canvases() {
     if (!canvases_sorted) {
         canvases_sorted = true;
         std::sort(canvases.begin(), canvases.end(),
-            [](std::weak_ptr<Base_Canvas>& weak_a, std::weak_ptr<Base_Canvas> weak_b) {
-                auto a = weak_a.lock();
-                auto b = weak_b.lock();
+            [](Canvas_Ref& canvas_a, Canvas_Ref& canvas_b) {
+                auto a = canvas_a.ptr.lock();
+                auto b = canvas_b.ptr.lock();
                 if (a && b) {
                     return a->get_priority() < b->get_priority();
                 } else if (a) {
@@ -469,13 +481,10 @@ const std::vector<std::weak_ptr<Base_Canvas>>& Map::get_canvases() {
 }
 
 Base_Canvas* Map::get_canvas(int id) {
-    auto result = std::find_if(canvases.begin(), canvases.end(),
-        [&id](std::weak_ptr<Base_Canvas> canvas) {
-            return canvas.lock() && canvas.lock()->get_id() == id;
-        });
+    auto result = canvases_by_id.find(id);
 
-    if (result != canvases.end())
-        return result->lock().get();
+    if (result != canvases_by_id.end() && result->second.lock())
+        return result->second.lock().get();
     else
         return nullptr;
 }
@@ -644,8 +653,9 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
             map_ptr->object_layers.push_back(static_cast<Object_Layer*>(layer.get()));
         }
 
-        if (layer.get())
-            map_ptr->layers.push_back(layer);
+        if (layer.get()) {
+            map_ptr->add_layer(layer);
+        }
 
         layer_node = layer_node->next_sibling();
     }
@@ -678,10 +688,13 @@ void Map_Renderer::render(Map& map) {
 
 void Map_Updater::update(Map& map) {
     if (map.get_game().is_paused()) return;
+
     map.game.set_current_scripting_interface(map.scripting_interface.get());
     map.scripting_interface->update();
+
     for (auto& layer : map.layers) {
-        if (auto updater = layer->updater.get())
+        if (auto updater = layer->updater.get()) {
             updater->update(map);
+        }
     }
 }

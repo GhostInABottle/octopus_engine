@@ -24,7 +24,7 @@ void Canvas_Renderer::render(Map& map) {
 
     auto& canvases = map.get_canvases();
     for (auto& weak_canvas : canvases) {
-        auto canvas = weak_canvas.lock();
+        auto canvas = weak_canvas.ptr.lock();
         if (!canvas || !canvas->is_visible())
             continue;
 

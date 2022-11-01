@@ -1,4 +1,3 @@
 - Pimpl idiom for Map_Object and Canvas to reduce header dependencies.
 - Editor: Handle object name change.
 - Update GLFW when https://github.com/glfw/glfw/issues/1295 is fixed.
-- Speed up the lookup of map layers and canvases by ID.

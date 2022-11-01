@@ -68,7 +68,8 @@ namespace xd {
         formatted_text& operator+=(const std::string& text) {
             std::string::const_iterator i = text.begin();
             while (i != text.end()) {
-                m_chars.push_back(utf8::next(i, text.end()));
+                auto c = utf8::next(i, text.end());
+                m_chars.push_back(c);
             }
             return *this;
         }

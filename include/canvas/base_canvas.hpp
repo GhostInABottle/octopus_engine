@@ -35,7 +35,8 @@ public:
 
         auto& child = children.back();
         child->parent = this;
-        child->root_parent = this->root_parent ? this->root_parent : this;
+        auto root_parent = this->root_parent ? this->root_parent : this;
+        child->root_parent = root_parent;
         child->set_name(child_name);
         if (child->get_type() != children_type) {
             children_type = Type::MIXED;
@@ -47,8 +48,10 @@ public:
             setup_fbo();
         }
 
+        root_parent->children_by_id[child->id] = child.get();
+
         redraw_needed = true;
-        return static_cast<CType*>(children.back().get());
+        return static_cast<CType*>(child.get());
     }
     // Remove a child
     void remove_child(const std::string& name);
@@ -57,22 +60,22 @@ public:
     // Find a child by name
     Base_Canvas* get_child_by_name(const std::string& child_name) {
         auto child = std::find_if(children.begin(), children.end(),
-            [&](auto& child) {
-                return child->name == child_name
-                    || child->get_child_by_name(child_name);
-            }
-        );
+            [&](auto& child) { return child->name == child_name; });
         return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by ID
     Base_Canvas* get_child_by_id(int id) {
-        auto child = std::find_if(children.begin(), children.end(),
-            [&](auto& child) {
-                return child->id == id
-                    || child->get_child_by_id(id);
-            }
-        );
-        return child != children.end() ? child->get() : nullptr;
+        auto child = children_by_id.find(id);
+        if (child != children_by_id.end()) {
+            return child->second;
+        }
+
+        if (!parent) return nullptr;
+
+        // Manually look for ID if we're looking for the child of a child
+        auto direct_child = std::find_if(children.begin(), children.end(),
+            [&](auto& child) { return child->id == id; });
+        return direct_child != children.end() ? direct_child->get() : nullptr;
     }
     // Find a child by index
     Base_Canvas* get_child_by_index(std::size_t index) {
@@ -266,6 +269,8 @@ private:
     bool camera_relative;
     // List of child canvases that are rendered with this one
     std::vector<std::unique_ptr<Base_Canvas>> children;
+    // Lookup children by unique ID (only stored at root parent)
+    std::unordered_map<int, Base_Canvas*> children_by_id;
     // Did something change that requires the canvas to be redrawn?
     bool redraw_needed;
     // When was the last time the canvas was redrawn

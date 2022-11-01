@@ -35,22 +35,28 @@ void Base_Canvas::setup_fbo() {
 }
 
 void Base_Canvas::remove_child(const std::string& child_name) {
-    children.erase(
-        std::remove_if(children.begin(), children.end(),
-            [&child_name](std::unique_ptr<Base_Canvas>& c) { return c->get_name() == child_name; }
-    ), children.end());
-    // Update children type if needed
-    if (!children.empty() && children_type == Type::MIXED) {
-        auto child_type = children.front()->get_type();
-        for (auto& c : children) {
-            if (c->get_type() != child_type) {
-                child_type = Type::MIXED;
-                break;
-            }
-            children_type = child_type;
-        }
+    auto erase_start = std::remove_if(children.begin(), children.end(),
+        [&child_name](std::unique_ptr<Base_Canvas>& c) { return c->get_name() == child_name; });
+    auto erase_end = children.end();
+    auto root = root_parent ? root_parent : this;
+    for (auto i = erase_start; i != erase_end; ++i) {
+        root->children_by_id.erase((*i)->get_id());
     }
+    children.erase(erase_start, erase_end);
+
     redraw_needed = true;
+
+    if (children.empty() || children_type != Type::MIXED) return;
+
+    // Update mixed children type if needed
+    auto child_type = children.front()->get_type();
+    for (auto& c : children) {
+        if (c->get_type() != child_type) {
+            child_type = Type::MIXED;
+            break;
+        }
+        children_type = child_type;
+    }
 }
 
 void Base_Canvas::inherit_properties(const Base_Canvas& parent) {

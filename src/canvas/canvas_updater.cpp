@@ -4,12 +4,10 @@
 
 void Canvas_Updater::update(Map& map) {
     map.erase_canvases(
-        [](const std::weak_ptr<Base_Canvas>& weak_canvas) {
-            auto canvas = weak_canvas.lock();
-            if (canvas) {
-                if (canvas->should_update()) {
-                    canvas->update();
-                }
+        [](const Map::Canvas_Ref& weak_canvas) {
+            auto canvas = weak_canvas.ptr.lock();
+            if (canvas && canvas->should_update()) {
+                canvas->update();
             }
             return !canvas;
         }

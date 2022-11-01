@@ -38,6 +38,11 @@ class Map : public xd::entity<Map>, public Editable, public Tmx_Object {
 public:
     friend class Map_Renderer;
     friend class Map_Updater;
+    struct Canvas_Ref {
+        int id;
+        std::weak_ptr<Base_Canvas> ptr;
+        Canvas_Ref(int id, std::weak_ptr<Base_Canvas> ptr) : id(id), ptr(ptr) {}
+    };
     // Constructor and destructor
     explicit Map(Game& game);
     ~Map();
@@ -120,6 +125,8 @@ public:
     Object_Layer* get_object_layer_by_name(const std::string& name);
     // Add a new layer
     void add_layer(Layer_Type type);
+    // Add an existing layer
+    void add_layer(std::shared_ptr<Layer> layer);
     // Delete layer with given name
     void delete_layer(std::string name);
     // Add a canvas to the map
@@ -127,11 +134,15 @@ public:
     // Erase canvases that match a predicate function
     template<typename Predicate>
     void erase_canvases(Predicate func) {
-        canvases.erase(std::remove_if(
-            std::begin(canvases), std::end(canvases), func), std::end(canvases));
+        auto erase_start = std::remove_if(std::begin(canvases), std::end(canvases), func);
+        auto erase_end = std::end(canvases);
+        for (auto i = erase_start; i != erase_end; ++i) {
+            canvases_by_id.erase(i->id);
+        }
+        canvases.erase(erase_start, erase_end);
     }
     // Return a sorted list of canvases
-    const std::vector<std::weak_ptr<Base_Canvas>>& get_canvases();
+    const std::vector<Canvas_Ref>& get_canvases();
     // Get a canvas by its ID
     Base_Canvas* get_canvas(int id);
     // Resize map and layers
@@ -243,8 +254,12 @@ private:
     Tile_Layer* collision_layer;
     // List of map layers
     std::vector<std::shared_ptr<Layer>> layers;
+    // Lookup table of layer IDs to layer pointers
+    std::unordered_map<int, Layer*> layers_by_id;
     // List of canvases to draw
-    std::vector<std::weak_ptr<Base_Canvas>> canvases;
+    std::vector<Canvas_Ref> canvases;
+    // Lookup table of canvas IDs to canvases
+    std::unordered_map<int, std::weak_ptr<Base_Canvas>> canvases_by_id;
     // Background music
     std::string background_music;
     // Startup script filenames
