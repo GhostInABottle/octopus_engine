@@ -1,15 +1,14 @@
 #include "../../include/canvas/canvas_updater.hpp"
 #include "../../include/canvas/base_canvas.hpp"
 #include "../../include/map.hpp"
+#include "../../include/log.hpp"
 
 void Canvas_Updater::update(Map& map) {
-    map.erase_canvases(
-        [](const Map::Canvas_Ref& weak_canvas) {
-            auto canvas = weak_canvas.ptr.lock();
-            if (canvas && canvas->should_update()) {
-                canvas->update();
-            }
-            return !canvas;
+    auto& canvases = map.get_canvases();
+    for (auto& weak_canvas : canvases) {
+        auto canvas = weak_canvas.ptr.lock();
+        if (canvas && canvas->should_update()) {
+            canvas->update();
         }
-    );
+    }
 }

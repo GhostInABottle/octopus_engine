@@ -35,14 +35,16 @@ void Base_Canvas::setup_fbo() {
 }
 
 void Base_Canvas::remove_child(const std::string& child_name) {
-    auto erase_start = std::remove_if(children.begin(), children.end(),
-        [&child_name](std::unique_ptr<Base_Canvas>& c) { return c->get_name() == child_name; });
-    auto erase_end = children.end();
     auto root = root_parent ? root_parent : this;
-    for (auto i = erase_start; i != erase_end; ++i) {
-        root->children_by_id.erase((*i)->get_id());
-    }
-    children.erase(erase_start, erase_end);
+    auto& children_lookup = root->children_by_id;
+    auto erase_start = std::remove_if(children.begin(), children.end(),
+        [&child_name, &children_lookup](std::unique_ptr<Base_Canvas>& c) {
+            if (c->get_name() != child_name) return false;
+
+            children_lookup.erase(c->get_id());
+            return true;
+        });
+    children.erase(erase_start, children.end());
 
     redraw_needed = true;
 

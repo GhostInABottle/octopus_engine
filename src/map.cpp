@@ -437,27 +437,45 @@ void Map::delete_layer(std::string name) {
         }
     }
     // Delete matching layers
+    auto& layer_lookup = layers_by_id;
     auto erase_start = std::remove_if(layers.begin(), layers.end(),
-        [&name](std::shared_ptr<Layer> layer) {
+        [&name, &layer_lookup](std::shared_ptr<Layer> layer) {
             auto layer_name{layer->name};
             string_utilities::capitalize(layer_name);
-            return layer_name == name;
+            if (layer_name != name) return false;
+
+            layer_lookup.erase(layer->id);
+            return true;
         }
     );
-    auto erase_end = std::end(layers);
-    for (auto i = erase_start; i != erase_end; ++i) {
-        layers_by_id.erase((*i)->id);
-    }
-    layers.erase(erase_start, erase_end);
+    layers.erase(erase_start, std::end(layers));
 }
 
 void Map::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
+    if (canvases_sorted) {
+        // Clean up expired references, but only once when multiple canvases
+        // are being inserted at once
+        erase_canvases();
+    }
     canvases_sorted = false;
     canvas->set_priority(canvases.size());
     auto id = canvas->get_id();
     auto ref = Canvas_Ref{ id, canvas };
     canvases.push_back(ref);
-    canvases_by_id[id] = ref.ptr;
+    canvases_by_id[id] = canvas;
+}
+
+void Map::erase_canvases() {
+    auto& canvas_lookup = canvases_by_id;
+    auto erase_start = std::remove_if(std::begin(canvases), std::end(canvases),
+        [&canvas_lookup](const Canvas_Ref& ref) {
+            auto canvas = ref.ptr.lock();
+            if (canvas) return false;
+
+            canvas_lookup.erase(ref.id);
+            return true;
+        });
+    canvases.erase(erase_start, std::end(canvases));
 }
 
 const std::vector<Map::Canvas_Ref>& Map::get_canvases() {

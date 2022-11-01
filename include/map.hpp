@@ -132,15 +132,7 @@ public:
     // Add a canvas to the map
     void add_canvas(std::shared_ptr<Base_Canvas> canvas);
     // Erase canvases that match a predicate function
-    template<typename Predicate>
-    void erase_canvases(Predicate func) {
-        auto erase_start = std::remove_if(std::begin(canvases), std::end(canvases), func);
-        auto erase_end = std::end(canvases);
-        for (auto i = erase_start; i != erase_end; ++i) {
-            canvases_by_id.erase(i->id);
-        }
-        canvases.erase(erase_start, erase_end);
-    }
+    void erase_canvases();
     // Return a sorted list of canvases
     const std::vector<Canvas_Ref>& get_canvases();
     // Get a canvas by its ID

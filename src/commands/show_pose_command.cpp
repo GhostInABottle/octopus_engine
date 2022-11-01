@@ -34,7 +34,8 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
     auto holder = get_holder();
     if (!holder) {
         throw std::runtime_error("Sprite holder with id (" + std::to_string(holder_info.id)
-            + ") not found when trying to show pose: " + pose_name);
+            + (holder_info.parent_id != -1 ? ", " + std::to_string(holder_info.parent_id) : std::string{})
+            + ") not found when trying to show pose : " + pose_name);
     }
 
     holder->set_pose(pose_name, state, dir);
