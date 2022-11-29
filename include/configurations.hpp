@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include "log.hpp"
 
 class config_exception : public std::runtime_error {
 public:
@@ -61,11 +62,14 @@ public:
         if ((has_value(name) || has_default(name)) && get<T>(name) == value) {
             return;
         }
+
         values[name] = value;
         for (auto& pair : observers) {
             pair.second(name);
         }
+
         changed_since_save = true;
+        LOGGER_I << "Config " << name << " changed to " << value;
     }
 private:
     typedef std::variant<std::string, int, unsigned int, float, bool> value_type;
