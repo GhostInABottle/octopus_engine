@@ -42,6 +42,9 @@ struct Game::Impl {
             pause_start_time(0),
             total_paused_time(0),
             exit_requested(false),
+            fullscreen_change_ticks(-1),
+            fullscreen_update_delay(1),
+            was_fullscreen(false),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
             game_width(Configurations::get<float>("debug.width")),
             game_height(Configurations::get<float>("debug.height")),
@@ -57,6 +60,10 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game) {
+        // Default windowed width/height if starting in fullscreen mode
+        windowed_width = static_cast<int>(game_width * 3);
+        windowed_height = static_cast<int>(game_height * 3);
+
         // Register the shaking text decorator
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);
@@ -94,7 +101,7 @@ struct Game::Impl {
                 Configurations::get<int>("graphics.screen-height"));
         }
         if (config_changed("graphics.fullscreen")) {
-            game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
+            start_fullscreen_change(game);
         }
         if (config_changed("graphics.vsync") && window) {
             window->set_vsync(Configurations::get<bool>("graphics.vsync"));
@@ -207,6 +214,35 @@ struct Game::Impl {
         si->schedule_function(function, "GLOBAL");
         game.set_current_scripting_interface(old_interface);
     }
+    void start_fullscreen_change(Game& game) {
+        if (fullscreen_change_ticks != -1) {
+            end_fullscreen_change(game);
+        }
+        fullscreen_change_ticks = game.window_ticks();
+        was_fullscreen = game.is_fullscreen();
+        if (!was_fullscreen) {
+            windowed_width = game.window_width();
+            windowed_height = game.window_height();
+        }
+        game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
+    }
+    void end_fullscreen_change(Game& game) {
+        // Need to wait in some operating systems for the mode change to apply
+        if (game.window_ticks() - fullscreen_change_ticks < fullscreen_update_delay) {
+            return;
+        }
+
+        fullscreen_change_ticks = -1;
+
+        auto is_fullscreen = game.is_fullscreen();
+        if (is_fullscreen && !was_fullscreen) {
+            Configurations::set<int>("graphics.screen-width", game.window_width());
+            Configurations::set<int>("graphics.screen-height", game.window_height());
+        } else if (!is_fullscreen && was_fullscreen) {
+            Configurations::set<int>("graphics.screen-width", windowed_width);
+            Configurations::set<int>("graphics.screen-height", windowed_height);
+        }
+    }
     // Audio system (pointer because it's null for editor)
     xd::audio* audio;
     // Was game started in editor mode?
@@ -239,6 +275,12 @@ struct Game::Impl {
     // Keep track of paused time
     int pause_start_time;
     int total_paused_time;
+    // Information about a fullscreen change
+    int fullscreen_change_ticks;
+    int fullscreen_update_delay;
+    bool was_fullscreen;
+    int windowed_width;
+    int windowed_height;
     // Is it time to exit the main loop?
     bool exit_requested;
     // Debug font style (FPS and time display)
@@ -480,6 +522,10 @@ void Game::frame_update() {
 
     if (pimpl->next_map.empty()) {
         map->update();
+    }
+
+    if (pimpl->fullscreen_change_ticks != -1) {
+        pimpl->end_fullscreen_change(*this);
     }
 
     pimpl->process_config_changes(*this, window.get());
