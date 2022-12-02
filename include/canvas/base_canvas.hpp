@@ -24,7 +24,7 @@ public:
     Base_Canvas(const Base_Canvas&) = delete;
     Base_Canvas& operator=(const Base_Canvas&) = delete;
     // Base class destructor
-    virtual ~Base_Canvas() = 0 {}
+    virtual ~Base_Canvas() noexcept {}
     // Update or render canvas
     virtual void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) = 0;
     virtual void update() {}

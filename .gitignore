@@ -6,3 +6,8 @@
 build/
 editor/*.dll
 editor/*.exe
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+octopus_engine

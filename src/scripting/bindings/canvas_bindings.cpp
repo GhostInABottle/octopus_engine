@@ -48,53 +48,53 @@ namespace detail {
 
         canvas_type["add_child_image"] = sol::overload(
             // with position
-            [&](T& parent, const std::string& name, const std::string& filename, float x, float y) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y) {
                 return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y });
             },
-            [&](T& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
                 return parent.add_child<Image_Canvas>(name, game, filename, pos);
             },
             // with hex transparent color
-            [&](T& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& hex) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& hex) {
                 auto color = hex.empty() ? xd::vec4{ 0 } : hex_to_color(hex);
                 return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y }, color);
             },
-            [&](T& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& hex) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& hex) {
                 auto color = hex.empty() ? xd::vec4{ 0 } : hex_to_color(hex);
                 return parent.add_child<Image_Canvas>(name, game, filename, pos, color);
             },
             // with transparent color as vec4
-            [&](T& parent, const std::string& name, const std::string& filename, float x, float y, xd::vec4 transparent) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, xd::vec4 transparent) {
                 return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y }, transparent);
             },
-            [&](T& parent, const std::string& name, const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
                 return parent.add_child<Image_Canvas>(name, game, filename, pos, transparent);
             }
         );
 
         canvas_type["add_child_sprite"] = sol::overload(
             // with position
-            [&](T& parent, const std::string& name, const std::string& filename, float x, float y) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y) {
                 return parent.add_child<Sprite_Canvas>(name, game, filename, xd::vec2{ x, y });
             },
-            [&](T& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
                 return parent.add_child<Sprite_Canvas>(name, game, filename, pos);
             },
             // with pose name
-            [&](T& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& pose) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& pose) {
                 return parent.add_child<Sprite_Canvas>(name, game, filename, xd::vec2{ x, y }, pose);
             },
-            [&](T& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& pose) {
+            [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& pose) {
                 return parent.add_child<Sprite_Canvas>(name, game, filename, pos, pose);
             }
         );
 
         // with text and position
         canvas_type["add_child_text"] = sol::overload(
-            [&](T& parent, const std::string& name, float x, float y, const std::string& text) {
+            [&](Base_Canvas& parent, const std::string& name, float x, float y, const std::string& text) {
                 return parent.add_child<Text_Canvas>(name, game, xd::vec2(x, y), text, true, true);
             },
-            [&](T& parent, const std::string& name, xd::vec2 pos, const std::string& text) {
+            [&](Base_Canvas& parent, const std::string& name, xd::vec2 pos, const std::string& text) {
                 return parent.add_child<Text_Canvas>(name, game, pos, text, true, true);
             }
         );
@@ -222,7 +222,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
                 game.add_canvas(canvas);
                 return canvas;
             }
-        )
+        ),
+        sol::base_classes, sol::bases<Base_Canvas>()
     );
 
     detail::bind_base_canvas(lua, game, image_canvas_type);
@@ -258,7 +259,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
                 game.add_canvas(canvas);
                 return canvas;
             }
-        )
+        ),
+        sol::base_classes, sol::bases<Base_Canvas>()
     );
 
     detail::bind_base_canvas(lua, game, sprite_canvas_type);
@@ -301,7 +303,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
                 game.add_canvas(canvas);
                 return canvas;
             }
-        )
+        ),
+        sol::base_classes, sol::bases<Base_Canvas>()
     );
 
     detail::bind_base_canvas(lua, game, text_canvas_type);

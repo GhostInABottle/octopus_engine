@@ -42,7 +42,7 @@ namespace xd::detail {
         virtual void set_loop_points(unsigned int start, unsigned int end) = 0;
         virtual std::pair<unsigned int, unsigned int> get_loop_points() const = 0;
 
-        virtual ~sound_handle() = 0 {}
+        virtual ~sound_handle() noexcept {}
     };
 }
 
