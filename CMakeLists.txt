@@ -36,6 +36,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${FREETYPE_INCLUDE_DIR_ft2build})
 
 add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
+target_compile_definitions(octopus_engine PRIVATE NDEBUG)
 
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)

@@ -31,8 +31,8 @@ void Configurations::load_defaults() {
     defaults["text.screen-edge-margin-x"] = 20;
     defaults["text.screen-edge-margin-y"] = 20;
 
-    defaults["graphics.screen-width"] = 640;
-    defaults["graphics.screen-height"] = 480;
+    defaults["graphics.screen-width"] = -1;
+    defaults["graphics.screen-height"] = -1;
     defaults["graphics.window-width"] = 640;
     defaults["graphics.window-height"] = 480;
     defaults["graphics.fullscreen"] = false;
