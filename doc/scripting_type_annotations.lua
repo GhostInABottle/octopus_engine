@@ -5,7 +5,7 @@
 
 -- Global variables
 
----@alias Engine_Direction integer
+---@alias Engine_Direction 0|1|2|3|4|6|8|9|12|16|32
 
 ---@type Engine_Direction
 NONE = 0
@@ -105,30 +105,36 @@ bit = {}
 ---@param a integer
 ---@param b integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.band(a, b) end
 
 ---@param a integer
 ---@param b integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.bor(a, b) end
 
 ---@param a integer
 ---@param b integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.bxor(a, b) end
 
 ---@param a integer
 ---@param b integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.rshift(a, b) end
 
 ---@param a integer
 ---@param b integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.lshift(a, b) end
 
 ---@param a integer
 ---@return integer
+---@diagnostic disable-next-line: duplicate-set-field
 function bit.bnot(a) end
 
 -- File system
@@ -665,7 +671,6 @@ Text_Parser = {}
 ---@return Engine_Token[]
 function Text_Parser:parse(text, permissive) end
 
-
 ---@class Engine_Map_Data
 
 -- Shared canvas properties and methods
@@ -902,6 +907,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field magnification Engine_Vec2
 ---@field sprite_magnification Engine_Vec2
 ---@field color Engine_Color
+---@field opacity number
 ---@field uses_layer_color boolean
 ---@field script string
 ---@field touch_script string
@@ -1023,8 +1029,8 @@ function Engine_Layer:reset() end
 ---@class Engine_Map
 ---@field data Engine_Map_Data
 ---@field name string # from TMX file
----@field filename string
----@field filename_stem string
+---@field filename string # full filename including folders
+---@field filename_stem string # last part of filename without the extension
 ---@field width integer
 ---@field height integer
 ---@field tile_height integer
@@ -1225,7 +1231,7 @@ function Sound(filename, pausable) end
 ---@field fps integer
 ---@field frame_count integer
 ---@field data_directory string
----@field playing_music Engine_Music
+---@field playing_music Engine_Music?
 ---@field character_input string
 ---@field triggered_keys string[]
 ---@field gamepad_enabled boolean

@@ -69,6 +69,12 @@ xd::window::window(const std::string& title, int width, int height, const window
     glfwWindowHint(GLFW_DEPTH_BITS, options.depth_bits);
     glfwWindowHint(GLFW_STENCIL_BITS, options.stencil_bits);
 
+    if (m_width == -1 || m_height == -1) {
+        auto size = get_size();
+        m_width = static_cast<int>(size.x);
+        m_height = static_cast<int>(size.y);
+    }
+
     m_window = glfwCreateWindow(m_width, m_height, title.c_str(),
             options.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
@@ -371,6 +377,11 @@ int xd::window::framebuffer_height() const
 
 void xd::window::set_size(int width, int height)
 {
+    if (width == -1 || height == -1) {
+        auto size = get_size();
+        width = static_cast<int>(size.x);
+        height = static_cast<int>(size.y);
+    }
     m_width = width;
     m_height = height;
     glfwSetWindowSize(m_window, width, height);

@@ -60,9 +60,6 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game) {
-        // Default windowed width/height if starting in fullscreen mode
-        windowed_width = static_cast<int>(game_width * 3);
-        windowed_height = static_cast<int>(game_height * 3);
 
         // Register the shaking text decorator
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
@@ -96,9 +93,13 @@ struct Game::Impl {
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
-        if (config_changed("graphics.screen-width") || config_changed("graphics.screen-height")) {
+        if (game.is_fullscreen() && (config_changed("graphics.screen-width") || config_changed("graphics.screen-height"))) {
             game.set_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
+        }
+        if (!game.is_fullscreen() && (config_changed("graphics.window-width") || config_changed("graphics.window-height"))) {
+            game.set_size(Configurations::get<int>("graphics.window-width"),
+                Configurations::get<int>("graphics.window-height"));
         }
         if (config_changed("graphics.fullscreen")) {
             start_fullscreen_change(game);
@@ -220,10 +221,6 @@ struct Game::Impl {
         }
         fullscreen_change_ticks = game.window_ticks();
         was_fullscreen = game.is_fullscreen();
-        if (!was_fullscreen) {
-            windowed_width = game.window_width();
-            windowed_height = game.window_height();
-        }
         game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
     }
     void end_fullscreen_change(Game& game) {
@@ -236,11 +233,11 @@ struct Game::Impl {
 
         auto is_fullscreen = game.is_fullscreen();
         if (is_fullscreen && !was_fullscreen) {
-            Configurations::set<int>("graphics.screen-width", game.window_width());
-            Configurations::set<int>("graphics.screen-height", game.window_height());
+            game.set_size(Configurations::get<int>("graphics.screen-width"),
+                Configurations::get<int>("graphics.screen-height"));
         } else if (!is_fullscreen && was_fullscreen) {
-            Configurations::set<int>("graphics.screen-width", windowed_width);
-            Configurations::set<int>("graphics.screen-height", windowed_height);
+            game.set_size(Configurations::get<int>("graphics.window-width"),
+                Configurations::get<int>("graphics.window-height"));
         }
     }
     // Audio system (pointer because it's null for editor)
@@ -279,8 +276,6 @@ struct Game::Impl {
     int fullscreen_change_ticks;
     int fullscreen_update_delay;
     bool was_fullscreen;
-    int windowed_width;
-    int windowed_height;
     // Is it time to exit the main loop?
     bool exit_requested;
     // Debug font style (FPS and time display)
@@ -320,8 +315,12 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
         pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
-            Configurations::get<int>("graphics.screen-width"),
-            Configurations::get<int>("graphics.screen-height"),
+            Configurations::get<bool>("graphics.fullscreen")
+                ? Configurations::get<int>("graphics.screen-width")
+                : Configurations::get<int>("graphics.window-width"),
+            Configurations::get<bool>("graphics.fullscreen")
+                ? Configurations::get<int>("graphics.screen-height")
+                : Configurations::get<int>("graphics.window-height"),
             xd::window_options(
                 Configurations::get<bool>("graphics.fullscreen"),
                 static_cast<int>(Configurations::get<float>("debug.width") * 3),

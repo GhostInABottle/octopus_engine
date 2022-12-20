@@ -106,6 +106,10 @@ void Player_Controller::update(Map_Object& object) {
 
     if (moved) {
         collision = object.move(direction, speed, check_type, change_facing);
+        if (action_pressed && collision.passable()) {
+            // Try again to see if there's an object in front of the player after moving
+            collision = map->passable(object, direction, check_type);
+        }
     }
 
     process_collision(object, collision, Collision_Type::OBJECT, moved, action_pressed);
@@ -118,18 +122,19 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
     if (type == Collision_Type::OBJECT) {
         old_object = object.get_collision_object();
         other = collision.other_object;
-        if (other)
+        if (other && old_object != other)
             object.set_collision_object(other);
     } else {
         old_object = object.get_collision_area();
         other = collision.other_area;
-        if (other)
+        if (other && old_object != other)
             object.set_collision_area(other);
     }
 
     auto run_scripts = !object.is_disabled();
     auto touched = run_scripts && moved && other && other->has_touch_script() && other != old_object;
     auto triggered = run_scripts && action_pressed && other && other->has_trigger_script();
+
     if (touched || triggered) {
         object.set_triggered_object(other);
         if (other->is_player_facing()) {
