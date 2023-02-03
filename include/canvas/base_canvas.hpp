@@ -116,9 +116,7 @@ public:
     int get_priority() const {
         return priority;
     }
-    void set_priority(int new_priority) {
-        priority = new_priority;
-    }
+    void set_priority(int new_priority);
     xd::vec2 get_position() const {
         return position;
     }

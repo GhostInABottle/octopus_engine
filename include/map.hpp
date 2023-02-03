@@ -211,6 +211,9 @@ public:
     bool is_changed() {
         return needs_redraw;
     }
+    void sort_canvases() {
+        canvases_sorted = false;
+    }
 private:
     // Game instance
     Game& game;

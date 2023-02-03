@@ -1,6 +1,7 @@
 #include "../../include/canvas/base_canvas.hpp"
 #include "../../include/utility/color.hpp"
 #include "../../include/game.hpp"
+#include "../../include/map.hpp"
 #include "../../include/configurations.hpp"
 
 Base_Canvas::Base_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position) :
@@ -65,6 +66,12 @@ void Base_Canvas::inherit_properties(const Base_Canvas& parent) {
     // Child inherits parent properties
     set_color(parent.get_color());
     set_scissor_box(parent.get_scissor_box());
+}
+
+void Base_Canvas::set_priority(int new_priority) {
+    if (new_priority == priority) return;
+    priority = new_priority;
+    game.get_map()->sort_canvases();
 }
 
 bool Base_Canvas::should_update() const {
