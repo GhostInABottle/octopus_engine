@@ -1,5 +1,6 @@
 #include "../include/save_file.hpp"
 #include "../include/configurations.hpp"
+#include "../include/xd/lua.hpp"
 #include <iostream>
 #include <cstdio>
 #include <string>
@@ -280,55 +281,75 @@ namespace detail {
     }
 }
 
-Save_File::Save_File(sol::state& state, bool header_only, bool compact) :
-    state(state),
-    data(state, sol::create),
-    header(state, sol::create),
-    header_only(header_only),
-    compact(compact),
-    valid(false) {}
+struct Save_File::Impl {
+    Impl(sol::state& state, const sol::table* data, const sol::table* header, bool header_only, bool compact, bool valid) :
+        state(state),
+        data(data ? *data : sol::table{ state, sol::create }),
+        header(header ? *header : sol::table{ state, sol::create }),
+        header_only(header_only),
+        compact(compact),
+        valid(valid) {}
+    sol::state& state;
+    sol::table header;
+    sol::table data;
+    bool header_only;
+    bool compact;
+    bool valid;
+};
 
-Save_File::Save_File(sol::state& state, const sol::table& data, std::optional<sol::table> header, bool compact) :
-    state(state),
-    data(data),
-    header(header.value_or(sol::table(state, sol::create))),
-    header_only(false),
-    compact(compact),
-    valid(true) {}
+// Reading constructor
+Save_File::Save_File(sol::state& state, bool header_only, bool compact) :
+    pimpl(std::make_unique<Impl>(state, nullptr, nullptr, header_only, compact, false)) {}
+
+// Writing constructor
+Save_File::Save_File(sol::state& state, const sol::table& data, const sol::table* header, bool compact) :
+    pimpl(std::make_unique<Impl>(state, &data, header, false, compact, true)) {}
+
+Save_File::~Save_File() {}
+
+sol::object& Save_File::lua_data() { return pimpl->data; }
+
+sol::object& Save_File::header_data() { return pimpl->header; }
+
+bool Save_File::is_valid() const { return pimpl->valid; }
+
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
-    save_file.valid = false;
+    save_file.pimpl->valid = false;
     detail::write(stream, Configurations::get<unsigned int>("debug.save-signature"));
-    detail::write_object(stream, save_file.header, save_file.compact);
-    detail::write_object(stream, save_file.data, save_file.compact);
-    save_file.valid = true;
+    auto compact = save_file.pimpl->compact;
+    detail::write_object(stream, save_file.header_data(), compact);
+    detail::write_object(stream, save_file.lua_data(), compact);
+    save_file.pimpl->valid = true;
     return stream;
 }
 
 std::istream& operator>>(std::istream& stream, Save_File& save_file) {
-    save_file.valid = false;
+    save_file.pimpl->valid = false;
     unsigned int signature;
     detail::read(stream, signature);
     if (signature != Configurations::get<unsigned int>("debug.save-signature")) {
         throw std::runtime_error("Invalid file signature");
     }
 
-    auto first_table = detail::read_object(stream, save_file.state, save_file.compact);
+    auto& state = save_file.pimpl->state;
+    auto compact = save_file.pimpl->compact;
+    auto first_table = detail::read_object(stream, state, compact);
 
-    if (save_file.header_only) {
-        save_file.header = first_table;
-        save_file.valid = true;
+    if (save_file.pimpl->header_only) {
+        save_file.pimpl->header = first_table;
+        save_file.pimpl->valid = true;
         return stream;
     }
 
     if (stream.peek() != EOF) {
         // Headers are optional since they were introduced later
-        save_file.header = first_table;
-        save_file.data = detail::read_object(stream, save_file.state, save_file.compact);
+        save_file.pimpl->header = first_table;
+        save_file.pimpl->data = detail::read_object(stream, state, compact);
     } else {
-        save_file.data = first_table;
+        save_file.pimpl->data = first_table;
     }
 
-    save_file.valid = true;
+    save_file.pimpl->valid = true;
     return stream;
 }

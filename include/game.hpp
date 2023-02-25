@@ -278,13 +278,15 @@ public:
         return command_line_args;
     }
 private:
+    std::vector<std::string> command_line_args;
+    // Window needs to be constructed before pimpl
+    std::unique_ptr<xd::window> window;
     struct Impl;
     friend struct Impl;
-    std::unique_ptr<xd::window> window;
+    std::unique_ptr<Impl> pimpl;
     bool paused;
     bool pausing_enabled;
     float magnification;
-    std::unique_ptr<Impl> pimpl;
     std::unique_ptr<Clock> clock;
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
@@ -296,7 +298,6 @@ private:
     xd::font_style style;
     int editor_ticks;
     xd::ivec2 editor_size;
-    std::vector<std::string> command_line_args;
 };
 
 #endif

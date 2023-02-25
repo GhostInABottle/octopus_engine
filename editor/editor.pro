@@ -68,6 +68,7 @@ SOURCES += main.cpp\
     ../src/player_controller.cpp \
     ../src/save_file.cpp \
     ../src/scripting/bindings/canvas_bindings.cpp \
+    ../src/scripting/bindings/game_bindings.cpp \
     ../src/scripting/lua_object.cpp \
     ../src/scripting/scripting_interface.cpp \
     ../src/shake_decorator.cpp \
@@ -183,6 +184,7 @@ HEADERS  += main_window.hpp \
     ../include/vendor/rapidxml_print.hpp \
     ../include/save_file.hpp \
     ../include/scripting/bindings/canvas_bindings.hpp \
+    ../include/scripting/bindings/game_bindings.hpp \
     ../include/scripting/lua_object.hpp \
     ../include/scripting/scripting_interface.hpp \
     ../include/shake_decorator.hpp \

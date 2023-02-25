@@ -881,10 +881,10 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field name string
 ---@field type string
 ---@field position Engine_Vec2
----@field real_position Engine_Vec2
----@field centered_position Engine_Vec2
+---@field real_position Engine_Vec2 # position + bounding_box.position
+---@field centered_position Engine_Vec2 # real_position + bounding_box.size / 2
 ---@field bounding_box Engine_Rect
----@field positioned_bounding_box Engine_Rect
+---@field positioned_bounding_box Engine_Rect # bounding box positioned at real_position
 ---@field x number
 ---@field y number
 ---@field size Engine_Vec2
@@ -894,16 +894,16 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field walk_state string
 ---@field face_state string
 ---@field visible boolean
----@field frozen boolean
+---@field frozen boolean # prevents pose state from changing
 ---@field disabled boolean
----@field stopped boolean
+---@field stopped boolean # stops and prevents movement
 ---@field passthrough boolean
 ---@field passthrough_type Engine_Passthrough_Type
 ---@field speed number
+---@field fps_independent_speed number # readonly
 ---@field collision_object Engine_Map_Object?
 ---@field triggered_object Engine_Map_Object?
 ---@field collision_area Engine_Map_Object?
----@field fps_independent_speed number
 ---@field magnification Engine_Vec2
 ---@field sprite_magnification Engine_Vec2
 ---@field color Engine_Color
@@ -1042,9 +1042,9 @@ function Engine_Layer:reset() end
 ---@field script_scheduler_paused boolean
 current_map = {}
 
----@overload fun(self : Engine_Map, id : integer) : Engine_Map_Object
+---@overload fun(self : Engine_Map, id : integer) : Engine_Map_Object?
 ---@param name string
----@return Engine_Map_Object
+---@return Engine_Map_Object?
 function current_map:get_object(name) end
 
 ---@param name? string
@@ -1104,8 +1104,8 @@ function current_map:run_script_file(filename) end
 ---@class Engine_Camera
 ---@field position Engine_Vec2
 ---@field position_bounds Engine_Rect
----@field screen_tint Engine_Color
----@field map_tint Engine_Color
+---@field screen_tint Engine_Color # Drawn above everything
+---@field map_tint Engine_Color # Drawn above map/objects but under text/canvases
 ---@field tracked_object Engine_Map_Object
 ---@field is_shaking boolean
 camera = {}

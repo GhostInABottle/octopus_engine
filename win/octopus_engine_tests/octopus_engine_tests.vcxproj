@@ -132,6 +132,7 @@
     <ClCompile Include="..\..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\..\src\key_binder.cpp" />
     <ClCompile Include="..\..\src\scripting\bindings\canvas_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\game_bindings.cpp" />
     <ClCompile Include="..\..\src\utility\color.cpp" />
     <ClCompile Include="..\..\src\utility\file.cpp" />
     <ClCompile Include="..\..\src\utility\math.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="..\..\include\exceptions.hpp" />
     <ClInclude Include="..\..\include\key_binder.hpp" />
     <ClInclude Include="..\..\include\scripting\bindings\canvas_bindings.hpp" />
+    <ClInclude Include="..\..\include\scripting\bindings\game_bindings.hpp" />
     <ClInclude Include="..\..\include\utility\color.hpp" />
     <ClInclude Include="..\..\include\utility\direction.hpp" />
     <ClInclude Include="..\..\include\utility\file.hpp" />

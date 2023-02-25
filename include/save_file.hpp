@@ -1,25 +1,24 @@
 #ifndef HPP_SAVE_FILE
 #define HPP_SAVE_FILE
 
+#include <memory>
 #include <iosfwd>
-#include "../include/xd/lua.hpp"
+#include "xd/vendor/sol/forward.hpp"
 
 class Save_File {
 public:
     Save_File(sol::state& state, bool header_only = false, bool compact = true);
-    Save_File(sol::state& state, const sol::table& data, std::optional<sol::table> header = std::nullopt, bool compact = true);
-    sol::object& lua_data() { return data; }
-    sol::object& header_data() { return header; }
-    bool is_valid() const { return valid; }
+    Save_File(sol::state& state, const sol::table& data, const sol::table* header = nullptr, bool compact = true);
+    ~Save_File();
+    sol::object& lua_data();
+    sol::object& header_data();
+    bool is_valid() const;
     friend std::ostream& operator<<(std::ostream& stream, Save_File& save_file);
     friend std::istream& operator>>(std::istream& stream, Save_File& save_file);
 private:
-    sol::state& state;
-    sol::table header;
-    sol::table data;
-    bool header_only;
-    bool compact;
-    bool valid;
+    struct Impl;
+    friend struct Impl;
+    std::unique_ptr<Impl> pimpl;
 };
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file);

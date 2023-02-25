@@ -351,6 +351,9 @@
     <ClCompile Include="..\src\xd\audio\detail\fmod_sound_handle.cpp">
       <Filter>Source Files\xd\audio\detail</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\game_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -751,6 +754,9 @@
     </ClInclude>
     <ClInclude Include="..\include\xd\audio\detail\sound_handle.hpp">
       <Filter>Header Files\xd\audio\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\scripting\bindings\game_bindings.hpp">
+      <Filter>Header Files\scripting\bindings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

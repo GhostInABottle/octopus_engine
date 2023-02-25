@@ -312,7 +312,6 @@ struct Game::Impl {
 
 Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode) :
         command_line_args(args),
-        pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
             Configurations::get<bool>("graphics.fullscreen")
@@ -338,6 +337,7 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
                 0, // antialiasing
                 2, // GL major version
                 0))), // GL minor version
+        pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
         paused(false),
         pausing_enabled(true),
         magnification(Configurations::get<float>("debug.magnification")),
