@@ -1,4 +1,4 @@
-#include "../../../include/scripting/bindings/canvas_bindings.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/canvas/text_canvas.hpp"
 #include "../../../include/canvas/image_canvas.hpp"
@@ -8,6 +8,9 @@
 #include "../../../include/xd/lua.hpp"
 #include "../../../include/utility/color.hpp"
 #include "../../../include/game.hpp"
+#include <string>
+#include <memory>
+#include <optional>
 
 namespace detail {
     template <typename T, typename CT>

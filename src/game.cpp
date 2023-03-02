@@ -322,10 +322,11 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
                 : Configurations::get<int>("graphics.window-height"),
             xd::window_options(
                 Configurations::get<bool>("graphics.fullscreen"),
-                static_cast<int>(Configurations::get<float>("debug.width") * 3),
-                static_cast<int>(Configurations::get<float>("debug.height") * 3),
+                static_cast<int>(Configurations::get<float>("debug.width")),
+                static_cast<int>(Configurations::get<float>("debug.height")),
+                0.8f, // max windowed size percentage
                 false, // allow resize
-                false, // display_cursor
+                false, // display cursor
                 Configurations::get<bool>("graphics.vsync"),
                 Configurations::get<bool>("controls.gamepad-enabled"),
                 Configurations::get<bool>("controls.gamepad-detection"),

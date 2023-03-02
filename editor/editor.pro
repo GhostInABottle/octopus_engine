@@ -69,6 +69,14 @@ SOURCES += main.cpp\
     ../src/save_file.cpp \
     ../src/scripting/bindings/canvas_bindings.cpp \
     ../src/scripting/bindings/game_bindings.cpp \
+    ../src/scripting/bindings/audio_bindings.cpp \
+    ../src/scripting/bindings/camera_bindings.cpp \
+    ../src/scripting/bindings/layer_bindings.cpp \
+    ../src/scripting/bindings/map_bindings.cpp \
+    ../src/scripting/bindings/map_object_bindings.cpp \
+    ../src/scripting/bindings/math_bindings.cpp \
+    ../src/scripting/bindings/text_bindings.cpp \
+    ../src/scripting/bindings/utility_bindings.cpp \
     ../src/scripting/lua_object.cpp \
     ../src/scripting/scripting_interface.cpp \
     ../src/shake_decorator.cpp \
@@ -183,8 +191,7 @@ HEADERS  += main_window.hpp \
     ../include/vendor/rapidxml.hpp \
     ../include/vendor/rapidxml_print.hpp \
     ../include/save_file.hpp \
-    ../include/scripting/bindings/canvas_bindings.hpp \
-    ../include/scripting/bindings/game_bindings.hpp \
+    ../include/scripting/script_bindings.hpp \
     ../include/scripting/lua_object.hpp \
     ../include/scripting/scripting_interface.hpp \
     ../include/shake_decorator.hpp \

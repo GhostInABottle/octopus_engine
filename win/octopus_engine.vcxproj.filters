@@ -85,9 +85,6 @@
     <Filter Include="Source Files\scripting\bindings">
       <UniqueIdentifier>{952a5849-21ca-4be4-98b7-376a677c57a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\scripting\bindings">
-      <UniqueIdentifier>{077b758c-a56f-4539-8a11-966f02625747}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\xd\audio\detail">
       <UniqueIdentifier>{7a6c8431-cb92-45b7-ac0f-6de5386d9d70}</UniqueIdentifier>
     </Filter>
@@ -352,6 +349,30 @@
       <Filter>Source Files\xd\audio\detail</Filter>
     </ClCompile>
     <ClCompile Include="..\src\scripting\bindings\game_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\math_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\map_object_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\audio_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\layer_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\map_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\camera_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\text_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\utility_bindings.cpp">
       <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
   </ItemGroup>
@@ -737,9 +758,6 @@
     <ClInclude Include="..\include\scripting\scripting_interface.hpp">
       <Filter>Header Files\scripting</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\scripting\bindings\canvas_bindings.hpp">
-      <Filter>Header Files\scripting\bindings</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\commands\move_canvas_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
@@ -755,8 +773,8 @@
     <ClInclude Include="..\include\xd\audio\detail\sound_handle.hpp">
       <Filter>Header Files\xd\audio\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\scripting\bindings\game_bindings.hpp">
-      <Filter>Header Files\scripting\bindings</Filter>
+    <ClInclude Include="..\include\scripting\script_bindings.hpp">
+      <Filter>Header Files\scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

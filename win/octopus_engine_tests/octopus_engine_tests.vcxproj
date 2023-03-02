@@ -131,8 +131,16 @@
     <ClCompile Include="..\..\src\commands\move_canvas_command.cpp" />
     <ClCompile Include="..\..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\..\src\key_binder.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\audio_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\camera_bindings.cpp" />
     <ClCompile Include="..\..\src\scripting\bindings\canvas_bindings.cpp" />
     <ClCompile Include="..\..\src\scripting\bindings\game_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\layer_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\map_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\map_object_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\math_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\text_bindings.cpp" />
+    <ClCompile Include="..\..\src\scripting\bindings\utility_bindings.cpp" />
     <ClCompile Include="..\..\src\utility\color.cpp" />
     <ClCompile Include="..\..\src\utility\file.cpp" />
     <ClCompile Include="..\..\src\utility\math.cpp" />
@@ -229,8 +237,7 @@
     <ClInclude Include="..\..\include\direction.hpp" />
     <ClInclude Include="..\..\include\exceptions.hpp" />
     <ClInclude Include="..\..\include\key_binder.hpp" />
-    <ClInclude Include="..\..\include\scripting\bindings\canvas_bindings.hpp" />
-    <ClInclude Include="..\..\include\scripting\bindings\game_bindings.hpp" />
+    <ClInclude Include="..\..\include\scripting\script_bindings.hpp" />
     <ClInclude Include="..\..\include\utility\color.hpp" />
     <ClInclude Include="..\..\include\utility\direction.hpp" />
     <ClInclude Include="..\..\include\utility\file.hpp" />

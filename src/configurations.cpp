@@ -33,8 +33,8 @@ void Configurations::load_defaults() {
 
     defaults["graphics.screen-width"] = -1;
     defaults["graphics.screen-height"] = -1;
-    defaults["graphics.window-width"] = 640;
-    defaults["graphics.window-height"] = 480;
+    defaults["graphics.window-width"] = -1;
+    defaults["graphics.window-height"] = -1;
     defaults["graphics.fullscreen"] = false;
     defaults["graphics.vsync"] = false;
     // Scaling modes: aspect, window, stretch

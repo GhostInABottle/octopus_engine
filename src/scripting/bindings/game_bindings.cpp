@@ -1,4 +1,4 @@
-#include "../../../include/scripting/bindings/game_bindings.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/game.hpp"
 #include "../../../include/clock.hpp"
@@ -6,8 +6,22 @@
 #include "../../../include/save_file.hpp"
 #include "../../../include/xd/lua.hpp"
 #include "../../../include/xd/audio.hpp"
+#include <string>
+#include <memory>
+#include <tuple>
+#include <optional>
 
 void bind_game_types(sol::state& lua, Game& game) {
+    // Input type
+    lua.new_enum<xd::input_type>("Input_Type",
+        {
+            {"keyboard", xd::input_type::INPUT_KEYBOARD},
+            {"mouse", xd::input_type::INPUT_MOUSE},
+            {"gamepad", xd::input_type::INPUT_GAMEPAD}
+        }
+    );
+
+    // Game object
     auto game_type = lua.new_usertype<Game>("Game");
 
     game_type["width"] = sol::property(&Game::window_width);

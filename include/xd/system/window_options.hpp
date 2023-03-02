@@ -7,8 +7,9 @@ namespace xd
     {
         window_options() noexcept
             : fullscreen(false)
-            , default_windowed_width(800)
-            , default_windowed_height(600)
+            , game_width(320)
+            , game_height(240)
+            , max_windowed_size_percentage(0.8f)
             , allow_resize(false)
             , display_cursor(true)
             , vsync(true)
@@ -24,14 +25,15 @@ namespace xd
             , minor_version(0)
         {}
 
-        window_options(bool fullscreen, int window_width, int window_height,
+        window_options(bool fullscreen, int game_width, int game_height, float max_windowed_size_percentage,
             bool allow_resize, bool display_cursor, bool vsync,
             bool enable_joystick, bool gamepad_detection, bool axis_as_dpad, float stick_sensitivity,
             float trigger_sensitivity, int depth_bits, int stencil_bits, int antialiasing_level,
             int major_version, int minor_version) noexcept
             : fullscreen(fullscreen)
-            , default_windowed_width(window_width)
-            , default_windowed_height(window_height)
+            , game_width(game_width)
+            , game_height(game_height)
+            , max_windowed_size_percentage(max_windowed_size_percentage)
             , allow_resize(allow_resize)
             , display_cursor(display_cursor)
             , vsync(vsync)
@@ -48,8 +50,9 @@ namespace xd
         {}
 
         bool fullscreen;
-        int default_windowed_width;
-        int default_windowed_height;
+        int game_width;
+        int game_height;
+        float max_windowed_size_percentage;
         bool allow_resize;
         bool display_cursor;
         bool vsync;

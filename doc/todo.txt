@@ -1,4 +1,3 @@
-- Move more script binding code to separate files.
 - Non-blocking data saving.
 - Hide the OpenGL-dependent code behind an abstraction.
 - Virtual filesystem / archive format.

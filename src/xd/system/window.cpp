@@ -45,8 +45,6 @@ namespace
 xd::window::window(const std::string& title, int width, int height, const window_options& options)
     : m_width(width)
     , m_height(height)
-    , m_windowed_pos(50, 50)
-    , m_windowed_size(options.default_windowed_width, options.default_windowed_height)
     , m_last_input_type(input_type::INPUT_KEYBOARD)
     , m_in_update(false)
     , m_tick_handler_counter(0)
@@ -68,11 +66,29 @@ xd::window::window(const std::string& title, int width, int height, const window
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, options.minor_version);
     glfwWindowHint(GLFW_DEPTH_BITS, options.depth_bits);
     glfwWindowHint(GLFW_STENCIL_BITS, options.stencil_bits);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    if (m_width == -1 || m_height == -1) {
-        auto size = get_size();
-        m_width = static_cast<int>(size.x);
-        m_height = static_cast<int>(size.y);
+    // Calculate windowed size
+    auto screen_size = get_size();
+    auto missing_size = m_width == -1 || m_height == -1;
+    if (!missing_size && !options.fullscreen) {
+        m_windowed_size = xd::vec2(m_width, m_height);
+    } else {
+        auto screen_dim = screen_size.x < screen_size.y ? screen_size.x : screen_size.y;
+        auto game_dim = static_cast<float>(screen_size.x < screen_size.y ? options.game_width : options.game_height);
+        int factor = 1;
+        while (factor * game_dim / screen_dim < options.max_windowed_size_percentage) {
+            factor++;
+        }
+        m_windowed_size = xd::ivec2(options.game_width, options.game_height) * (factor - 1);
+    }
+
+    if (missing_size && options.fullscreen) {
+        m_width = static_cast<int>(screen_size.x);
+        m_height = static_cast<int>(screen_size.y);
+    } else if (missing_size) {
+        m_width = m_windowed_size.x;
+        m_height = m_windowed_size.y;
     }
 
     m_window = glfwCreateWindow(m_width, m_height, title.c_str(),
@@ -83,6 +99,13 @@ xd::window::window(const std::string& title, int width, int height, const window
         glfwTerminate();
         throw xd::window_creation_failed();
     }
+
+    // Calculate windowed position
+    m_windowed_pos.x = (static_cast<int>(screen_size.x) - m_windowed_size.x) / 2;
+    m_windowed_pos.y = (static_cast<int>(screen_size.y) - m_windowed_size.y) / 2;
+    glfwSetWindowPos(m_window, m_windowed_pos.x, m_windowed_pos.y);
+    glfwShowWindow(m_window);
+
     glfwMakeContextCurrent(m_window);
 
     if (options.display_cursor)
@@ -377,11 +400,17 @@ int xd::window::framebuffer_height() const
 
 void xd::window::set_size(int width, int height)
 {
-    if (width == -1 || height == -1) {
+    auto fullscreen = is_fullscreen();
+    auto missing_size = width == -1 || height == -1;
+    if (missing_size && fullscreen) {
         auto size = get_size();
         width = static_cast<int>(size.x);
         height = static_cast<int>(size.y);
+    } else if (missing_size) {
+        width = m_windowed_size.x;
+        height = m_windowed_size.y;
     }
+
     m_width = width;
     m_height = height;
     glfwSetWindowSize(m_window, width, height);
