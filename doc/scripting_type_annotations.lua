@@ -206,40 +206,60 @@ function filesystem.remove(path) end
 
 -- Text and Choices
 
+-- All properties are read only once created
 ---@class Engine_Text_Options
+---@field text string
+---@field choices string[]
+---@field object Engine_Map_Object
+---@field position Engine_Vec2
+---@field position_type Engine_Text_Position_Type
+---@field duration integer
+---@field centered boolean
+---@field show_dashes boolean
+---@field cancelable boolean
+---@field choice_indent integer
+---@field canvas_priority integer
+---@field fade_in_duration integer
+---@field fade_out_duration integer
+---@field background_visible boolean
+---@field background_color Engine_Color
 local Engine_Text_Options = {}
-
----@param choices string[]
----@return Engine_Text_Options
-function Engine_Text_Options:set_choices(choices) end
-
----@param cancelable boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_cancelable(cancelable) end
-
----@param priority integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_canvas_priority(priority) end
-
----@param visible boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_background_visible(visible) end
-
----@param centered boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_centered(centered) end
 
 ---@param text string
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_text(text) end
 
----@param position_type integer|Engine_Text_Position_Type
+---@param object Engine_Map_Object
 ---@return Engine_Text_Options
-function Engine_Text_Options:set_position_type(position_type) end
+function Engine_Text_Options:set_object(object) end
+
+---@param position Engine_Vec2
+---@return Engine_Text_Options
+function Engine_Text_Options:set_position(position) end
 
 ---@param duration integer
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_duration(duration) end
+
+---@param centered boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_centered(centered) end
+
+---@param show_dashes boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_show_dashes(show_dashes) end
+
+---@param cancelable boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_cancelable(cancelable) end
+
+---@param choice_indent integer
+---@return Engine_Text_Options
+function Engine_Text_Options:set_choice_indent(choice_indent) end
+
+---@param priority integer
+---@return Engine_Text_Options
+function Engine_Text_Options:set_canvas_priority(priority) end
 
 ---@param duration integer
 ---@return Engine_Text_Options
@@ -249,9 +269,21 @@ function Engine_Text_Options:set_fade_in_duration(duration) end
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_fade_out_duration(duration) end
 
+---@param visible boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_background_visible(visible) end
+
 ---@param color Engine_Color
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_background_color(color) end
+
+---@param choices string[]
+---@return Engine_Text_Options
+function Engine_Text_Options:set_choices(choices) end
+
+---@param position_type integer|Engine_Text_Position_Type
+---@return Engine_Text_Options
+function Engine_Text_Options:set_position_type(position_type) end
 
 ---@overload fun(object : Engine_Map_Object) : Engine_Text_Options
 ---@param position Engine_Vec2

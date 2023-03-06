@@ -43,7 +43,6 @@ struct Text_Options
     long duration;
     bool centered;
     bool show_dashes;
-    bool translated;
     bool cancelable;
     unsigned int choice_indent;
     int canvas_priority;
@@ -59,7 +58,6 @@ struct Text_Options
         duration(-1),
         centered(false),
         show_dashes(true),
-        translated(false),
         cancelable(false),
         choice_indent(2),
         canvas_priority(-1),
@@ -115,11 +113,6 @@ struct Text_Options
 
     Text_Options& set_show_dashes(bool show_dashes) {
         this->show_dashes = show_dashes;
-        return *this;
-    }
-
-    Text_Options& set_translated(bool translated) {
-        this->translated = translated;
         return *this;
     }
 

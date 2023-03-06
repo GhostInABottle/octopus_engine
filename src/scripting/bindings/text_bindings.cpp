@@ -10,6 +10,78 @@
 #include <string>
 #include <utility>
 
+namespace detail {
+    Text_Options options_from_table(const sol::table& table) {
+        Text_Options options;
+        if (table["text"].valid()) {
+            options.set_text(table["text"]);
+        }
+
+        if (table["choices"].valid()) {
+            sol::table choices_table = table["choices"];
+            std::vector<std::string> choices;
+            for (auto& kv : choices_table) {
+                choices.push_back(kv.second.as<std::string>());
+            }
+            options.set_choices(choices);
+        }
+
+        if (table["object"].valid()) {
+            options.set_object(table["object"]);
+        }
+
+        if (table["position"].valid()) {
+            options.set_position(table["position"]);
+        }
+
+        if (table["position_type"].valid()) {
+            options.set_position_type(table["position_type"]);
+        }
+
+        if (table["duration"].valid()) {
+            options.set_duration(table["duration"]);
+        }
+
+        if (table["centered"].valid()) {
+            options.set_centered(table["centered"]);
+        }
+
+        if (table["show_dashes"].valid()) {
+            options.set_show_dashes(table["show_dashes"]);
+        }
+
+        if (table["cancelable"].valid()) {
+            options.set_cancelable(table["cancelable"]);
+        }
+
+        if (table["choice_indent"].valid()) {
+            options.set_choice_indent(table["choice_indent"]);
+        }
+
+        if (table["canvas_priority"].valid()) {
+            options.set_canvas_priority(table["canvas_priority"]);
+        }
+
+        if (table["fade_in_duration"].valid()) {
+            options.set_fade_in_duration(table["fade_in_duration"]);
+        }
+
+        if (table["fade_out_duration"].valid()) {
+            options.set_fade_out_duration(table["fade_out_duration"]);
+        }
+
+        if (table["background_visible"].valid()) {
+            options.set_background_visible(table["background_visible"]);
+        }
+
+        if (table["background_color"].valid()) {
+            options.set_background_color(table["background_color"]);
+        }
+
+        return options;
+    }
+}
+
 void bind_text_types(sol::state& lua, Game& game) {
     // Text positioning
     lua.new_enum<Text_Position_Type>("Text_Position_Type",
@@ -26,6 +98,7 @@ void bind_text_types(sol::state& lua, Game& game) {
     // Options for displaying text
     auto options_type = lua.new_usertype<Text_Options>("Text_Options",
         sol::call_constructor, sol::constructors<Text_Options(), Text_Options(Map_Object*), Text_Options(xd::vec2)>());
+
     options_type["text"] = sol::readonly(&Text_Options::text);
     options_type["choices"] = sol::readonly(&Text_Options::choices);
     options_type["object"] = sol::readonly(&Text_Options::object);
@@ -36,19 +109,18 @@ void bind_text_types(sol::state& lua, Game& game) {
     options_type["show_dashes"] = sol::readonly(&Text_Options::show_dashes);
     options_type["cancelable"] = sol::readonly(&Text_Options::cancelable);
     options_type["choice_indent"] = sol::readonly(&Text_Options::choice_indent);
-    options_type["translated"] = sol::readonly(&Text_Options::translated);
     options_type["canvas_priority"] = sol::readonly(&Text_Options::canvas_priority);
     options_type["fade_in_duration"] = sol::readonly(&Text_Options::fade_in_duration);
     options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
     options_type["background_visible"] = sol::readonly(&Text_Options::background_visible);
     options_type["background_color"] = sol::readonly(&Text_Options::background_color);
+
     options_type["set_text"] = &Text_Options::set_text;
     options_type["set_object"] = &Text_Options::set_object;
     options_type["set_position"] = &Text_Options::set_position;
     options_type["set_duration"] = &Text_Options::set_duration;
     options_type["set_centered"] = &Text_Options::set_centered;
     options_type["set_show_dashes"] = &Text_Options::set_show_dashes;
-    options_type["set_translated"] = &Text_Options::set_translated;
     options_type["set_cancelable"] = &Text_Options::set_cancelable;
     options_type["set_choice_indent"] = &Text_Options::set_choice_indent;
     options_type["set_canvas_priority"] = &Text_Options::set_canvas_priority;
@@ -71,6 +143,10 @@ void bind_text_types(sol::state& lua, Game& game) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Show_Text_Command>(game, options);
         },
+        [&](const sol::table& table) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_command<Show_Text_Command>(game, detail::options_from_table(table));
+        },
         [&](Map_Object& obj, const std::string& text) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Show_Text_Command>(
@@ -92,6 +168,7 @@ void bind_text_types(sol::state& lua, Game& game) {
                 game, Text_Options{ position }.set_text(text).set_duration(duration));
         }
     );
+
     lua["centered_text"] = sol::overload(
         [&](float y, const std::string& text) {
             auto si = game.get_current_scripting_interface();
@@ -110,10 +187,15 @@ void bind_text_types(sol::state& lua, Game& game) {
         const std::string& text, std::optional<bool> cancelable) {
             options.set_choices(choices).set_text(text).set_cancelable(cancelable.value_or(false));
     };
+
     lua["choices"] = sol::overload(
         [&](const Text_Options& options) {
             auto si = game.get_current_scripting_interface();
             return si->register_choice_command<Show_Text_Command>(game, options);
+        },
+        [&](const sol::table& table) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_choice_command<Show_Text_Command>(game, detail::options_from_table(table));
         },
         [&](Map_Object& obj, const std::string& text, const sol::table& table, std::optional<bool> cancelable) {
             std::vector<std::string> choices;

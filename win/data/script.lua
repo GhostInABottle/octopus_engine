@@ -36,8 +36,30 @@ if c.selected == 1 then
     -- Text
     text(o, "Showing some text"):wait()
     text(o, "{shake=0}Now...{/shake}{shake=10}This here{/shake} {shake=30}is some{/shake} {shake=50}weird{/shake}{shake=70} shaking {/shake}{shake=90}text,{/shake}{shake} isn't it?{/shake}"):wait()
-    local options = Text_Options(o):set_text('Custom text options!'):set_choices({'Ok!', 'Nope'}):set_show_dashes(false):set_choice_indent(8)
-    choices(options):wait()
+    local options = Text_Options(o)
+        :set_text('Text options (method chaining)')
+        :set_choices({'Ok!', 'Nope'})
+        :set_show_dashes(false)
+        :set_choice_indent(8)
+    local cc = choices(options)
+    cc:wait()
+    print('Selected: ' .. cc.selected)
+    options = {
+        text = 'Cancelable options (table)',
+        choices = { 'Yes', 'No' },
+        object = o,
+        position_type = bit.bor(Text_Position_Type.centered_x, Text_Position_Type.exact_y),
+        show_dashes = false,
+        cancelable = true,
+        choice_indent = 6,
+        canvas_priority = 666,
+        fade_in_duration = 1000,
+        fade_out_duration = 500,
+        background_color = Color('red')
+    }
+    cc = choices(options)
+    cc:wait()
+    print('Selected: ' .. cc.selected)
     text(o, "{color=blue}Test?\n\n {rainbow}Hello,\nd{color=green}ea{/color}r\n world!{/rainbow}{/color}\nHow{bold} about {/bold}that?"):wait()
     text(Vec2(100, 100), "{typewriter}Slowly now...{/typewriter}", 2000):wait()
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
