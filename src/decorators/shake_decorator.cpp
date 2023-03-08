@@ -1,7 +1,7 @@
+#include "../../include/decorators/shake_decorator.hpp"
+#include "../../include/game.hpp"
+#include "../../include/configurations.hpp"
 #include <random>
-#include "../include/game.hpp"
-#include "../include/configurations.hpp"
-#include "../include/shake_decorator.hpp"
 
 Shake_Decorator::Shake_Decorator(Game& game) : game(game) {}
 
@@ -17,7 +17,7 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
     }
 
     auto power = 100 - args.get<int>(0, 0);
-    auto key = text.get_unformatted() + " -|- " + std::to_string(power);
+    auto key = text.get_unformatted() + ";;" + std::to_string(power);
     auto& state = states[key];
 
     if (state.displacements.empty()) {
@@ -38,19 +38,20 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
     }
 
     for (auto i = text.begin(); i != text.end(); ++i) {
-        if (state.shake) {
-            auto pos = std::distance(text.begin(), i);
-            if (time_to_update) {
-                state.displacements[pos].x = displacement(engine);
-                state.displacements[pos].y = displacement(engine);
-            }
-
-            decorator.push_position(state.displacements[pos]);
+        if (!state.shake) {
             decorator.push_text(*i);
-            decorator.pop_position();
-        } else {
-            decorator.push_text(*i);
+            continue;
         }
+
+        auto pos = std::distance(text.begin(), i);
+        if (time_to_update) {
+            state.displacements[pos].x = displacement(engine);
+            state.displacements[pos].y = displacement(engine);
+        }
+
+        decorator.push_position(state.displacements[pos]);
+        decorator.push_text(*i);
+        decorator.pop_position();
     }
 }
 

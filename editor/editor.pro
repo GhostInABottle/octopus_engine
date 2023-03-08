@@ -79,7 +79,8 @@ SOURCES += main.cpp\
     ../src/scripting/bindings/utility_bindings.cpp \
     ../src/scripting/lua_object.cpp \
     ../src/scripting/scripting_interface.cpp \
-    ../src/shake_decorator.cpp \
+    ../src/decorators/shake_decorator.cpp \
+    ../src/decorators/typewriter_decorator.cpp \
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
     ../src/sprite_holder.cpp \
@@ -194,7 +195,8 @@ HEADERS  += main_window.hpp \
     ../include/scripting/script_bindings.hpp \
     ../include/scripting/lua_object.hpp \
     ../include/scripting/scripting_interface.hpp \
-    ../include/shake_decorator.hpp \
+    ../include/decorators/shake_decorator.hpp \
+    ../include/decorators/typewriter_decorator.hpp \
     ../include/sprite.hpp \
     ../include/sprite_data.hpp \
     ../include/sprite_holder.hpp \

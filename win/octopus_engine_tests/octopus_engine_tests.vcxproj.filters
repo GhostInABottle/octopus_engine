@@ -91,6 +91,12 @@
     <Filter Include="Source Files\xd\audio\detail">
       <UniqueIdentifier>{05655483-c042-4a41-8a78-c039ee66db0a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\decorators">
+      <UniqueIdentifier>{aa3e352a-f67e-4b5f-8b8c-870a49848a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\decorators">
+      <UniqueIdentifier>{e7b7d951-0a66-4667-adce-c22f81b738b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -236,9 +242,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\commands\zoom_command.cpp">
       <Filter>Source Files\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\shake_decorator.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Editable.cpp">
       <Filter>Source Files</Filter>
@@ -399,6 +402,12 @@
     <ClCompile Include="..\..\src\scripting\bindings\utility_bindings.cpp">
       <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\decorators\shake_decorator.cpp">
+      <Filter>Source Files\decorators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\decorators\typewriter_decorator.cpp">
+      <Filter>Source Files\decorators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -538,9 +547,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\commands\zoom_command.hpp">
       <Filter>Header Files\commands</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\shake_decorator.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\asset_manager.hpp">
       <Filter>Header Files\xd</Filter>
@@ -793,6 +799,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\scripting\script_bindings.hpp">
       <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\decorators\shake_decorator.hpp">
+      <Filter>Header Files\decorators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\decorators\typewriter_decorator.hpp">
+      <Filter>Header Files\decorators</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

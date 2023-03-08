@@ -28,7 +28,6 @@ xd::stock_text_formatter::stock_text_formatter(const std::string& icons_filename
     register_decorator("outline", std::bind(&stock_text_formatter::outline_decorator, this, _1, _2, _3));
     register_decorator("spacing", std::bind(&stock_text_formatter::spacing_decorator, this, _1, _2, _3));
     register_decorator("rainbow", std::bind(&stock_text_formatter::rainbow_decorator, this, _1, _2, _3));
-    register_decorator("typewriter", std::bind(&stock_text_formatter::typewriter_decorator, this, _1, _2, _3));
 }
 
 xd::stock_text_formatter::~stock_text_formatter()
@@ -52,16 +51,6 @@ glm::vec4 xd::stock_text_formatter::get_color(const std::string& name)
 void xd::stock_text_formatter::set_color(const std::string& name, const glm::vec4& color)
 {
     m_colors[name] = color;
-}
-
-void xd::stock_text_formatter::reset_typewriter(int timer)
-{
-    m_typewriter_timers[timer] = std::clock();
-}
-
-void xd::stock_text_formatter::reset_typewriters()
-{
-    m_typewriter_timers.clear();
 }
 
 void xd::stock_text_formatter::size_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)
@@ -187,32 +176,6 @@ void xd::stock_text_formatter::rainbow_decorator(text_decorator& decorator, cons
     int color_index = 0;
     for (formatted_text::const_iterator i = text.begin(); i != text.end(); ++i) {
         decorator.push_color(rainbow_colors[color_index++ % rainbow_colors.size()]);
-        decorator.push_text(*i);
-    }
-}
-
-void xd::stock_text_formatter::typewriter_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)
-{
-    // get the typewriter timer to use (default: 0)
-    int timer = args.get<int>(0, 0);
-
-    // the speed of the typewriter (default: 10 cps)
-    float speed = args.get<float>(1, 10.0f);
-
-    // find the start time, or create a new timer if one doesn't exist with current time
-    std::clock_t started;
-    typewriter_timer_map_t::iterator i = m_typewriter_timers.find(timer);
-    if (i != m_typewriter_timers.end())
-        started = i->second;
-    else
-        m_typewriter_timers[timer] = started = std::clock();
-
-    // calculate time elapsed
-    float elapsed = (float)(clock() - started) / 1000.0f;
-    int index = 0;
-    for (xd::formatted_text::const_iterator i = text.begin(); i != text.end(); ++i) {
-        if ((elapsed*speed) < ++index)
-            break;
         decorator.push_text(*i);
     }
 }

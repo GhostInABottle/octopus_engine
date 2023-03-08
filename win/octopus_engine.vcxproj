@@ -133,6 +133,8 @@
     <ClCompile Include="..\src\commands\move_canvas_command.cpp" />
     <ClCompile Include="..\src\commands\text_options.cpp" />
     <ClCompile Include="..\src\commands\timed_command.cpp" />
+    <ClCompile Include="..\src\decorators\shake_decorator.cpp" />
+    <ClCompile Include="..\src\decorators\typewriter_decorator.cpp" />
     <ClCompile Include="..\src\key_binder.cpp" />
     <ClCompile Include="..\src\scripting\bindings\audio_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\camera_bindings.cpp" />
@@ -212,7 +214,6 @@
     <ClCompile Include="..\src\scripting\lua_object.cpp" />
     <ClCompile Include="..\src\scripting\scripting_interface.cpp" />
     <ClCompile Include="..\src\custom_shaders.cpp" />
-    <ClCompile Include="..\src\shake_decorator.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
     <ClCompile Include="..\src\sprite_data.cpp" />
     <ClCompile Include="..\src\sprite_holder.cpp" />
@@ -230,6 +231,8 @@
     <ClInclude Include="..\include\commands\move_canvas_command.hpp" />
     <ClInclude Include="..\include\commands\text_options.hpp" />
     <ClInclude Include="..\include\commands\timed_command.hpp" />
+    <ClInclude Include="..\include\decorators\shake_decorator.hpp" />
+    <ClInclude Include="..\include\decorators\typewriter_decorator.hpp" />
     <ClInclude Include="..\include\key_binder.hpp" />
     <ClInclude Include="..\include\scripting\script_bindings.hpp" />
     <ClInclude Include="..\include\translucent_object.hpp" />
@@ -347,7 +350,6 @@
     <ClInclude Include="..\include\scripting\lua_object.hpp" />
     <ClInclude Include="..\include\scripting\scripting_interface.hpp" />
     <ClInclude Include="..\include\custom_shaders.hpp" />
-    <ClInclude Include="..\include\shake_decorator.hpp" />
     <ClInclude Include="..\include\sprite.hpp" />
     <ClInclude Include="..\include\sprite_data.hpp" />
     <ClInclude Include="..\include\sprite_holder.hpp" />

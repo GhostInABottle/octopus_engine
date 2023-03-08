@@ -20,12 +20,8 @@ namespace xd
         glm::vec4 get_color(const std::string& name);
         void set_color(const std::string& name, const glm::vec4& color);
 
-        void reset_typewriter(int timer = 0);
-        void reset_typewriters();
-
     private:
         typedef std::unordered_map<std::string, glm::vec4> color_map_t;
-        typedef std::unordered_map<int, std::clock_t> typewriter_timer_map_t;
 
         void size_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void type_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
@@ -36,10 +32,8 @@ namespace xd
         void outline_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void spacing_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
         void rainbow_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
-        void typewriter_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args);
 
         color_map_t m_colors;
-        typewriter_timer_map_t m_typewriter_timers;
     };
 }
 

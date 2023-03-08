@@ -61,7 +61,7 @@ if c.selected == 1 then
     cc:wait()
     print('Selected: ' .. cc.selected)
     text(o, "{color=blue}Test?\n\n {rainbow}Hello,\nd{color=green}ea{/color}r\n world!{/rainbow}{/color}\nHow{bold} about {/bold}that?"):wait()
-    text(Vec2(100, 100), "{typewriter}Slowly now...{/typewriter}", 2000):wait()
+    text(Vec2(100, 100), "{typewriter}Slowly showing some text...{/typewriter}", 3000):wait()
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
     wait(500)
     text(o, 'Manually showing text with a canvas'):wait()

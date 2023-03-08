@@ -12,7 +12,8 @@
 #include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/save_file.hpp"
-#include "../include/shake_decorator.hpp"
+#include "../include/decorators/shake_decorator.hpp"
+#include "../include/decorators/typewriter_decorator.hpp"
 #include "../include/key_binder.hpp"
 #include "../include/log.hpp"
 #include "../include/vendor/platform_folders.hpp"
@@ -59,11 +60,15 @@ struct Game::Impl {
                 hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
-            shake_decorator(game) {
+            shake_decorator(game),
+            typewriter_decorator(game) {
 
-        // Register the shaking text decorator
+        // Register decorators
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);
+        });
+        text_formatter.register_decorator("typewriter", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+            typewriter_decorator(decorator, text, args);
         });
 
         // Scripts folder
@@ -308,6 +313,8 @@ struct Game::Impl {
     xd::simple_text_renderer text_renderer;
     // {shake} decorator
     Shake_Decorator shake_decorator;
+    // {typewriter} decorator
+    Typewriter_Decorator typewriter_decorator;
 };
 
 Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode) :
@@ -780,7 +787,7 @@ float Game::text_width(const std::string& text, xd::font* font, const xd::font_s
 }
 
 void Game::reset_text_decorators() {
-    pimpl->text_formatter.reset_typewriters();
+    pimpl->typewriter_decorator.reset();
 }
 
 bool Game::stopped() const {
