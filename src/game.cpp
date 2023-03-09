@@ -786,10 +786,6 @@ float Game::text_width(const std::string& text, xd::font* font, const xd::font_s
         style ? *style : this->style, text);
 }
 
-void Game::reset_text_decorators() {
-    pimpl->typewriter_decorator.reset();
-}
-
 bool Game::stopped() const {
     return clock->stopped();
 }

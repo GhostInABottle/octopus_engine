@@ -97,8 +97,6 @@ struct Show_Text_Command::Impl : Timed_Command {
                 pos.y = screen_margins.y;
         }
 
-        game.reset_text_decorators();
-
         // Create the text canvas and show it
         canvas = std::make_shared<Text_Canvas>(game, pos, full, camera_relative || always_visible);
         canvas->set_opacity(0.0f);

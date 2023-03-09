@@ -13,9 +13,12 @@ void Typewriter_Decorator::operator()(xd::text_decorator& decorator, const xd::f
     auto new_state = states.find(slot) == states.end();
     auto& state = states[slot];
 
-    if (new_state) {
+    auto unformatted = text.get_unformatted();
+    if (new_state || state.text != unformatted) {
         state.game_paused = game.is_paused();
         state.start_time = state.ticks(game);
+        state.text = unformatted;
+        state.done = false;
     }
 
     auto elapsed = state.ticks(game) - state.start_time;
@@ -23,11 +26,11 @@ void Typewriter_Decorator::operator()(xd::text_decorator& decorator, const xd::f
     int index = 0;
     xd::formatted_text::const_iterator i;
     for (i = text.begin(); i != text.end(); ++i) {
-        if (elapsed / delay < ++index) break;
+        if (!state.done && elapsed / delay < ++index) break;
         decorator.push_text(*i);
     }
 
-    if (i == text.end()) {
+    if (!state.done && i == text.end()) {
         state.done = true;
     }
 }

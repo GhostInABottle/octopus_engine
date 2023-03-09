@@ -28,6 +28,7 @@ private:
         long start_time{0};
         bool game_paused{false};
         bool done{false};
+        std::string text;
         int ticks(Game& game) const;
     };
     std::unordered_map<int, State> states;

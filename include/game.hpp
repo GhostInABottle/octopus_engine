@@ -233,8 +233,6 @@ public:
     const xd::font_style& get_font_style() { return style; }
     // Get width of text, in pixels
     float text_width(const std::string& text, xd::font* font = nullptr, const xd::font_style* style = nullptr);
-    // Reset any active text decorators (e.g. {typewriter})
-    void reset_text_decorators();
     // Get clock
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
