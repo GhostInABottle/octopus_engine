@@ -1,5 +1,6 @@
 #include "../include/map_object.hpp"
 #include "../include/game.hpp"
+#include "../include/audio_player.hpp"
 #include "../include/map.hpp"
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
@@ -258,7 +259,7 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
     }
 
     auto& asset_manager = game.get_asset_manager();
-    auto audio = game.get_audio();
+    auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
     auto new_sprite = std::make_shared<Sprite>(game,
         Sprite_Data::load(filename, asset_manager, audio, channel_group));

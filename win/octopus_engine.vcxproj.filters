@@ -384,6 +384,9 @@
     <ClCompile Include="..\src\decorators\typewriter_decorator.cpp">
       <Filter>Source Files\decorators</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\audio_player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -787,6 +790,9 @@
     </ClInclude>
     <ClInclude Include="..\include\decorators\typewriter_decorator.hpp">
       <Filter>Header Files\decorators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\audio_player.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

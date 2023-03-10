@@ -3,6 +3,7 @@
 #include "../../include/commands/update_opacity_command.hpp"
 #include "../../include/xd/audio/sound.hpp"
 #include "../../include/game.hpp"
+#include "../../include/audio_player.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/canvas/text_canvas.hpp"
 #include "../../include/text_parser.hpp"
@@ -30,20 +31,11 @@ struct Show_Text_Command::Impl : Timed_Command {
                 static_cast<float>(Configurations::get<int>("text.screen-edge-margin-y"))) {
 
         // Load choice sound effects
-        auto audio = game.get_audio();
+        auto& audio_player = game.get_audio_player();
         auto group_type = game.get_sound_group_type();
-        auto select_sound_file = Configurations::get<std::string>("audio.choice-select-sfx");
-        if (audio && !select_sound_file.empty()) {
-            select_sound = std::make_unique<xd::sound>(*audio, select_sound_file, group_type);
-        }
-        auto confirm_sound_file = Configurations::get<std::string>("audio.choice-confirm-sfx");
-        if (audio && !confirm_sound_file.empty()) {
-            confirm_sound = std::make_unique<xd::sound>(*audio, confirm_sound_file, group_type);
-        }
-        auto cancel_sound_file = Configurations::get<std::string>("audio.choice-cancel-sfx");
-        if (audio && !cancel_sound_file.empty()) {
-            cancel_sound = std::make_unique<xd::sound>(*audio, cancel_sound_file, group_type);
-        }
+        select_sound = audio_player.load_global_config_sound("audio.choice-select-sfx", 3, false);
+        confirm_sound = audio_player.load_global_config_sound("audio.choice-confirm-sfx", 3, false);
+        cancel_sound = audio_player.load_global_config_sound("audio.choice-cancel-sfx", 3, false);
 
         selected_choice_color = "{color=" + color_to_rgba_string(hex_to_color(
             Configurations::get<std::string>("text.choice-selected-color"))) + "}";
@@ -296,11 +288,11 @@ struct Show_Text_Command::Impl : Timed_Command {
     long press_start;
     std::string selected_choice_color;
     // Choice navigation sound effect
-    std::unique_ptr<xd::sound> select_sound;
+    std::shared_ptr<xd::sound> select_sound;
     // Choice confirmation sound effect
-    std::unique_ptr<xd::sound> confirm_sound;
+    std::shared_ptr<xd::sound> confirm_sound;
     // Choice cancel sound effect
-    std::unique_ptr<xd::sound> cancel_sound;
+    std::shared_ptr<xd::sound> cancel_sound;
     // How far the text should be from the screen edges
     xd::vec2 screen_margins;
 };

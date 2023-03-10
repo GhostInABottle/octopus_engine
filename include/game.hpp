@@ -21,11 +21,11 @@ class Scripting_Interface;
 class Base_Canvas;
 class Clock;
 class Save_File;
+class Audio_Player;
 
 namespace xd {
-    class asset_manager;
-    class music;
     class audio;
+    class asset_manager;
     namespace lua {
         class virtual_machine;
     }
@@ -35,16 +35,11 @@ class Game {
 public:
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
-    explicit Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode = false);
+    explicit Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audio, bool editor_mode = false);
     ~Game();
-    // Get audio system pointer
-    xd::audio* get_audio();
+
     // Get the active channel group for sound effects
-    channel_group_type get_sound_group_type() const {
-        return is_paused()
-            ? channel_group_type::non_pausable_sound
-            : channel_group_type::sound;
-    }
+    channel_group_type get_sound_group_type() const;
     // Main game loop
     void run();
     // Logic update
@@ -187,21 +182,8 @@ public:
     bool is_script_scheduler_paused() const;
     // Pause or resume the Lua scheduler
     void set_script_scheduler_paused(bool paused);
-    // Play some music
-    void play_music(const std::string& filename, bool looping = true);
-    void play_music(const std::shared_ptr<xd::music>& new_music, bool looping = true);
-    // Get the music currently playing
-    std::shared_ptr<xd::music> get_playing_music() { return music; }
-    // Set the currently playing music
-    void set_playing_music(const std::shared_ptr<xd::music>& music) {
-        this->music = music;
-    }
-    // Set or get the global volume for music
-    float get_global_music_volume() const;
-    void set_global_music_volume(float volume) const;
-    // Set or get the global volume for sound
-    float get_global_sound_volume() const;
-    void set_global_sound_volume(float volume) const;
+    // Get the cached audio subsystem
+    Audio_Player& get_audio_player();
     // Load map file and set as current map at the end of the frame
     void set_next_map(const std::string& filename,
         Direction dir = Direction::NONE,
@@ -291,7 +273,6 @@ private:
     std::unique_ptr<xd::framebuffer> framebuffer;
     Scripting_Interface* current_scripting_interface;
     std::shared_ptr<Map_Object> player;
-    std::shared_ptr<xd::music> music;
     std::shared_ptr<xd::font> font;
     xd::font_style style;
     int editor_ticks;

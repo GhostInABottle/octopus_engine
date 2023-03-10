@@ -6,6 +6,7 @@
 #include "../include/object_layer_renderer.hpp"
 #include "../include/image_layer.hpp"
 #include "../include/game.hpp"
+#include "../include/audio_player.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/utility/string.hpp"
@@ -119,7 +120,7 @@ struct Sprite::Impl {
         auto current_frame = &pose->frames[frame_index];
         int frame_time = get_frame_time(*current_frame);
 
-        auto audio = game.get_audio();
+        auto audio = game.get_audio_player().get_audio();
         auto sound_file = current_frame->sound_file.get();
         auto play_sfx = audio && sound_file
             && (last_sound_frame != frame_index || sound_file->stopped());

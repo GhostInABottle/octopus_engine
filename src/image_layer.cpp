@@ -2,6 +2,7 @@
 #include "../include/image_layer_renderer.hpp"
 #include "../include/image_layer_updater.hpp"
 #include "../include/game.hpp"
+#include "../include/audio_player.hpp"
 #include "../include/utility/color.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
@@ -20,7 +21,7 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
     }
 
     auto& asset_manager = game.get_asset_manager();
-    auto audio = game.get_audio();
+    auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
     sprite = std::make_unique<Sprite>(game,
         Sprite_Data::load(filename, asset_manager, audio, channel_group));

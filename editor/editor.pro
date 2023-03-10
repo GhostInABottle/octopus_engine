@@ -29,6 +29,7 @@ SOURCES += main.cpp\
     ../src/canvas/image_canvas.cpp \
     ../src/canvas/sprite_canvas.cpp \
     ../src/canvas/text_canvas.cpp \
+    ../src/audio_player.cpp \
     ../src/clock.cpp \
     ../src/command.cpp \
     ../src/command_result.cpp \
@@ -146,6 +147,7 @@ HEADERS  += main_window.hpp \
     ../include/canvas/image_canvas.hpp \
     ../include/canvas/sprite_canvas.hpp \
     ../include/canvas/text_canvas.hpp \
+    ../include/audio_player.hpp \
     ../include/clock.hpp \
     ../include/collision_check_types.hpp \
     ../include/collision_record.hpp \

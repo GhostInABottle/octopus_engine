@@ -1,4 +1,5 @@
 #include "../include/game.hpp"
+#include "../include/audio_player.hpp"
 #include "../include/clock.hpp"
 #include "../include/player_controller.hpp"
 #include "../include/camera.hpp"
@@ -30,15 +31,14 @@
 #include <unordered_set>
 
 struct Game::Impl {
-    explicit Impl(Game& game, xd::audio* audio, bool editor_mode) :
-            audio(audio),
+    explicit Impl(Game& game, std::shared_ptr<xd::audio> audio, bool editor_mode) :
+            audio_player(audio),
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
             next_direction(Direction::DOWN),
             focus_pause(false),
             pause_unfocused(Configurations::get<bool>("game.pause-unfocused")),
-            music_was_paused(false),
             was_stopped(false),
             pause_start_time(0),
             total_paused_time(0),
@@ -125,10 +125,10 @@ struct Game::Impl {
             window->set_gamma(Configurations::get<float>("graphics.gamma"));
         }
         if (config_changed("audio.music-volume")) {
-            game.set_global_music_volume(Configurations::get<float>("audio.music-volume"));
+            audio_player.set_global_music_volume(Configurations::get<float>("audio.music-volume"));
         }
         if (config_changed("audio.sound-volume")) {
-            game.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
+            audio_player.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
         }
         if (config_changed("controls.gamepad-enabled") && window) {
             window->set_joystick_enabled(Configurations::get<bool>("controls.gamepad-enabled"));
@@ -245,8 +245,8 @@ struct Game::Impl {
                 Configurations::get<int>("graphics.window-height"));
         }
     }
-    // Audio system (pointer because it's null for editor)
-    xd::audio* audio;
+    // Audio subsystem
+    Audio_Player audio_player;
     // Was game started in editor mode?
     bool editor_mode;
     // Texture asset manager
@@ -270,8 +270,6 @@ struct Game::Impl {
     bool focus_pause;
     // Should the game be paused while unfocused?
     bool pause_unfocused;
-    // was music already paused when game got paused?
-    bool music_was_paused;
     // Was time stopped when game got paused?
     bool was_stopped;
     // Keep track of paused time
@@ -317,7 +315,7 @@ struct Game::Impl {
     Typewriter_Decorator typewriter_decorator;
 };
 
-Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_mode) :
+Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audio, bool editor_mode) :
         command_line_args(args),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
@@ -357,15 +355,14 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     clock = std::make_unique<Clock>(*this);
     camera = std::make_unique<Camera>(*this);
     framebuffer = std::make_unique<xd::framebuffer>();
+
     // Listen to config changes
     Configurations::add_observer("Game",
         [this](const std::string& key) {
             this->pimpl->on_config_change(key);
         }
     );
-    // Default volumes
-    set_global_music_volume(Configurations::get<float>("audio.music-volume"));
-    set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
+
     // Setup fonts
     LOGGER_I << "Setting up fonts";
     style.outline(1, xd::vec4(0.0f, 0.0f, 0.0f, 1.0f))
@@ -426,10 +423,7 @@ Game::Game(const std::vector<std::string>& args, xd::audio* audio, bool editor_m
     // Add player to the map
     map->add_object(player);
     // Play background music
-    auto bg_music = map->get_bg_music_filename();
-    if (pimpl->audio && !bg_music.empty() && bg_music != "false") {
-        play_music(map->get_bg_music_filename());
-    }
+    pimpl->audio_player.play_music(*map);
     // Track player by camera
     camera->set_object(player.get());
     // Bind game keys
@@ -461,8 +455,8 @@ Game::~Game() {
     Configurations::remove_observer("Game");
 }
 
-xd::audio* Game::get_audio() {
-    return pimpl->audio;
+channel_group_type Game::get_sound_group_type() const {
+    return pimpl->audio_player.get_sound_group_type(!paused);
 }
 
 void Game::run() {
@@ -476,7 +470,7 @@ void Game::run() {
 }
 
 void Game::frame_update() {
-    if (pimpl->audio) pimpl->audio->update();
+    pimpl->audio_player.update();
 
     // Toggle fullscreen when ALT+Enter is pressed
     if ((pressed(xd::KEY_RALT) || pressed(xd::KEY_LALT)) && triggered_once(xd::KEY_ENTER)) {
@@ -577,14 +571,7 @@ void Game::pause() {
     pimpl->was_stopped = clock->stopped();
     clock->stop_time();
 
-    if (music && Configurations::get<bool>("audio.mute-on-pause")) {
-        pimpl->music_was_paused = music->paused();
-        if (!pimpl->music_was_paused)
-            music->pause();
-    }
-    if (pimpl->audio) {
-        pimpl->audio->pause_sounds();
-    }
+    pimpl->audio_player.pause();
 
     camera->set_shader(Configurations::get<std::string>("graphics.pause-vertex-shader"),
         Configurations::get<std::string>("graphics.pause-fragment-shader"));
@@ -601,12 +588,7 @@ void Game::resume(const std::string& script) {
 
     if (!pimpl->was_stopped) clock->resume_time();
 
-    if (music && music->paused() && !pimpl->music_was_paused) {
-        music->play();
-    }
-    if (pimpl->audio) {
-        pimpl->audio->resume_sounds();
-    }
+    pimpl->audio_player.resume();
 
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
@@ -726,37 +708,8 @@ void Game::set_script_scheduler_paused(bool paused) {
         scheduler.resume();
 }
 
-void Game::play_music(const std::string& filename, bool looping) {
-    if (!pimpl->audio) return;
-    play_music(std::make_shared<xd::music>(*pimpl->audio, filename), looping);
-}
-
-void Game::play_music(const std::shared_ptr<xd::music>& new_music, bool looping) {
-    if (music)
-        music->stop();
-    set_playing_music(new_music);
-    music->set_looping(looping);
-    music->play();
-}
-
-float Game::get_global_music_volume() const {
-    if (!pimpl->audio) return 0.0f;
-    return pimpl->audio->get_music_volume();
-}
-
-void Game::set_global_music_volume(float volume) const {
-    if (!pimpl->audio) return;
-    pimpl->audio->set_music_volume(volume);
-}
-
-float Game::get_global_sound_volume() const {
-    if (!pimpl->audio) return 0.0f;
-    return pimpl->audio->get_sound_volume();
-}
-
-void Game::set_global_sound_volume(float volume) const {
-    if (!pimpl->audio) return;
-    pimpl->audio->set_sound_volume(volume);
+Audio_Player& Game::get_audio_player() {
+    return pimpl->audio_player;
 }
 
 void Game::set_next_map(const std::string& filename, Direction dir, std::optional<xd::vec2> pos, std::optional<std::string> music) {
@@ -886,13 +839,10 @@ void Game::load_next_map() {
     camera->update();
 
     // Play background music
+    auto& audio_player = pimpl->audio_player;
+    audio_player.load_map_audio(*map);
     auto bg_music = pimpl->next_music.value_or(map->get_bg_music_filename());
-    auto playing_music{music ? music->get_filename() : ""};
-    if (bg_music == "false") {
-        music.reset();
-    } else if (!bg_music.empty() && bg_music != playing_music) {
-        play_music(bg_music);
-    }
+    audio_player.play_music(*map, bg_music);
 
     map->run_startup_scripts();
     pimpl->next_map = "";

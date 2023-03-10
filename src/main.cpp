@@ -4,6 +4,7 @@
 #include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
 #include <vector>
+#include <memory>
 #ifdef __APPLE__
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
@@ -26,9 +27,9 @@ int main(int argc, char* argv[]) {
 #endif
         file_utilities::parse_config("config.ini");
 
-        xd::audio audio;
+        auto audio = std::make_shared<xd::audio>();
         LOGGER_I << "Reticulating Splines";
-        Game game(args, &audio);
+        Game game(args, audio);
         game.run();
         LOGGER_I << "Splines Reticulated";
 

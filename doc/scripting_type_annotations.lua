@@ -1254,6 +1254,50 @@ function Engine_Sound:set_loop_points(loop_start, loop_end) end
 ---@return Engine_Sound
 function Sound(filename, pausable) end
 
+-- Audio_Player
+
+---@class Engine_Audio_Player
+---@field playing_music Engine_Music?
+---@field global_music_volume number
+---@field global_sound_volume number
+local Engine_Audio_Player = {}
+
+---@param filename string
+---@param channel_count? integer # defaults to 1
+---@param pausable? boolean # defaults to true
+---@return Engine_Sound? # nil if filename is '' or channel_count is 0
+function Engine_Audio_Player:load_global_sound(filename, channel_count, pausable) end
+
+---@param config_name string
+---@param channel_count? integer # defaults to 1
+---@param pausable? boolean # defaults to true
+---@return Engine_Sound? # nil if config has no value or channel_count is 0
+function Engine_Audio_Player:load_global_config_sound(config_name, channel_count, pausable) end
+
+---@param filename string
+---@param channel_count? integer # defaults to 1
+---@param pausable? boolean # defaults to true
+---@return Engine_Sound? # nil if filename is '' or channel_count is 0
+function Engine_Audio_Player:load_map_sound(filename, channel_count, pausable) end
+
+---@param config_name string
+---@param channel_count? integer # defaults to 1
+---@param pausable? boolean # defaults to true
+---@return Engine_Sound? # nil if config has no value or channel_count is 0
+function Engine_Audio_Player:load_map_config_sound(config_name, channel_count, pausable) end
+
+---@param filename string
+---@return Engine_Music? # nil if filename is ''
+function Engine_Audio_Player:load_music(filename) end
+
+---@overload fun(self : Engine_Audio_Player, music : Engine_Music, looping? : boolean) : Engine_Music
+---@overload fun(self : Engine_Audio_Player, filename : string, volume : number) : Engine_Music
+---@param filename string
+---@param looping? boolean # defaults to true
+---@param volume? number # defaults to 1
+---@return Engine_Music? # nil if filename is '' or 'false'
+function Engine_Audio_Player:play_music(filename, looping, volume) end
+
 -- Game
 
 ---@class Engine_Game
@@ -1263,7 +1307,6 @@ function Sound(filename, pausable) end
 ---@field fps integer
 ---@field frame_count integer
 ---@field data_directory string
----@field playing_music Engine_Music?
 ---@field character_input string
 ---@field triggered_keys string[]
 ---@field gamepad_enabled boolean
@@ -1281,11 +1324,10 @@ function Sound(filename, pausable) end
 ---@field stopped boolean
 ---@field script_scheduler_paused boolean
 ---@field debug boolean
----@field global_music_volume number
----@field global_sound_volume number
 ---@field command_line_args string[]
 ---@field fullscreen boolean
 ---@field magnification integer
+---@field audio_player Engine_Audio_Player # readonly
 game = {}
 
 ---@param name string
@@ -1360,11 +1402,6 @@ function game:load_header(filename, compact) end
 
 function game:save_config_file() end
 function game:save_keymap_file() end
-
----@overload fun(self : Engine_Game, music : Engine_Music, looping? : boolean)
----@param filename string
----@param looping? boolean
-function game:play_music(filename, looping) end
 
 function game:pause() end
 

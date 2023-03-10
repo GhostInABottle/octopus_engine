@@ -1,6 +1,7 @@
 #include "../../include/canvas/sprite_canvas.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/game.hpp"
+#include "../../include/audio_player.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
 
@@ -15,7 +16,7 @@ void Sprite_Canvas::set_sprite(Game& game, const std::string& sprite_filename, c
 
     filename = sprite_filename;
     auto& asset_manager = game.get_asset_manager();
-    auto audio = game.get_audio();
+    auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
     sprite = std::make_unique<Sprite>(game,
         Sprite_Data::load(sprite_filename, asset_manager, audio, channel_group));

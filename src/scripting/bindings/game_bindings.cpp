@@ -2,10 +2,10 @@
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/game.hpp"
 #include "../../../include/clock.hpp"
+#include "../../../include/audio_player.hpp"
 #include "../../../include/configurations.hpp"
 #include "../../../include/save_file.hpp"
 #include "../../../include/xd/lua.hpp"
-#include "../../../include/xd/audio.hpp"
 #include <string>
 #include <memory>
 #include <tuple>
@@ -40,9 +40,6 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["paused"] = sol::property(&Game::is_paused);
     game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
     game_type["script_scheduler_paused"] = sol::property(&Game::is_script_scheduler_paused, &Game::set_script_scheduler_paused);
-    game_type["playing_music"] = sol::property(&Game::get_playing_music, &Game::set_playing_music);
-    game_type["global_music_volume"] = sol::property(&Game::get_global_music_volume, &Game::set_global_music_volume);
-    game_type["global_sound_volume"] = sol::property(&Game::get_global_sound_volume, &Game::set_global_sound_volume);
     game_type["debug"] = sol::property(&Game::is_debug);
     game_type["data_directory"] = sol::property(&Game::get_save_directory);
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
@@ -53,12 +50,13 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
     game_type["monitor_resolutions"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_sizes());
-        });
+    });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
     game_type["character_input"] = sol::property(&Game::character_input);
     game_type["command_line_args"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_command_line_args());
-        });
+    });
+    game_type["audio_player"] = sol::property(&Game::get_audio_player);
 
     game_type["set_size"] = &Game::set_size;
 
@@ -154,21 +152,6 @@ void bind_game_types(sol::state& lua, Game& game) {
 
     game_type["save_config_file"] = &Game::save_config_file;
     game_type["save_keymap_file"] = &Game::save_keymap_file;
-
-    game_type["play_music"] = sol::overload(
-        [](Game* game, const std::string& filename) {
-            game->play_music(filename);
-        },
-        [](Game* game, const std::string& filename, bool looping) {
-            game->play_music(filename, looping);
-        },
-            [](Game* game, const std::shared_ptr<xd::music>& music) {
-            game->play_music(music);
-        },
-            [](Game* game, const std::shared_ptr<xd::music>& music, bool looping) {
-            game->play_music(music, looping);
-        }
-        );
 
     game_type["wait_for_input"] = sol::yielding(sol::overload(
         [](Game* game, const std::string& key) {

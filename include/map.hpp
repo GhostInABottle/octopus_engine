@@ -21,7 +21,7 @@
 #include "scripting/lua_object.hpp"
 
 namespace xd {
-    class music;
+    class sound;
 }
 class Game;
 class Map_Object;
@@ -214,6 +214,10 @@ public:
     void sort_canvases() {
         canvases_sorted = false;
     }
+    typedef std::unordered_map<std::string, std::vector<std::shared_ptr<xd::sound>>> Audio_Cache;
+    Audio_Cache& get_audio_cache() {
+        return audio_cache;
+    }
 private:
     // Game instance
     Game& game;
@@ -267,6 +271,8 @@ private:
     bool objects_moved;
     // Is canvas list already sorted?
     bool canvases_sorted;
+    // Cached sounds/audio for the map
+    Audio_Cache audio_cache;
     // Remove object from ID and name hash tables
     void erase_object_references(Map_Object* object);
     void run_script_impl(const std::string& script_or_filename, bool is_filename);
