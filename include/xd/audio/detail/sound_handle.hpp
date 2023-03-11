@@ -41,6 +41,7 @@ namespace xd::detail {
         virtual bool is_looping() const = 0;
         virtual void set_loop_points(unsigned int start, unsigned int end) = 0;
         virtual std::pair<unsigned int, unsigned int> get_loop_points() const = 0;
+        virtual channel_group_type get_channel_group_type() const = 0;
 
         virtual ~sound_handle() noexcept {}
     };

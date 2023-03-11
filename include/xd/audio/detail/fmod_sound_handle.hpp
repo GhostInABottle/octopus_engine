@@ -34,12 +34,12 @@ namespace xd::detail {
         void set_looping(bool looping) override;
         bool is_looping() const override;
         void set_loop_points(unsigned int start, unsigned int end) override;
-        virtual std::pair<unsigned int, unsigned int> get_loop_points() const override;
+        std::pair<unsigned int, unsigned int> get_loop_points() const override;
 
         FMOD::Sound* get_sound() { return sound; }
         void set_channel(FMOD::Channel* new_channel) { channel = new_channel; }
         FMOD::Channel* get_channel() { return channel; }
-        channel_group_type get_channel_group_type() const { return channel_group; }
+        channel_group_type get_channel_group_type() const override { return channel_group; }
         const std::string& get_filename() const override { return filename; }
 
         ~fmod_sound_handle() override;

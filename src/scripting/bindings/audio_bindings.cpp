@@ -118,4 +118,13 @@ void bind_audio_types(sol::state& lua, Game& game) {
             return audio_player.play_music(*game.get_map(), music, looping);
         }
     );
+
+    audio_player["play_sound"] = [&game](Audio_Player& audio_player, const std::string& filename,
+            std::optional<float> pitch, std::optional<float> volume) {
+        return audio_player.play_sound(game, filename, pitch.value_or(1.0f), volume.value_or(1.0f));
+    };
+    audio_player["play_config_sound"] = [&game](Audio_Player& audio_player, const std::string& config_name,
+            std::optional<float> pitch, std::optional<float> volume) {
+        return audio_player.play_config_sound(game, config_name, pitch.value_or(1.0f), volume.value_or(1.0f));
+    };
 }

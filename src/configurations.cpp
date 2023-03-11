@@ -7,23 +7,23 @@
 #include <fstream>
 
 void Configurations::load_defaults() {
-    defaults["game.title"] = std::string("Untitled");
+    defaults["game.title"] = std::string{"Untitled"};
     defaults["game.pause-unfocused"] = true;
-    defaults["game.data-folder"] = std::string();
-    defaults["game.data-folder-version"] = std::string("v0_1");
-    defaults["game.object-outline-color"] = std::string("#FFFFFF00");
-    defaults["game.object-script-preamble"] = std::string();
-    defaults["game.map-loaded-script"] = std::string();
-    defaults["game.pause-script"] = std::string();
-    defaults["game.scripts-folder"] = std::string();
+    defaults["game.data-folder"] = std::string{};
+    defaults["game.data-folder-version"] = std::string{"v0_1"};
+    defaults["game.object-outline-color"] = std::string{"#FFFFFF00"};
+    defaults["game.object-script-preamble"] = std::string{};
+    defaults["game.map-loaded-script"] = std::string{};
+    defaults["game.pause-script"] = std::string{};
+    defaults["game.scripts-folder"] = std::string{};
 
     defaults["text.fade-in-duration"] = 250;
     defaults["text.fade-out-duration"] = 250;
     defaults["text.choice-press-delay"] = 250;
-    defaults["text.choice-selected-color"] = std::string("#FF00FF00");
+    defaults["text.choice-selected-color"] = std::string{"#FF00FF00"};
     defaults["text.canvas-priority"] = 1000;
     defaults["text.show-background"] = true;
-    defaults["text.background-color"] = std::string("#7F000000");
+    defaults["text.background-color"] = std::string{"#7F000000"};
     defaults["text.background-margin-left"] = 5;
     defaults["text.background-margin-top"] = 5;
     defaults["text.background-margin-right"] = 5;
@@ -38,35 +38,37 @@ void Configurations::load_defaults() {
     defaults["graphics.fullscreen"] = false;
     defaults["graphics.vsync"] = false;
     // Scaling modes: aspect, window, stretch
-    defaults["graphics.scale-mode"] = std::string("window");
-    defaults["graphics.vertex-shader"] = std::string();
-    defaults["graphics.fragment-shader"] = std::string();
-    defaults["graphics.pause-vertex-shader"] = std::string();
-    defaults["graphics.pause-fragment-shader"] = std::string();
+    defaults["graphics.scale-mode"] = std::string{"window"};
+    defaults["graphics.vertex-shader"] = std::string{};
+    defaults["graphics.fragment-shader"] = std::string{};
+    defaults["graphics.pause-vertex-shader"] = std::string{};
+    defaults["graphics.pause-fragment-shader"] = std::string{};
     defaults["graphics.brightness"] = 1.0f;
     defaults["graphics.contrast"] = 1.0f;
     defaults["graphics.gamma"] = 1.0f;
     defaults["graphics.postprocessing-enabled"] = true;
 
+
+    defaults["audio.audio-folder"] = std::string{};
     defaults["audio.music-volume"] = 1.0f;
     defaults["audio.sound-volume"] = 1.0f;
-    defaults["audio.choice-select-sfx"] = std::string();
-    defaults["audio.choice-confirm-sfx"] = std::string();
-    defaults["audio.choice-cancel-sfx"] = std::string();
+    defaults["audio.choice-select-sfx"] = std::string{};
+    defaults["audio.choice-confirm-sfx"] = std::string{};
+    defaults["audio.choice-cancel-sfx"] = std::string{};
     defaults["audio.mute-on-pause"] = true;
     defaults["audio.sound-attenuation-factor"] = 50.0f;
 
-    defaults["font.default"] = std::string();
-    defaults["font.bold"] = std::string();
-    defaults["font.italic"] = std::string();
+    defaults["font.default"] = std::string{};
+    defaults["font.bold"] = std::string{};
+    defaults["font.italic"] = std::string{};
     defaults["font.size"] = 12;
     defaults["font.line-height"] = 12.0f;
-    defaults["font.icon-image"] = std::string();
+    defaults["font.icon-image"] = std::string{};
     defaults["font.icon-width"] = 12.0f;
     defaults["font.icon-height"] = 12.0f;
     defaults["font.icon-offset-x"] = 0.0f;
     defaults["font.icon-offset-y"] = 0.0f;
-    defaults["font.icon-transparent-color"] = std::string("FF00FF00");
+    defaults["font.icon-transparent-color"] = std::string{"FF00FF00"};
 
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.gamepad-detection"] = true;
@@ -74,15 +76,15 @@ void Configurations::load_defaults() {
     defaults["controls.axis-as-dpad"] = true;
     defaults["controls.stick-sensitivity"] = 0.5f;
     defaults["controls.trigger-sensitivity"] = 0.5f;
-    defaults["controls.action-button"] = std::string("a");
-    defaults["controls.cancel-button"] = std::string("b");
-    defaults["controls.pause-button"] = std::string("pause");
-    defaults["controls.mapping-file"] = std::string("keymap.ini");
+    defaults["controls.action-button"] = std::string{"a"};
+    defaults["controls.cancel-button"] = std::string{"b"};
+    defaults["controls.pause-button"] = std::string{"pause"};
+    defaults["controls.mapping-file"] = std::string{"keymap.ini"};
 
     defaults["logging.enabled"] = true;
-    defaults["logging.filename"] = std::string("game.log");
-    defaults["logging.level"] = std::string("debug");
-    defaults["logging.mode"] = std::string("truncate");
+    defaults["logging.filename"] = std::string{"game.log"};
+    defaults["logging.level"] = std::string{"debug"};
+    defaults["logging.mode"] = std::string{"truncate"};
 
     defaults["debug.width"] = 320.0f;
     defaults["debug.height"] = 240.0f;
@@ -90,7 +92,7 @@ void Configurations::load_defaults() {
     defaults["debug.show-fps"] = true;
     defaults["debug.show-time"] = false;
     defaults["debug.logic-fps"] = 60;
-    defaults["debug.pathfinding-sprite"] = std::string();
+    defaults["debug.pathfinding-sprite"] = std::string{};
     defaults["debug.canvas-fps"] = 40;
     defaults["debug.use-fbo"] = true;
     defaults["debug.seed-lua-rng"] = true;
@@ -99,13 +101,13 @@ void Configurations::load_defaults() {
     defaults["debug.collision-check-delay"] = 50;
     defaults["debug.edge-tolerance-pixels"] = 8;
 
-    defaults["startup.map"] = std::string();
-    defaults["startup.player-sprite"] = std::string();
+    defaults["startup.map"] = std::string{};
+    defaults["startup.player-sprite"] = std::string{};
     defaults["startup.player-position-x"] = 70.0f;
     defaults["startup.player-position-y"] = 50.0f;
-    defaults["startup.tint-color"] = std::string("00000000");
-    defaults["startup.clear-color"] = std::string("00000000");
-    defaults["startup.scripts-list"] = std::string();
+    defaults["startup.tint-color"] = std::string{"00000000"};
+    defaults["startup.clear-color"] = std::string{"00000000"};
+    defaults["startup.scripts-list"] = std::string{};
 }
 
 std::vector<std::string> Configurations::parse(std::string filename) {

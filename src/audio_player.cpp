@@ -1,4 +1,5 @@
 #include "../include/audio_player.hpp"
+#include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
@@ -6,14 +7,17 @@
 #include "../include/xd/audio.hpp"
 #include <stdexcept>
 
-Audio_Player::Audio_Player(std::shared_ptr<xd::audio> audio) : audio(audio), music_was_paused(false) {
+Audio_Player::Audio_Player(std::shared_ptr<xd::audio> audio)
+        : audio(audio),
+        audio_folder(Configurations::get<std::string>("audio.audio-folder")),
+        music_was_paused(false) {
     // Set default volumes
     set_global_music_volume(Configurations::get<float>("audio.music-volume"));
     set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
     // Cache default sounds
     load_global_config_sound("audio.choice-select-sfx", 3, false);
     load_global_config_sound("audio.choice-confirm-sfx", 3, false);
-    load_global_config_sound("audio.choice-select-sfx", 3, false);
+    load_global_config_sound("audio.choice-cancel-sfx", 3, false);
 }
 
 std::shared_ptr<xd::sound> Audio_Player::load_global_config_sound(const std::string& config_name,
@@ -64,7 +68,7 @@ std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std:
         music = load_music(current_map, filename);
         LOGGER_D << "Playing cached music file: " << filename;
     } else {
-        music = std::make_shared<xd::music>(*audio, filename);
+        music = std::make_shared<xd::music>(*audio, audio_folder + filename);
         LOGGER_D << "Playing non-cached music file: " << filename;
     }
 
@@ -85,6 +89,53 @@ std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std:
     music->play();
 
     return music;
+}
+
+std::shared_ptr<xd::sound> Audio_Player::play_sound(Game& game, const std::string& filename,
+        float pitch, float volume, std::string key) {
+    if (key.empty()) {
+        key = filename;
+    }
+
+    auto& map_cache = game.get_map()->get_audio_cache();
+    Audio_Cache* cache = &map_cache;
+    if (cache->find(key) == cache->end()) {
+        if (global_cache.find(key) != global_cache.end()) {
+            cache = &global_cache;
+        }
+    }
+
+    auto& channels = (*cache)[key];
+
+    // Reuse non-playing channel from cache or add new one
+    std::shared_ptr<xd::sound> sound;
+    for (auto& channel : channels) {
+        if (!channel->playing()) {
+            sound = channel;
+            break;
+        }
+    }
+
+    if (!sound) {
+        auto pausable = channels.empty()
+            ? !game.is_paused()
+            : channels.back()->get_channel_group_type() != channel_group_type::non_pausable_sound;
+        LOGGER_D << "Loading an additional " << (pausable ? "" : "non-") << "channel for " << key;
+        sound = load_sound(*cache, key, filename, channels.size() + 1, pausable);
+        if (!sound) return nullptr;
+    }
+
+    sound->set_pitch(pitch);
+    sound->set_volume(volume);
+    sound->play();
+
+    return sound;
+}
+
+std::shared_ptr<xd::sound> Audio_Player::play_config_sound(Game& game, const std::string& config_name,
+        float pitch, float volume) {
+    auto filename = Configurations::get<std::string>(config_name);
+    return play_sound(game, filename, pitch, volume, config_name);
 }
 
 float Audio_Player::get_global_music_volume() const {
@@ -140,10 +191,11 @@ std::shared_ptr<xd::sound> Audio_Player::load_sound(Audio_Cache& cache, const st
 
     auto& sounds = cache[key];
 
+    auto group_type = get_sound_group_type(pausable);
     auto old_count = sounds.size();
     if (channel_count > old_count) {
         for (unsigned int i = 0; i < channel_count - old_count; ++i) {
-            sounds.emplace_back(std::make_shared<xd::sound>(*audio, filename, get_sound_group_type(pausable)));
+            sounds.emplace_back(std::make_shared<xd::sound>(*audio, audio_folder + filename, group_type));
         }
     }
 
@@ -156,7 +208,7 @@ std::shared_ptr<xd::music> Audio_Player::load_music(Audio_Cache& cache, const st
     auto& sounds = cache[filename];
     if (sounds.empty()) {
         LOGGER_D << "Loading music file: " << filename;
-        sounds.emplace_back(std::make_shared<xd::music>(*audio, filename));
+        sounds.emplace_back(std::make_shared<xd::music>(*audio, audio_folder + filename));
     }
 
     return std::dynamic_pointer_cast<xd::music>(sounds.back());
@@ -177,7 +229,7 @@ void Audio_Player::load_audio_from_map_prop(Map& current_map, const std::string&
         }
 
         auto channel_count = 1;
-        if (filename.find(":")) {
+        if (filename.find(":") != std::string::npos) {
             auto parts = string_utilities::split(filename, ":");
             if (parts.size() != 2) {
                 throw std::runtime_error{"Invalid map property " + prop_name + ": " + prop};

@@ -43,6 +43,7 @@ namespace xd
         bool looping() const;
         std::pair<unsigned int, unsigned int> get_loop_points() const;
 
+        channel_group_type get_channel_group_type() const;
         std::string get_filename() const;
 
     private:

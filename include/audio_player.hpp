@@ -7,6 +7,7 @@
 #include <vector>
 #include "xd/audio/channel_group_type.hpp"
 
+class Game;
 class Map;
 
 namespace xd {
@@ -46,8 +47,15 @@ public:
     }
     // Play and set the currently playing music for the map
     std::shared_ptr<xd::music> play_music(Map& current_map, float volume = 1.0f);
-    std::shared_ptr<xd::music> play_music(Map& current_map, const std::string& filename, bool looping = true, float volume = 1.0f);
-    std::shared_ptr<xd::music> play_music(Map& current_map, const std::shared_ptr<xd::music>& new_music, bool looping = true);
+    std::shared_ptr<xd::music> play_music(Map& current_map, const std::string& filename,
+        bool looping = true, float volume = 1.0f);
+    std::shared_ptr<xd::music> play_music(Map& current_map,
+        const std::shared_ptr<xd::music>& new_music, bool looping = true);
+    // Play a sound effect
+    std::shared_ptr<xd::sound> play_sound(Game& game, const std::string& filename,
+        float pitch = 1.0f, float volume = 1.0f, std::string key = "");
+    std::shared_ptr<xd::sound> play_config_sound(Game& game, const std::string& config_name,
+        float pitch = 1.0f, float volume = 1.0f);
     // Get the music currently playing
     std::shared_ptr<xd::music> get_playing_music() { return music; }
     // Set the currently playing music
@@ -75,6 +83,7 @@ private:
     std::shared_ptr<xd::music> music;
     std::shared_ptr<xd::audio> audio;
     Audio_Cache global_cache;
+    std::string audio_folder;
     // was music already paused when game got paused?
     bool music_was_paused;
 };

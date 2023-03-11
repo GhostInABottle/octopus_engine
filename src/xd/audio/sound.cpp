@@ -106,6 +106,10 @@ std::pair<unsigned int, unsigned int> xd::sound::get_loop_points() const
     return m_handle->get_loop_points();
 }
 
+channel_group_type xd::sound::get_channel_group_type() const {
+    return m_handle->get_channel_group_type();
+}
+
 std::string xd::sound::get_filename() const {
     return m_handle->get_filename();
 }

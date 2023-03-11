@@ -1290,13 +1290,25 @@ function Engine_Audio_Player:load_map_config_sound(config_name, channel_count, p
 ---@return Engine_Music? # nil if filename is ''
 function Engine_Audio_Player:load_music(filename) end
 
----@overload fun(self : Engine_Audio_Player, music : Engine_Music, looping? : boolean) : Engine_Music
----@overload fun(self : Engine_Audio_Player, filename : string, volume : number) : Engine_Music
+---@overload fun(self : Engine_Audio_Player, music : Engine_Music, looping? : boolean) : Engine_Music?
+---@overload fun(self : Engine_Audio_Player, filename : string, volume : number) : Engine_Music?
 ---@param filename string
 ---@param looping? boolean # defaults to true
 ---@param volume? number # defaults to 1
 ---@return Engine_Music? # nil if filename is '' or 'false'
 function Engine_Audio_Player:play_music(filename, looping, volume) end
+
+---@param filename string
+---@param pitch? number
+---@param volume? number
+---@return Engine_Sound? # nil if filename is ''
+function Engine_Audio_Player:play_sound(filename, pitch, volume) end
+
+---@param config_name string
+---@param pitch? number
+---@param volume? number
+---@return Engine_Sound? # nil if config has no value
+function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 
 -- Game
 

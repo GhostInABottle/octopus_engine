@@ -212,10 +212,10 @@ elseif c.selected == 5 then
     sound:play()
     text(o, 'Changing global sound volume then playing again'):wait()
     local old_sound_volume = audio_player.global_sound_volume
-    audio_player.global_sound_volume = 0.5
-    Sound(sound_file):play()
+    audio_player.global_sound_volume = 0.3
+    game.audio_player:play_sound(sound_file)
     text(o, 'Playing sound effect again with half volume and pitch'):wait()
-    sound:play()
+    game.audio_player:play_sound(sound_file, 0.5, 0.5)
     text(o, 'Changing global sound volume via configuration'):wait()
     game:set_float_config('audio.sound-volume', 0.25)
     wait(1)
