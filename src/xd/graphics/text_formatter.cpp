@@ -1007,18 +1007,29 @@ void xd::text_formatter::parse(const std::string& text, std::list<detail::text_f
 
                 // parse arguments
                 std::string arg;
-                while (start != end
-                        && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)
-                        && !detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end)) {
+                while (start != end && !detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)) {
                     if (*start == ',') {
                         // push and reset the argument
                         args.m_args.push_back(arg);
                         arg = "";
                         ++start;
-                    } else {
-                        // aggregate the argument
-                        utf8::append(utf8::next(start, end), std::back_inserter(arg));
+                        continue;
                     }
+
+                    auto terminating = detail::text_formatter::safe_equal(m_decorator_terminate_delim, start, end);
+
+                    if (terminating) {
+                        ++start;
+                        if (start == end || detail::text_formatter::safe_equal(m_decorator_close_delim, start, end)) {
+                            // Possible self-closing tag
+                            break;
+                        } else {
+                            // Add the / terminator back to the argument value
+                            arg = arg + m_decorator_terminate_delim;
+                        }
+                    }
+                    // aggregate the argument
+                    utf8::append(utf8::next(start, end), std::back_inserter(arg));
                 }
 
                 // push the last arg

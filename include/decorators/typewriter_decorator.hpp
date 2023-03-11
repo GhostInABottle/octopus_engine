@@ -15,9 +15,12 @@ class Typewriter_Decorator {
 public:
     Typewriter_Decorator(Game& game);
     void operator()(xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args);
-    bool is_done(Game& game, int slot) const {
-        if (states.find(slot) == states.end()) return true;
+    bool is_done(int slot) const {
+        if (states.find(slot) == states.end()) return false;
         return states.at(slot).done;
+    }
+    void reset_slot(int slot) {
+        states.erase(slot);
     }
     void reset() {
         states.clear();
@@ -29,6 +32,7 @@ private:
         bool game_paused{false};
         bool done{false};
         std::string text;
+        int last_index{0};
         int ticks(Game& game) const;
     };
     std::unordered_map<int, State> states;

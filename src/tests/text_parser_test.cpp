@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <stdexcept>
 #include "../../include/text_parser.hpp"
 #include "../../include/utility/string.hpp"
 
@@ -48,7 +49,13 @@ namespace detail {
     void validate_tokens(const std::string& text, std::vector<Token> expectedTokens) {
         std::vector<Token> actualTokens;
 
-        BOOST_CHECK_NO_THROW(actualTokens = Text_Parser::parse(text));
+        try {
+            actualTokens = Text_Parser::parse(text);
+        } catch (std::exception& e) {
+            // Workaround because BOOST_CHECK_NO_THROW is always passing for some reason
+            BOOST_FAIL(e.what());
+        }
+
         BOOST_CHECK_EQUAL(actualTokens.size(), expectedTokens.size());
 
         for (std::size_t i = 0; i < actualTokens.size(); ++i) {
@@ -127,7 +134,11 @@ BOOST_AUTO_TEST_CASE(text_parser_exceptions) {
 
 BOOST_AUTO_TEST_CASE(text_parser_no_exceptions_if_permissive) {
     for (auto& invalid : detail::invalid_parsing_cases) {
-        BOOST_CHECK_NO_THROW(Text_Parser::parse(invalid, true));
+        try {
+            Text_Parser::parse(invalid, true);
+        } catch (std::exception& e) {
+            BOOST_FAIL(e.what());
+        }
     }
 }
 
@@ -173,6 +184,16 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_value) {
     };
 
     detail::validate_tokens("{b=c}hello{/b}", tokens);
+}
+
+BOOST_AUTO_TEST_CASE(text_parser_parses_tag_with_forward_slash_in_value) {
+    std::vector<Token> tokens = {
+        detail::build_token(Token_Type::OPENING_TAG, "b", "c/,d/x,2", false, 0, 11),
+        detail::build_token(Token_Type::TEXT, "", "hello", false, 12, 16),
+        detail::build_token(Token_Type::CLOSING_TAG, "b", "", false, 17, 20)
+    };
+
+    detail::validate_tokens("{b=c/,d/x,2}hello{/b}", tokens);
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag_with_empty_text) {

@@ -95,10 +95,10 @@ namespace detail {
         // with text and position
         canvas_type["add_child_text"] = sol::overload(
             [&](Base_Canvas& parent, const std::string& name, float x, float y, const std::string& text) {
-                return parent.add_child<Text_Canvas>(name, game, xd::vec2(x, y), text, true, true);
+                return parent.add_child<Text_Canvas>(name, game, xd::vec2(x, y), text, true, std::nullopt, true);
             },
             [&](Base_Canvas& parent, const std::string& name, xd::vec2 pos, const std::string& text) {
-                return parent.add_child<Text_Canvas>(name, game, pos, text, true, true);
+                return parent.add_child<Text_Canvas>(name, game, pos, text, true, std::nullopt, true);
             }
         );
 

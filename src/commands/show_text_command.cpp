@@ -7,6 +7,7 @@
 #include "../../include/camera.hpp"
 #include "../../include/canvas/text_canvas.hpp"
 #include "../../include/text_parser.hpp"
+#include "../../include/map.hpp"
 #include "../../include/map_object.hpp"
 #include "../../include/direction.hpp"
 #include "../../include/utility/color.hpp"
@@ -15,20 +16,53 @@
 #include <utility>
 
 struct Show_Text_Command::Impl : Timed_Command {
+    // Text display options
+    Text_Options options;
+    // The canvas for showing the text
+    std::shared_ptr<Text_Canvas> canvas;
+    // Command to fade the text in/out
+    std::unique_ptr<Update_Opacity_Command> canvas_updater;
+    // Command is complete when it's stopped or text is done and canvas is hidden
+    bool complete;
+    // Text is done when pressing enter (or cancel if cancelable) or after duration
+    bool text_complete;
+    // Was the player disabled before starting this command
+    bool was_disabled;
+    // Index of the final selected choice, or -1 if canceled
+    int selected_choice;
+    // Index of the currently active choice
+    unsigned int current_choice;
+    // The last pressed direction (for detecting long presses)
+    Direction pressed_direction;
+    // Ticks when the last long press started
+    long press_start;
+    // A tag such as "{color=green}" based on config
+    std::string selected_choice_color;
+    // Choice navigation sound effect
+    std::shared_ptr<xd::sound> select_sound;
+    // Choice confirmation sound effect
+    std::shared_ptr<xd::sound> confirm_sound;
+    // Choice cancel sound effect
+    std::shared_ptr<xd::sound> cancel_sound;
+    // How far the text should be from the screen edges
+    xd::vec2 screen_margins;
+    // Is the typewriter effect done?
+    int typewriter_done;
+
     explicit Impl(Game& game, Text_Options options) :
             Timed_Command(game, options.duration),
             options(std::move(options)),
             complete(false),
             text_complete(false),
             was_disabled(false),
-            cancelable(false),
             selected_choice(0),
             current_choice(0),
             pressed_direction(Direction::NONE),
             press_start(0),
             screen_margins(
                 static_cast<float>(Configurations::get<int>("text.screen-edge-margin-x")),
-                static_cast<float>(Configurations::get<int>("text.screen-edge-margin-y"))) {
+                static_cast<float>(Configurations::get<int>("text.screen-edge-margin-y"))),
+            typewriter_done(false) {
 
         // Load choice sound effects
         auto& audio_player = game.get_audio_player();
@@ -41,6 +75,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             Configurations::get<std::string>("text.choice-selected-color"))) + "}";
 
         auto full = full_text();
+        // Remove typewriter tags because we want to measure the full width of all lines
         std::unordered_set<std::string> tags_to_strip{"typewriter"};
         auto clean_text = Text_Parser::strip_tags(full, tags_to_strip);
         auto text_lines = Text_Parser::split_to_lines(clean_text);
@@ -58,14 +93,16 @@ struct Show_Text_Command::Impl : Timed_Command {
         float char_height = font_style.line_height();
         float text_height = char_height * (text_lines.size() - 1);
         auto pos{this->options.position};
-        bool camera_relative = (this->options.position_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
-        bool always_visible = (this->options.position_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
+
+        auto pos_type = this->options.position_type;
+        bool camera_relative = (pos_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
+        bool always_visible = (pos_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
 
         if (!camera_relative && always_visible) {
             pos -= game.get_camera()->get_pixel_position();
         }
 
-        if ((this->options.position_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
+        if ((pos_type & Text_Position_Type::BOTTOM_Y) != Text_Position_Type::NONE) {
             pos.y -= text_height;
         } else {
             pos.y += char_height;
@@ -73,7 +110,7 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         if (this->options.centered) {
             pos.x = game.game_width() / 2 - text_width / 2;
-        } else if ((this->options.position_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+        } else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
             pos.x -= text_width / 2;
         }
 
@@ -89,15 +126,27 @@ struct Show_Text_Command::Impl : Timed_Command {
                 pos.y = screen_margins.y;
         }
 
+        // Set typewriter options if needed
+        std::optional<Text_Canvas::Typewriter_Options> typewriter_options;
+        if (this->options.typewriter_on) {
+            typewriter_options = Text_Canvas::Typewriter_Options{};
+            typewriter_options->slot = game.get_map()->next_typewriter_slot();
+            typewriter_options->delay = this->options.typewriter_delay;
+            typewriter_options->sound_filename = this->options.typewriter_sound;
+        }
+
         // Create the text canvas and show it
-        canvas = std::make_shared<Text_Canvas>(game, pos, full, camera_relative || always_visible);
+        canvas = std::make_shared<Text_Canvas>(game, pos, full,
+            camera_relative || always_visible, typewriter_options);
         canvas->set_opacity(0.0f);
+
         if (this->options.background_visible) {
             canvas->set_background_visible(true);
             canvas->set_background_color(this->options.background_color);
             canvas->set_background_rect(xd::rect{pos.x, pos.y - char_height,
                 text_width, text_height + char_height});
         }
+
         game.add_canvas(canvas);
 
         // Show text above other images
@@ -116,11 +165,11 @@ struct Show_Text_Command::Impl : Timed_Command {
             was_disabled = game.get_player()->is_disabled();
             game.get_player()->set_disabled(true);
         }
-        cancelable = options.cancelable;
 
         canvas->set_visible(true);
     }
 
+    // The text along with colored/indented choices
     std::string full_text() const {
         std::string result = options.text;
         for (unsigned int i = 0; i < options.choices.size(); ++i) {
@@ -155,6 +204,7 @@ struct Show_Text_Command::Impl : Timed_Command {
         return result;
     }
 
+    // Update the active choice based on input
     void update_choice() {
         unsigned int old_choice = current_choice;
 
@@ -167,6 +217,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             pressed_dir = Direction::UP;
 
         if (pressed_dir != Direction::NONE) {
+            // Track long presses
             auto ticks = game.is_paused() ? game.window_ticks() : game.ticks();
             if (pressed_dir == pressed_direction) {
                 static int delay = Configurations::get<int>("text.choice-press-delay");
@@ -194,17 +245,21 @@ struct Show_Text_Command::Impl : Timed_Command {
         auto choice_count = options.choices.size();
         if (dir == Direction::DOWN)
             current_choice = (current_choice + 1) % choice_count;
+
         if (dir == Direction::UP)
             current_choice = (current_choice + choice_count - 1) % choice_count;
+
+        // Update the choice colors
         if (old_choice != current_choice) {
             if (select_sound) select_sound->play();
             canvas->set_text(full_text());
         }
     }
 
+    // Check if the cancel or pause button were pressed
     std::string cancel_action() {
         static std::string cancel_button = Configurations::get<std::string>("controls.cancel-button");
-        if (cancelable && game.triggered_once(cancel_button)) return "cancel";
+        if (options.cancelable && game.triggered_once(cancel_button)) return "cancel";
 
         static std::string pause_button = Configurations::get<std::string>("controls.pause-button");
         if (game.is_paused() && game.triggered_once(pause_button)) return "pause";
@@ -224,6 +279,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             return;
         }
 
+        // Wait for text to be shown or hidden
         if (!canvas_updater->is_complete()) {
             if (stopped) {
                 canvas_updater->stop();
@@ -232,23 +288,42 @@ struct Show_Text_Command::Impl : Timed_Command {
             return;
         }
 
+        // Mark the command as complete when text is done / stopped
         if (text_complete || stopped) {
             if (canvas->is_visible()) {
                 canvas->set_visible(false);
             }
+
             if (options.duration == -1) {
                 game.get_player()->set_disabled(was_disabled);
             }
+
             complete = true;
             return;
+        }
+
+        static std::string action_button = Configurations::get<std::string>("controls.action-button");
+        auto has_duration = options.duration > -1;
+
+        // Wait for the typewriter effect to finish
+        if (options.typewriter_on && !canvas->typewriter_done()) {
+            if (options.typewriter_skippable && !paused && game.triggered_once(action_button)) {
+                canvas->skip_typewriter();
+                typewriter_done = true;
+            }
+            return;
+        } else if (options.typewriter_on && has_duration && !typewriter_done) {
+            typewriter_done = true;
+            start_time = ticks;
         }
 
         if (options.duration > -1) {
             text_complete = is_done(ticks);
         } else if (!paused) {
-            static std::string action_button = Configurations::get<std::string>("controls.action-button");
-            
+            // Check if the action button is pressed
             text_complete = game.triggered_once(action_button);
+
+            // Handle choices
             if (!options.choices.empty()) {
                 if (text_complete) {
                     if (confirm_sound) confirm_sound->play();
@@ -263,6 +338,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             }
         }
 
+        // Start fading out
         if (text_complete) {
             int duration = options.fade_out_duration == -1 ?
                 Configurations::get<int>("text.fade-out-duration") :
@@ -274,27 +350,6 @@ struct Show_Text_Command::Impl : Timed_Command {
     void set_start_time(int start) {
         start_time = start;
     }
-
-    Text_Options options;
-    std::shared_ptr<Text_Canvas> canvas;
-    std::unique_ptr<Update_Opacity_Command> canvas_updater;
-    bool complete;
-    bool text_complete;
-    bool was_disabled;
-    bool cancelable;
-    int selected_choice;
-    unsigned int current_choice;
-    Direction pressed_direction;
-    long press_start;
-    std::string selected_choice_color;
-    // Choice navigation sound effect
-    std::shared_ptr<xd::sound> select_sound;
-    // Choice confirmation sound effect
-    std::shared_ptr<xd::sound> confirm_sound;
-    // Choice cancel sound effect
-    std::shared_ptr<xd::sound> cancel_sound;
-    // How far the text should be from the screen edges
-    xd::vec2 screen_margins;
 };
 
 Show_Text_Command::Show_Text_Command(Game& game, Text_Options options) :

@@ -53,7 +53,8 @@ Map::Map(Game& game) :
         draw_object_outlines(true),
         needs_redraw(true),
         objects_moved(true),
-        canvases_sorted(false) {
+        canvases_sorted(false),
+        last_typewriter_slot(100) {
     Base_Canvas::reset_last_child_id();
     add_component(std::make_shared<Map_Renderer>());
     add_component(std::make_shared<Map_Updater>());

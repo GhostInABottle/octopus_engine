@@ -131,10 +131,19 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                 return true;
             };
 
+            // Read tag name and value
             while (start != end) {
-                if (std::find(std::begin(special), std::end(special), *start) == std::end(special)) {
+                auto is_special = std::find(std::begin(special), std::end(special), *start) != std::end(special);
+                auto next = start + 1;
+                auto has_tag_name = !tag_token.tag.empty();
+                if (is_special && *start == '/' && next != end && *next != '}' && has_tag_name) {
+                    // Allow / in arguments
+                    is_special = false;
+                }
+
+                if (!is_special) {
                     // Read tag name or value
-                    if (tag_token.tag.empty())
+                    if (!has_tag_name)
                         tag_name += *start;
                     else
                         value += *start;

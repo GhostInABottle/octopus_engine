@@ -223,6 +223,10 @@ function filesystem.remove(path) end
 ---@field fade_out_duration integer
 ---@field background_visible boolean
 ---@field background_color Engine_Color
+---@field typewriter_on boolean
+---@field typewriter_delay integer
+---@field typewriter_sound string
+---@field typewriter_skippable boolean
 local Engine_Text_Options = {}
 
 ---@param text string
@@ -277,13 +281,29 @@ function Engine_Text_Options:set_background_visible(visible) end
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_background_color(color) end
 
----@param choices string[]
----@return Engine_Text_Options
-function Engine_Text_Options:set_choices(choices) end
-
 ---@param position_type integer|Engine_Text_Position_Type
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_position_type(position_type) end
+
+---@param typewriter_on boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_on(typewriter_on) end
+
+---@param typewriter_delay integer
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_delay(typewriter_delay) end
+
+---@param typewriter_sound string
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_sound(typewriter_sound) end
+
+---@param typewriter_skippable boolean
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_skippable(typewriter_skippable) end
+
+---@param choices string[]
+---@return Engine_Text_Options
+function Engine_Text_Options:set_choices(choices) end
 
 ---@overload fun(object : Engine_Map_Object) : Engine_Text_Options
 ---@param position Engine_Vec2

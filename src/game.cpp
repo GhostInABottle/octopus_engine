@@ -890,3 +890,7 @@ std::optional<std::string> Game::get_gamepad_name() const {
 std::string Game::get_object_script_preamble() const {
     return pimpl->object_script_preamble;
 }
+
+Typewriter_Decorator& Game::get_typewriter_decorator() {
+    return pimpl->typewriter_decorator;
+}

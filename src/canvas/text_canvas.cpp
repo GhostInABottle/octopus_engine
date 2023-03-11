@@ -1,12 +1,17 @@
 #include "../../include/canvas/text_canvas.hpp"
 #include "../../include/game.hpp"
-#include "../../include/utility/file.hpp"
 #include "../../include/camera.hpp"
+#include "../../include/decorators/typewriter_decorator.hpp"
+#include "../../include/utility/file.hpp"
+#include <sstream>
 #include <stdexcept>
 
-Text_Canvas::Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative, bool is_child)
+Text_Canvas::Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative,
+    std::optional<Typewriter_Options> typewriter_options, bool is_child)
         : Base_Canvas(game, Base_Canvas::Type::TEXT, position),
-        permissive_tag_parsing(false) {
+        permissive_tag_parsing(false),
+        typewriter_options(typewriter_options),
+        typewriter_line(0) {
     font = game.get_font();
     style = std::make_unique<xd::font_style>(game.get_font_style());
     set_camera_relative(camera_relative);
@@ -79,7 +84,8 @@ void Text_Canvas::render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* p
         pos += parent->get_position();
     }
 
-    for (const auto& line : lines) {
+    for (auto i = 0U; i < lines.size(); ++i) {
+        auto& line = lines[i];
         float draw_x = pos.x;
         float draw_y = pos.y;
         if (!is_camera_relative()) {
@@ -87,11 +93,46 @@ void Text_Canvas::render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* p
             draw_y -= camera_pos.y;
         }
 
-        render_text(line, draw_x, draw_y);
+        render_text(line, draw_x, draw_y, i);
         pos.y += style->line_height();
     }
 }
 
-void Text_Canvas::render_text(const std::string& text_to_render, float x, float y) const {
-    game.render_text(*font, *style, x, y, text_to_render);
+void Text_Canvas::skip_typewriter() {
+    if (!typewriter_options) return;
+    typewriter_line = text_lines.size();
+    auto& decorator = game.get_typewriter_decorator();
+    decorator.reset_slot(typewriter_options->slot);
+}
+
+void Text_Canvas::render_text(const std::string& text_to_render, float x, float y, unsigned int line_number) {
+    auto apply_typewriter = typewriter_options && !typewriter_done();
+    if (apply_typewriter && line_number > typewriter_line) {
+        // Still showing a previous line using the typewriter effect
+        return;
+    } else if (!apply_typewriter || line_number < typewriter_line) {
+        game.render_text(*font, *style, x, y, text_to_render);
+        return;
+    }
+
+    auto slot = typewriter_options->slot;
+    auto& decorator = game.get_typewriter_decorator();
+    if (decorator.is_done(slot)) {
+        apply_typewriter = false;
+        decorator.reset_slot(slot);
+        if (typewriter_line < text_lines.size()) {
+            ++typewriter_line;
+        }
+    }
+
+    std::string text;
+    if (apply_typewriter) {
+        std::stringstream ss;
+        ss << "{typewriter=" << slot << "," << typewriter_options->delay << ","
+             << typewriter_options->sound_filename << "}" << text_to_render << "{/typewriter}";
+        text = ss.str();
+    }
+
+    game.render_text(*font, *style, x, y, apply_typewriter ? text : text_to_render);
+    return;
 }

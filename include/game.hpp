@@ -22,6 +22,7 @@ class Base_Canvas;
 class Clock;
 class Save_File;
 class Audio_Player;
+class Typewriter_Decorator;
 
 namespace xd {
     class audio;
@@ -257,6 +258,7 @@ public:
     const std::vector<std::string>& get_command_line_args() const {
         return command_line_args;
     }
+    Typewriter_Decorator& get_typewriter_decorator();
 private:
     std::vector<std::string> command_line_args;
     // Window needs to be constructed before pimpl

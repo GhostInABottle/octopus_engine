@@ -218,6 +218,9 @@ public:
     Audio_Cache& get_audio_cache() {
         return audio_cache;
     }
+    int next_typewriter_slot() {
+        return ++last_typewriter_slot;
+    }
 private:
     // Game instance
     Game& game;
@@ -273,6 +276,8 @@ private:
     bool canvases_sorted;
     // Cached sounds/audio for the map
     Audio_Cache audio_cache;
+    // Used to uniquely identify typewriter text effects
+    int last_typewriter_slot;
     // Remove object from ID and name hash tables
     void erase_object_references(Map_Object* object);
     void run_script_impl(const std::string& script_or_filename, bool is_filename);

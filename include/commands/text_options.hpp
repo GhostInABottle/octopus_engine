@@ -7,6 +7,8 @@
 #include "../configurations.hpp"
 #include "../utility/color.hpp"
 
+class Map_Object;
+
 enum class Text_Position_Type {
     NONE = 0,
     // Interpret position literally, X refers to left of text
@@ -31,8 +33,6 @@ inline Text_Position_Type operator&(Text_Position_Type a, Text_Position_Type b) 
     return static_cast<Text_Position_Type>(static_cast<int>(a) & static_cast<int>(b));
 }
 
-class Map_Object;
-
 struct Text_Options
 {
     std::string text;
@@ -50,6 +50,10 @@ struct Text_Options
     int fade_out_duration;
     bool background_visible;
     xd::vec4 background_color;
+    bool typewriter_on;
+    int typewriter_delay;
+    std::string typewriter_sound;
+    bool typewriter_skippable;
 
     Text_Options() :
         object(nullptr),
@@ -64,7 +68,10 @@ struct Text_Options
         fade_in_duration(-1),
         fade_out_duration(-1),
         background_visible(Configurations::get<bool>("text.show-background")),
-        background_color(hex_to_color(Configurations::get<std::string>("text.background-color"))) {}
+        background_color(hex_to_color(Configurations::get<std::string>("text.background-color"))),
+        typewriter_on(false),
+        typewriter_delay(-1),
+        typewriter_skippable(true) {}
 
 
     Text_Options(Map_Object* object) : Text_Options() {
@@ -148,6 +155,26 @@ struct Text_Options
 
     Text_Options& set_background_color(xd::vec4 background_color) {
         this->background_color = background_color;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_on(bool on) {
+        this->typewriter_on = on;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_delay(int delay) {
+        this->typewriter_delay = delay;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_sound(const std::string& sound) {
+        this->typewriter_sound = sound;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_skippable(bool skippable) {
+        this->typewriter_skippable = skippable;
         return *this;
     }
 };

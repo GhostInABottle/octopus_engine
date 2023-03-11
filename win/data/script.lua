@@ -53,9 +53,13 @@ if c.selected == 1 then
         cancelable = true,
         choice_indent = 6,
         canvas_priority = 666,
-        fade_in_duration = 1000,
-        fade_out_duration = 500,
-        background_color = Color('red')
+        fade_in_duration = 500,
+        fade_out_duration = 250,
+        background_color = Color('red'),
+        typewriter_on = true,
+        typewriter_delay = 50,
+        typewriter_skippable = true,
+        typewriter_sound = 'data/as3sfxr_menu_click.wav',
     }
     cc = choices(options)
     cc:wait()

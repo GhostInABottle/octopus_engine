@@ -1,6 +1,7 @@
 #ifndef HPP_TEXT_CANVAS
 #define HPP_TEXT_CANVAS
 
+#include <optional>
 #include "base_canvas.hpp"
 #include "../xd/graphics/font.hpp"
 #include "../text_parser.hpp"
@@ -12,10 +13,19 @@ namespace xd {
 // A canvas for displaying tet
 class Text_Canvas : public Base_Canvas {
 public:
+    struct Typewriter_Options {
+        // Slot used by the typewriter effect
+        int slot{-1};
+        // The delay for showing each character
+        int delay{-1};
+        // The sound effect to play when showing each character
+        std::string sound_filename;
+    };
     Text_Canvas(const Text_Canvas&) = delete;
     Text_Canvas& operator=(const Text_Canvas&) = delete;
     // Create a canvas with some text
-    Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true, bool is_child = false);
+    Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative = true,
+        std::optional<Typewriter_Options> typewriter_options = std::nullopt, bool is_child = false);
     // Inherit certain properties from another canvas
     void inherit_properties(const Base_Canvas& parent) override;
     // Update the text for a text canvas
@@ -179,6 +189,12 @@ public:
     void link_font(const std::string& type, const std::string& font_file);
     // Render the text
     void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) override;
+    // Check if the typewriter effect is done
+    bool typewriter_done() const {
+        return !typewriter_options || typewriter_line >= text_lines.size();
+    }
+    // Show the whole text without the typewriter effect
+    void skip_typewriter();
 private:
     // Text to print
     std::string text;
@@ -190,8 +206,12 @@ private:
     std::unique_ptr<xd::font_style> style;
     // Ignore missing tags
     bool permissive_tag_parsing;
+    // Options for the typewriter effect
+    std::optional<Typewriter_Options> typewriter_options;
+    // Index of current line being printed with the typewriter effect
+    unsigned int typewriter_line;
     // Render text at a position
-    void render_text(const std::string& text, float x, float y) const;
+    void render_text(const std::string& text, float x, float y, unsigned int line_number);
 };
 
 #endif

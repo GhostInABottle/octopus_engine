@@ -78,6 +78,22 @@ namespace detail {
             options.set_background_color(table["background_color"]);
         }
 
+        if (table["typewriter_on"].valid()) {
+            options.set_typewriter_on(table["typewriter_on"]);
+        }
+
+        if (table["typewriter_delay"].valid()) {
+            options.set_typewriter_delay(table["typewriter_delay"]);
+        }
+
+        if (table["typewriter_sound"].valid()) {
+            options.set_typewriter_sound(table["typewriter_sound"]);
+        }
+
+        if (table["typewriter_skippable"].valid()) {
+            options.set_typewriter_skippable(table["typewriter_skippable"]);
+        }
+
         return options;
     }
 }
@@ -114,6 +130,10 @@ void bind_text_types(sol::state& lua, Game& game) {
     options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
     options_type["background_visible"] = sol::readonly(&Text_Options::background_visible);
     options_type["background_color"] = sol::readonly(&Text_Options::background_color);
+    options_type["typewriter_on"] = sol::readonly(&Text_Options::typewriter_on);
+    options_type["typewriter_delay"] = sol::readonly(&Text_Options::typewriter_delay);
+    options_type["typewriter_sound"] = sol::readonly(&Text_Options::typewriter_sound);
+    options_type["typewriter_skippable"] = sol::readonly(&Text_Options::typewriter_skippable);
 
     options_type["set_text"] = &Text_Options::set_text;
     options_type["set_object"] = &Text_Options::set_object;
@@ -128,6 +148,10 @@ void bind_text_types(sol::state& lua, Game& game) {
     options_type["set_fade_out_duration"] = &Text_Options::set_fade_out_duration;
     options_type["set_background_visible"] = &Text_Options::set_background_visible;
     options_type["set_background_color"] = &Text_Options::set_background_color;
+    options_type["set_typewriter_on"] = &Text_Options::set_typewriter_on;
+    options_type["set_typewriter_delay"] = &Text_Options::set_typewriter_delay;
+    options_type["set_typewriter_sound"] = &Text_Options::set_typewriter_sound;
+    options_type["set_typewriter_skippable"] = &Text_Options::set_typewriter_skippable;
     options_type["set_choices"] = [&](Text_Options& options, const sol::table& table) -> Text_Options& {
         std::vector<std::string> choices;
         for (auto& kv : table) {
