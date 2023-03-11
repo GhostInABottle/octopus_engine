@@ -2,4 +2,3 @@
 - Hide the OpenGL-dependent code behind an abstraction.
 - Virtual filesystem / archive format.
 - Investigate canvas issues on Mac/Linux.
-- Allow waiting for the typewriter text effect to finish or skipping it.
