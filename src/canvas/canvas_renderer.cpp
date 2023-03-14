@@ -45,10 +45,11 @@ void Canvas_Renderer::render(Map& map) {
 
 void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     auto scissor_box = canvas.get_scissor_box();
-    if (scissor_box.w > 0) {
-        // Use a texture-sized viewport when calculating scissor box
-        xd::rect viewport = xd::rect(0, 0, game.game_width(), game.game_height());
-        camera.enable_scissor_test(scissor_box, viewport);
+    auto has_scissor_box = scissor_box.w > 0;
+    if (has_scissor_box) {
+        // Disable scissor testing to make sure that glClear wipes the entire texture
+        // This prevents visual glitches caused by reused textures on mac/linux
+        camera.disable_scissor_test();
     }
 
     auto& framebuffer = game.get_framebuffer();
@@ -62,6 +63,12 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     camera.set_clear_color();
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
         GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (has_scissor_box) {
+        // Use a texture-sized viewport when calculating scissor box
+        xd::rect viewport = xd::rect(0, 0, game.game_width(), game.game_height());
+        camera.enable_scissor_test(scissor_box, viewport);
+    }
 }
 
 void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_Canvas& root) {
