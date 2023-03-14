@@ -33,14 +33,14 @@ void Object_Layer_Renderer::render(Map& map) {
             if (a->get_draw_order() == Map_Object::Draw_Order::NORMAL || same_order)
                 a_order = a->get_real_position().y;
             else if (a->get_draw_order() == Map_Object::Draw_Order::BELOW)
-                a_order = std::numeric_limits<float>().min();
+                a_order = std::numeric_limits<float>().lowest();
             else
                 a_order = std::numeric_limits<float>().max();
 
             if (b->get_draw_order() == Map_Object::Draw_Order::NORMAL || same_order)
                 b_order = b->get_real_position().y;
             else if (b->get_draw_order() == Map_Object::Draw_Order::BELOW)
-                b_order = std::numeric_limits<float>().min();
+                b_order = std::numeric_limits<float>().lowest();
             else
                 b_order = std::numeric_limits<float>().max();
 
