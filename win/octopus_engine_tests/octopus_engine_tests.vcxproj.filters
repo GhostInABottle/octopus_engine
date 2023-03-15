@@ -97,6 +97,12 @@
     <Filter Include="Header Files\decorators">
       <UniqueIdentifier>{e7b7d951-0a66-4667-adce-c22f81b738b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utility\filesystem">
+      <UniqueIdentifier>{b54a7c72-0286-486d-acd0-f387c00f8073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utility\filesystem">
+      <UniqueIdentifier>{0182ca93-03b4-47ad-9fcd-65a3060c9c7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -410,6 +416,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\audio_player.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utility\filesystem\boost_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utility\filesystem\disk_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utility\filesystem\readable_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utility\filesystem\standard_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utility\filesystem\writable_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -811,6 +832,24 @@
     </ClInclude>
     <ClInclude Include="..\..\include\audio_player.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\boost_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\disk_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\path_info.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\readable_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\standard_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\utility\filesystem\writable_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

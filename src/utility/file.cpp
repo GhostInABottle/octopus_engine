@@ -71,7 +71,6 @@ std::ofstream file_utilities::open_ofstream(std::string filename, std::ios_base:
 }
 
 bool file_utilities::file_exists(const std::string& filename) {
-
     return fs::exists(detail::string_to_utf8_path(filename));
 }
 

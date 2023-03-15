@@ -150,6 +150,11 @@
     <ClCompile Include="..\src\tmx_properties.cpp" />
     <ClCompile Include="..\src\utility\color.cpp" />
     <ClCompile Include="..\src\utility\file.cpp" />
+    <ClCompile Include="..\src\utility\filesystem\boost_filesystem.cpp" />
+    <ClCompile Include="..\src\utility\filesystem\disk_filesystem.cpp" />
+    <ClCompile Include="..\src\utility\filesystem\readable_filesystem.cpp" />
+    <ClCompile Include="..\src\utility\filesystem\standard_filesystem.cpp" />
+    <ClCompile Include="..\src\utility\filesystem\writable_filesystem.cpp" />
     <ClCompile Include="..\src\utility\math.cpp" />
     <ClCompile Include="..\src\utility\string.cpp" />
     <ClCompile Include="..\src\utility\xml.cpp" />
@@ -241,6 +246,12 @@
     <ClInclude Include="..\include\utility\color.hpp" />
     <ClInclude Include="..\include\utility\direction.hpp" />
     <ClInclude Include="..\include\utility\file.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\disk_filesystem.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\path_info.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\readable_filesystem.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\boost_filesystem.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\writable_filesystem.hpp" />
+    <ClInclude Include="..\include\utility\filesystem\standard_filesystem.hpp" />
     <ClInclude Include="..\include\utility\math.hpp" />
     <ClInclude Include="..\include\utility\string.hpp" />
     <ClInclude Include="..\include\utility\xml.hpp" />

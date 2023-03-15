@@ -6,16 +6,9 @@
 #include <tuple>
 #include <fstream>
 #include <ctime>
+#include "filesystem/path_info.hpp"
 
 namespace file_utilities {
-    // Basic file/dir info
-    struct Path_Info {
-        std::string name;
-        bool is_regular;
-        bool is_directory;
-        unsigned long long timestamp;
-        std::tm calendar_time;
-    };
     // Open the file with the given UTF8 name for reading
     std::ifstream open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in);
     // Open the file with the given UTF8 name for writing

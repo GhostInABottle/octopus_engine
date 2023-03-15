@@ -95,6 +95,11 @@ SOURCES += main.cpp\
     ../src/utility/string.cpp \
     ../src/utility/color.cpp \
     ../src/utility/xml.cpp \
+    ../src/utility/filesystem/boost_filesystem.cpp \
+    ../src/utility/filesystem/disk_filesystem.cpp \
+    ../src/utility/filesystem/readable_filesystem.cpp \
+    ../src/utility/filesystem/standard_filesystem.cpp \
+    ../src/utility/filesystem/writable_filesystem.cpp \
     ../src/xd/audio/detail/fmod_audio_handle.cpp \
     ../src/xd/audio/detail/fmod_sound_handle.cpp \
     ../src/xd/audio/audio.cpp \
@@ -215,6 +220,12 @@ HEADERS  += main_window.hpp \
     ../include/utility/math.hpp \
     ../include/utility/string.hpp \
     ../include/utility/xml.hpp \
+    ../include/utility/filesystem/boost_filesystem.hpp \
+    ../include/utility/filesystem/disk_filesystem.hpp \
+    ../include/utility/filesystem/path_info.hpp \
+    ../include/utility/filesystem/readable_filesystem.hpp \
+    ../include/utility/filesystem/standard_filesystem.hpp \
+    ../include/utility/filesystem/writable_filesystem.hpp \
     ../include/xd/asset_manager.hpp \
     ../include/xd/asset_serializer.hpp \
     ../include/xd/audio.hpp \
