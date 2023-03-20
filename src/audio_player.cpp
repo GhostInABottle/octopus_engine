@@ -53,14 +53,14 @@ std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, float volu
 std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std::string& filename, bool looping, float volume) {
     if (!audio || filename.empty()) return nullptr;
 
-    auto playing_music{ music ? music->get_filename() : "" };
-    if (filename == playing_music) return music;
-
     if (filename == "false") {
         music->stop();
         music.reset();
         return nullptr;
     }
+
+    auto playing_music{ music ? music->get_filename() : "" };
+    if (audio_folder + filename == playing_music) return music;
 
     std::shared_ptr<xd::music> music;
     auto& map_cache = current_map.get_audio_cache();
