@@ -2,6 +2,7 @@
 #include "../include/utility/color.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/xml.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/xd/system.hpp"
 
@@ -37,14 +38,15 @@ rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
 
 std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
     auto doc = std::make_unique<rapidxml::xml_document<>>();
-    auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
+    auto fs = file_utilities::game_data_filesystem();
+    auto content = doc->allocate_string(fs->read_file(filename).c_str());
     doc->parse<0>(content);
     auto tileset_node = doc->first_node("tileset");
     if (!tileset_node)
         throw tmx_exception("Invalid external tileset TMX file. Missing tileset node");
     auto tileset = load(*tileset_node);
     tileset->filename = filename;
-    file_utilities::normalize_slashes(tileset->filename);
+    string_utilities::normalize_slashes(tileset->filename);
     return tileset;
 }
 
@@ -59,12 +61,14 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
         node.first_attribute("tilewidth")->value());
     tileset_ptr->tile_height = std::stoi(
         node.first_attribute("tileheight")->value());
+
     // Tileset properties
     tileset_ptr->properties.read(node);
+
     // Image
     if (auto image_node = node.first_node("image")) {
         tileset_ptr->image_source = image_node->first_attribute("source")->value();
-        file_utilities::normalize_slashes(tileset_ptr->image_source);
+        string_utilities::normalize_slashes(tileset_ptr->image_source);
         if (auto trans_attr = image_node->first_attribute("trans")) {
             tileset_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
@@ -74,6 +78,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
             tileset_ptr->image_trans_color, GL_REPEAT, GL_REPEAT,
             GL_NEAREST, GL_NEAREST);
     }
+
     // Tiles
     for (auto tile_node = node.first_node("tile");
             tile_node; tile_node = tile_node->next_sibling("tile")) {
@@ -82,6 +87,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
         tile.properties.read(*tile_node);
         tileset_ptr->tiles.push_back(tile);
     }
+
     return tileset_ptr;
 }
 

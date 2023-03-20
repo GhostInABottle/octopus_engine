@@ -72,6 +72,7 @@ SOURCES += main.cpp\
     ../src/scripting/bindings/game_bindings.cpp \
     ../src/scripting/bindings/audio_bindings.cpp \
     ../src/scripting/bindings/camera_bindings.cpp \
+    ../src/scripting/bindings/file_bindings.cpp \
     ../src/scripting/bindings/layer_bindings.cpp \
     ../src/scripting/bindings/map_bindings.cpp \
     ../src/scripting/bindings/map_object_bindings.cpp \
@@ -97,9 +98,8 @@ SOURCES += main.cpp\
     ../src/utility/xml.cpp \
     ../src/utility/filesystem/boost_filesystem.cpp \
     ../src/utility/filesystem/disk_filesystem.cpp \
-    ../src/utility/filesystem/readable_filesystem.cpp \
     ../src/utility/filesystem/standard_filesystem.cpp \
-    ../src/utility/filesystem/writable_filesystem.cpp \
+    ../src/utility/filesystem/user_data_folder.cpp \
     ../src/xd/audio/detail/fmod_audio_handle.cpp \
     ../src/xd/audio/detail/fmod_sound_handle.cpp \
     ../src/xd/audio/audio.cpp \
@@ -225,6 +225,7 @@ HEADERS  += main_window.hpp \
     ../include/utility/filesystem/path_info.hpp \
     ../include/utility/filesystem/readable_filesystem.hpp \
     ../include/utility/filesystem/standard_filesystem.hpp \
+    ../include/utility/filesystem/user_data_folder.hpp \
     ../include/utility/filesystem/writable_filesystem.hpp \
     ../include/xd/asset_manager.hpp \
     ../include/xd/asset_serializer.hpp \

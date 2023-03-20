@@ -29,16 +29,20 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(const std::string& filename, xd::
         xd::audio* audio, channel_group_type channel_group) {
     try {
         auto doc = std::make_unique<rapidxml::xml_document<>>();
-        auto content = doc->allocate_string(file_utilities::read_file(filename).c_str());
+        auto fs = file_utilities::game_data_filesystem();
+        auto content = doc->allocate_string(fs->read_file(filename).c_str());
         doc->parse<0>(content);
+
         auto sprite_node = doc->first_node("Sprite");
         if (!sprite_node) {
             throw xml_exception("Missing Sprite node.");
         }
 
         auto sprite_data = load(*sprite_node, manager, audio, channel_group);
+
         sprite_data->filename = filename;
-        file_utilities::normalize_slashes(sprite_data->filename);
+        string_utilities::normalize_slashes(sprite_data->filename);
+
         return sprite_data;
     } catch (std::exception& ex) {
         throw xml_exception("Error reading sprite data file " + filename + ": " + ex.what());
@@ -60,7 +64,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
     if (auto attr = node.first_attribute("Image")) {
         image_loaded = true;
         std::string image_file = attr->value();
-        file_utilities::normalize_slashes(image_file);
+        string_utilities::normalize_slashes(image_file);
         sprite_ptr->image = manager.load_persistent<xd::texture>(
             image_file, sprite_ptr->transparent_color,
             GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
@@ -111,7 +115,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
-            file_utilities::normalize_slashes(pose_image_file);
+            string_utilities::normalize_slashes(pose_image_file);
             pose.image = manager.load_persistent<xd::texture>(
                 pose_image_file,
                 pose.transparent_color,
@@ -156,7 +160,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
-                file_utilities::normalize_slashes(frame_image_file);
+                string_utilities::normalize_slashes(frame_image_file);
                 frame.image = manager.load_persistent<xd::texture>(
                     frame_image_file,
                     frame.transparent_color,

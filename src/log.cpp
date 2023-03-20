@@ -11,15 +11,18 @@ void Log::open_log_file() {
     if (Configurations::defaults_loaded()) {
         enabled = Configurations::get<bool>("logging.enabled");
     }
-    if (!enabled)
-        return;
+    if (!enabled) return;
+
     auto filename = Configurations::get<std::string>("logging.filename");
     if (filename.empty()) filename = "game.log";
-    file_utilities::normalize_slashes(filename);
-    auto data_dir = file_utilities::get_data_directory(false);
+
+    string_utilities::normalize_slashes(filename);
+    auto data_folder = file_utilities::user_data_folder();
+    auto data_dir = data_folder->get_version_path();
     if (filename.find("/") == std::string::npos) {
         filename = data_dir + filename;
     }
+
     int mode = static_cast<int>(std::fstream::out);
     auto config_mode = Configurations::get<std::string>("logging.mode");
     if (config_mode == "truncate")
@@ -27,7 +30,7 @@ void Log::open_log_file() {
     else if (config_mode == "append")
         mode |= std::ios_base::app;
 
-    log_file = file_utilities::open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
+    log_file = data_folder->get_filesystem().open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
     enabled = static_cast<bool>(log_file);
     std::string config_level = Configurations::get<std::string>("logging.level");
     string_utilities::capitalize(config_level);

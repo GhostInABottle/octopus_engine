@@ -203,94 +203,79 @@ void Key_Binder::unbind_key(const xd::key& key) {
     }
 }
 
-bool Key_Binder::process_keymap_file() {
-    std::string filename = get_keymap_filename();
-    if (!file_utilities::file_exists(filename)) {
-        filename = Configurations::get<std::string>("controls.mapping-file");
-    }
-    auto input = file_utilities::open_ifstream(filename);
-    if (!input) {
-        LOGGER_W << "Couldn't read key mapping file \"" << filename << "\", using default key mapping.";
-        return false;
-    }
-
-    LOGGER_I << "Processing keymap file " << filename;
+bool Key_Binder::process_keymap_file(std::istream& stream) {
     bound_keys.clear();
     // Read keymap file and bind keys based on name
     std::string line;
     int counter = 0;
-    while (std::getline(input, line))
-    {
+    while (std::getline(stream, line)) {
         ++counter;
         string_utilities::trim(line);
-        if (line.empty() || line[0] == '#')
-            continue;
+        if (line.empty() || line[0] == '#') continue;
+
         auto parts = string_utilities::split(line, "=");
         if (parts.size() < 2) {
-            LOGGER_W << "Error processing key mapping file \"" << filename <<
-                " at line " << counter << ", missing = sign.";
+            LOGGER_W << "Error processing key mapping file at line "
+                << counter << ", missing = sign.";
             continue;
         }
+
         auto virtual_name = parts[0];
         string_utilities::trim(virtual_name);
-        if (virtual_name.empty())
-            LOGGER_E << "Error processing key mapping file \"" << filename <<
-            " at line " << counter << ", virtual name is missing.";
+        if (virtual_name.empty()) {
+            LOGGER_E << "Error processing key mapping file  at line "
+                << counter << ", virtual name is missing.";
+        }
+
         auto keys = string_utilities::split(parts[1], ",");
-        if (keys.empty())
-            LOGGER_W << "Error processing key mapping file \"" << filename <<
-            " at line " << counter << ", no keys specified.";
+        if (keys.empty()) {
+            LOGGER_W << "Error processing key mapping file  at line "
+                << counter << ", no keys specified.";
+        }
+
         for (auto key : keys) {
             string_utilities::trim(key);
             string_utilities::capitalize(key);
             if (keys_for_name.find(key) != keys_for_name.end()) {
                 bind_key(key, virtual_name);
             } else {
-                LOGGER_W << "Error processing key mapping file \"" << filename <<
-                    " at line " << counter << ", key \"" << key << "\" not found.";
+                LOGGER_W << "Error processing key mapping file  at line "
+                    << counter << ", key \"" << key << "\" not found.";
             }
         }
     }
+ 
     changed_since_save = true;
     return true;
 }
 
-bool Key_Binder::save_keymap_file() {
-    if (!changed_since_save || !Configurations::get<bool>("debug.update-config-files")) return true;
-    auto filename = get_keymap_filename();
-    auto output = file_utilities::open_ofstream(filename);
-    if (!output) {
-        LOGGER_E << "Unable to open keymap file " << filename << " for writing";
-        return false;
-    }
-    LOGGER_I << "Saving keymap file " << filename;
-    output << "# Logical name = key1, key2, gamepad-key1, etc.\n"
+bool Key_Binder::can_save() const {
+    return changed_since_save && Configurations::get<bool>("debug.update-config-files");
+}
+
+bool Key_Binder::save_keymap_file(std::ostream& stream) {
+    stream << "# Logical name = key1, key2, gamepad-key1, etc.\n"
         "# Special keys allowed: enter, space, esc, ctrl, alt, and directions\n";
-    if (!output) {
+
+    if (!stream) {
         LOGGER_E << "Error writing opening comment to keymap file";
         return false;
     }
+
     for (auto& [virtual_name, physical_names] : bound_keys) {
         auto values = string_utilities::join(physical_names, ", ");
         if (values.empty()) continue;
-        output << virtual_name << " = " <<values << "\n";
-        if (!output) {
+
+        stream << virtual_name << " = " <<values << "\n";
+        if (!stream) {
             LOGGER_E << "Error writing key mapping '" << virtual_name
-                << "=" << values << "' to keymap file " << filename;
+                << "=" << values << "' to keymap file";
             return false;
         }
     }
-    LOGGER_I << "Finished saving keymap file " << filename;
+
     changed_since_save = false;
     return true;
-}
-
-std::string Key_Binder::get_keymap_filename() const {
-    std::string filename = Configurations::get<std::string>("controls.mapping-file");
-    if (file_utilities::is_absolute_path(filename)) return filename;
-    auto data_directory = file_utilities::get_data_directory();
-    if (data_directory.empty()) return filename;
-    return data_directory + file_utilities::get_filename_component(filename);
 }
 
 std::vector<xd::key> Key_Binder::get_keys(const std::string& physical_name) const {

@@ -7,10 +7,9 @@
 #include <boost/filesystem.hpp>
 #include <chrono>
 
-using namespace file_utilities;
 namespace fs = boost::filesystem;
 
-namespace file_utilities::detail {
+namespace detail {
     fs::path string_to_utf8_path(const std::string& str) {
         #ifdef _WIN32
                 return fs::path(win32::Utf8ToUtf16(str));

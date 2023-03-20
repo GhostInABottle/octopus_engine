@@ -396,10 +396,7 @@
     <ClCompile Include="..\src\utility\filesystem\standard_filesystem.cpp">
       <Filter>Source Files\utility\filesystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility\filesystem\writable_filesystem.cpp">
-      <Filter>Source Files\utility\filesystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility\filesystem\readable_filesystem.cpp">
+    <ClCompile Include="..\src\utility\filesystem\user_data_folder.cpp">
       <Filter>Source Files\utility\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utility\filesystem\disk_filesystem.cpp">
@@ -407,6 +404,9 @@
     </ClCompile>
     <ClCompile Include="..\src\utility\filesystem\boost_filesystem.cpp">
       <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\file_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -831,6 +831,9 @@
       <Filter>Header Files\utility\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="..\include\utility\filesystem\disk_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\filesystem\user_data_folder.hpp">
       <Filter>Header Files\utility\filesystem</Filter>
     </ClInclude>
   </ItemGroup>

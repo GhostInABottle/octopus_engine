@@ -1,10 +1,9 @@
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
-#include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
 #include <boost/lexical_cast.hpp>
 #include <typeinfo>
-#include <fstream>
+#include <iostream>
 
 void Configurations::load_defaults() {
     defaults["game.title"] = std::string{"Untitled"};
@@ -110,13 +109,9 @@ void Configurations::load_defaults() {
     defaults["startup.scripts-list"] = std::string{};
 }
 
-std::vector<std::string> Configurations::parse(std::string filename) {
+std::vector<std::string> Configurations::parse(std::istream& stream) {
     if (defaults.size() == 0) {
         load_defaults();
-    }
-    auto stream = file_utilities::open_ifstream(filename);
-    if (!stream) {
-        throw config_exception("Couldn't read file " + filename);
     }
 
     values.clear();
@@ -140,7 +135,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
         if (line[0] == '[') {
             auto end = line.find(']');
             if (end == std::string::npos) {
-                errors.push_back(filename + " contains section line without closing ] at line "
+                errors.push_back("Config file contains section line without closing ] at line "
                     + std::to_string(line_number) + ", line content: " + line);
             } else {
                 current_section = line.substr(1, end - 1);
@@ -157,13 +152,13 @@ std::vector<std::string> Configurations::parse(std::string filename) {
         // Key = Value pairs
         auto eq = line.find('=');
         if (eq == std::string::npos) {
-            errors.push_back(filename + " is missing = sign at line "
+            errors.push_back("Config file is missing = sign at line "
                 + std::to_string(line_number) + ", line content: " + line);
         } else {
             auto key = line.substr(0, eq);
             string_utilities::trim(key);
             if (key.empty()) {
-                errors.push_back(filename + " is missing configuration key at line "
+                errors.push_back("Config file is missing configuration key at line "
                     + std::to_string(line_number) + ", line content: " + line);
                 continue;
             }
@@ -171,7 +166,7 @@ std::vector<std::string> Configurations::parse(std::string filename) {
                 key = current_section + "." + key;
             }
             if (has_value(key)) {
-                errors.push_back(filename + " contains duplicate key '" + key + "' at line "
+                errors.push_back("Config file contains duplicate key '" + key + "' at line "
                     + std::to_string(line_number) + ", line content: " + line);
             }
             if (!comments.empty()) {
@@ -197,18 +192,13 @@ std::vector<std::string> Configurations::parse(std::string filename) {
 
     changed_since_save = false;
     if (values.empty()) {
-        errors.push_back(filename + " config file was completely empty or invalid");
+        errors.push_back("Config file was completely empty or invalid");
     }
 
     return errors;
 }
 
-void Configurations::save(std::string filename) {
-    auto stream = file_utilities::open_ofstream(filename);
-    if (!stream) {
-        throw config_exception("Couldn't open config file for saving " + filename);
-    }
-    LOGGER_I << "Saving config file " << filename;
+void Configurations::save(std::ostream& stream) {
     std::unordered_map<std::string, std::vector<std::pair<std::string, Configurations::value_type>>> sections;
     for (auto& [full_key, value] : values) {
         auto dot = full_key.find(".");
@@ -235,7 +225,7 @@ void Configurations::save(std::string filename) {
             stream << "[" << section << "]\n";
         }
         if (!stream) {
-            throw config_exception("Error writing section " + section + " to config file " + filename);
+            throw config_exception("Error writing section " + section + " to config file");
         }
         for (auto& [key, val] : section_values) {
             auto full_key = section == "global" ? key : section + "." + key;
@@ -245,7 +235,7 @@ void Configurations::save(std::string filename) {
             }
             stream << key << " = " << get_string(full_key) << "\n";
             if (!stream) {
-                throw config_exception("Error writing key " + full_key + " to config file " + filename);
+                throw config_exception("Error writing key " + full_key + " to config file");
             }
         }
     }

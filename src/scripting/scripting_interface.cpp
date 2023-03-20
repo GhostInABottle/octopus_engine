@@ -95,6 +95,8 @@ void Scripting_Interface::setup_scripts() {
 
     bind_utility_types(lua, *game);
 
+    bind_file_types(lua, *game);
+
     bind_text_types(lua, *game);
 
     bind_math_types(lua);

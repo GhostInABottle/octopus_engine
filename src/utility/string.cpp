@@ -62,3 +62,7 @@ bool string_utilities::string_to_bool(const std::string& original) {
 void string_utilities::replace_all(std::string& haystack, const std::string& needle, const std::string& replacement) {
     boost::replace_all(haystack, needle, replacement);
 }
+
+void string_utilities::normalize_slashes(std::string& filename) {
+    replace_all(filename, "\\", "/");
+}

@@ -14,6 +14,7 @@
 #include "../include/xd/vendor/sol/sol.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/vendor/rapidxml_print.hpp"
@@ -530,7 +531,9 @@ void Map::save(std::string save_filename) {
     doc->append_node(decl_node);
     auto map_node = save(*doc);
     doc->append_node(map_node);
-    auto out = file_utilities::open_ofstream(save_filename, std::ios_base::out | std::ios_base::trunc);
+
+    auto fs = file_utilities::disk_filesystem();
+    auto out = fs->open_ofstream(save_filename, std::ios_base::out | std::ios_base::trunc);
     rapidxml::print_stream(out, *doc, rapidxml::print_space_indenting);
 }
 
@@ -545,30 +548,38 @@ rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {
     node->append_attribute(xml_attribute(doc, "tileheight", std::to_string(tile_height)));
     node->append_attribute(xml_attribute(doc, "nextobjectid", std::to_string(next_object_id)));
     properties.save(doc, *node);
+
     // Tilesets
     for (auto& tileset : tilesets) {
         auto tileset_node = tileset.save(doc);
         node->append_node(tileset_node);
     }
+
     // Layers
     for (auto& layer : layers) {
         auto layer_node = layer->save(doc);
         node->append_node(layer_node);
     }
+
     return node;
 }
 
 std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
     LOGGER_I << "Loading map " << filename;
     auto doc = std::make_unique< rapidxml::xml_document<>>();
-    char* content = doc->allocate_string(file_utilities::read_file(filename).c_str());
+    auto fs = file_utilities::game_data_filesystem();
+    char* content = doc->allocate_string(fs->read_file(filename).c_str());
     doc->parse<0>(content);
+
     auto map_node = doc->first_node("map");
     if (!map_node)
         throw tmx_exception("Invalid TMX file. Missing map node");
+
     auto map = load(game, *map_node);
+
     map->filename = filename;
-    file_utilities::normalize_slashes(map->filename);
+    string_utilities::normalize_slashes(map->filename);
+
     return map;
 }
 

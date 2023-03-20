@@ -157,52 +157,82 @@ function bit.bnot(a) end
 ---@field timestamp integer
 ---@field calendar_time Engine_Calendar_Time
 
-filesystem = {}
+---@class Engine_Readable_Filesystem
+local Engine_Readable_Filesystem = {}
 
 ---@param path string
 ---@return boolean
-function filesystem.exists(path) end
+function Engine_Readable_Filesystem:exists(path) end
 
 ---@param path string
 ---@return boolean
-function filesystem.is_regular_file(path) end
+function Engine_Readable_Filesystem:is_regular_file(path) end
 
 ---@param path string
 ---@return boolean
-function filesystem.is_directory(path) end
+function Engine_Readable_Filesystem:is_directory(path) end
 
 ---@param path string
 ---@return boolean
-function filesystem.is_absolute(path) end
+function Engine_Readable_Filesystem:is_absolute(path) end
 
 ---@param path string
 ---@return string
-function filesystem.get_basename(path) end
+function Engine_Readable_Filesystem:get_basename(path) end
 
 ---@param path string
 ---@return string
-function filesystem.get_stem(path) end
+function Engine_Readable_Filesystem:get_stem(path) end
 
 ---@param path string
 ---@return integer ms_timestamp, Engine_Calendar_Time calendar_time
-function filesystem.last_write_time(path) end
+function Engine_Readable_Filesystem:last_write_time(path) end
 
 ---@param path string
 ---@return string[]
-function filesystem.list_directory(path) end
+function Engine_Readable_Filesystem:list_directory(path) end
 
 ---@param path string
 ---@return Engine_Path_Info[]
-function filesystem.list_detailed_directory(path) end
+function Engine_Readable_Filesystem:list_detailed_directory(path) end
+
+---@class Engine_Writable_Filesystem : Engine_Readable_Filesystem
+local Engine_Writable_Filesystem = {}
 
 ---@param source string
 ---@param destination string
 ---@return boolean copied
-function filesystem.copy(source, destination) end
+function Engine_Writable_Filesystem:copy(source, destination) end
 
 ---@param path string
 ---@return boolean removed
-function filesystem.remove(path) end
+function Engine_Writable_Filesystem:remove(path) end
+
+---@class Engine_User_Data_Folder
+---@field base_path string # readonly
+---@field game_path string # readonly
+---@field version_path string # readonly
+local Engine_User_Data_Folder = {}
+
+---@param filename string
+---@param data Save_Data
+---@param header? Save_Data_Header
+---@param compact? boolean
+---@return boolean success
+function Engine_User_Data_Folder:save(filename, data, header, compact) end
+
+---@param filename string
+---@param compact? boolean
+---@return Save_Data save_data, Save_Data_Header header
+function Engine_User_Data_Folder:load(filename, compact) end
+
+---@param filename string
+---@param compact? boolean
+---@return Save_Data_Header header
+function Engine_User_Data_Folder:load_header(filename, compact) end
+
+function Engine_User_Data_Folder:save_config_file() end
+function Engine_User_Data_Folder:save_keymap_file() end
 
 -- Text and Choices
 
@@ -1338,7 +1368,6 @@ function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 ---@field seconds integer
 ---@field fps integer
 ---@field frame_count integer
----@field data_directory string
 ---@field character_input string
 ---@field triggered_keys string[]
 ---@field gamepad_enabled boolean
@@ -1360,6 +1389,9 @@ function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 ---@field fullscreen boolean
 ---@field magnification integer
 ---@field audio_player Engine_Audio_Player # readonly
+---@field game_data_filesystem Engine_Readable_Filesystem # readonly
+---@field user_data_filesystem Engine_Writable_Filesystem # readonly
+---@field data_folder Engine_User_Data_Folder # readonly
 game = {}
 
 ---@param name string
@@ -1414,26 +1446,6 @@ function game:set_unsigned_config(name, value) end
 ---@param direction Engine_Direction
 ---@param music_file string?
 function game:load_map(filename, x, y, direction, music_file) end
-
----@param filename string
----@param data Save_Data
----@param header? Save_Data_Header
----@param compact? boolean
----@return boolean success
-function game:save(filename, data, header, compact) end
-
----@param filename string
----@param compact? boolean
----@return Save_Data save_data, Save_Data_Header header
-function game:load(filename, compact) end
-
----@param filename string
----@param compact? boolean
----@return Save_Data_Header header
-function game:load_header(filename, compact) end
-
-function game:save_config_file() end
-function game:save_keymap_file() end
 
 function game:pause() end
 

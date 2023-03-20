@@ -65,8 +65,9 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
     std::string vsrc, fsrc;
     if (!vertex.empty() && !fragment.empty()) {
         try {
-            vsrc = file_utilities::read_file(vertex);
-            fsrc = file_utilities::read_file(fragment);
+            auto fs = file_utilities::game_data_filesystem();
+            vsrc = fs->read_file(vertex);
+            fsrc = fs->read_file(fragment);
         } catch (const std::runtime_error& err) {
             throw std::runtime_error("Error loading shaders: " + std::string{err.what()});
         }

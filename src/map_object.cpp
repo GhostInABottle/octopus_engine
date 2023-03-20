@@ -166,11 +166,14 @@ void Map_Object::set_name(const std::string& new_name) {
 
 std::string Map_Object::prepare_script(const std::string& script) const {
     if (script.empty()) return script;
+
     auto preamble = game.get_object_script_preamble();
     auto extension = script.substr(script.find_last_of(".") + 1);
-    return extension == "lua"
-        ? preamble + file_utilities::read_file(game.get_scripts_directory() + script)
-        : preamble + script;
+    if (extension != "lua") return preamble + script;
+
+    auto fs = file_utilities::game_data_filesystem();
+    auto script_filename = game.get_scripts_directory() + script;
+    return preamble + fs->read_file(script_filename);
 }
 
 void  Map_Object::set_trigger_script(const std::string& script) {
@@ -246,14 +249,15 @@ Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
-    if (!file_utilities::file_exists(filename)) {
+    auto fs = file_utilities::game_data_filesystem();
+    if (!fs->file_exists(filename)) {
         throw std::runtime_error("Tried to set sprite for map object " + name +
             " to nonexistent file " + filename);
     }
 
     if (sprite) {
         auto normalized_filename{filename};
-        file_utilities::normalize_slashes(normalized_filename);
+        string_utilities::normalize_slashes(normalized_filename);
         if (sprite->get_filename() == normalized_filename)
             return;
     }

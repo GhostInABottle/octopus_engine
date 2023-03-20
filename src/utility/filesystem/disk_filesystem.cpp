@@ -1,14 +1,13 @@
 #include "../../../include/utility/filesystem/disk_filesystem.hpp"
+#include "../../../include/utility/string.hpp"
 #include "../../../include/log.hpp"
 #ifdef _WIN32
 #include "../../../include/vendor/utf8conv.h"
 #endif
 #include <stdexcept>
 
-using namespace file_utilities;
-
 std::ifstream Disk_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode mode) {
-    normalize_slashes(filename);
+    string_utilities::normalize_slashes(filename);
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
     return std::ifstream{ utf16_filename, mode };
@@ -18,7 +17,7 @@ std::ifstream Disk_Filesystem::open_ifstream(std::string filename, std::ios_base
 }
 
 std::ofstream Disk_Filesystem::open_ofstream(std::string filename, std::ios_base::openmode mode) {
-    normalize_slashes(filename);
+    string_utilities::normalize_slashes(filename);
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
     return std::ofstream{ utf16_filename , mode };

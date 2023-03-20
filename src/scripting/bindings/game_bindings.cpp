@@ -5,6 +5,7 @@
 #include "../../../include/audio_player.hpp"
 #include "../../../include/configurations.hpp"
 #include "../../../include/save_file.hpp"
+#include "../../../include/utility/file.hpp"
 #include "../../../include/xd/lua.hpp"
 #include <string>
 #include <memory>
@@ -31,6 +32,7 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["game_width"] = sol::property([](Game& game) { return game.game_width(); });
     game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
     game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);
+
     game_type["ticks"] = sol::property(&Game::ticks);
     game_type["window_ticks"] = sol::property(&Game::window_ticks);
     game_type["fps"] = sol::property(&Game::fps);
@@ -41,18 +43,30 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
     game_type["script_scheduler_paused"] = sol::property(&Game::is_script_scheduler_paused, &Game::set_script_scheduler_paused);
     game_type["debug"] = sol::property(&Game::is_debug);
-    game_type["data_directory"] = sol::property(&Game::get_save_directory);
+
+    game_type["game_data_filesystem"] = sol::property([](Game&) {
+        return file_utilities::game_data_filesystem();
+    });
+    game_type["user_data_filesystem"] = sol::property([](Game&) {
+        return file_utilities::user_data_filesystem();
+        });
+    game_type["data_folder"] = sol::property([](Game&) {
+        return file_utilities::user_data_folder();
+    });
+
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
     game_type["last_input_type"] = sol::property(&Game::get_last_input_type);
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
     game_type["gamepad_name"] = sol::property(&Game::get_gamepad_name);
+    game_type["character_input"] = sol::property(&Game::character_input);
+
     game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
     game_type["monitor_resolutions"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_sizes());
     });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
-    game_type["character_input"] = sol::property(&Game::character_input);
+
     game_type["command_line_args"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_command_line_args());
     });
@@ -129,29 +143,6 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["set_string_config"] = [](Game*, const std::string& key, const std::string& value) {
         Configurations::set(key, value);
     };
-
-    game_type["save"] = [&](Game* game, const std::string& filename, sol::table obj, std::optional<sol::table> header, std::optional<bool> compact) {
-        Save_File file(lua, obj, header ? &header.value() : nullptr, compact.value_or(true));
-        game->save(filename, file);
-        return file.is_valid();
-    };
-    game_type["load"] = [&](Game* game, const std::string& filename, std::optional<bool> compact) {
-        auto file = game->load(filename, false, compact.value_or(true));
-        if (file->is_valid())
-            return std::make_tuple(file->lua_data(), file->header_data());
-        else
-            return std::make_tuple(sol::object(sol::lua_nil), sol::object(sol::lua_nil));
-    };
-    game_type["load_header"] = [&](Game* game, const std::string& filename, std::optional<bool> compact) {
-        auto file = game->load(filename, true, compact.value_or(true));
-        if (file->is_valid())
-            return file->header_data();
-        else
-            return sol::object(sol::lua_nil);
-    };
-
-    game_type["save_config_file"] = &Game::save_config_file;
-    game_type["save_keymap_file"] = &Game::save_keymap_file;
 
     game_type["wait_for_input"] = sol::yielding(sol::overload(
         [](Game* game, const std::string& key) {

@@ -20,9 +20,9 @@ class Map_Object;
 class Scripting_Interface;
 class Base_Canvas;
 class Clock;
-class Save_File;
 class Audio_Player;
 class Typewriter_Decorator;
+class Key_Binder;
 
 namespace xd {
     class audio;
@@ -232,16 +232,6 @@ public:
     int window_ticks() { return window ? window->ticks() : editor_ticks; }
     // Get configured directory for Lua scripts
     std::string get_scripts_directory() const;
-    // Get save file directory and creates it if needed
-    std::string get_save_directory() const;
-    // Save game
-    void save(std::string filename, Save_File& save_file) const;
-    // Load game
-    std::unique_ptr<Save_File> load(std::string filename, bool header_only = false, bool compact = true);
-    // Save configurations file
-    bool save_config_file() const;
-    // Save key binding file
-    bool save_keymap_file() const;
     // Check if gamepad config is enabled and at least one gamepad exists
     bool gamepad_enabled() const;
     // Get current gamepad ID
@@ -259,6 +249,7 @@ public:
         return command_line_args;
     }
     Typewriter_Decorator& get_typewriter_decorator();
+    Key_Binder& get_key_binder();
 private:
     std::vector<std::string> command_line_args;
     // Window needs to be constructed before pimpl

@@ -6,6 +6,7 @@
 class Game;
 
 void bind_utility_types(sol::state& lua, Game& game);
+void bind_file_types(sol::state& lua, Game& game);
 void bind_text_types(sol::state& lua, Game& game);
 void bind_game_types(sol::state& lua, Game& game);
 void bind_canvas_types(sol::state& lua, Game& game);

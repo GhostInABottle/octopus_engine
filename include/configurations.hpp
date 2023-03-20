@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <iosfwd>
 #include "log.hpp"
 
 class config_exception : public std::runtime_error {
@@ -23,9 +24,9 @@ public:
     // Check if configuration defaults are loaded
     static bool defaults_loaded() noexcept { return !defaults.empty(); }
     // Parse the configuration file and returns list of parse errors
-    static std::vector<std::string> parse(std::string filename);
+    static std::vector<std::string> parse(std::istream& stream);
     // Save the configuration file
-    static void save(std::string filename);
+    static void save(std::ostream& stream);
     // Has the configurations changed since it was last saved?
     static bool changed() noexcept { return changed_since_save; }
     // Get the option with given name

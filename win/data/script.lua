@@ -278,10 +278,11 @@ elseif c.selected == 6 then
    local char_input = game:end_character_input()
    text(o, "You entered: " .. char_input):wait()
 elseif c.selected == 7 then
+    local filesystem = game.user_data_filesystem
     -- Filesystem
     local function test_list(method, processor)
         print('Files in current folder (' .. method .. '):')
-        local files = filesystem[method]('.')
+        local files = filesystem[method](filesystem, '.')
         local processed_files = {}
         for _, file in ipairs(files) do
             table.insert(processed_files, processor(file))
@@ -298,8 +299,8 @@ elseif c.selected == 7 then
         return date_str, dst
     end
     local function basic_processor(file_name)
-        local file_type = filesystem.is_directory(file_name) and 'directory' or 'file'
-        local ms, tm = filesystem.last_write_time(file_name)
+        local file_type = filesystem:is_directory(file_name) and 'directory' or 'file'
+        local ms, tm = filesystem:last_write_time(file_name)
         local date_str, dst = process_tm(tm)
         return {
             name = file_name,
@@ -343,36 +344,42 @@ elseif c.selected == 7 then
         m = { w = 'z' }
     }
 
+    local folder = game.data_folder
+    text(o, "User data folder: " .. folder.version_path):wait()
+    print('Base path: ' .. folder.base_path)
+    print('Game path: ' .. folder.game_path)
+
     text(o, "Saving a table where f.x = 1"):wait()
     print('Original table:')
     print(print_table(tbl))
     print('Original header:')
     print(print_table(header))
-    game:save('data/test_save.txt', tbl)
-    game:save('data/test_save_header.txt', tbl, header)
+
+    folder:save('data/test_save.txt', tbl)
+    folder:save('data/test_save_header.txt', tbl, header)
 
     print('Loaded file without header:')
-    local tbl2, header2 = game:load('data/test_save.txt')
+    local tbl2, header2 = folder:load('data/test_save.txt')
     text(o, "And loading it back. Loaded f.x = " .. tbl2.f.x):wait()
     print(print_table(tbl2))
     print(print_table(header2))
     print('Loaded file with header:')
-    tbl2, header2 = game:load('data/test_save_header.txt')
+    tbl2, header2 = folder:load('data/test_save_header.txt')
     print(print_table(tbl2))
     print(print_table(header2))
     print('Loaded header only:')
-    print(print_table(game:load_header('data/test_save_header.txt')))
+    print(print_table(folder:load_header('data/test_save_header.txt')))
 
     text(o, "Copying file"):wait()
     local copy_name = "data/test_save2.txt"
-    filesystem.copy("data/test_save.txt", copy_name)
-    local tbl3 = game:load(copy_name)
+    filesystem:copy("data/test_save.txt", copy_name)
+    local tbl3 = folder:load(copy_name)
     print('Loaded copied file:')
     print(print_table(tbl3))
-    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
+    print('File exists: ' .. tostring(filesystem:exists(copy_name)))
     text(o, 'Removing the copy'):wait()
-    filesystem.remove(copy_name)
-    print('File exists: ' .. tostring(filesystem.exists(copy_name)))
+    filesystem:remove(copy_name)
+    print('File exists: ' .. tostring(filesystem:exists(copy_name)))
 elseif c.selected == 8 then
     -- Other
     text(o, "Are we in debug mode? " .. (game.debug and "Yes!" or "No!")):wait()

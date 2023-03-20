@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <iosfwd>
 #include "xd/system/input.hpp"
 
 class Game;
@@ -24,11 +25,11 @@ public:
     // Remove binding for a key
     void unbind_key(const xd::key& key);
     // Process the keymap file and return whether it succeeded
-    bool process_keymap_file();
+    bool process_keymap_file(std::istream& stream);
+    // Check if the file has changed and that saving is enabled
+    bool can_save() const;
     // Save the keymap file and return whether it succeeded
-    bool save_keymap_file();
-    // Get the filename of the keymap file
-    std::string get_keymap_filename() const;
+    bool save_keymap_file(std::ostream& stream);
     // Get the physical name for a key
     std::string get_key_identifier(const xd::key& key) const {
         if (name_for_key.find(key) != name_for_key.end())

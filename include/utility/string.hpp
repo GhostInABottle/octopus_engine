@@ -25,6 +25,8 @@ namespace string_utilities {
     bool string_to_bool(const std::string& original);
     // Replace all instances in the string
     void replace_all(std::string& haystack, const std::string& needle, const std::string& replacement);
+    // Change backslashes to forward slashes
+    void normalize_slashes(std::string& filename);
 }
 
 #endif

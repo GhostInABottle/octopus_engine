@@ -12,6 +12,7 @@
 #include "../include/utility/color.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/save_file.hpp"
 #include "../include/decorators/shake_decorator.hpp"
 #include "../include/decorators/typewriter_decorator.hpp"
@@ -51,7 +52,6 @@ struct Game::Impl {
             game_height(Configurations::get<float>("debug.height")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
-            save_path("not set"),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
             scripts_folder(Configurations::get<std::string>("game.scripts-folder")),
             reset_scripting(false),
@@ -79,10 +79,13 @@ struct Game::Impl {
         // Script preamble
         auto preamble = string_utilities::trim(Configurations::get<std::string>("game.object-script-preamble"));
         if (preamble.empty()) return;
+
         auto extension = preamble.substr(preamble.find_last_of(".") + 1);
         if (extension == "lua") {
-            preamble = file_utilities::read_file(scripts_folder + preamble);
+            auto fs = file_utilities::game_data_filesystem();
+            preamble = fs->read_file(scripts_folder + preamble);
         }
+
         object_script_preamble = preamble + ";";
     }
     // Called when a configuration changes
@@ -143,26 +146,14 @@ struct Game::Impl {
         }
         config_changes.clear();
     }
-    // Get default save folder
-    std::string get_save_directory() {
-        if (!save_path.empty() && (save_path == "not set" || !file_utilities::file_exists(save_path))) {
-            save_path = file_utilities::get_data_directory();
-        }
-        return save_path;
-    }
-    // Add directory to save filename
-    void cleanup_save_filename(std::string& filename) {
-        file_utilities::normalize_slashes(filename);
-        if (filename.find('/') == std::string::npos) {
-            filename = get_save_directory() + filename;
-        }
-    }
     // Process key-mapping string
     void process_keymap(Game& game) {
         if (!key_binder) {
             key_binder = std::make_unique<Key_Binder>(game);
         }
-        if (!key_binder->process_keymap_file()) {
+
+        auto user_data_folder = file_utilities::user_data_folder();
+        if (!user_data_folder->load_keymap_file(*key_binder)) {
             key_binder->bind_defaults();
         }
     }
@@ -188,7 +179,8 @@ struct Game::Impl {
             Configurations::get<std::string>("startup.scripts-list");
 
         if (!scripts_list.empty()) {
-           auto scripts_file = file_utilities::open_ifstream(scripts_list);
+            auto fs = file_utilities::game_data_filesystem();
+            auto scripts_file = fs->open_ifstream(scripts_list);
             if (scripts_file) {
                 std::string filename;
                 while (std::getline(scripts_file, filename)) {
@@ -293,8 +285,6 @@ struct Game::Impl {
     int preferred_gamepad_id;
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
-    // Calculated save folder path
-    std::string save_path;
     // Keymap file reader and binder
     std::unique_ptr<Key_Binder> key_binder;
     // The button for pausing the game
@@ -371,14 +361,16 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
     pimpl->debug_style.line_height(12.0f).force_autohint(true);
     auto font_file = Configurations::get<std::string>("font.default");
 
-    if (!file_utilities::file_exists(font_file)) {
+
+    auto fs = file_utilities::game_data_filesystem();
+    if (!fs->file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
     font = create_font(font_file);
 
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     if (!bold_font_file.empty()) {
-        if (!file_utilities::file_exists(bold_font_file)) {
+        if (!fs->file_exists(bold_font_file)) {
             throw std::runtime_error("Couldn't read bold font file " + bold_font_file);
         }
         font->link_font("bold", create_font(bold_font_file));
@@ -386,7 +378,7 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
 
     auto italic_font_file = Configurations::get<std::string>("font.italic");
     if (!italic_font_file.empty()) {
-        if (!file_utilities::file_exists(italic_font_file)) {
+        if (!fs->file_exists(italic_font_file)) {
             throw std::runtime_error("Couldn't read bold font file " + italic_font_file);
         }
         font->link_font("italic", create_font(italic_font_file));
@@ -466,7 +458,8 @@ void Game::run() {
             break;
         render();
     }
-    save_config_file();
+
+    file_utilities::user_data_folder()->try_to_save_config();
 }
 
 void Game::frame_update() {
@@ -724,7 +717,8 @@ xd::asset_manager& Game::get_asset_manager() {
 }
 
 std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
-    if (!file_utilities::file_exists(filename))
+    auto fs = file_utilities::game_data_filesystem();
+    if (!fs->file_exists(filename))
         throw std::runtime_error("Couldn't read font file " + filename);
     return pimpl->asset_manager.load<xd::font>(filename);
 }
@@ -757,65 +751,6 @@ int Game::ticks() const {
 
 std::string Game::get_scripts_directory() const {
     return pimpl->scripts_folder;
-}
-
-std::string Game::get_save_directory() const {
-    return pimpl->get_save_directory();
-}
-
-void Game::save(std::string filename, Save_File& save_file) const {
-    pimpl->cleanup_save_filename(filename);
-    try {
-        auto stream = file_utilities::open_ofstream(filename, std::ios::out | std::ios::binary);
-        if (!stream) {
-            throw std::runtime_error("Unable to open file for writing");
-        }
-        stream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-        stream << save_file;
-        LOGGER_I << "Saved file " << filename;
-    } catch (const std::ios_base::failure & e) {
-        LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
-    } catch (const config_exception& e) {
-        LOGGER_E << "Error while saving config file - message: " << e.what();
-    } catch (const std::runtime_error& e) {
-        LOGGER_E << "Error saving file " << filename << " - message: " << e.what();
-    }
-}
-
-std::unique_ptr<Save_File> Game::load(std::string filename, bool header_only, bool compact) {
-    pimpl->cleanup_save_filename(filename);
-    auto& state = pimpl->scripting_interface->lua_state();
-    auto file = std::make_unique<Save_File>(state, header_only, compact);
-    try {
-        auto stream = file_utilities::open_ifstream(filename, std::ios::in | std::ios::binary);
-        if (!stream) {
-            throw std::runtime_error("File doesn't exist or can't be opened");
-        }
-        stream.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        stream >> *file;
-        LOGGER_I << "Loaded file " << filename;
-    } catch (const std::ios_base::failure& e) {
-        LOGGER_E << "Error loading file " << filename << " - error code: " << e.code() << " - message: " << e.what();
-    } catch (const std::runtime_error& e) {
-        LOGGER_E << "Error loading file " << filename << " - message: " << e.what();
-    }
-    return file;
-}
-
-bool Game::save_config_file() const {
-    try {
-        file_utilities::save_config("config.ini");
-        return true;
-    } catch (const config_exception& e) {
-        LOGGER_E << "Error while saving config file - message: " << e.what();
-    } catch (const std::runtime_error& e) {
-        LOGGER_E << "Error saving config file - message: " << e.what();
-    }
-    return false;
-}
-
-bool Game::save_keymap_file() const {
-    return pimpl->key_binder->save_keymap_file();
 }
 
 void Game::load_next_map() {
@@ -893,4 +828,8 @@ std::string Game::get_object_script_preamble() const {
 
 Typewriter_Decorator& Game::get_typewriter_decorator() {
     return pimpl->typewriter_decorator;
+}
+
+Key_Binder& Game::get_key_binder() {
+    return *pimpl->key_binder;
 }

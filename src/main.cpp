@@ -25,14 +25,22 @@ int main(int argc, char* argv[]) {
             throw std::runtime_error("Unable to get OSX resources folder");
         }
 #endif
-        file_utilities::parse_config("config.ini");
-
+        // Parse the config file
+        auto user_data_folder = file_utilities::user_data_folder();
+        for (auto warning : user_data_folder->get_warnings()) {
+            LOGGER_I << warning;
+        }
+        user_data_folder->parse_config();
+ 
+        // Initialize the audio system
         auto audio = std::make_shared<xd::audio>();
+
         LOGGER_I << "Reticulating Splines";
+
         Game game(args, audio);
         game.run();
-        LOGGER_I << "Splines Reticulated";
 
+        LOGGER_I << "Splines Reticulated";
     } catch (const rapidxml::parse_error& e) {
         std::string where = e.where<char>();
         LOGGER_E << "RapidXml Exception: \"" << e.what() << "\" at \"" << where.substr(0, 50) << '"';

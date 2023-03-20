@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <chrono>
 
-using namespace file_utilities;
 namespace fs = std::filesystem;
 
 bool Standard_Filesystem::file_exists(const std::string& filename) {
@@ -63,7 +62,7 @@ std::vector<std::string> Standard_Filesystem::directory_content_names_unchecked(
 }
 
 std::vector<Path_Info> Standard_Filesystem::directory_content_details_unchecked(const std::string& path) {
-    std::vector<file_utilities::Path_Info> result;
+    std::vector<Path_Info> result;
 
     for (auto& p : fs::directory_iterator(fs::u8path(path))) {
         auto is_regular = fs::is_regular_file(p);

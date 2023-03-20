@@ -3,21 +3,17 @@
 
 #include "readable_filesystem.hpp"
 
-namespace file_utilities {
-    // Utilities for modifying a filesystem and writing files
-    class Writable_Filesystem : public Readable_Filesystem {
-    public:
-        // Get directory for writing game data (saves, config, logs, etc.)
-        virtual std::string get_data_directory(bool log_errors = true);
-        // Open the file with the given UTF8 name for writing
-        virtual std::ofstream open_ofstream(std::string filename, std::ios_base::openmode mode = std::ios_base::out) = 0;
-        // Copy a file, returns a boolean indicating success
-        virtual bool copy_file(const std::string& source, const std::string& destination) = 0;
-        // Remove a file, returns a boolean indicating success
-        virtual bool remove_file(const std::string& filename) = 0;
-        // Create one or more directories specified in the path
-        virtual bool create_directories(const std::string& path) = 0;
-    };
-}
+// Utilities for modifying a filesystem and writing files
+class Writable_Filesystem : public Readable_Filesystem {
+public:
+    // Open the file with the given UTF8 name for writing
+    virtual std::ofstream open_ofstream(std::string filename, std::ios_base::openmode mode = std::ios_base::out) = 0;
+    // Copy a file, returns a boolean indicating success
+    virtual bool copy_file(const std::string& source, const std::string& destination) = 0;
+    // Remove a file, returns a boolean indicating success
+    virtual bool remove_file(const std::string& filename) = 0;
+    // Create one or more directories specified in the path
+    virtual bool create_directories(const std::string& path) = 0;
+};
 
 #endif

@@ -1,5 +1,5 @@
 #include "../../include/canvas/image_canvas.hpp"
-#include "../../include/utility/file.hpp"
+#include "../../include/utility/string.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
 
@@ -10,7 +10,7 @@ Image_Canvas::Image_Canvas(Game& game, const std::string& filename, xd::vec2 pos
 }
 
 void Image_Canvas::set_image(std::string image_filename, xd::vec4 trans) {
-    file_utilities::normalize_slashes(image_filename);
+    string_utilities::normalize_slashes(image_filename);
     if (image_texture && filename == image_filename)
         return;
 

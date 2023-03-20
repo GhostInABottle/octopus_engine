@@ -67,7 +67,8 @@ void Text_Canvas::set_font(const std::string& font_file) {
 }
 
 void Text_Canvas::link_font(const std::string& font_type, const std::string& font_file) {
-    if (!file_utilities::file_exists(font_file)) {
+    auto fs = file_utilities::game_data_filesystem();
+    if (!fs->file_exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
 
