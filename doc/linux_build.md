@@ -12,6 +12,7 @@ The following are the steps needed to prepare the dependencies and build the eng
   * liblua5.2-dev
   * libgl-dev
   * libglew-dev
+  * libphysfs-dev
   * fmod
     * Download from fmod.com
     * Extract the files

@@ -26,17 +26,16 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(FMOD REQUIRED)
+find_package(PhysFS REQUIRED)
+
+set(INCLUDE_DIRS, ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIRS}
+${FREETYPE_INCLUDE_DIR_ft2build} ${PHYSFS_INCLUDE_DIR})
+
+target_include_directories(octopus_engine PUBLIC ${INCLUDE_DIRS})
 
 set(DEPENDENCIES ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${FREETYPE_LIBRARIES}
 ${HARFBUZZ_LIBRARIES} ${LUA_LIBRARIES} ${ZLIB_LIBRARIES} ${FMOD_LIBRARIES}
-${HarfBuzz_LIBRARIES} GLEW::GLEW glfw)
-
-include_directories(${LUA_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${FREETYPE_INCLUDE_DIR_ft2build})
-
-add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
-target_compile_definitions(octopus_engine PRIVATE NDEBUG)
+${HarfBuzz_LIBRARIES} ${PHYSFS_LIBRARY} GLEW::GLEW glfw)
 
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
@@ -58,6 +57,9 @@ elseif(UNIX AND ${IS_GNU})
     endif()
 endif()
 
+add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
+
+target_compile_definitions(octopus_engine PRIVATE NDEBUG)
 target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
 target_link_libraries(octopus_engine ${DEPENDENCIES})

@@ -68,7 +68,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_HAS_AUTO_PTR_ETC=1;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
@@ -76,7 +76,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3-d.lib;freetype.lib;harfbuzz-d.lib;lua52d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;glfw3-d.lib;freetype.lib;harfbuzz-d.lib;lua52d.lib;fmod_vc.lib;physfs-static-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -88,7 +88,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_HAS_AUTO_PTR_ETC=1;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
@@ -98,7 +98,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3.lib;freetype.lib;harfbuzz.lib;lua52.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;glfw3.lib;freetype.lib;harfbuzz.lib;lua52.lib;fmod_vc.lib;physfs-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -109,7 +109,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_HAS_AUTO_PTR_ETC=1;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
@@ -119,7 +119,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;legacy_stdio_definitions.lib;glfw3.lib;freetype.lib;harfbuzz.lib;lua52.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;opengl32.lib;glew.lib;glfw3.lib;freetype.lib;harfbuzz.lib;lua52.lib;fmod_vc.lib;physfs-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -159,6 +159,7 @@
     <ClCompile Include="..\src\utility\string.cpp" />
     <ClCompile Include="..\src\utility\xml.cpp" />
     <ClCompile Include="..\src\vendor\lutf8lib.cpp" />
+    <ClCompile Include="..\src\vendor\physfs.cpp" />
     <ClCompile Include="..\src\vendor\platform_folders.cpp" />
     <ClCompile Include="..\src\xd\audio\audio.cpp" />
     <ClCompile Include="..\src\xd\audio\detail\fmod_audio_handle.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="..\include\utility\string.hpp" />
     <ClInclude Include="..\include\utility\xml.hpp" />
     <ClInclude Include="..\include\vendor\lutf8lib.hpp" />
+    <ClInclude Include="..\include\vendor\physfs.hpp" />
     <ClInclude Include="..\include\vendor\platform_folders.hpp" />
     <ClInclude Include="..\include\vendor\unidata.h" />
     <ClInclude Include="..\include\vendor\utf8conv.h" />

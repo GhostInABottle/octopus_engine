@@ -408,6 +408,9 @@
     <ClCompile Include="..\src\scripting\bindings\file_bindings.cpp">
       <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vendor\physfs.cpp">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -835,6 +838,9 @@
     </ClInclude>
     <ClInclude Include="..\include\utility\filesystem\user_data_folder.hpp">
       <Filter>Header Files\utility\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vendor\physfs.hpp">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

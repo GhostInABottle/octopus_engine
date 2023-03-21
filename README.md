@@ -29,8 +29,9 @@ Dependencies:
 * [FMOD Studio Programmer's API](http://www.fmod.org/download/)
 * [GLFW 3.3](http://www.glfw.org/)
 * [GLEW](http://glew.sourceforge.net/)
+* [PhysicsFS](https://icculus.org/physfs/)
 * [Qt 5.6](https://www.qt.io/) - Optional, only needed for the editor
   
-There are project files for Visual Studio 2019. You'll need to download and build the dependencies and make sure they're visible for VS.
+There are project files for Visual Studio 2022. You'll need to download and build the dependencies and make sure they're visible for VS.
 
 On Linux you can use CMake 3.10 and g++ 7 or later. See [linux_build.md](doc/linux_build.md) for more details.

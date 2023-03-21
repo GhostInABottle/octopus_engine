@@ -21,6 +21,7 @@ SOURCES += main.cpp\
     ../src/vendor/base64.cpp \
     ../src/vendor/lutf8lib.cpp \
     ../src/vendor/platform_folders.cpp \
+    ../src/vendor/physfs.cpp \
     ../src/camera.cpp \
     ../src/canvas/base_canvas.cpp \
     ../src/canvas/base_image_canvas.cpp \
@@ -144,6 +145,7 @@ HEADERS  += main_window.hpp \
     ../include/vendor/rapidxml_print.hpp \
     ../include/vendor/unidata.h \
     ../include/vendor/utf8conv.h \
+    ../include/vendor/physfs.hpp \
     ../include/camera.hpp \
     ../include/canvas/base_canvas.hpp \
     ../include/canvas/base_image_canvas.hpp \
