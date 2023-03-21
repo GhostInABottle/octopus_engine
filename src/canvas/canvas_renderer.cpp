@@ -11,7 +11,8 @@
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
     : game(game),
     camera(camera),
-    fbo_supported(Configurations::get<bool>("debug.use-fbo") && xd::framebuffer::extension_supported()),
+    fbo_supported(Configurations::get<bool>("graphics.use-fbo", "debug.use-fbo")
+        && xd::framebuffer::extension_supported()),
     background_margins(
         Configurations::get<int>("text.background-margin-left"),
         Configurations::get<int>("text.background-margin-top"),
@@ -57,18 +58,24 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     auto [complete, error] = framebuffer.check_complete();
     if (!complete) throw std::runtime_error(error);
 
-    glViewport(0, 0, static_cast<int>(game.game_width()), static_cast<int>(game.game_height()));
+    auto game_width = game.game_width();
+    auto game_height = game.game_height();
+    glViewport(0, 0, game_width, game_height);
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     camera.set_clear_color();
+
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
         GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (has_scissor_box) {
-        // Use a texture-sized viewport when calculating scissor box
-        xd::rect viewport = xd::rect(0, 0, game.game_width(), game.game_height());
-        camera.enable_scissor_test(scissor_box, viewport);
-    }
+    if (!has_scissor_box) return;
+
+    // Use a texture-sized viewport when calculating scissor box
+    xd::rect viewport{ 0, 0,
+        static_cast<float>(game_width),
+        static_cast<float>(game_height) };
+    camera.enable_scissor_test(scissor_box, viewport);
 }
 
 void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_Canvas& root) {

@@ -49,7 +49,7 @@ function NPC:initialize(name, data)
     -- How fast game time is vs real time
     self.time_multiplier = time_multiplier
     -- Time taken for a single frame
-    self.frame_time = 1000 / tonumber(game:get_config('debug.logic-fps'))
+    self.frame_time = 1000 / tonumber(game:get_config('graphics.logic-fps'))
     -- Last position
     self.position = Vec2(-1, -1)
     -- Is NPC's schedule active?
@@ -558,7 +558,8 @@ function NPC:update()
                     self.data.sprite,
                     self.position,
                     self.direction)
-                self.object.x = self.object.x - self.object.bounding_box.x
+                local bounding_box = self.object.bounding_box
+                self.object.position = self.object.position - bounding_box.position
             end
             self.object.type = 'npc'
             self.object.direction = self.direction

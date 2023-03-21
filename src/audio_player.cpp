@@ -28,17 +28,17 @@ std::shared_ptr<xd::sound> Audio_Player::load_global_config_sound(const std::str
 
 std::shared_ptr<xd::sound> Audio_Player::load_map_sound(Map& current_map,
         const std::string& filename, unsigned int channel_count, bool pausable) {
-	return load_sound(current_map.get_audio_cache(), filename, filename, channel_count, pausable);
+    return load_sound(current_map.get_audio_cache(), filename, filename, channel_count, pausable);
 }
 
 std::shared_ptr<xd::sound> Audio_Player::load_map_config_sound(Map& current_map,
         const std::string& config_name, unsigned int channel_count, bool pausable) {
-	auto filename = Configurations::get<std::string>(config_name);
-	return load_sound(current_map.get_audio_cache(), config_name, filename, channel_count, pausable);
+    auto filename = Configurations::get<std::string>(config_name);
+    return load_sound(current_map.get_audio_cache(), config_name, filename, channel_count, pausable);
 }
 
 std::shared_ptr<xd::music> Audio_Player::load_music(Map& current_map, const std::string& filename) {
-	return load_music(current_map.get_audio_cache(), filename);
+    return load_music(current_map.get_audio_cache(), filename);
 }
 
 void Audio_Player::load_map_audio(Map& map) {

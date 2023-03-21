@@ -96,8 +96,8 @@ public:
     // Toggle fullscreen mode
     void set_fullscreen(bool fullscreen);
     // Game dimensions
-    float game_width(bool magnified = true) const;
-    float game_height(bool magnified = true) const;
+    int game_width(bool magnified = true) const;
+    int game_height(bool magnified = true) const;
     // Get screen magnification
     float get_magnification() const {
         return magnification;

@@ -64,18 +64,29 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
 
     // Layer properties
     auto& properties = layer_ptr->properties;
-    std::string sprite;
-    if (properties.contains("xspeed"))
-        layer_ptr->velocity.x = std::stof(properties["xspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
-    if (properties.contains("yspeed"))
-        layer_ptr->velocity.y = std::stof(properties["yspeed"]) * 60.0f / Configurations::get<int>("debug.logic-fps");
-    if (properties.contains("fixed"))
+
+    auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
+    if (properties.contains("xspeed")) {
+        layer_ptr->velocity.x = std::stof(properties["xspeed"]) * 60.0f / logic_fps;
+    }
+
+    if (properties.contains("yspeed")) {
+        layer_ptr->velocity.y = std::stof(properties["yspeed"]) * 60.0f / logic_fps;
+    }
+
+    if (properties.contains("fixed")) {
         layer_ptr->fixed = string_utilities::string_to_bool(properties["fixed"]);
-    if (properties.contains("sprite"))
+    }
+
+    std::string sprite;
+    if (properties.contains("sprite")) {
         sprite = properties["sprite"];
+    }
+
     std::string pose;
-    if (properties.contains("pose"))
+    if (properties.contains("pose")) {
         pose = properties["pose"];
+    }
 
     // Image
     if (!sprite.empty()) {
@@ -95,11 +106,13 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     }
 
     layer_ptr->renderer = std::make_unique<Image_Layer_Renderer>(*layer_ptr, camera);
-    if (!check_close(layer_ptr->velocity.x, 0.0f) || !check_close(layer_ptr->velocity.y, 0.0f))
+    if (!check_close(layer_ptr->velocity.x, 0.0f) || !check_close(layer_ptr->velocity.y, 0.0f)) {
         layer_ptr->repeat = true;
+    }
 
-    if (layer_ptr->sprite || layer_ptr->repeat)
+    if (layer_ptr->sprite || layer_ptr->repeat) {
         layer_ptr->updater = std::make_unique<Image_Layer_Updater>(*layer_ptr);
+    }
 
     return layer_ptr;
 }

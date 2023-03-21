@@ -233,7 +233,9 @@ void Camera::center_at(const Map_Object& target) {
 }
 
 xd::vec2 Camera::get_centered_position(xd::vec2 pos) const {
-    return get_bounded_position(pos - xd::vec2{game.game_width() / 2.0f, game.game_height() / 2.0f});
+    float game_width = static_cast<float>(game.game_width());
+    float game_height = static_cast<float>(game.game_height());
+    return get_bounded_position(pos - xd::vec2{game_width / 2.0f, game_height / 2.0f});
 }
 
 xd::vec2 Camera::get_centered_position(const Map_Object& target) const {
@@ -247,8 +249,10 @@ xd::rect Camera::get_position_bounds() const {
     auto map = game.get_map();
     float map_width = static_cast<float>(map->get_pixel_width());
     float map_height = static_cast<float>(map->get_pixel_height());
+    float game_width = static_cast<float>(game.game_width());
+    float game_height = static_cast<float>(game.game_height());
     return xd::rect{0.0f, 0.0f,
-        map_width - game.game_width(), map_height - game.game_height()};
+        map_width - game_width, map_height - game_height };
 }
 
 xd::vec2 Camera::get_bounded_position(xd::vec2 pos) const {
@@ -271,9 +275,12 @@ void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
         custom_viewport = viewport;
     }
 
-    int y = static_cast<int>(game.game_height() - (rect.y + rect.h));
-    xd::vec2 scale{custom_viewport.w / game.game_width(),
-                   custom_viewport.h / game.game_height()};
+
+    float game_width = static_cast<float>(game.game_width());
+    float game_height = static_cast<float>(game.game_height());
+    int y = static_cast<int>(game_height - (rect.y + rect.h));
+    xd::vec2 scale{custom_viewport.w / game_width,
+                   custom_viewport.h / game_height};
 
     glEnable(GL_SCISSOR_TEST);
     glScissor(static_cast<int>(custom_viewport.x + rect.x * scale.x),
@@ -311,13 +318,13 @@ float Camera::shake_offset() const {
 
 void Camera::draw_map_tint() const {
     if (check_close(map_tint.a, 0.0f)) return;
+
     auto width = static_cast<float>(game.game_width());
     auto height = static_cast<float>(game.game_height());
-    if (map_tint.a > 0.0f) {
-        auto cam_pos = get_pixel_position();
-        xd::rect rect{cam_pos.x, cam_pos.y, width, height};
-        draw_rect(rect, map_tint);
-    }
+
+    auto cam_pos = get_pixel_position();
+    xd::rect rect{cam_pos.x, cam_pos.y, width, height};
+    draw_rect(rect, map_tint);
 }
 
 void Camera_Renderer::render(Camera& camera) {
@@ -358,7 +365,7 @@ void Object_Tracker::update(Camera& camera) {
 
 Screen_Shaker::Screen_Shaker(float strength, float speed)
     : strength(strength)
-    , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps"))
+    , speed(speed * 60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps"))
     , direction(1)
     , offset(0) {}
 

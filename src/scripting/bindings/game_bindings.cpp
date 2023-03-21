@@ -120,7 +120,7 @@ void bind_game_types(sol::state& lua, Game& game) {
             [](Game* game, const std::string& filename, xd::vec2 pos, int dir, std::optional<std::string> music) {
             game->set_next_map(filename, static_cast<Direction>(dir), pos, music);
         }
-        );
+    );
 
     game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
     game_type["get_bool_config"] = [](Game*, const std::string& key) { return Configurations::get<bool>(key); };
@@ -157,7 +157,7 @@ void bind_game_types(sol::state& lua, Game& game) {
                 return game->triggered();
                 });
         }
-        ));
+    ));
 
     game_type["text_width"] = [&](Game& game, const std::string& text) {
         return game.text_width(text);

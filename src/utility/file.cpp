@@ -21,7 +21,7 @@ std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem() {
     return detail::disk_filesystem;
 }
 
-Readable_Filesystem* file_utilities::game_data_filesystem() {
+Readable_Filesystem* file_utilities::game_data_filesystem(const char*) {
     if (detail::game_data_filesystem) return detail::game_data_filesystem;
 
     auto disk_fs = disk_filesystem();
@@ -33,7 +33,7 @@ void file_utilities::set_game_data_filesystem(Readable_Filesystem* fs) {
     detail::game_data_filesystem = fs;
 }
 
-Writable_Filesystem* file_utilities::user_data_filesystem() {
+Writable_Filesystem* file_utilities::user_data_filesystem(const char* arg) {
     if (detail::user_data_filesystem) return detail::user_data_filesystem;
 
     auto disk_fs = disk_filesystem();

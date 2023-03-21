@@ -167,7 +167,7 @@ void bind_utility_types(sol::state& lua, Game& game) {
             }
             return std::make_unique<Command_Result>(command);
         }
-        );
+    );
     // A command to show an object's pose (used in NPC scheduling)
     lua["Pose_Command"] = [&](Map_Object* object, const std::string& pose, const std::string& state, Direction direction) {
         auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;

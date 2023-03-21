@@ -118,7 +118,7 @@ void bind_map_object_types(sol::state& lua, Game& game) {
             object->set_outlined_object_id(other->get_id());
             other->set_outlining_object(object);
         }
-        );
+    );
     object_type["outlining_object"] = sol::property(&Map_Object::get_outlining_object);
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
@@ -135,7 +135,7 @@ void bind_map_object_types(sol::state& lua, Game& game) {
         [](Map_Object* obj, int dir) {
             obj->set_direction(static_cast<Direction>(dir));
         }
-        );
+    );
     object_type["sprite_magnification"] = sol::property(&Map_Object::get_sprite_magnification);
     object_type["sfx_attenuation"] = sol::property(&Map_Object::is_sound_attenuation_enabled, &Map_Object::set_sound_attenuation_enabled);
     object_type["get_property"] = &Map_Object::get_property;
@@ -163,7 +163,7 @@ void bind_map_object_types(sol::state& lua, Game& game) {
                 *game.get_map(), *obj, pos.x, pos.y,
                 Collision_Check_Type::BOTH, keep_trying);
         }
-        );
+    );
     object_type["move"] = [&](Map_Object* obj, int dir, float pixels, std::optional<bool> skip, std::optional<bool> change_facing) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Move_Object_Command>(

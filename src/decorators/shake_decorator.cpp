@@ -25,7 +25,8 @@ void Shake_Decorator::operator()(xd::text_decorator& decorator, const xd::format
         state.game_paused = game.is_paused();
     }
 
-    static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
+    static int ms_between_refresh = 1000 /
+        Configurations::get<int>("graphics.canvas-fps", "debug.canvas-fps");
     bool time_to_update = state.ticks(game) - state.last_shake > ms_between_refresh;
 
     static std::mt19937 engine;

@@ -24,13 +24,13 @@ Base_Canvas::Base_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position) 
     last_camera_position(0.0f, 0.0f) {}
 
 void Base_Canvas::setup_fbo() {
-    if (!Configurations::get<bool>("debug.use-fbo") || !xd::framebuffer::extension_supported()) {
+    auto use_fbo = Configurations::get<bool>("graphics.use-fbo", "debug.use-fbo");
+    if (!use_fbo || !xd::framebuffer::extension_supported()) {
         return;
     }
 
-    auto width = static_cast<int>(game.game_width());
-    auto height = static_cast<int>(game.game_height());
-
+    auto width = game.game_width();
+    auto height = game.game_height();
     fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
         xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
 }
@@ -82,8 +82,11 @@ bool Base_Canvas::should_update() const {
 bool Base_Canvas::should_redraw(int time) const {
     const bool redraw_children = std::any_of(std::begin(children), std::end(children),
         [time](const std::unique_ptr<Base_Canvas>& c) { return c->should_redraw(time);  });
-    static int ms_between_refresh = 1000 / Configurations::get<int>("debug.canvas-fps");
+
+    static int ms_between_refresh = 1000 /
+        Configurations::get<int>("graphics.canvas-fps", "debug.canvas-fps");
     const bool time_to_update = time - last_drawn_time > ms_between_refresh;
+
     return redraw_needed || redraw_children || time_to_update;
 }
 

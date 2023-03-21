@@ -52,10 +52,10 @@ std::unique_ptr<Tileset> Tileset::load(const std::string& filename) {
 
 std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
     auto tileset_ptr = std::make_unique<Tileset>();
-	int first_id = 1;
-	if (auto first_id_attr = node.first_attribute("firstgid"))
-		first_id = std::stoi(first_id_attr->value());
-	tileset_ptr->first_id = first_id;
+    int first_id = 1;
+    if (auto first_id_attr = node.first_attribute("firstgid"))
+        first_id = std::stoi(first_id_attr->value());
+    tileset_ptr->first_id = first_id;
     tileset_ptr->name = node.first_attribute("name")->value();
     tileset_ptr->tile_width = std::stoi(
         node.first_attribute("tilewidth")->value());

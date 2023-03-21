@@ -43,7 +43,7 @@ void bind_camera_types(sol::state& lua, Game& game) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);
         }
-        );
+    );
     camera_type["tint_screen"] = sol::overload(
         [&](Camera& camera, xd::vec4 color, long duration) {
             auto si = game.get_current_scripting_interface();
@@ -54,7 +54,7 @@ void bind_camera_types(sol::state& lua, Game& game) {
             auto color = hex_to_color(hex_color);
             return si->register_command<Tint_Command>(Tint_Target::SCREEN, game, color, duration);
         }
-        );
+    );
     camera_type["tint_map"] = sol::overload(
         [&](Camera& camera, xd::vec4 color, long duration) {
             auto si = game.get_current_scripting_interface();
@@ -65,7 +65,7 @@ void bind_camera_types(sol::state& lua, Game& game) {
             auto color = hex_to_color(hex_color);
             return si->register_command<Tint_Command>(Tint_Target::MAP, game, color, duration);
         }
-        );
+    );
     camera_type["zoom"] = [&](Camera& camera, float scale, long duration) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Zoom_Command>(game, scale, duration);

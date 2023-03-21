@@ -287,11 +287,13 @@ void Map_Object::set_angle(int angle) {
 }
 
 float Map_Object::get_speed() const {
-    return speed * Configurations::get<int>("debug.logic-fps") / 60.0f;
+    auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
+    return speed * logic_fps / 60.0f;
 }
 
 void Map_Object::set_speed(float new_speed) {
-    speed = new_speed * 60.0f / Configurations::get<int>("debug.logic-fps");
+    auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
+    speed = new_speed * 60.0f / logic_fps;
     if (sprite)
         sprite->set_speed(new_speed);
 }

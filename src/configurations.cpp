@@ -15,6 +15,7 @@ void Configurations::load_defaults() {
     defaults["game.map-loaded-script"] = std::string{};
     defaults["game.pause-script"] = std::string{};
     defaults["game.scripts-folder"] = std::string{};
+    defaults["game.archive-path"] = std::string{};
 
     defaults["text.fade-in-duration"] = 250;
     defaults["text.fade-out-duration"] = 250;
@@ -30,10 +31,14 @@ void Configurations::load_defaults() {
     defaults["text.screen-edge-margin-x"] = 20;
     defaults["text.screen-edge-margin-y"] = 20;
 
+    defaults["graphics.game-width"] = 320;
+    defaults["graphics.game-height"] = 240;
     defaults["graphics.screen-width"] = -1;
     defaults["graphics.screen-height"] = -1;
     defaults["graphics.window-width"] = -1;
     defaults["graphics.window-height"] = -1;
+    defaults["graphics.logic-fps"] = 60;
+    defaults["graphics.canvas-fps"] = 40;
     defaults["graphics.fullscreen"] = false;
     defaults["graphics.vsync"] = false;
     // Scaling modes: aspect, window, stretch
@@ -45,8 +50,9 @@ void Configurations::load_defaults() {
     defaults["graphics.brightness"] = 1.0f;
     defaults["graphics.contrast"] = 1.0f;
     defaults["graphics.gamma"] = 1.0f;
+    defaults["graphics.use-fbo"] = true;
     defaults["graphics.postprocessing-enabled"] = true;
-
+    defaults["graphics.magnification"] = 1.0f;
 
     defaults["audio.audio-folder"] = std::string{};
     defaults["audio.music-volume"] = 1.0f;
@@ -85,15 +91,9 @@ void Configurations::load_defaults() {
     defaults["logging.level"] = std::string{"debug"};
     defaults["logging.mode"] = std::string{"truncate"};
 
-    defaults["debug.width"] = 320.0f;
-    defaults["debug.height"] = 240.0f;
-    defaults["debug.magnification"] = 1.0f;
     defaults["debug.show-fps"] = true;
     defaults["debug.show-time"] = false;
-    defaults["debug.logic-fps"] = 60;
     defaults["debug.pathfinding-sprite"] = std::string{};
-    defaults["debug.canvas-fps"] = 40;
-    defaults["debug.use-fbo"] = true;
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
     defaults["debug.update-config-files"] = true;
@@ -249,5 +249,6 @@ std::string Configurations::get_string(const std::string& name) {
     } else if (has_default(name)) {
         return std::visit(visitor, defaults[name]);
     }
+
     return "";
 }

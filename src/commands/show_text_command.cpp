@@ -108,20 +108,22 @@ struct Show_Text_Command::Impl : Timed_Command {
             pos.y += char_height;
         }
 
+        auto game_width = static_cast<float>(game.game_width());
+        auto game_height = static_cast<float>(game.game_height());
         if (this->options.centered) {
-            pos.x = game.game_width() / 2 - text_width / 2;
+            pos.x = game_width / 2 - text_width / 2;
         } else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
             pos.x -= text_width / 2;
         }
 
         if (always_visible) {
             // Make sure text fits on the screen
-            if (pos.x + text_width > game.game_width() - screen_margins.x)
-                pos.x = game.game_width() - text_width - screen_margins.x;
+            if (pos.x + text_width > game_width - screen_margins.x)
+                pos.x = game_width - text_width - screen_margins.x;
             if (pos.x < screen_margins.x)
                 pos.x = screen_margins.x;
-            if (pos.y + text_height > game.game_height() - screen_margins.y)
-                pos.y = game.game_height() - text_height - screen_margins.y;
+            if (pos.y + text_height > game_height - screen_margins.y)
+                pos.y = game_height - text_height - screen_margins.y;
             if (pos.y < screen_margins.y)
                 pos.y = screen_margins.y;
         }

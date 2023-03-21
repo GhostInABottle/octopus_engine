@@ -32,12 +32,24 @@ public:
     // Get the option with given name
     template<typename T>
     static T get(const std::string& name) {
-        if (has_value(name))
+        if (has_value(name)) {
             return std::get<T>(values[name]);
-        else if (has_default(name))
+        } else if (has_default(name)) {
             return std::get<T>(defaults[name]);
-        else
-            throw config_exception(name + " is an invalid config value");
+        }
+
+        throw config_exception(name + " is an invalid config value");
+    }
+    // Try to get config with given name, or fallback to default
+    template<typename T>
+    static T get(const std::string& name, const std::string& fallback) {
+        if (exists(name)) {
+            return get<T>(name);
+        } else if (exists(fallback)) {
+            return get<T>(fallback);
+        }
+
+        throw config_exception(name + " is an invalid config value");
     }
     // Check if an option exists
     static bool has_value(const std::string& name) {
@@ -46,6 +58,10 @@ public:
     // Check if option has a default value
     static bool has_default(const std::string& name) {
         return defaults.find(name) != defaults.end();
+    }
+    // Check if config exists
+    static bool exists(const std::string& name) {
+        return has_value(name) || has_default(name);
     }
     // Get the option with given name as a string
     static std::string get_string(const std::string& name);
@@ -60,7 +76,7 @@ public:
     // Update an option with given name
     template<typename T>
     static void set(const std::string& name, T value) {
-        if ((has_value(name) || has_default(name)) && get<T>(name) == value) {
+        if (exists(name) && get<T>(name) == value) {
             return;
         }
 

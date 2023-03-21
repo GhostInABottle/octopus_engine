@@ -9,7 +9,7 @@
 Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float speed)
         : camera(camera)
         , camera_object(camera.get_object())
-        , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps")) {
+        , speed(speed * 60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps")) {
     camera.set_object(nullptr);
     xd::vec2 displacement = camera.get_bounded_position(xd::vec2(x, y)) - camera.get_position();
     pixels = static_cast<float>(xd::length(displacement));
@@ -20,7 +20,7 @@ Move_Camera_Command::Move_Camera_Command(Camera& camera, Direction dir, float pi
     : camera(camera)
     , camera_object(camera.get_object())
     , pixels(pixels)
-    , speed(speed * 60.0f / Configurations::get<int>("debug.logic-fps")) {
+    , speed(speed * 60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps")) {
     camera.set_object(nullptr);
     direction = direction_to_vector(dir);
 }

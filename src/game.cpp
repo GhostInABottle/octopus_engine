@@ -48,8 +48,8 @@ struct Game::Impl {
             fullscreen_update_delay(1),
             was_fullscreen(false),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
-            game_width(Configurations::get<float>("debug.width")),
-            game_height(Configurations::get<float>("debug.height")),
+            game_width(Configurations::get<int>("graphics.game-width", "debug.width")),
+            game_height(Configurations::get<int>("graphics.game-height", "debug.height")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
@@ -276,9 +276,9 @@ struct Game::Impl {
     // Debug font style (FPS and time display)
     xd::font_style debug_style;
     // Game width
-    float game_width;
+    int game_width;
     // Game height
-    float game_height;
+    int game_height;
     // Active gamepad id
     int gamepad_id;
     // Configured gamepad ID
@@ -317,8 +317,8 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
                 : Configurations::get<int>("graphics.window-height"),
             xd::window_options(
                 Configurations::get<bool>("graphics.fullscreen"),
-                static_cast<int>(Configurations::get<float>("debug.width")),
-                static_cast<int>(Configurations::get<float>("debug.height")),
+                Configurations::get<int>("graphics.game-width", "debug.width"),
+                Configurations::get<int>("graphics.game-height", "debug.height"),
                 0.8f, // max windowed size percentage
                 false, // allow resize
                 false, // display cursor
@@ -336,7 +336,7 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
         pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
         paused(false),
         pausing_enabled(true),
-        magnification(Configurations::get<float>("debug.magnification")),
+        magnification(Configurations::get<float>("graphics.magnification", "debug.magnification")),
         current_scripting_interface(nullptr),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         editor_ticks(0),
@@ -431,7 +431,7 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
     // Run map startup scripts
     map->run_startup_scripts();
     // Set frame update function and frequency
-    int logic_fps = Configurations::get<int>("debug.logic-fps");
+    int logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
     // Log errors
     window->register_error_handler([](int code, const char* description) {
@@ -597,8 +597,8 @@ void Game::set_size(int width, int height) {
     LOGGER_I << "Setting screen size to " << width << ", " << height;
     if (pimpl->editor_mode) {
         editor_size = xd::ivec2(width, height);
-        pimpl->game_width = map->get_pixel_width() * magnification;
-        pimpl->game_height = map->get_pixel_height() * magnification;
+        pimpl->game_width = static_cast<int>(map->get_pixel_width() * magnification);
+        pimpl->game_height = static_cast<int>(map->get_pixel_height() * magnification);
     } else {
         window->set_size(width, height);
     }
@@ -619,12 +619,16 @@ void Game::set_fullscreen(bool fullscreen) {
     camera->set_size(framebuffer_width(), framebuffer_height());
 }
 
-float Game::game_width(bool magnified) const {
-    return magnified ? pimpl->game_width / magnification : pimpl->game_width;
+int Game::game_width(bool magnified) const {
+    return magnified
+        ? static_cast<int>(pimpl->game_width / magnification)
+        : pimpl->game_width;
 }
 
-float Game::game_height(bool magnified) const {
-    return magnified ? pimpl->game_height / magnification : pimpl->game_height;
+int Game::game_height(bool magnified) const {
+    return magnified
+        ? static_cast<int>(pimpl->game_height / magnification)
+        : pimpl->game_height;
 }
 
 void Game::set_magnification(float mag) {

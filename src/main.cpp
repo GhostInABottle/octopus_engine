@@ -11,7 +11,6 @@
 #endif
 
 int main(int argc, char* argv[]) {
-    std::vector<std::string> args(argv, argv + argc);
     try {
 #ifdef __APPLE__
         // Set current working directory to resources folder in OSX
@@ -25,9 +24,12 @@ int main(int argc, char* argv[]) {
             throw std::runtime_error("Unable to get OSX resources folder");
         }
 #endif
+
+        std::vector<std::string> args{ argv, argv + argc };
+
         // Parse the config file
         auto user_data_folder = file_utilities::user_data_folder();
-        for (auto warning : user_data_folder->get_warnings()) {
+        for (auto& warning : user_data_folder->get_warnings()) {
             LOGGER_I << warning;
         }
         user_data_folder->parse_config();
