@@ -6,7 +6,7 @@
 #include "../glm.hpp"
 #include <string>
 #include <memory>
-
+#include <iosfwd>
 
 namespace xd
 {
@@ -14,13 +14,13 @@ namespace xd
     {
     public:
 
-        image(const std::string& filename);
-        image(const std::string& filename, xd::vec4 color_key);
+        image(const std::string& filename, std::istream& stream);
+        image(const std::string& filename, std::istream& stream, xd::vec4 color_key);
         virtual ~image();
         image(const image&) = delete;
         image& operator=(const image&) = delete;
 
-        void load(const std::string& filename);
+        void load(const std::string& filename, std::istream& stream);
 
         int width() const noexcept { return m_width; }
         int height() const noexcept { return m_height; }

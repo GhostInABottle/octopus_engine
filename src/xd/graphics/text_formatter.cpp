@@ -706,7 +706,7 @@ void xd::text_decorator::pop_force_autohint()
 }
 
 
-xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size, vec2 icon_offset)
+xd::text_formatter::text_formatter(std::shared_ptr<xd::texture> icon_texture, vec2 icon_size, vec2 icon_offset)
         : m_decorator_open_delim("{")
         , m_decorator_open_escape_delim("{{")
         , m_decorator_close_delim("}")
@@ -717,15 +717,10 @@ xd::text_formatter::text_formatter(const std::string& icons_filename, vec4 trans
         , m_variable_close_delim(">")
         , m_variable_close_escape_delim(">>")
         , m_icon_size(icon_size)
-        , m_icon_offset(icon_offset) {
-    if (icons_filename.empty()) return;
-    m_icon_texture = std::make_shared<xd::texture>(icons_filename, transparent_color,
-        GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
-}
+        , m_icon_offset(icon_offset)
+        , m_icon_texture(icon_texture) {}
 
-xd::text_formatter::~text_formatter()
-{
-}
+xd::text_formatter::~text_formatter() {}
 
 const std::string& xd::text_formatter::get_decorator_open_delim() const
 {

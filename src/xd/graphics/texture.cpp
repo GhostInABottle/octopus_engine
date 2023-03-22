@@ -21,13 +21,13 @@ xd::texture::texture(int width, int height, const void *data, xd::vec4 ck,
 }
 
 
-xd::texture::texture(const std::string& filename, xd::vec4 ck,
+xd::texture::texture(const std::string& filename, std::istream& stream, xd::vec4 ck,
     GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter)
 {
     init();
     set_wrap(wrap_s, wrap_t);
     set_filter(mag_filter, min_filter);
-    load(filename, ck);
+    load(filename, stream, ck);
 }
 
 xd::texture::texture(const xd::image& image,
@@ -69,9 +69,9 @@ void xd::texture::bind(int unit) const noexcept
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
 }
 
-void xd::texture::load(const std::string& filename, xd::vec4 color_key)
+void xd::texture::load(const std::string& filename, std::istream& stream, xd::vec4 color_key)
 {
-    load(image(filename, color_key));
+    load(image{ filename, stream, color_key });
 }
 
 void xd::texture::load(const image& image)

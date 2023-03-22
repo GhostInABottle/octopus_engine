@@ -9,6 +9,18 @@
 #include "../include/xd/audio.hpp"
 #include <iostream>
 
+namespace detail {
+    static std::shared_ptr<xd::texture> load_sprite_texture(xd::asset_manager& manager, std::string filename, xd::vec4 transparent_color) {
+        auto fs = file_utilities::game_data_filesystem();
+        auto stream = fs->open_binary_ifstream(filename);
+        if (!stream || !*stream) {
+            throw xml_exception{ "Failed to load sprite image " + filename };
+        }
+
+        return manager.load_persistent<xd::texture>(filename, *stream, transparent_color);
+    }
+}
+
 Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager), has_diagonal_directions(false) {}
 
 Sprite_Data::~Sprite_Data() {
@@ -62,12 +74,10 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         sprite_ptr->transparent_color = hex_to_color(trans_color_attr->value());
 
     if (auto attr = node.first_attribute("Image")) {
-        image_loaded = true;
         std::string image_file = attr->value();
-        string_utilities::normalize_slashes(image_file);
-        sprite_ptr->image = manager.load_persistent<xd::texture>(
-            image_file, sprite_ptr->transparent_color,
-            GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+        sprite_ptr->image = detail::load_sprite_texture(manager, image_file,
+            sprite_ptr->transparent_color);
+        image_loaded = true;
     }
 
     // Default sprite pose
@@ -115,11 +125,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
-            string_utilities::normalize_slashes(pose_image_file);
-            pose.image = manager.load_persistent<xd::texture>(
-                pose_image_file,
-                pose.transparent_color,
-                GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+            pose.image = detail::load_sprite_texture(manager, pose_image_file,
+                pose.transparent_color);
         } else {
             pose_images_loaded = false;
         }
@@ -160,11 +167,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
-                string_utilities::normalize_slashes(frame_image_file);
-                frame.image = manager.load_persistent<xd::texture>(
-                    frame_image_file,
-                    frame.transparent_color,
-                    GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+                frame.image = detail::load_sprite_texture(manager, frame_image_file,
+                    frame.transparent_color);
             } else {
                 frame_images_loaded = false;
             }

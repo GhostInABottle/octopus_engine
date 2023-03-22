@@ -20,7 +20,7 @@
 #include <vector>
 
 namespace detail {
-    xd::vec4 default_color(1, 1, 1, 1);
+    static xd::vec4 default_color(1, 1, 1, 1);
 }
 
 struct Sprite::Impl {

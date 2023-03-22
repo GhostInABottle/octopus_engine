@@ -16,6 +16,7 @@ public:
     virtual ~Readable_Filesystem() = 0 {}
     // Open the file with the given UTF8 name for reading
     virtual std::unique_ptr<std::istream> open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) = 0;
+    virtual std::unique_ptr<std::istream> open_binary_ifstream(std::string filename) = 0;
     // Check if a file exists
     virtual bool file_exists(const std::string& filename) = 0;
     // Read file content into a string

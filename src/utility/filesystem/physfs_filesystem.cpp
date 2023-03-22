@@ -2,7 +2,11 @@
 #include "../../../include/vendor/physfs.hpp"
 #include "../../../include/utility/string.hpp"
 
-std::unique_ptr<std::istream> PhysFS_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode mode) {
+std::unique_ptr<std::istream> PhysFS_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode) {
+    return open_binary_ifstream(filename);
+}
+
+std::unique_ptr<std::istream> PhysFS_Filesystem::open_binary_ifstream(std::string filename) {
     string_utilities::normalize_slashes(filename);
     return std::make_unique<PhysFS::ifstream>(filename);
 }
@@ -43,6 +47,6 @@ std::vector<std::string> PhysFS_Filesystem::directory_content_names(const std::s
     return {};
 }
 
-std::vector<Path_Info> directory_content_details(const std::string& path) {
+std::vector<Path_Info> PhysFS_Filesystem::directory_content_details(const std::string& path) {
     return {};
 }

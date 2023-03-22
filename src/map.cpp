@@ -29,7 +29,7 @@
 #include <utility>
 
 namespace detail {
-    std::string generate_unique_name(std::unordered_set<std::string> names,
+    static std::string generate_unique_name(std::unordered_set<std::string> names,
             std::string base_name = "UNTITLED") {
         int i = 1;
         string_utilities::capitalize(base_name);

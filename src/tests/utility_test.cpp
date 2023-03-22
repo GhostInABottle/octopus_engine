@@ -8,13 +8,13 @@
 BOOST_AUTO_TEST_SUITE(utility_tests)
 
 namespace detail {
-    inline void check_color(const xd::vec4& resulting_color, const xd::vec4& expected_color) {
+    static void check_color(const xd::vec4& resulting_color, const xd::vec4& expected_color) {
         float epsilon = 0.01f;
         BOOST_CHECK_CLOSE(resulting_color.r, expected_color.r, epsilon);
         BOOST_CHECK_CLOSE(resulting_color.g, expected_color.g, epsilon);
         BOOST_CHECK_CLOSE(resulting_color.b, expected_color.b, epsilon);
     }
-    std::unordered_map<std::string, xd::vec4> hex_to_color_map = {
+    static std::unordered_map<std::string, xd::vec4> hex_to_color_map = {
         { "000000", xd::vec4(0.0f, 0.0f, 0.0f, 1.0f) },
         { "ffffff", xd::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
         { "ca50f0", xd::vec4(0.79215686f, 0.31372549f, 0.94117647f, 1.0f) },

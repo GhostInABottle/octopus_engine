@@ -8,7 +8,6 @@
 #include <memory>
 #include "../../../include/xd/graphics/font.hpp"
 #include "../../../include/xd/graphics/exceptions.hpp"
-#include "../../../include/xd/graphics/texture.hpp"
 #include "../../../include/xd/vendor/utf8.h"
 #include "../../../include/xd/vendor/unicode_data.hpp"
 

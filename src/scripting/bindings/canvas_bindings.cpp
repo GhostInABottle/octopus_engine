@@ -14,7 +14,7 @@
 
 namespace detail {
     template <typename T, typename CT>
-    void bind_get_child(sol::state& lua, sol::usertype<T> canvas_type, const char* method) {
+    static void bind_get_child(sol::state& lua, sol::usertype<T> canvas_type, const char* method) {
         canvas_type[method] = sol::overload(
             [](Base_Canvas* cvs, std::size_t index) {
                 return dynamic_cast<CT*>(cvs->get_child_by_index(index));
@@ -26,7 +26,7 @@ namespace detail {
     }
 
     template <typename T>
-    void bind_base_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
+    static void bind_base_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
         canvas_type["data"] = sol::property(&T::get_lua_data);
         canvas_type["id"] = sol::property(&T::get_id);
         canvas_type["name"] = sol::property(&T::get_name, &T::set_name);
@@ -130,7 +130,7 @@ namespace detail {
     }
 
     template <typename T>
-    void bind_base_image_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
+    static void bind_base_image_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
         canvas_type["origin"] = sol::property(&T::get_origin, &T::set_origin);
         canvas_type["magnification"] = sol::property(&T::get_magnification, &T::set_magnification);
         canvas_type["angle"] = sol::property(&T::get_angle, &T::set_angle);

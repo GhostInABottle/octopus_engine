@@ -17,8 +17,10 @@
 #include <unordered_map>
 #include <memory>
 #include <variant>
+#include <iosfwd>
 
 namespace xd {
+    class texture;
     class text_formatter;
 
     class formatted_char {
@@ -211,7 +213,7 @@ namespace xd {
         typedef std::function<void (text_decorator&, const formatted_text&, const text_decorator_args&)> decorator_callback_t;
         typedef std::function<std::string (const std::string&)> variable_callback_t;
 
-        text_formatter(const std::string& icons_filename = "", vec4 transparent_color = vec4{}, vec2 icon_size = vec2{}, vec2 icon_offset = vec2{});
+        text_formatter(std::shared_ptr<xd::texture> icon_texture = nullptr, vec2 icon_size = vec2{}, vec2 icon_offset = vec2{});
         virtual ~text_formatter();
 
         const std::string& get_decorator_open_delim() const;

@@ -12,6 +12,7 @@
 #include "../include/sprite_data.hpp"
 #include "../include/configurations.hpp"
 #include "../include/xd/system.hpp"
+#include <istream>
 
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
@@ -37,11 +38,15 @@ void Image_Layer::set_image(const std::string& filename) {
             " to nonexistent file " + filename);
     }
 
+    auto stream = fs->open_binary_ifstream(image_source);
+    if (!stream || !*stream) {
+        throw std::runtime_error("Failed to load image " + filename
+            + " for layer " + name);
+    }
+
     image_source = filename;
-    string_utilities::normalize_slashes(image_source);
-    image_texture = std::make_shared<xd::texture>(
-        image_source, image_trans_color, GL_REPEAT, GL_REPEAT,
-        GL_NEAREST, GL_NEAREST);
+    image_texture = std::make_shared<xd::texture>(image_source,
+        *stream, image_trans_color);
 }
 
 rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
@@ -98,9 +103,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
             layer_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
         // Load the texture
-        layer_ptr->image_texture = std::make_shared<xd::texture>(
-            layer_ptr->image_source, layer_ptr->image_trans_color,
-            GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST);
+        layer_ptr->set_image(layer_ptr->image_source);
     } else {
         throw tmx_exception("Missing image in image layer");
     }

@@ -32,7 +32,7 @@ void Base_Canvas::setup_fbo() {
     auto width = game.game_width();
     auto height = game.game_height();
     fbo_texture = std::make_shared<xd::texture>(width, height, nullptr,
-        xd::vec4(0), GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+        xd::vec4(0), GL_CLAMP, GL_CLAMP);
 }
 
 void Base_Canvas::remove_child(const std::string& child_name) {

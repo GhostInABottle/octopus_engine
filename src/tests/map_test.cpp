@@ -5,7 +5,7 @@
 #include "../../include/tests/game_fixture.hpp"
 
 namespace detail {
-    void check_map(Map& map) {
+    static void check_map(Map& map) {
         BOOST_CHECK_EQUAL(map.get_width(), 50);
         BOOST_CHECK_EQUAL(map.get_height(), 40);
         BOOST_CHECK_EQUAL(map.get_tile_width(), 8);

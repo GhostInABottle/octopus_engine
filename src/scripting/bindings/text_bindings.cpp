@@ -11,7 +11,7 @@
 #include <utility>
 
 namespace detail {
-    Text_Options options_from_table(const sol::table& table) {
+    static Text_Options options_from_table(const sol::table& table) {
         Text_Options options;
         if (table["text"].valid()) {
             options.set_text(table["text"]);

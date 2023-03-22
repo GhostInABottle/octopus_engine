@@ -17,6 +17,10 @@ std::unique_ptr<std::istream> Disk_Filesystem::open_ifstream(std::string filenam
 #endif
 }
 
+std::unique_ptr<std::istream> Disk_Filesystem::open_binary_ifstream(std::string filename) {
+    return open_ifstream(filename, std::ios_base::in | std::ios_base::binary);
+}
+
 std::unique_ptr<std::ostream> Disk_Filesystem::open_ofstream(std::string filename, std::ios_base::openmode mode) {
     string_utilities::normalize_slashes(filename);
 #ifdef _WIN32

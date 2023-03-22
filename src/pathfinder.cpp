@@ -5,8 +5,8 @@
 #include "../include/configurations.hpp"
 
 namespace detail {
-    bool debug_mode = false;
-    void show_test_tile(Map& map, int x, int y, const std::string& type) {
+    static bool debug_mode = false;
+    static void show_test_tile(Map& map, int x, int y, const std::string& type) {
         auto pos = xd::vec2(x * map.get_tile_width(), y * map.get_tile_height());
         std::string name = std::to_string(x) + ", " + std::to_string(y);
         auto obj = map.get_object(name);

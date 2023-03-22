@@ -6,6 +6,7 @@
 #include "image.hpp"
 #include <memory>
 #include <string>
+#include <iosfwd>
 
 namespace xd
 {
@@ -17,19 +18,19 @@ namespace xd
         texture();
         texture(int width, int height, const void *data = 0, vec4 ck = vec4(0),
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
-            GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);
-        texture(const std::string& filename, vec4 ck = vec4(0),
+            GLint mag_filter = GL_NEAREST, GLint min_filter = GL_NEAREST);
+        texture(const std::string& filename, std::istream& stream, vec4 ck = vec4(0),
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
-            GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);
+            GLint mag_filter = GL_NEAREST, GLint min_filter = GL_NEAREST);
         texture(const xd::image& image,
             GLint wrap_s = GL_REPEAT, GLint wrap_t = GL_REPEAT,
-            GLint mag_filter = GL_LINEAR, GLint min_filter = GL_LINEAR);
+            GLint mag_filter = GL_NEAREST, GLint min_filter = GL_NEAREST);
         virtual ~texture();
 
         void bind() const noexcept;
         void bind(int unit) const noexcept;
 
-        void load(const std::string& filename, vec4 color_key = vec4(0));
+        void load(const std::string& filename, std::istream& stream, vec4 color_key = vec4(0));
         void load(const xd::image& image);
         void load(int width, int height, const void *data, vec4 color_key = vec4(0));
         void load(const void *data);
@@ -57,7 +58,8 @@ namespace xd
     struct asset_serializer<xd::texture>
     {
         typedef std::string key_type;
-        key_type operator()(const std::string& filename, xd::vec4,
+        key_type operator()(const std::string& filename,
+            std::istream& stream, xd::vec4 = xd::vec4(0),
             GLint = GL_REPEAT, GLint = GL_REPEAT,
             GLint = GL_LINEAR, GLint = GL_LINEAR) const
         {

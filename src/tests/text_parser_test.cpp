@@ -4,7 +4,7 @@
 #include "../../include/utility/string.hpp"
 
 namespace detail {
-    std::string invalid_parsing_cases[] = {
+    static std::string invalid_parsing_cases[] = {
         "{",            // open brace at the end
         "a{",           // open brace at the end
         "a{/",          // close brace at the end
@@ -20,7 +20,7 @@ namespace detail {
         "aaa}"          // unexpected closing tag
     };
 
-    std::vector<std::string> before_split = {
+    static std::vector<std::string> before_split = {
         "h{b}ello",
         "{/b}{c=6}h{d}i",
         "hey{/d}",
@@ -28,7 +28,7 @@ namespace detail {
         "{icon=4/}farewell"
     };
 
-    std::vector<std::string> after_split = {
+    static std::vector<std::string> after_split = {
         "h{b}ello{/b}",
         "{b}{/b}{c=6}h{d}i{/d}{/c}",
         "{c=6}{d}hey{/d}{/c}",
@@ -36,7 +36,7 @@ namespace detail {
         "{icon=4/}farewell"
     };
 
-    void validate_token(Token actual, Token expected) {
+    static void validate_token(Token actual, Token expected) {
         BOOST_CHECK_EQUAL(static_cast<int>(actual.type), static_cast<int>(expected.type));
         BOOST_CHECK_EQUAL(actual.tag, expected.tag);
         BOOST_CHECK_EQUAL(actual.value, expected.value);
@@ -46,7 +46,7 @@ namespace detail {
         BOOST_CHECK_EQUAL(actual.self_closing, expected.self_closing);
     }
 
-    void validate_tokens(const std::string& text, std::vector<Token> expectedTokens) {
+    static void validate_tokens(const std::string& text, std::vector<Token> expectedTokens) {
         std::vector<Token> actualTokens;
 
         try {
@@ -63,7 +63,7 @@ namespace detail {
         }
     }
 
-    Token build_token(Token_Type type, std::string tag, std::string value, bool unmatched, int start, int end, bool self_closing = false) {
+    static Token build_token(Token_Type type, std::string tag, std::string value, bool unmatched, int start, int end, bool self_closing = false) {
         Token token;
         token.type = type;
         token.tag = tag;

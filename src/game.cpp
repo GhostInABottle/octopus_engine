@@ -56,8 +56,7 @@ struct Game::Impl {
             scripts_folder(Configurations::get<std::string>("game.scripts-folder")),
             reset_scripting(false),
             text_formatter(
-                Configurations::get<std::string>("font.icon-image"),
-                hex_to_color(Configurations::get<std::string>("font.icon-transparent-color")),
+                make_icon_texture(),
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game),
@@ -87,6 +86,21 @@ struct Game::Impl {
         }
 
         object_script_preamble = preamble + ";";
+    }
+    // Create icon texture
+    static std::shared_ptr<xd::texture> make_icon_texture() {
+        auto filename = Configurations::get<std::string>("font.icon-image");
+        if (filename.empty()) return nullptr;
+
+        auto fs = file_utilities::game_data_filesystem();
+        auto stream = fs->open_binary_ifstream(filename);
+        if (!stream || !*stream) {
+            throw std::runtime_error{ "Failed to load icon texture " + filename };
+        }
+
+        return std::make_shared<xd::texture>(filename, *stream,
+            hex_to_color(Configurations::get<std::string>("font.icon-transparent-color"))
+        );
     }
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {

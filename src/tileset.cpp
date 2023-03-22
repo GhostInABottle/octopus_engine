@@ -5,6 +5,7 @@
 #include "../include/utility/string.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/xd/system.hpp"
+#include <istream>
 
 rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {
     auto node = xml_node(doc, "tileset");
@@ -72,11 +73,18 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
         if (auto trans_attr = image_node->first_attribute("trans")) {
             tileset_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
+
+        auto fs = file_utilities::game_data_filesystem();
+        auto stream = fs->open_binary_ifstream(tileset_ptr->image_source);
+        if (!stream || !*stream) {
+            throw xml_exception{ "Failed to load tileset image " + tileset_ptr->image_source };
+        }
+
         // Load the texture
         tileset_ptr->image_texture = std::make_shared<xd::texture>(
             tileset_ptr->image_source,
-            tileset_ptr->image_trans_color, GL_REPEAT, GL_REPEAT,
-            GL_NEAREST, GL_NEAREST);
+            *stream,
+            tileset_ptr->image_trans_color);
     }
 
     // Tiles

@@ -1,8 +1,8 @@
 #include "../../../include/xd/graphics/stock_text_formatter.hpp"
 #include <functional>
 
-xd::stock_text_formatter::stock_text_formatter(const std::string& icons_filename, vec4 transparent_color, vec2 icon_size, vec2 icon_offset)
-    : xd::text_formatter(icons_filename, transparent_color, icon_size, icon_offset)
+xd::stock_text_formatter::stock_text_formatter(std::shared_ptr<xd::texture> icon_texture, vec2 icon_size, vec2 icon_offset)
+    : xd::text_formatter(icon_texture, icon_size, icon_offset)
 {
     // shortcut for using _1 _2 etc
     using namespace std::placeholders;
