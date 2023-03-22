@@ -99,6 +99,13 @@ void Configurations::load_defaults() {
     defaults["debug.update-config-files"] = true;
     defaults["debug.collision-check-delay"] = 50;
     defaults["debug.edge-tolerance-pixels"] = 8;
+    // Deprecated configurations, use graphics.[config_name] instead
+    defaults["debug.width"] = 320;
+    defaults["debug.height"] = 240;
+    defaults["debug.magnification"] = 1.0f;
+    defaults["debug.logic-fps"] = 60;
+    defaults["debug.canvas-fps"] = 40;
+    defaults["debug.use-fbo"] = true;
 
     defaults["startup.map"] = std::string{};
     defaults["startup.player-sprite"] = std::string{};
@@ -154,40 +161,46 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
         if (eq == std::string::npos) {
             errors.push_back("Config file is missing = sign at line "
                 + std::to_string(line_number) + ", line content: " + line);
-        } else {
-            auto key = line.substr(0, eq);
-            string_utilities::trim(key);
-            if (key.empty()) {
-                errors.push_back("Config file is missing configuration key at line "
-                    + std::to_string(line_number) + ", line content: " + line);
-                continue;
-            }
-            if (!current_section.empty()) {
-                key = current_section + "." + key;
-            }
-            if (has_value(key)) {
-                errors.push_back("Config file contains duplicate key '" + key + "' at line "
-                    + std::to_string(line_number) + ", line content: " + line);
-            }
-            if (!comments.empty()) {
-                comment_lines[key] = comments;
-                comments = "";
-            }
-            auto value_string = line.substr(eq + 1);
-            string_utilities::trim(value_string);
-            if (has_default(key)) {
-                if (value_string == "true") value_string = "1";
-                if (value_string == "false") value_string = "0";
-                values[key] = std::visit(
-                    [&value_string](auto&& arg) {
-                        using T = std::decay_t<decltype(arg)>;
-                        return Configurations::value_type{boost::lexical_cast<T>(value_string)};
-                    },
-                    defaults[key]);
-            } else {
-                values[key] = value_string;
-            }
+            continue;
         }
+
+        auto key = line.substr(0, eq);
+        string_utilities::trim(key);
+        if (key.empty()) {
+            errors.push_back("Config file is missing configuration key at line "
+                + std::to_string(line_number) + ", line content: " + line);
+            continue;
+        }
+
+        if (!current_section.empty()) {
+            key = current_section + "." + key;
+        }
+
+        if (has_value(key)) {
+            errors.push_back("Config file contains duplicate key '" + key + "' at line "
+                + std::to_string(line_number) + ", line content: " + line);
+        }
+
+        if (!comments.empty()) {
+            comment_lines[key] = comments;
+            comments = "";
+        }
+
+        auto value_string = line.substr(eq + 1);
+        string_utilities::trim(value_string);
+        if (has_default(key)) {
+            if (value_string == "true") value_string = "1";
+            if (value_string == "false") value_string = "0";
+            values[key] = std::visit(
+                [&value_string](auto&& arg) {
+                    using T = std::decay_t<decltype(arg)>;
+                    return Configurations::value_type{boost::lexical_cast<T>(value_string)};
+                },
+                defaults[key]);
+            continue;
+        }
+
+        values[key] = value_string;
     }
 
     changed_since_save = false;

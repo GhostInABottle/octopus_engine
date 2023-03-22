@@ -40,16 +40,14 @@ public:
 
         throw config_exception(name + " is an invalid config value");
     }
-    // Try to get config with given name, or fallback to default
+    // Try to get explicitly configured value for given name, or fallback to default
     template<typename T>
     static T get(const std::string& name, const std::string& fallback) {
-        if (exists(name)) {
-            return get<T>(name);
-        } else if (exists(fallback)) {
+        if (!has_value(name) && has_value(fallback)) {
             return get<T>(fallback);
         }
 
-        throw config_exception(name + " is an invalid config value");
+        return get<T>(name);
     }
     // Check if an option exists
     static bool has_value(const std::string& name) {
