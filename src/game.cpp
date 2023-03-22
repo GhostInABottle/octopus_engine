@@ -178,20 +178,24 @@ struct Game::Impl {
         std::string scripts_list =
             Configurations::get<std::string>("startup.scripts-list");
 
-        if (!scripts_list.empty()) {
-            auto fs = file_utilities::game_data_filesystem();
-            auto scripts_file = fs->open_ifstream(scripts_list);
-            if (scripts_file) {
-                std::string filename;
-                while (std::getline(scripts_file, filename)) {
-                    if (string_utilities::ends_with(filename, "\r"))
-                        filename = filename.substr(0, filename.size() - 1);
-                    run_script(game, filename, true);
-                }
-            } else {
-                throw std::runtime_error("Couldn't read file " + scripts_list);
-            }
+        if (scripts_list.empty()) {
+            reset_scripting = false;
+            return;
         }
+
+        auto fs = file_utilities::game_data_filesystem();
+        auto scripts_file = fs->open_ifstream(scripts_list);
+        if (!scripts_file || !*scripts_file) {
+            throw std::runtime_error("Couldn't read file " + scripts_list);
+        }
+
+        std::string filename;
+        while (std::getline(*scripts_file, filename)) {
+            if (string_utilities::ends_with(filename, "\r"))
+                filename = filename.substr(0, filename.size() - 1);
+            run_script(game, filename, true);
+        }
+
         reset_scripting = false;
     }
     void run_script(Game& game, const std::string& script_or_filename, bool is_filename) {

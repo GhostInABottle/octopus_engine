@@ -99,6 +99,7 @@ SOURCES += main.cpp\
     ../src/utility/xml.cpp \
     ../src/utility/filesystem/boost_filesystem.cpp \
     ../src/utility/filesystem/disk_filesystem.cpp \
+    ../src/utility/filesystem/physfs_filesystem.cpp \
     ../src/utility/filesystem/standard_filesystem.cpp \
     ../src/utility/filesystem/user_data_folder.cpp \
     ../src/xd/audio/detail/fmod_audio_handle.cpp \
@@ -224,6 +225,7 @@ HEADERS  += main_window.hpp \
     ../include/utility/xml.hpp \
     ../include/utility/filesystem/boost_filesystem.hpp \
     ../include/utility/filesystem/disk_filesystem.hpp \
+    ../include/utility/filesystem/physfs_filesystem.hpp \
     ../include/utility/filesystem/path_info.hpp \
     ../include/utility/filesystem/readable_filesystem.hpp \
     ../include/utility/filesystem/standard_filesystem.hpp \

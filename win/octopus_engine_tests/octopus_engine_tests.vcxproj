@@ -149,6 +149,7 @@
     <ClCompile Include="..\..\src\utility\file.cpp" />
     <ClCompile Include="..\..\src\utility\filesystem\boost_filesystem.cpp" />
     <ClCompile Include="..\..\src\utility\filesystem\disk_filesystem.cpp" />
+    <ClCompile Include="..\..\src\utility\filesystem\physfs_filesystem.cpp" />
     <ClCompile Include="..\..\src\utility\filesystem\standard_filesystem.cpp" />
     <ClCompile Include="..\..\src\utility\filesystem\user_data_folder.cpp" />
     <ClCompile Include="..\..\src\utility\math.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="..\..\include\utility\filesystem\boost_filesystem.hpp" />
     <ClInclude Include="..\..\include\utility\filesystem\disk_filesystem.hpp" />
     <ClInclude Include="..\..\include\utility\filesystem\path_info.hpp" />
+    <ClInclude Include="..\..\include\utility\filesystem\physfs_filesystem.hpp" />
     <ClInclude Include="..\..\include\utility\filesystem\readable_filesystem.hpp" />
     <ClInclude Include="..\..\include\utility\filesystem\standard_filesystem.hpp" />
     <ClInclude Include="..\..\include\utility\filesystem\user_data_folder.hpp" />

@@ -411,6 +411,9 @@
     <ClCompile Include="..\src\vendor\physfs.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\utility\filesystem\physfs_filesystem.cpp">
+      <Filter>Source Files\utility\filesystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -841,6 +844,9 @@
     </ClInclude>
     <ClInclude Include="..\include\vendor\physfs.hpp">
       <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utility\filesystem\physfs_filesystem.hpp">
+      <Filter>Header Files\utility\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

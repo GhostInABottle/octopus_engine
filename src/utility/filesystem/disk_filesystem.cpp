@@ -5,34 +5,35 @@
 #include "../../../include/vendor/utf8conv.h"
 #endif
 #include <stdexcept>
+#include <fstream>
 
-std::ifstream Disk_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode mode) {
+std::unique_ptr<std::istream> Disk_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode mode) {
     string_utilities::normalize_slashes(filename);
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
-    return std::ifstream{ utf16_filename, mode };
+    return std::make_unique<std::ifstream>(utf16_filename, mode);
 #else
-    return std::ifstream{ filename, mode };
+    return std::make_unique<std::ifstream>(filename, mode);
 #endif
 }
 
-std::ofstream Disk_Filesystem::open_ofstream(std::string filename, std::ios_base::openmode mode) {
+std::unique_ptr<std::ostream> Disk_Filesystem::open_ofstream(std::string filename, std::ios_base::openmode mode) {
     string_utilities::normalize_slashes(filename);
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
-    return std::ofstream{ utf16_filename , mode };
+    return std::make_unique<std::ofstream>(utf16_filename , mode);
 #else
-    return std::ofstream{ filename, mode };
+    return std::make_unique<std::ofstream>(filename, mode);
 #endif
 }
 
 std::string Disk_Filesystem::read_file(std::string filename) {
     auto stream = open_ifstream(filename);
-    if (!stream) {
+    if (!stream || !*stream) {
         throw std::runtime_error("Couldn't open file for reading: " + filename);
     }
 
-    return std::string((std::istreambuf_iterator<char>(stream)),
+    return std::string((std::istreambuf_iterator<char>(*stream)),
         std::istreambuf_iterator<char>());
 }
 

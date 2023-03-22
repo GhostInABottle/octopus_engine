@@ -7,7 +7,7 @@
 class Writable_Filesystem : public Readable_Filesystem {
 public:
     // Open the file with the given UTF8 name for writing
-    virtual std::ofstream open_ofstream(std::string filename, std::ios_base::openmode mode = std::ios_base::out) = 0;
+    virtual std::unique_ptr<std::ostream> open_ofstream(std::string filename, std::ios_base::openmode mode = std::ios_base::out) = 0;
     // Copy a file, returns a boolean indicating success
     virtual bool copy_file(const std::string& source, const std::string& destination) = 0;
     // Remove a file, returns a boolean indicating success

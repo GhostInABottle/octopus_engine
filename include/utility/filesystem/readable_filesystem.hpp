@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 #include <tuple>
-#include <fstream>
+#include <iosfwd>
+#include <ios>
 #include <ctime>
+#include <memory>
 #include "path_info.hpp"
 
 // Utilities for examining a filesystem and reading files
@@ -13,7 +15,7 @@ class Readable_Filesystem {
 public:
     virtual ~Readable_Filesystem() = 0 {}
     // Open the file with the given UTF8 name for reading
-    virtual std::ifstream open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) = 0;
+    virtual std::unique_ptr<std::istream> open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) = 0;
     // Check if a file exists
     virtual bool file_exists(const std::string& filename) = 0;
     // Read file content into a string

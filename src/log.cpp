@@ -4,7 +4,7 @@
 #include "../include/utility/string.hpp"
 
 Log_Level Log::reporting_level = Log_Level::debug;
-std::ofstream Log::log_file;
+std::unique_ptr<std::ostream> Log::log_file;
 bool Log::enabled = false;
 
 void Log::open_log_file() {
@@ -23,7 +23,7 @@ void Log::open_log_file() {
         filename = data_dir + filename;
     }
 
-    int mode = static_cast<int>(std::fstream::out);
+    int mode = static_cast<int>(std::ios_base::out);
     auto config_mode = Configurations::get<std::string>("logging.mode");
     if (config_mode == "truncate")
         mode |= std::ios_base::trunc;

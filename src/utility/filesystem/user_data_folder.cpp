@@ -78,11 +78,11 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem
 void User_Data_Folder::parse_config() {
     if (!parsed_default_config) {
         auto default_stream = filesystem.open_ifstream("config.ini");
-        if (!default_stream) {
+        if (!default_stream || !*default_stream) {
             throw config_exception("Couldn't read file config.ini");
         }
 
-        auto warnings = Configurations::parse(default_stream);
+        auto warnings = Configurations::parse(*default_stream);
         LOGGER_I << "Parsed the default config.ini file";
 
         for (auto& warning : warnings) {
@@ -102,10 +102,11 @@ void User_Data_Folder::parse_config() {
         }
 
         auto existing_file_stream = filesystem.open_ifstream(config_path);
-        if (!existing_file_stream) {
+        if (!existing_file_stream || !*existing_file_stream) {
             throw config_exception("Couldn't read file " + config_path);
         }
-        warnings = Configurations::parse(existing_file_stream);
+
+        warnings = Configurations::parse(*existing_file_stream);
         for (auto& warning : warnings) {
             LOGGER_W << warning;
         }
@@ -124,13 +125,13 @@ void User_Data_Folder::save_config(bool force) {
     auto config_path = version_path + "config.ini";
 
     auto stream = filesystem.open_ofstream(config_path);
-    if (!stream) {
+    if (!stream || !*stream) {
         throw config_exception("Couldn't open config file for saving " + config_path);
     }
 
     LOGGER_I << "Saving config file " << config_path;
 
-    Configurations::save(stream);
+    Configurations::save(*stream);
 
     LOGGER_I << "Saved config file " << config_path;
 }
@@ -152,11 +153,11 @@ bool User_Data_Folder::save(std::string filename, Save_File& save_file) {
     cleanup_save_filename(filename);
     try {
         auto stream = filesystem.open_ofstream(filename, std::ios::out | std::ios::binary);
-        if (!stream) {
+        if (!stream || !*stream) {
             throw std::runtime_error("Unable to open file for writing");
         }
-        stream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-        stream << save_file;
+        stream->exceptions(std::ios_base::failbit | std::ios_base::badbit);
+        *stream << save_file;
         LOGGER_I << "Saved file " << filename;
         return save_file.is_valid();
     } catch (const std::ios_base::failure& e) {
@@ -175,11 +176,12 @@ bool User_Data_Folder::load(std::string filename, Save_File& save_file) {
 
     try {
         auto stream = filesystem.open_ifstream(filename, std::ios::in | std::ios::binary);
-        if (!stream) {
+        if (!stream || !*stream) {
             throw std::runtime_error("File doesn't exist or can't be opened");
         }
-        stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        stream >> save_file;
+
+        stream->exceptions(std::ios_base::failbit | std::ios_base::badbit);
+        *stream >> save_file;
         LOGGER_I << "Loaded file " << filename;
         return save_file.is_valid();
     } catch (const std::ios_base::failure& e) {
@@ -205,13 +207,13 @@ bool User_Data_Folder::load_keymap_file(Key_Binder& key_binder) {
     }
 
     auto input = filesystem.open_ifstream(filename);
-    if (!input) {
+    if (!input || !*input) {
         LOGGER_W << "Couldn't read key mapping file \"" << filename << "\", using default key mapping.";
         return false;
     }
 
     LOGGER_I << "Processing keymap file " << filename;
-    return key_binder.process_keymap_file(input);
+    return key_binder.process_keymap_file(*input);
 }
 
 bool User_Data_Folder::save_keymap_file(Key_Binder& key_binder) {
@@ -219,14 +221,14 @@ bool User_Data_Folder::save_keymap_file(Key_Binder& key_binder) {
 
     auto filename = get_keymap_filename();
     auto output = filesystem.open_ofstream(filename);
-    if (!output) {
+    if (!output || !*output) {
         LOGGER_E << "Unable to open keymap file " << filename << " for writing";
         return false;
     }
 
     LOGGER_I << "Saving keymap file " << filename;
 
-    auto saved = key_binder.save_keymap_file(output);
+    auto saved = key_binder.save_keymap_file(*output);
     if (saved) {
         LOGGER_I << "Finished saving keymap file " << filename;
     }

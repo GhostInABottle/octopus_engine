@@ -534,7 +534,9 @@ void Map::save(std::string save_filename) {
 
     auto fs = file_utilities::disk_filesystem();
     auto out = fs->open_ofstream(save_filename, std::ios_base::out | std::ios_base::trunc);
-    rapidxml::print_stream(out, *doc, rapidxml::print_space_indenting);
+    if (!out || !*out) return;
+
+    rapidxml::print_stream(*out, *doc, rapidxml::print_space_indenting);
 }
 
 rapidxml::xml_node<>* Map::save(rapidxml::xml_document<>& doc) {

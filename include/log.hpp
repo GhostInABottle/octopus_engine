@@ -1,11 +1,12 @@
 #ifndef HPP_LOG
 #define HPP_LOG
 
-#include <fstream>
+#include <istream>
 #include <sstream>
 #include <string>
 #include <ctime>
 #include <iomanip>
+#include <memory>
 
 // Ignore 'inheritance by dominance' warning
 #pragma warning(push)
@@ -21,16 +22,17 @@ class Log : public std::stringstream {
 public:
     // Constructor: sets the level
     explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
-        if (!log_file.is_open()) {
+        if (!log_file) {
             open_log_file();
         }
     }
     // Destructor: writes the message to file
     ~Log() {
-        if (!enabled || current_level > Log::get_reporting_level())
-            return;
-        log_file << "- " << timestamp() << " " << log_level_to_string(current_level)
+        if (!enabled || current_level > Log::get_reporting_level()) return;
+
+        *log_file << "- " << timestamp() << " " << log_level_to_string(current_level)
             << ": " << this->str() << std::endl;
+
         if (!log_file) {
             enabled = false;
         }
@@ -99,7 +101,7 @@ private:
     // The global reporting level
     static Log_Level reporting_level;
     // The file to write into
-    static std::ofstream log_file;
+    static std::unique_ptr<std::ostream> log_file;
     // Is logging disabled? (e.g. failed to open log file)
     static bool enabled;
     // Open the log file for the first time
