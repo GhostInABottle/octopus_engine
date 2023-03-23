@@ -21,6 +21,7 @@
 #include "../include/vendor/platform_folders.hpp"
 #include "../include/xd/audio.hpp"
 #include "../include/xd/graphics.hpp"
+#include "../include/xd/graphics/font.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include "../include/xd/vendor/sol/sol.hpp"
@@ -742,7 +743,9 @@ std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->file_exists(filename))
         throw std::runtime_error("Couldn't read font file " + filename);
-    return pimpl->asset_manager.load<xd::font>(filename);
+
+    auto stream_ptr = fs->open_binary_ifstream(filename).release();
+    return pimpl->asset_manager.load<xd::font>(filename, stream_ptr);
 }
 
 void Game::render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text) {

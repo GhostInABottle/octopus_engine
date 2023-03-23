@@ -6,7 +6,6 @@
 #include <string>
 #include <optional>
 #include "xd/graphics/framebuffer.hpp"
-#include "xd/graphics/font.hpp"
 #include "xd/graphics/simple_text_renderer.hpp"
 #include "xd/graphics/types.hpp"
 #include "xd/system.hpp"
@@ -27,6 +26,7 @@ class Key_Binder;
 namespace xd {
     class audio;
     class asset_manager;
+    class font;
     namespace lua {
         class virtual_machine;
     }

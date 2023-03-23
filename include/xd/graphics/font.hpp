@@ -14,6 +14,7 @@
 #include "../asset_serializer.hpp"
 #include <memory>
 #include <unordered_map>
+#include <iosfwd>
 
 namespace xd
 {
@@ -21,13 +22,14 @@ namespace xd
     class font
     {
     public:
-
-        font(const std::string& filename);
+        // Ownership of the stream will be transferred to the font
+        // Can't use unique_ptr because the asset_serializer will steal it
+        font(const std::string& filename, std::istream* stream);
         virtual ~font();
         font(const font&) = delete;
         font& operator=(const font&) = delete;
 
-        void link_font(const std::string& type, const std::string& filename);
+        void link_font(const std::string& type, const std::string& filename, std::unique_ptr<std::istream> stream);
         void link_font(const std::string& type, std::shared_ptr<font> font);
         void unlink_font(const std::string& type);
 
@@ -75,7 +77,7 @@ namespace xd
     template <>
     struct asset_serializer<xd::font> {
         typedef std::string key_type;
-        key_type operator()(const std::string& filename) const {
+        key_type operator()(const std::string& filename, std::istream* stream) const {
             return filename;
         }
         key_type operator()(const xd::font& font) const {

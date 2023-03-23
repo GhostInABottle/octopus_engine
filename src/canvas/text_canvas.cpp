@@ -2,7 +2,6 @@
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/decorators/typewriter_decorator.hpp"
-#include "../../include/utility/file.hpp"
 #include <sstream>
 #include <stdexcept>
 
@@ -67,11 +66,6 @@ void Text_Canvas::set_font(const std::string& font_file) {
 }
 
 void Text_Canvas::link_font(const std::string& font_type, const std::string& font_file) {
-    auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(font_file)) {
-        throw std::runtime_error("Couldn't read font file " + font_file);
-    }
-
     font->link_font(font_type, game.create_font(font_file));
 }
 

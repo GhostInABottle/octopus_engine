@@ -1,15 +1,18 @@
+#include "../../../include/xd/graphics/font.hpp"
+#include "../../../include/xd/graphics/exceptions.hpp"
+#include "../../../include/xd/vendor/utf8.h"
+#include "../../../include/log.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SIZES_H
 #include <harfbuzz/hb.h>
 #include <harfbuzz/hb-ft.h>
+#include "../../../include/xd/vendor/unicode_data.hpp"
 #include <memory>
 #include <unordered_map>
 #include <memory>
-#include "../../../include/xd/graphics/font.hpp"
-#include "../../../include/xd/graphics/exceptions.hpp"
-#include "../../../include/xd/vendor/utf8.h"
-#include "../../../include/xd/vendor/unicode_data.hpp"
+#include <istream>
+#include <mutex>
 
 namespace xd { namespace detail { namespace font {
 
@@ -26,7 +29,9 @@ namespace xd { namespace detail { namespace font {
         operator FT_Library() { return m_library; }
     private:
         FT_Library m_library;
-    } library;
+    };
+
+    static ft_lib ft_library;
 
     struct vertex
     {
@@ -64,18 +69,66 @@ namespace xd { namespace detail { namespace font {
         glm::vec2 advance, offset;
     };
 
+    unsigned long file_read(FT_Stream rec, unsigned long offset, unsigned char* buffer, unsigned long count) {
+        auto* istream = static_cast<std::istream*>(rec->descriptor.pointer);
+        istream->clear();
+
+        if (count > 0) {
+            istream->read(reinterpret_cast<char*>(buffer), count);
+            // Read operation
+            if (!*istream || istream->eof()) return 0;
+
+            return static_cast<unsigned long>(istream->gcount());
+        }
+
+        // Seek operation
+        istream->seekg(offset, std::ios::beg);
+        return *istream ? 0 : 1;
+    }
+    void file_close(FT_Stream) {}
+
+    // FT Face ops need to be thread-safe
+    // see https://freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_library
+    static std::mutex face_mutex;
+
     struct face
     {
-        face(const char* filename) {
+        face(const std::string& filename, std::unique_ptr<std::istream> stream)
+                : stream_rec{ std::make_unique<FT_StreamRec>() },
+                istream{ std::move(stream) } {
+            if (!istream || !*istream) throw font_load_failed(filename);
+
+            // calculate file size
+            istream->seekg(0, std::ios::end);
+            auto file_size = static_cast<unsigned long>(istream->tellg());
+            istream->seekg(0, std::ios::beg);
+
+            LOGGER_D << "Loading font " << filename << " with size " << file_size;
+
+            // use custom file access functions
+            stream_rec->base = nullptr;
+            stream_rec->size = file_size;
+            stream_rec->pos = 0;
+            stream_rec->descriptor.pointer = static_cast<void*>(istream.get());
+            stream_rec->read = file_read;
+            stream_rec->close = file_close;
+
+            FT_Open_Args args{};
+            args.flags = FT_OPEN_STREAM;
+            args.stream = stream_rec.get();
+
+            std::lock_guard<std::mutex> lock{ face_mutex };
+
             // load the font
-            auto error = FT_New_Face(detail::font::library, filename, 0, &handle);
-            if (error)
-                throw font_load_failed(filename);
+            auto error = FT_Open_Face(ft_library, &args, 0, &handle);
+            if (error) throw font_load_failed(filename);
+
             hb_font = hb_ft_font_create(handle, 0);
             hb_buffer = hb_buffer_create();
             hb_buffer_set_content_type(hb_buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
         }
         ~face() {
+            std::lock_guard<std::mutex> lock{ face_mutex };
             hb_buffer_destroy(hb_buffer);
             hb_font_destroy(hb_font);
             // free font sizes
@@ -89,17 +142,22 @@ namespace xd { namespace detail { namespace font {
         hb_font_t* hb_font;
         hb_buffer_t* hb_buffer;
         std::unordered_map<int, FT_Size> sizes;
+        std::unique_ptr<FT_StreamRec> stream_rec;
+        std::unique_ptr<std::istream> istream;
     };
 
 } } }
 
-xd::font::font(const std::string& font_filename)
+using namespace xd::detail::font;
+
+xd::font::font(const std::string& font_filename, std::istream* stream)
         : m_filename(font_filename)
         , m_mvp_uniform("mvpMatrix")
         , m_position_uniform("vPosition")
         , m_color_uniform("vColor")
         , m_texture_uniform("colorMap")
-        , m_face(std::make_unique<detail::font::face>(font_filename.c_str())){
+        , m_face(std::make_unique<face>(font_filename,
+            std::unique_ptr<std::istream>(stream))) {
 }
 
 xd::font::~font()
@@ -110,9 +168,9 @@ xd::font::~font()
     }
 }
 
-void xd::font::link_font(const std::string& type, const std::string& filename)
+void xd::font::link_font(const std::string& type, const std::string& filename, std::unique_ptr<std::istream> stream)
 {
-    auto linked_font = std::make_shared<font>(filename);
+    auto linked_font = std::make_shared<font>(filename, stream.release());
     m_linked_fonts[type] = linked_font;
 }
 
@@ -169,8 +227,8 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
         throw glyph_load_failed(m_filename, char_index);
 
     // create glyph
-    m_glyph_map[key] = std::make_unique<detail::font::glyph>();
-    detail::font::glyph& glyph = *m_glyph_map[key];
+    m_glyph_map[key] = std::make_unique<glyph>();
+    glyph& glyph = *m_glyph_map[key];
     glyph.glyph_index = char_index;
     glyph.advance.x = static_cast<float>(m_face->handle->glyph->advance.x >> 6);
     glyph.advance.y = static_cast<float>(m_face->handle->glyph->advance.y >> 6);
@@ -188,7 +246,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
         0, GL_LUMINANCE, GL_UNSIGNED_BYTE, bitmap.buffer);
 
     // create quad for it
-    detail::font::vertex data[4];
+    vertex data[4];
     data[0].pos = glm::vec2(0, 0);
     data[1].pos = glm::vec2(0, bitmap.rows);
     data[2].pos = glm::vec2(bitmap.width, bitmap.rows);
@@ -199,7 +257,7 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
     data[3].tex = glm::vec2(1, 0);
 
     // create a batch
-    glyph.quad_ptr = std::make_shared<detail::font::vertex_batch_t>(GL_QUADS);
+    glyph.quad_ptr = std::make_shared<vertex_batch_t>(GL_QUADS);
     glyph.quad_ptr->load(data, 4);
     glyph.offset.x = static_cast<float>(m_face->handle->glyph->bitmap_left);
     glyph.offset.y = static_cast<float>(m_face->handle->glyph->bitmap_top);
@@ -274,7 +332,7 @@ void xd::font::render(const std::string& text, const font_style& style,
 
         if (actual_rendering) {
             // get the cached glyph, or cache if it is not yet cached
-            const detail::font::glyph& glyph = load_glyph(codepoint, style.m_size, load_flags);
+            const glyph& glyph = load_glyph(codepoint, style.m_size, load_flags);
 
             // bind the texture
             glBindTexture(GL_TEXTURE_2D, glyph.texture_id);
