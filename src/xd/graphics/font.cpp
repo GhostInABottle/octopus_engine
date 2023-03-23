@@ -66,7 +66,11 @@ namespace xd { namespace detail { namespace font {
 
     struct face
     {
-        face(FT_Face f) : handle(f) {
+        face(const char* filename) {
+            // load the font
+            auto error = FT_New_Face(detail::font::library, filename, 0, &handle);
+            if (error)
+                throw font_load_failed(filename);
             hb_font = hb_ft_font_create(handle, 0);
             hb_buffer = hb_buffer_create();
             hb_buffer_set_content_type(hb_buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
@@ -94,16 +98,8 @@ xd::font::font(const std::string& font_filename)
         , m_mvp_uniform("mvpMatrix")
         , m_position_uniform("vPosition")
         , m_color_uniform("vColor")
-        , m_texture_uniform("colorMap") {
-    int error;
-
-    FT_Face handle = nullptr;
-    // load the font
-    error = FT_New_Face(detail::font::library, font_filename.c_str(), 0, &handle);
-    // construct a new font face; make sure it gets deleted if exception is thrown
-    m_face = std::make_unique<detail::font::face>(handle);
-    if (error)
-        throw font_load_failed(font_filename);
+        , m_texture_uniform("colorMap")
+        , m_face(std::make_unique<detail::font::face>(font_filename.c_str())){
 }
 
 xd::font::~font()

@@ -3,20 +3,24 @@
 #include "../../../../include/xd/audio/exceptions.hpp"
 #include "../../../../include/log.hpp"
 #include <FMOD/fmod.hpp>
+#include <istream>
 
 namespace xd::detail {
-    bool invalid_result(FMOD_RESULT result) {
+    static bool invalid_result(FMOD_RESULT result) {
         // Stolen and stale channel handles are expected
         return result != FMOD_OK
             && result != FMOD_ERR_CHANNEL_STOLEN
             && result != FMOD_ERR_INVALID_HANDLE;
     }
+
     const FMOD_TIMEUNIT time_unit = FMOD_TIMEUNIT_PCM;
 }
 
 xd::detail::fmod_sound_handle::fmod_sound_handle(audio_handle& audio_handle,
-        FMOD::Sound* sound, channel_group_type group_type, const std::string& filename) :
+        FMOD::Sound* sound, channel_group_type group_type, const std::string& filename,
+        std::unique_ptr<std::istream> stream) :
     audio(audio_handle),
+    stream(std::move(stream)),
     sound(sound),
     channel(nullptr),
     channel_group(group_type),

@@ -17,7 +17,8 @@ namespace xd::detail {
         // Setup the FMOD system
         fmod_audio_handle();
         // Create a sound object (initially paused)
-        std::unique_ptr<sound_handle> create_sound(const std::string& filename, channel_group_type group_type) override;
+        std::unique_ptr<sound_handle> create_sound(const std::string& filename,
+            std::unique_ptr<std::istream> stream, channel_group_type group_type) override;
         // Play a sound
         void play_sound(sound_handle& sound) override;
         // Set volume for a group

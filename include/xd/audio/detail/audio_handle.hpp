@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <iosfwd>
 #include "../channel_group_type.hpp"
 
 
@@ -13,7 +14,8 @@ namespace xd::detail {
     {
     public:
         // Create a sound instance
-        virtual std::unique_ptr<sound_handle> create_sound(const std::string& filename, channel_group_type group_type) = 0;
+        virtual std::unique_ptr<sound_handle> create_sound(const std::string& filename,
+            std::unique_ptr<std::istream> stream, channel_group_type group_type) = 0;
         // Set volume for a group
         virtual void set_channel_group_volume(channel_group_type group_type, float volume) = 0;
         // Set volume for a channel group

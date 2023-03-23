@@ -4,6 +4,7 @@
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/string.hpp"
+#include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
 #include <stdexcept>
 
@@ -68,7 +69,10 @@ std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std:
         music = load_music(current_map, filename);
         LOGGER_D << "Playing cached music file: " << filename;
     } else {
-        music = std::make_shared<xd::music>(*audio, audio_folder + filename);
+        auto fs = file_utilities::game_data_filesystem();
+        auto full_name = audio_folder + filename;
+        music = std::make_shared<xd::music>(*audio, full_name,
+            fs->open_binary_ifstream(full_name));
         LOGGER_D << "Playing non-cached music file: " << filename;
     }
 
@@ -193,10 +197,13 @@ std::shared_ptr<xd::sound> Audio_Player::load_sound(Audio_Cache& cache, const st
 
     auto group_type = get_sound_group_type(pausable);
     auto old_count = sounds.size();
-    if (channel_count > old_count) {
-        for (unsigned int i = 0; i < channel_count - old_count; ++i) {
-            sounds.emplace_back(std::make_shared<xd::sound>(*audio, audio_folder + filename, group_type));
-        }
+    if (channel_count <= old_count) return sounds.back();
+
+    auto full_name = audio_folder + filename;
+    auto fs = file_utilities::game_data_filesystem();
+    for (unsigned int i = 0; i < channel_count - old_count; ++i) {
+        sounds.emplace_back(std::make_shared<xd::sound>(*audio, full_name,
+            fs->open_binary_ifstream(full_name), group_type));
     }
 
     return sounds.back();
@@ -208,7 +215,10 @@ std::shared_ptr<xd::music> Audio_Player::load_music(Audio_Cache& cache, const st
     auto& sounds = cache[filename];
     if (sounds.empty()) {
         LOGGER_D << "Loading music file: " << filename;
-        sounds.emplace_back(std::make_shared<xd::music>(*audio, audio_folder + filename));
+        auto fs = file_utilities::game_data_filesystem();
+        auto full_name = audio_folder + filename;
+        sounds.emplace_back(std::make_shared<xd::music>(*audio, full_name,
+            fs->open_binary_ifstream(full_name)));
     }
 
     return std::dynamic_pointer_cast<xd::music>(sounds.back());

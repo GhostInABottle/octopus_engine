@@ -6,10 +6,11 @@
 #include "../../../include/log.hpp"
 #include <memory>
 
-xd::sound::sound(audio& audio, const std::string& filename, channel_group_type group_type) {
+xd::sound::sound(audio& audio, const std::string& filename,
+        std::unique_ptr<std::istream> stream, channel_group_type group_type) {
     // load sound from file
     auto audio_handle = audio.get_handle();
-    m_handle = audio_handle->create_sound(filename, group_type);
+    m_handle = audio_handle->create_sound(filename, std::move(stream), group_type);
 
     // Set loop points if specified in tags
     if (group_type != channel_group_type::music) return;

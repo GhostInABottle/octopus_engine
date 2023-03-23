@@ -2,6 +2,8 @@
 #define H_XD_AUDIO_DETAIL_FMOD_SOUND_HANDLE
 
 #include "sound_handle.hpp"
+#include <iosfwd>
+#include <memory>
 
 namespace FMOD {
     class Sound;
@@ -12,7 +14,8 @@ namespace xd::detail {
     class fmod_sound_handle : public sound_handle {
     public:
         fmod_sound_handle(audio_handle& audio_handle, FMOD::Sound* sound,
-            channel_group_type group_type, const std::string& filename);
+            channel_group_type group_type, const std::string& filename,
+            std::unique_ptr<std::istream> stream);
 
         int get_loop_tag(const char* name) override;
         tag_loop_info read_tagged_loop_points() override;
@@ -45,6 +48,7 @@ namespace xd::detail {
         ~fmod_sound_handle() override;
     private:
         audio_handle& audio;
+        std::unique_ptr<std::istream> stream;
         FMOD::Sound* sound;
         FMOD::Channel* channel;
         channel_group_type channel_group;

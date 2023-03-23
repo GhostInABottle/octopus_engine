@@ -14,7 +14,8 @@ namespace xd
 
         music(const music&) = delete;
         music& operator=(const music&) = delete;
-        music(audio& audio, const std::string& filename);
+        music(audio& audio, const std::string& filename,
+            std::unique_ptr<std::istream> stream);
     };
 }
 

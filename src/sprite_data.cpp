@@ -175,8 +175,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
             // Sound effect
             if (audio) {
+                auto fs = file_utilities::game_data_filesystem();
                 if (auto sound_file_attr = frame_node->first_attribute("Sound")) {
-                    frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value(), channel_group);
+                    auto sound_filename = std::string{ sound_file_attr->value() };
+                    frame.sound_file = std::make_shared<xd::sound>(*audio, sound_filename,
+                        fs->open_binary_ifstream(sound_filename), channel_group);
                 }
 
                 if (auto node = frame_node->first_node("Sound")) {
@@ -185,7 +188,9 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
                     }
 
                     if (auto sound_file_attr = node->first_attribute("Filename")) {
-                        frame.sound_file = std::make_shared<xd::sound>(*audio, sound_file_attr->value(), channel_group);
+                        auto sound_filename = std::string{ sound_file_attr->value() };
+                        frame.sound_file = std::make_shared<xd::sound>(*audio, sound_filename,
+                            fs->open_binary_ifstream(sound_filename), channel_group);
                     } else {
                         throw xml_exception("Frame has a sound node but the filename is missing");
                     }

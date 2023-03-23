@@ -45,6 +45,10 @@ public:
             ? channel_group_type::sound
             : channel_group_type::non_pausable_sound;
     }
+    // Get the default audio folder
+    const std::string& get_audio_folder() const {
+        return audio_folder;
+    }
     // Play and set the currently playing music for the map
     std::shared_ptr<xd::music> play_music(Map& current_map, float volume = 1.0f);
     std::shared_ptr<xd::music> play_music(Map& current_map, const std::string& filename,

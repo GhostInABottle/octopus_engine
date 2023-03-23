@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <memory>
+#include <iosfwd>
 #include "channel_group_type.hpp"
 
 namespace xd
@@ -20,7 +21,8 @@ namespace xd
 
         sound(const sound&) = delete;
         sound& operator=(const sound&) = delete;
-        sound(audio& audio, const std::string& filename, channel_group_type group_type);
+        sound(audio& audio, const std::string& filename,
+            std::unique_ptr<std::istream> stream, channel_group_type group_type);
         virtual ~sound();
 
         void play();

@@ -3,6 +3,7 @@
 #include "../../../include/game.hpp"
 #include "../../../include/map.hpp"
 #include "../../../include/audio_player.hpp"
+#include "../../../include/utility/file.hpp"
 #include "../../../include/command_result.hpp"
 #include "../../../include/commands/fade_music_command.hpp"
 #include "../../../include/xd/lua.hpp"
@@ -11,19 +12,28 @@
 #include <memory>
 #include <optional>
 
+namespace detail {
+    static std::unique_ptr<xd::sound> make_sound(Game& game, const std::string& filename, std::optional<bool> pausable) {
+        auto& audio_player = game.get_audio_player();
+        auto fs = file_utilities::game_data_filesystem();
+        channel_group_type group_type = pausable.has_value()
+            ? audio_player.get_sound_group_type(pausable.value())
+            : game.get_sound_group_type();
+        auto full_name = audio_player.get_audio_folder() + filename;
+        return std::make_unique<xd::sound>(*audio_player.get_audio(), full_name,
+            fs->open_binary_ifstream(full_name), group_type);
+    }
+}
+
 void bind_audio_types(sol::state& lua, Game& game) {
     // Sound effect
     auto sound = lua.new_usertype<xd::sound>("Sound",
         sol::call_constructor, sol::factories(
             [&](const std::string& filename) {
-                auto audio = game.get_audio_player().get_audio();
-                auto group_type = game.get_sound_group_type();
-                return std::make_unique<xd::sound>(*audio, filename, group_type);
+                return detail::make_sound(game, filename, std::nullopt);
             },
             [&](const std::string& filename, bool pausable) {
-                auto& audio_player = game.get_audio_player();
-                auto group_type = audio_player.get_sound_group_type(pausable);
-                return std::make_unique<xd::sound>(*audio_player.get_audio(), filename, group_type);
+                return detail::make_sound(game, filename, pausable);
             }
         )
     );
@@ -44,8 +54,11 @@ void bind_audio_types(sol::state& lua, Game& game) {
     auto music = lua.new_usertype<xd::music>("Music",
         sol::call_constructor, sol::factories(
             [&](const std::string& filename) {
-                auto audio = game.get_audio_player().get_audio();
-                return std::make_shared<xd::music>(*audio, filename);
+                auto audio_player = game.get_audio_player();
+                auto full_name = audio_player.get_audio_folder() + filename;
+                auto fs = file_utilities::game_data_filesystem();
+                return std::make_shared<xd::music>(*audio_player.get_audio(), full_name,
+                    fs->open_binary_ifstream(full_name));
             }
     ));
     music["playing"] = sol::property(&xd::music::playing);
