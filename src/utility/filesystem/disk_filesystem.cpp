@@ -61,8 +61,14 @@ std::vector<Path_Info> Disk_Filesystem::directory_content_details(const std::str
         return {};
     }
 
+    std::string dir_name{path};
+    string_utilities::normalize_slashes(dir_name);
+    if (!string_utilities::ends_with(dir_name, "/")) {
+        dir_name += "/";
+    }
+
     try {
-        return directory_content_details_unchecked(path);
+        return directory_content_details_unchecked(dir_name);
     } catch (std::runtime_error& e) {
         LOGGER_E << "Error while trying to list directory " << path << ", some or all files might be ignored - " << e.what();
         return {};

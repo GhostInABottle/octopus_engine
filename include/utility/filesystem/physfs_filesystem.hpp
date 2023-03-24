@@ -5,6 +5,9 @@
 
 // PhysicsFS archive-based filesystem
 class PhysFS_Filesystem : public Readable_Filesystem {
+public:
+    PhysFS_Filesystem(const char* arg);
+    ~PhysFS_Filesystem();
     virtual std::unique_ptr<std::istream> open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) override;
     virtual std::unique_ptr<std::istream> open_binary_ifstream(std::string filename) override;
     virtual std::string read_file(std::string filename) override;

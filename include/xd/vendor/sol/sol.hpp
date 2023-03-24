@@ -7401,7 +7401,7 @@ namespace sol {
 	template <>
 	struct is_transparent_argument<variadic_args> : std::true_type { };
 	template <typename T>
-	struct is_variadic_arguments : std::is_same<T, variadic_args> { };
+	struct is_variadic_arguments : meta::any<std::is_same<T, variadic_args>, meta::is_optional<T>> {};
 
 	template <typename T>
 	struct is_container
@@ -7999,9 +7999,9 @@ namespace sol {
 			// LuaJIT cannot have the catchall when the safe propagation is on
 			// but LuaJIT will swallow all C++ errors
 			// if we don't at least catch std::exception ones
-			catch (...) {
-				call_exception_handler(L, optional<const std::exception&>(nullopt), "caught (...) exception");
-			}
+			//catch (...) {
+			//	call_exception_handler(L, optional<const std::exception&>(nullopt), "caught (...) exception");
+			//}
 #endif // LuaJIT cannot have the catchall, but we must catch std::exceps for it
 			return lua_error(L);
 #endif // Safe exceptions
@@ -13386,14 +13386,14 @@ namespace sol { namespace stack {
 					tracking.use(static_cast<int>(success));
 					return {};
 				}
-				return stack_detail::unchecked_get<ValueType>(L, index, tracking);
+				return T(stack_detail::unchecked_get<ValueType>(L, index, tracking));
 			}
 			else {
 				if (!check<ValueType>(L, index, &no_panic)) {
 					tracking.use(static_cast<int>(!lua_isnone(L, index)));
 					return {};
 				}
-				return stack_detail::unchecked_get<ValueType>(L, index, tracking);
+				return T(stack_detail::unchecked_get<ValueType>(L, index, tracking));
 			}
 		}
 	};
@@ -18024,9 +18024,16 @@ namespace function_detail {
 			return nr;
 		}
 
+		struct on_success {
+			template <typename... Args>
+			int operator()(Args&&... args) const {
+				return call(std::forward<Args>(args)...);
+			}
+		};
+
 		int operator()(lua_State* L) {
-			auto mfx = [](auto&&... args) { return call(std::forward<decltype(args)>(args)...); };
-			return call_detail::overload_match<Functions...>(mfx, L, 1 + start_skew, overloads);
+			on_success call_obj{};
+			return call_detail::overload_match<Functions...>(call_obj, L, 1 + start_skew, overloads);
 		}
 	};
 }

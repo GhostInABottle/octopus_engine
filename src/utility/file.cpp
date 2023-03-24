@@ -1,15 +1,17 @@
 #include "../../include/utility/file.hpp"
 #include "../../include/utility/filesystem/standard_filesystem.hpp"
 #include "../../include/utility/filesystem/boost_filesystem.hpp"
+#include "../../include/utility/filesystem/physfs_filesystem.hpp"
 
 namespace file_utilities::detail {
     std::shared_ptr<Writable_Filesystem> disk_filesystem;
+    std::shared_ptr<Readable_Filesystem> virtual_filesystem;
     Writable_Filesystem* user_data_filesystem{ nullptr };
     Readable_Filesystem* game_data_filesystem{ nullptr };
     std::shared_ptr<User_Data_Folder> user_data_folder;
 }
 
-std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem() {
+std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem(const char*) {
     if (detail::disk_filesystem) return detail::disk_filesystem;
 
 #ifdef OCB_USE_BOOST_FILESYSTEM
@@ -21,10 +23,17 @@ std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem() {
     return detail::disk_filesystem;
 }
 
-Readable_Filesystem* file_utilities::game_data_filesystem(const char*) {
+std::shared_ptr<Readable_Filesystem> file_utilities::virtual_filesystem(const char* arg) {
+    if (detail::virtual_filesystem) return detail::virtual_filesystem;
+
+    detail::virtual_filesystem = std::make_shared<PhysFS_Filesystem>(arg);
+    return detail::virtual_filesystem;
+}
+
+Readable_Filesystem* file_utilities::game_data_filesystem(const char* arg) {
     if (detail::game_data_filesystem) return detail::game_data_filesystem;
 
-    auto disk_fs = disk_filesystem();
+    auto disk_fs = virtual_filesystem(arg);
     detail::game_data_filesystem = disk_fs.get();
     return detail::game_data_filesystem;
 }

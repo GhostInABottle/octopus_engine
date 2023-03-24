@@ -45,14 +45,12 @@ bool Boost_Filesystem::is_directory(const std::string& path) {
 std::tuple<unsigned long long, std::tm> Boost_Filesystem::last_write_time(const std::string& path) {
     try {
         auto file_time = fs::last_write_time(path);
-        auto duration = file_time;
-        auto time_t = file_time;
         auto time_point = std::chrono::system_clock::from_time_t(file_time);
 
         auto since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count();
 #pragma warning(push)
 #pragma warning(disable: 4996)
-        return std::make_tuple(static_cast<unsigned long long>(since_epoch), *std::localtime(&time_t));
+        return std::make_tuple(static_cast<unsigned long long>(since_epoch), *std::localtime(&file_time));
 #pragma warning(pop)
     } catch (fs::filesystem_error& e) {
         LOGGER_E << "Error getting the last modified time for path: " << path << ", returning 0s - " << e.what();
@@ -74,7 +72,7 @@ std::vector<std::string> Boost_Filesystem::directory_content_names_unchecked(con
 }
 
 std::vector<Path_Info> Boost_Filesystem::directory_content_details_unchecked(const std::string& path) {
-    std::vector<file_utilities::Path_Info> result;
+    std::vector<Path_Info> result;
 
     for (auto& p : fs::directory_iterator(detail::string_to_utf8_path(path))) {
         auto is_regular = fs::is_regular_file(p);
@@ -85,9 +83,10 @@ std::vector<Path_Info> Boost_Filesystem::directory_content_details_unchecked(con
         path_info.name = p.path().filename().string();
         path_info.is_regular = is_regular;
         path_info.is_directory = is_directory;
-        auto [timestamp, tm] = last_write_time(path);
+        auto [timestamp, tm] = last_write_time(path + path_info.name);
         path_info.timestamp = timestamp;
         path_info.calendar_time = tm;
+
         result.push_back(path_info);
     }
 

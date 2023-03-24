@@ -73,9 +73,10 @@ std::vector<Path_Info> Standard_Filesystem::directory_content_details_unchecked(
         path_info.name = p.path().filename().string();
         path_info.is_regular = is_regular;
         path_info.is_directory = is_directory;
-        auto [timestamp, tm] = last_write_time(path);
+        auto [timestamp, tm] = last_write_time(path + path_info.name);
         path_info.timestamp = timestamp;
         path_info.calendar_time = tm;
+
         result.push_back(path_info);
     }
 

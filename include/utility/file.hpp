@@ -5,7 +5,8 @@
 #include "filesystem/user_data_folder.hpp"
 
 namespace file_utilities {
-    std::shared_ptr<Writable_Filesystem> disk_filesystem();
+    std::shared_ptr<Writable_Filesystem> disk_filesystem(const char* arg = nullptr);
+    std::shared_ptr<Readable_Filesystem> virtual_filesystem(const char* arg = nullptr);
     Readable_Filesystem* game_data_filesystem(const char* arg = nullptr);
     void set_game_data_filesystem(Readable_Filesystem* filesystem);
     Writable_Filesystem* user_data_filesystem(const char* arg = nullptr);
