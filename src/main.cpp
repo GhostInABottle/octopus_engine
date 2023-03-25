@@ -28,8 +28,9 @@ int main(int argc, char* argv[]) {
         std::vector<std::string> args{ argv, argv + argc };
 
         // Init the filesystems
-        file_utilities::game_data_filesystem(argv[1]);
-        file_utilities::user_data_filesystem(argv[1]);
+        file_utilities::default_config_filesystem(argv[0]);
+        file_utilities::game_data_filesystem(argv[0]);
+        file_utilities::user_data_filesystem(argv[0]);
 
         // Parse the config file
         auto user_data_folder = file_utilities::user_data_folder();

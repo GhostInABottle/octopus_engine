@@ -2,15 +2,24 @@
 #include "../include/configurations.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
+#include <iostream>
 
 Log_Level Log::reporting_level = Log_Level::debug;
 std::unique_ptr<std::ostream> Log::log_file;
+std::ostream* Log::log_fallback = &std::cerr;
+bool Log::log_file_opened = false;
 bool Log::enabled = false;
 
 void Log::open_log_file() {
     if (Configurations::defaults_loaded()) {
         enabled = Configurations::get<bool>("logging.enabled");
+    } else {
+        // Use fallback
+        reporting_level = Log_Level::warning;
+        enabled = true;
+        return;
     }
+
     if (!enabled) return;
 
     auto filename = Configurations::get<std::string>("logging.filename");
@@ -31,7 +40,8 @@ void Log::open_log_file() {
         mode |= std::ios_base::app;
 
     log_file = data_folder->get_filesystem().open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
-    enabled = static_cast<bool>(log_file);
+    log_file_opened = static_cast<bool>(log_file);
+
     std::string config_level = Configurations::get<std::string>("logging.level");
     string_utilities::capitalize(config_level);
     reporting_level = log_level_from_string(config_level);

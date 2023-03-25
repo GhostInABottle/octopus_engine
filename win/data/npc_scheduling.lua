@@ -611,7 +611,7 @@ local function read_npcs(filename)
     local result = {}
     local filename = game:get_config('game.npcs-file')
     if filename ~= '' then
-        local npcs_data = dofile(filename)
+        local npcs_data = game:load_lua_file(filename)()
         for name, data in pairs(npcs_data) do
             result[name] = NPC(name, data)
         end

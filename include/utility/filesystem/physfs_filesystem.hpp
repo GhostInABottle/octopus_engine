@@ -1,12 +1,13 @@
 #ifndef HPP_PHYSFS_FILESYSTEM
 #define HPP_PHYSFS_FILESYSTEM
 
+#include <string_view>
 #include "readable_filesystem.hpp"
 
 // PhysicsFS archive-based filesystem
 class PhysFS_Filesystem : public Readable_Filesystem {
 public:
-    PhysFS_Filesystem(const char* arg);
+    PhysFS_Filesystem(std::string_view arg, std::string_view archive_name);
     ~PhysFS_Filesystem();
     virtual std::unique_ptr<std::istream> open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) override;
     virtual std::unique_ptr<std::istream> open_binary_ifstream(std::string filename) override;

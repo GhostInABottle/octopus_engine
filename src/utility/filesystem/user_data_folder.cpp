@@ -4,6 +4,7 @@
 #include "../../../include/save_file.hpp"
 #include "../../../include/key_binder.hpp"
 #include "../../../include/utility/string.hpp"
+#include "../../../include/utility/file.hpp"
 #include "../../../include/vendor/platform_folders.hpp"
 #include <stdexcept>
 
@@ -77,19 +78,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem
 
 void User_Data_Folder::parse_config() {
     if (!parsed_default_config) {
-        auto default_stream = filesystem.open_ifstream("config.ini");
-        if (!default_stream || !*default_stream) {
-            throw config_exception("Couldn't read file config.ini");
-        }
-
-        auto warnings = Configurations::parse(*default_stream);
-        LOGGER_I << "Parsed the default config.ini file";
-
-        for (auto& warning : warnings) {
-            LOGGER_W << warning;
-        }
-
-        parsed_default_config = true;
+        parse_default_config();
     }
 
     if (version_path.empty()) return;
@@ -113,6 +102,25 @@ void User_Data_Folder::parse_config() {
     } catch (config_exception& e) {
         LOGGER_E << "Unable to write config file to " << version_path << ": " << e.what();
     }
+}
+
+void User_Data_Folder::parse_default_config() {
+    if (parsed_default_config) return;
+
+    auto config_fs = file_utilities::default_config_filesystem();
+    auto default_stream = config_fs->open_ifstream("config.ini");
+    if (!default_stream || !*default_stream) {
+        throw config_exception("Couldn't read file config.ini");
+    }
+
+    auto warnings = Configurations::parse(*default_stream);
+    LOGGER_I << "Parsed the default config.ini file";
+
+    for (auto& warning : warnings) {
+        LOGGER_W << warning;
+    }
+
+    parsed_default_config = true;
 }
 
 void User_Data_Folder::save_config(bool force) {
@@ -202,11 +210,13 @@ std::string User_Data_Folder::get_keymap_filename() const {
 
 bool User_Data_Folder::load_keymap_file(Key_Binder& key_binder) {
     std::string filename = get_keymap_filename();
+    Readable_Filesystem* fs = &filesystem;
     if (!filesystem.file_exists(filename)) {
         filename = Configurations::get<std::string>("controls.mapping-file");
+        fs = file_utilities::game_data_filesystem();
     }
 
-    auto input = filesystem.open_ifstream(filename);
+    auto input = fs->open_ifstream(filename);
     if (!input || !*input) {
         LOGGER_W << "Couldn't read key mapping file \"" << filename << "\", using default key mapping.";
         return false;

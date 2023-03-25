@@ -14,8 +14,9 @@ namespace detail {
     }
 }
 
-PhysFS_Filesystem::PhysFS_Filesystem(const char* arg) {
-    PhysFS::init(arg);
+PhysFS_Filesystem::PhysFS_Filesystem(std::string_view arg, std::string_view archive_name) {
+    PhysFS::init(std::string{ arg }.c_str());
+
     auto base_dir = PhysFS::getBaseDir();
     string_utilities::normalize_slashes(base_dir);
 
@@ -24,6 +25,10 @@ PhysFS_Filesystem::PhysFS_Filesystem(const char* arg) {
         // Hack for running in Visual Studio
         base_dir = base_dir.substr(0, base_dir.find_last_of("/"));
         base_dir = base_dir.substr(0, base_dir.find_last_of("/") + 1);
+    }
+
+    if (!archive_name.empty()) {
+        PhysFS::mount(base_dir + std::string{ archive_name }, "", true);
     }
 
     PhysFS::mount(base_dir, "", true);
@@ -38,7 +43,6 @@ std::unique_ptr<std::istream> PhysFS_Filesystem::open_ifstream(std::string filen
 }
 
 std::unique_ptr<std::istream> PhysFS_Filesystem::open_binary_ifstream(std::string filename) {
-    string_utilities::normalize_slashes(filename);
     return std::make_unique<PhysFS::ifstream>(detail::clean_relative_path(filename));
 }
 
@@ -124,15 +128,16 @@ std::vector<Path_Info> PhysFS_Filesystem::directory_content_details(const std::s
     std::vector<Path_Info> result;
     auto filenames = PhysFS::enumerateFiles(dir_name);
     for (auto& filename : filenames) {
-        auto is_regular = is_regular_file(path);
-        auto is_dir = is_directory(path);
+        auto full_name = dir_name + filename;
+        auto is_regular = is_regular_file(full_name);
+        auto is_dir = is_directory(full_name);
         if (!is_regular && !is_dir) continue;
 
         Path_Info path_info;
         path_info.name = filename;
         path_info.is_regular = is_regular;
         path_info.is_directory = is_dir;
-        auto [timestamp, tm] = last_write_time(dir_name + filename);
+        auto [timestamp, tm] = last_write_time(full_name);
         path_info.timestamp = timestamp;
         path_info.calendar_time = tm;
 

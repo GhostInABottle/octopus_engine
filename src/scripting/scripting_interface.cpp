@@ -7,7 +7,36 @@
 #include "../../include/command.hpp"
 #include "../../include/configurations.hpp"
 #include "../../include/log.hpp"
+#include "../../include/utility/file.hpp"
+#include "../../include/utility/string.hpp"
 #include "../../include/xd/lua.hpp"
+
+namespace detail {
+    static int require_lua_file(lua_State* state) {
+        auto require_path = sol::stack::get<std::string>(state);
+        auto filename{require_path};
+        // Lua supports . as a platform-agnostic directory separator
+        string_utilities::replace_all(filename, ".", "/");
+        filename += ".lua";
+
+        auto filesystem = file_utilities::game_data_filesystem();
+        if (!filesystem->file_exists(filename)) {
+            // Push error string and return its stack index
+            sol::stack::push(state, " file does not exist: " + filename);
+            return 1;
+        }
+
+        try {
+            auto script = filesystem->read_file(filename);
+            // Load and push the code (or error message) to the stack, and return the index
+            luaL_loadbuffer(state, script.data(), script.size(), require_path.c_str());
+        } catch (std::exception& ex) {
+            sol::stack::push(state, " error while reading " + filename + ": " + ex.what());
+        }
+
+        return 1;
+    }
+}
 
 Game* Scripting_Interface::game = nullptr;
 
@@ -57,7 +86,8 @@ void Scripting_Interface::schedule_code(const std::string& script, const std::st
 }
 
 void Scripting_Interface::schedule_file(const std::string& filename, const std::string& context) {
-    scheduler.start_file(filename, context);
+    auto fs = file_utilities::game_data_filesystem();
+    scheduler.start(fs->read_file(filename), context);
 }
 
 void Scripting_Interface::schedule_function(const sol::protected_function& function, const std::string& context) {
@@ -92,6 +122,11 @@ void Scripting_Interface::setup_scripts() {
     }
 
     auto& lua = vm.lua_state();
+
+    // Use custom searcher for require
+    lua["package"]["searchers"] = lua.create_table_with(1, detail::require_lua_file);
+
+    // Bind the Lua engine interface
 
     bind_utility_types(lua, *game);
 

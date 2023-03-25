@@ -1504,6 +1504,10 @@ function game:run_script(script) end
 ---@param filename string
 function game:run_script_file(filename) end
 
+---@param filename string
+---@return function
+function game:load_lua_file(filename) end
+
 function game:exit() end
 
 function game:reset_scripting() end

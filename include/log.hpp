@@ -22,7 +22,7 @@ class Log : public std::stringstream {
 public:
     // Constructor: sets the level
     explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
-        if (!log_file) {
+        if (!log_file_opened) {
             open_log_file();
         }
     }
@@ -30,11 +30,13 @@ public:
     ~Log() {
         if (!enabled || current_level > Log::get_reporting_level()) return;
 
-        *log_file << "- " << timestamp() << " " << log_level_to_string(current_level)
+        auto file = log_file_opened ? log_file.get() : log_fallback;
+
+        *file << "- " << timestamp() << " " << log_level_to_string(current_level)
             << ": " << this->str() << std::endl;
 
-        if (!log_file) {
-            enabled = false;
+        if (log_file && !*log_file) {
+            log_file_opened = false;
         }
     }
     // To avoid rvalue issues in stringstream(e.g. char* being treated as void*)
@@ -102,7 +104,11 @@ private:
     static Log_Level reporting_level;
     // The file to write into
     static std::unique_ptr<std::ostream> log_file;
-    // Is logging disabled? (e.g. failed to open log file)
+    // Fallback stream to write to (e.g. std::cerr)
+    static std::ostream* log_fallback;
+    // Whether the log file was explicitly opened
+    static bool log_file_opened;
+    // Is logging disabled? (e.g. by config)
     static bool enabled;
     // Open the log file for the first time
     static void open_log_file();

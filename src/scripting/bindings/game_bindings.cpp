@@ -11,6 +11,7 @@
 #include <memory>
 #include <tuple>
 #include <optional>
+#include <stdexcept>
 
 void bind_game_types(sol::state& lua, Game& game) {
     // Input type
@@ -159,7 +160,23 @@ void bind_game_types(sol::state& lua, Game& game) {
         }
     ));
 
-    game_type["text_width"] = [&](Game& game, const std::string& text) {
+    game_type["text_width"] = [](Game& game, const std::string& text) {
         return game.text_width(text);
+    };
+
+    game_type["load_lua_file"] = [&lua](Game& game, const std::string& filename) {
+        auto filesystem = file_utilities::game_data_filesystem();
+        if (!filesystem->file_exists(filename)) {
+            throw std::runtime_error{ "File was not found while trying to load Lua file: " + filename };
+        }
+        auto script = filesystem->read_file(filename);
+
+        sol::load_result result = lua.load(script, filename);
+        if (!result.valid()) {
+            throw std::runtime_error("Error loading " + filename + ": " + result.get<std::string>());
+        }
+
+        sol::protected_function f = result;
+        return f;
     };
 }

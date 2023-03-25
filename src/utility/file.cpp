@@ -2,16 +2,19 @@
 #include "../../include/utility/filesystem/standard_filesystem.hpp"
 #include "../../include/utility/filesystem/boost_filesystem.hpp"
 #include "../../include/utility/filesystem/physfs_filesystem.hpp"
+#include "../../include/configurations.hpp"
 
 namespace file_utilities::detail {
-    std::shared_ptr<Writable_Filesystem> disk_filesystem;
-    std::shared_ptr<Readable_Filesystem> virtual_filesystem;
-    Writable_Filesystem* user_data_filesystem{ nullptr };
-    Readable_Filesystem* game_data_filesystem{ nullptr };
-    std::shared_ptr<User_Data_Folder> user_data_folder;
+    static std::shared_ptr<Writable_Filesystem> disk_filesystem;
+    static std::shared_ptr<Readable_Filesystem> virtual_filesystem;
+    static std::string virtual_archive_name;
+    static Writable_Filesystem* user_data_filesystem{ nullptr };
+    static Readable_Filesystem* game_data_filesystem{ nullptr };
+    static Readable_Filesystem* default_config_filesystem{ nullptr };
+    static std::shared_ptr<User_Data_Folder> user_data_folder;
 }
 
-std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem(const char*) {
+std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem(std::string_view) {
     if (detail::disk_filesystem) return detail::disk_filesystem;
 
 #ifdef OCB_USE_BOOST_FILESYSTEM
@@ -23,18 +26,36 @@ std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem(const char*
     return detail::disk_filesystem;
 }
 
-std::shared_ptr<Readable_Filesystem> file_utilities::virtual_filesystem(const char* arg) {
-    if (detail::virtual_filesystem) return detail::virtual_filesystem;
+std::shared_ptr<Readable_Filesystem> file_utilities::virtual_filesystem(std::string_view arg, std::string_view archive_name) {
+    auto already_set = detail::virtual_filesystem
+        && (archive_name.empty() || archive_name == detail::virtual_archive_name);
+    if (already_set) {
+        return detail::virtual_filesystem;
+    }
 
-    detail::virtual_filesystem = std::make_shared<PhysFS_Filesystem>(arg);
+    detail::virtual_filesystem = std::make_shared<PhysFS_Filesystem>(arg, archive_name);
+    detail::virtual_archive_name = archive_name;
+
     return detail::virtual_filesystem;
 }
 
-Readable_Filesystem* file_utilities::game_data_filesystem(const char* arg) {
+Readable_Filesystem* file_utilities::game_data_filesystem(std::string_view arg) {
     if (detail::game_data_filesystem) return detail::game_data_filesystem;
 
-    auto disk_fs = virtual_filesystem(arg);
-    detail::game_data_filesystem = disk_fs.get();
+    if (!Configurations::defaults_loaded()) {
+        user_data_folder()->parse_default_config();
+    }
+
+    std::shared_ptr<Readable_Filesystem> fs = disk_filesystem(arg);
+    auto archive_name = Configurations::get<std::string>("game.archive-path");
+    if (!archive_name.empty()) {
+        if (!fs->file_exists(archive_name)) {
+            throw config_exception { "Configured archive file was not found in executable directory: " + archive_name };
+        }
+        fs = virtual_filesystem(arg, archive_name);
+    }
+
+    detail::game_data_filesystem = fs.get();
     return detail::game_data_filesystem;
 }
 
@@ -42,7 +63,45 @@ void file_utilities::set_game_data_filesystem(Readable_Filesystem* fs) {
     detail::game_data_filesystem = fs;
 }
 
-Writable_Filesystem* file_utilities::user_data_filesystem(const char* arg) {
+Readable_Filesystem* file_utilities::default_config_filesystem(std::string_view arg) {
+    if (detail::default_config_filesystem) return detail::default_config_filesystem;
+
+    // Check if config.ini exists in the same physical directory as the executable
+    auto disk_fs = disk_filesystem(arg);
+    if (disk_fs->file_exists("config.ini")) {
+        detail::default_config_filesystem = disk_fs.get();
+        return detail::default_config_filesystem;
+    }
+
+    // Try to find config.ini in any default archive
+    std::string default_archive_names[] = {
+        "game", "octopus", "octopus_engine"
+    };
+    std::string default_archive_extensions[] = {
+        ".dat", ".bin", ".zip", ".ocd"
+    };
+
+    for (auto& name : default_archive_names) {
+        for (auto& ext : default_archive_extensions) {
+            auto archive_name = name + ext;
+            if (!disk_fs->file_exists(archive_name)) continue;
+            auto vfs = virtual_filesystem(arg, archive_name);
+            if (!vfs->file_exists("config.ini")) {
+                throw config_exception{ "Unable to find config.ini file in archive " + archive_name };
+            }
+            detail::default_config_filesystem = vfs.get();
+            return detail::default_config_filesystem;
+        }
+    }
+
+    throw config_exception{ "Unable to find config.ini file" };
+}
+
+void file_utilities::set_default_config_filesystem(Readable_Filesystem* fs) {
+    detail::default_config_filesystem = fs;
+}
+
+Writable_Filesystem* file_utilities::user_data_filesystem(std::string_view arg) {
     if (detail::user_data_filesystem) return detail::user_data_filesystem;
 
     auto disk_fs = disk_filesystem();

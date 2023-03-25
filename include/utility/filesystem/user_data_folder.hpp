@@ -17,6 +17,8 @@ public:
     ~User_Data_Folder() {}
     // Parse config file and save it to data directory if needed
     void parse_config();
+    // Parse the default config (not the one in user data directory)
+    void parse_default_config();
     // Save config file if it changed since last save (or if forced)
     void save_config(bool force = false);
     // Try to save the file, logging any errors

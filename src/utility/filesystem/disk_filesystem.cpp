@@ -9,6 +9,7 @@
 
 std::unique_ptr<std::istream> Disk_Filesystem::open_ifstream(std::string filename, std::ios_base::openmode mode) {
     string_utilities::normalize_slashes(filename);
+
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
     return std::make_unique<std::ifstream>(utf16_filename, mode);
@@ -23,6 +24,7 @@ std::unique_ptr<std::istream> Disk_Filesystem::open_binary_ifstream(std::string 
 
 std::unique_ptr<std::ostream> Disk_Filesystem::open_ofstream(std::string filename, std::ios_base::openmode mode) {
     string_utilities::normalize_slashes(filename);
+
 #ifdef _WIN32
     auto utf16_filename = win32::Utf8ToUtf16(filename);
     return std::make_unique<std::ofstream>(utf16_filename , mode);
