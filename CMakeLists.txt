@@ -10,6 +10,11 @@ file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false src/commands/*.cpp src/canvas/*.c
 
 file(GLOB XD_SOURCES LIST_DIRECTORIES false src/xd/audio/*.cpp src/xd/audio/detail/*.cpp src/xd/graphics/*.cpp src/xd/lua/*.cpp src/xd/system/*.cpp)
 
+add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
+
+target_compile_definitions(octopus_engine PRIVATE NDEBUG)
+target_compile_features(octopus_engine PRIVATE cxx_std_17)
+
 set(OpenGL_GL_PREFERENCE "GLVND")
 set(IS_GNU "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
@@ -28,7 +33,7 @@ find_package(ZLIB REQUIRED)
 find_package(FMOD REQUIRED)
 find_package(PhysFS REQUIRED)
 
-set(INCLUDE_DIRS, ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIRS}
+set(INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIRS}
 ${FREETYPE_INCLUDE_DIR_ft2build} ${PHYSFS_INCLUDE_DIR})
 
 target_include_directories(octopus_engine PUBLIC ${INCLUDE_DIRS})
@@ -56,10 +61,5 @@ elseif(UNIX AND ${IS_GNU})
         LIST(APPEND DEPENDENCIES stdc++fs)
     endif()
 endif()
-
-add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
-
-target_compile_definitions(octopus_engine PRIVATE NDEBUG)
-target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
 target_link_libraries(octopus_engine ${DEPENDENCIES})

@@ -13,7 +13,7 @@
 // Utilities for examining a filesystem and reading files
 class Readable_Filesystem {
 public:
-    virtual ~Readable_Filesystem() = 0 {}
+    virtual ~Readable_Filesystem() {}
     // Open the file with the given UTF8 name for reading
     virtual std::unique_ptr<std::istream> open_ifstream(std::string filename, std::ios_base::openmode mode = std::ios_base::in) = 0;
     virtual std::unique_ptr<std::istream> open_binary_ifstream(std::string filename) = 0;

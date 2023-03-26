@@ -1,6 +1,7 @@
 #include <streambuf>
 #include <string>
 #include <stdexcept>
+#include <string.h>
 #include "../../include/vendor/physfs.hpp"
 
 /*
