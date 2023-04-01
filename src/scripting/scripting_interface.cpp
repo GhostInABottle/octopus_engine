@@ -29,7 +29,7 @@ namespace detail {
         try {
             auto script = filesystem->read_file(filename);
             // Load and push the code (or error message) to the stack, and return the index
-            luaL_loadbuffer(state, script.data(), script.size(), require_path.c_str());
+            luaL_loadbuffer(state, script.data(), script.size(), ("@" + filename).c_str());
         } catch (std::exception& ex) {
             sol::stack::push(state, " error while reading " + filename + ": " + ex.what());
         }
@@ -87,7 +87,7 @@ void Scripting_Interface::schedule_code(const std::string& script, const std::st
 
 void Scripting_Interface::schedule_file(const std::string& filename, const std::string& context) {
     auto fs = file_utilities::game_data_filesystem();
-    scheduler.start(fs->read_file(filename), context);
+    scheduler.start(fs->read_file(filename), context, "@" + filename);
 }
 
 void Scripting_Interface::schedule_function(const sol::protected_function& function, const std::string& context) {

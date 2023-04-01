@@ -1,4 +1,2 @@
 - Non-blocking data saving.
 - Hide the OpenGL-dependent code behind an abstraction.
-- Virtual filesystem / archive format.
-- Investigate canvas issues on Mac/Linux.

@@ -10,9 +10,9 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 {
 }
 
-void xd::lua::scheduler::start(const std::string& code, const std::string& context)
+void xd::lua::scheduler::start(const std::string& code, const std::string& context, const std::string& chunk_name)
 {
-    start(std::make_shared<scheduler_cothread>(state, code, context));
+    start(std::make_shared<scheduler_cothread>(state, code, chunk_name, context));
 }
 
 void xd::lua::scheduler::start(const sol::protected_function& function, const std::string& context) {
@@ -95,9 +95,10 @@ void xd::lua::scheduler::start(const std::shared_ptr<xd::lua::scheduler::schedul
         m_current_thread = m_thread_stack.top();
 }
 
-xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code, const std::string& context) {
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code,
+        const std::string& chunk_name, const std::string& context) {
     thread = sol::thread::create(state);
-    auto load_result = thread.state().load(code);
+    auto load_result = thread.state().load(code, chunk_name);
     if (!load_result.valid()) {
         sol::error err = load_result;
         throw panic_error(err.what());

@@ -25,7 +25,7 @@ namespace xd
             scheduler& operator=(const scheduler&) = delete;
             scheduler(virtual_machine&  vm);
             virtual ~scheduler() = default;
-            void start(const std::string& code, const std::string& context);
+            void start(const std::string& code, const std::string& context, const std::string& chunk_name = "");
             void start(const sol::protected_function& function, const std::string& context);
             void run();
             void pause() { m_paused = true; }
@@ -91,7 +91,7 @@ namespace xd
                 sol::thread thread;
                 sol::coroutine coroutine;
                 std::string context;
-                scheduler_cothread(sol::state& state, const std::string& code, const std::string& context);
+                scheduler_cothread(sol::state& state, const std::string& code, const std::string& chunk_name, const std::string& context);
                 scheduler_cothread(sol::state& state, const sol::protected_function& function, const std::string& context);
             };
             struct scheduler_thread_task

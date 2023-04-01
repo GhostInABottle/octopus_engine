@@ -171,7 +171,8 @@ void bind_game_types(sol::state& lua, Game& game) {
         }
         auto script = filesystem->read_file(filename);
 
-        sol::load_result result = lua.load(script, filename);
+        // The @ indicates a filename for debugging and printing the stack trace
+        sol::load_result result = lua.load(script, "@" + filename);
         if (!result.valid()) {
             throw std::runtime_error("Error loading " + filename + ": " + result.get<std::string>());
         }
