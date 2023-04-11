@@ -539,6 +539,7 @@ function direction.to_four_directions(direction) end
 
 -- Logging
 
+---@class Engine_Logger
 logger = {}
 
 ---@param message string
@@ -1515,3 +1516,7 @@ function game:reset_scripting() end
 ---@param width integer
 ---@param height integer
 function game:set_size(width, height) end
+
+---@param url string
+---@return boolean
+function game:open_url(url) end

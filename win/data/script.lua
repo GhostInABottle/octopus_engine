@@ -409,6 +409,8 @@ elseif c.selected == 8 then
     game:set_bool_config('game.pause-unfocused', pause_unfocused == "0")
     text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
     text(o, "UP | RIGHT = " .. bit.bor(UP, RIGHT)):wait()
+    text(o, "Opening a url"):wait()
+    game:open_url("https://octopuscityblues.com")
 end
 text(o, "That's all!"):wait()
 player.disabled = false

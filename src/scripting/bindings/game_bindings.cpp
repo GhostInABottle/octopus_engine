@@ -180,4 +180,8 @@ void bind_game_types(sol::state& lua, Game& game) {
         sol::protected_function f = result;
         return f;
     };
+
+    game_type["open_url"] = [](Game& game, const std::string& url) {
+        return file_utilities::open_url(url);
+    };
 }

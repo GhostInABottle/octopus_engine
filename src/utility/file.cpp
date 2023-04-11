@@ -2,7 +2,19 @@
 #include "../../include/utility/filesystem/standard_filesystem.hpp"
 #include "../../include/utility/filesystem/boost_filesystem.hpp"
 #include "../../include/utility/filesystem/physfs_filesystem.hpp"
+#include "../../include/utility/string.hpp"
 #include "../../include/configurations.hpp"
+#include "../../include/log.hpp"
+#include <cstdlib>
+
+#ifdef _WIN32
+#include "../../include/vendor/utf8conv.h"
+#include <stdexcept>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <shellapi.h>
+#include <combaseapi.h>
+#endif
 
 namespace file_utilities::detail {
     static std::shared_ptr<Writable_Filesystem> disk_filesystem;
@@ -12,6 +24,43 @@ namespace file_utilities::detail {
     static Readable_Filesystem* game_data_filesystem{ nullptr };
     static Readable_Filesystem* default_config_filesystem{ nullptr };
     static std::shared_ptr<User_Data_Folder> user_data_folder;
+#ifdef _WIN32
+    static bool open_windows_path(const std::string& path) {
+        // It's good practice to initialize COM before calling ShellExecute
+        // It fails if called in the wrong thread model, so we try both
+        auto hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        if (hr == RPC_E_CHANGED_MODE) {
+            hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+        }
+
+        // S_FALSE means it was already initialized
+        if (hr != S_OK && hr != S_FALSE) {
+            LOGGER_E << "Error while trying to co-initialize COM and open " << path << ": " << hr;
+            return false;
+        }
+
+        std::wstring wide_path;
+        try {
+            wide_path = win32::Utf8ToUtf16(path);
+        } catch (std::runtime_error& err) {
+            LOGGER_E << "Failed to convert URL " << path << " to UTF16: " << err.what();
+            CoUninitialize();
+            return false;
+        }
+
+        auto result = ShellExecuteW(NULL, L"open", wide_path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+        CoUninitialize();
+
+        // ShellExecute returns a value > 32 if it succeeds
+        auto succeeded = result > reinterpret_cast<HINSTANCE>(32);
+        if (!succeeded) {
+            LOGGER_E << "ShellExecute failed to open " << path << " with result: " << result;
+        }
+
+        return succeeded;
+    }
+#endif
 }
 
 std::shared_ptr<Writable_Filesystem> file_utilities::disk_filesystem(std::string_view) {
@@ -119,4 +168,32 @@ std::shared_ptr<User_Data_Folder> file_utilities::user_data_folder() {
     auto fs = user_data_filesystem();
     detail::user_data_folder = std::make_shared<User_Data_Folder>(*fs);
     return detail::user_data_folder;
+}
+
+bool file_utilities::open_url(const std::string& url) {
+    bool result = false;
+
+    #if defined(_WIN32)
+        // Not using std::system("start ...") because it opens a console window
+        result = detail::open_windows_path(url);
+    #else
+        std::string command;
+
+        #if defined(__APPLE__)
+            command = "open \"%\"";
+        #else
+            command = "xdg-open \"%\"";
+        #endif
+
+        string_utilities::replace_all(command, "%", url);
+        result = std::system(command.c_str()) != 0;
+    #endif
+
+    if (result) {
+        LOGGER_I << "Opened URL " << url;
+    } else {
+        LOGGER_E << "Failed to open URL: " << url;
+    }
+
+    return result;
 }

@@ -25,6 +25,8 @@ namespace file_utilities {
     void set_user_data_filesystem(Writable_Filesystem* filesystem);
     // Get a helper class for accessing and writing to the user data folder
     std::shared_ptr<User_Data_Folder> user_data_folder();
+    // Try to open a URL
+    bool open_url(const std::string& url);
 }
 
 #endif
