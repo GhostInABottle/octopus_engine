@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 file(GLOB SOURCES LIST_DIRECTORIES false src/*.cpp)
 list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/test_main.cpp)
 
-file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false src/commands/*.cpp src/canvas/*.cpp src/decorators/*.cpp src/scripting/*.cpp src/scripting/bindings/*.cpp src/utility/*.cpp src/utility/filesystem/*.cpp src/vendor/*.cpp)
+file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false src/commands/*.cpp src/canvas/*.cpp src/decorators/*.cpp src/scripting/*.cpp src/scripting/bindings/*.cpp src/utility/*.cpp src/filesystem/*.cpp src/vendor/*.cpp)
 
 file(GLOB XD_SOURCES LIST_DIRECTORIES false src/xd/audio/*.cpp src/xd/audio/detail/*.cpp src/xd/graphics/*.cpp src/xd/lua/*.cpp src/xd/system/*.cpp)
 

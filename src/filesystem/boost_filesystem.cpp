@@ -1,5 +1,5 @@
 #ifdef OCB_USE_BOOST_FILESYSTEM
-#include "../../../include/utility/filesystem/boost_filesystem.hpp"
+#include "../../../include/filesystem/boost_filesystem.hpp"
 #include "../../../include/log.hpp"
 #ifdef _WIN32
 #include "../../../include/vendor/utf8conv.h"
