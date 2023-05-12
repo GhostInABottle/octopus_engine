@@ -30,6 +30,52 @@ namespace xd { namespace detail {
             outline_shader(std::make_unique<xd::sprite_outline_shader>()) {}
     };
 
+    static void set_tex_positions(sprite_vertex quad[4], rect src, int tw, int th) {
+        // offset texel positions by 1/100 of a pixel to reduce chance of bleeding
+        const float x_offset = 0.01f / tw;
+        const float y_offset = 0.01f / th;
+
+        // upper left
+        quad[0].texpos.x = src.x / tw + x_offset;
+        quad[0].texpos.y = (src.y + src.h) / th - y_offset;
+        // upper right
+        quad[1].texpos.x = (src.x + src.w) / tw - x_offset;
+        quad[1].texpos.y = (src.y + src.h) / th - y_offset;
+        // lower right
+        quad[2].texpos.x = (src.x + src.w) / tw - x_offset;
+        quad[2].texpos.y = src.y / th + y_offset;
+        // lower left
+        quad[3].texpos.x = src.x / tw + x_offset;
+        quad[3].texpos.y = src.y / th + y_offset;
+    }
+
+    static void setup_quad(sprite_vertex quad[4], const sprite& i, float batch_scale, int tw, int th) {
+        auto& src = i.src;
+        auto& origin = i.origin;
+
+        // calculate scale
+        vec2 scale = batch_scale * i.scale;
+
+        // assign position
+        quad[0].pos = vec2(scale.x * (0 - origin.x) * src.w, scale.y * (1 - origin.y) * src.h);
+        quad[1].pos = vec2(scale.x * (1 - origin.x) * src.w, scale.y * (1 - origin.y) * src.h);
+        quad[2].pos = vec2(scale.x * (1 - origin.x) * src.w, scale.y * (0 - origin.y) * src.h);
+        quad[3].pos = vec2(scale.x * (0 - origin.x) * src.w, scale.y * (0 - origin.y) * src.h);
+
+        // if there's rotation
+        if (i.rotation) {
+            // construct a rotation matrix
+            auto rotation_matrix = rotate(mat4(), i.rotation, vec3(0, 0, 1));
+            // rotate the 4 vertices
+            quad[0].pos = vec2(rotation_matrix * vec4(quad[0].pos, 0, 1));
+            quad[1].pos = vec2(rotation_matrix * vec4(quad[1].pos, 0, 1));
+            quad[2].pos = vec2(rotation_matrix * vec4(quad[2].pos, 0, 1));
+            quad[3].pos = vec2(rotation_matrix * vec4(quad[3].pos, 0, 1));
+        }
+
+        // assign texture pos
+        detail::set_tex_positions(quad, src, tw, th);
+    }
 } }
 
 xd::sprite_batch::sprite_batch()
@@ -61,37 +107,11 @@ xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 
     // iterate through all sprites
     for (auto i = m_data->sprites.begin(); i != m_data->sprites.end(); ++i) {
-        // so we need to type less ;)
         auto tw = i->tex->width();
         auto th = i->tex->height();
-        auto& src = i->src;
-        auto& origin = i->origin;
 
-        // calculate scale
-        vec2 scale = m_scale * i->scale;
-
-        // assign position
-        quad[0].pos = vec2(scale.x*(0-origin.x)*src.w, scale.y*(1-origin.y)*src.h);
-        quad[1].pos = vec2(scale.x*(1-origin.x)*src.w, scale.y*(1-origin.y)*src.h);
-        quad[2].pos = vec2(scale.x*(1-origin.x)*src.w, scale.y*(0-origin.y)*src.h);
-        quad[3].pos = vec2(scale.x*(0-origin.x)*src.w, scale.y*(0-origin.y)*src.h);
-
-        // if there's rotation
-        if (i->rotation) {
-            // construct a rotation matrix
-            auto rotation_matrix = rotate(mat4(), i->rotation, vec3(0, 0, 1));
-            // rotate the 4 vertices
-            quad[0].pos = vec2(rotation_matrix * vec4(quad[0].pos, 0, 1));
-            quad[1].pos = vec2(rotation_matrix * vec4(quad[1].pos, 0, 1));
-            quad[2].pos = vec2(rotation_matrix * vec4(quad[2].pos, 0, 1));
-            quad[3].pos = vec2(rotation_matrix * vec4(quad[3].pos, 0, 1));
-        }
-
-        // assign texture pos
-        quad[0].texpos = vec2(src.x/tw        , (src.y+src.h)/th);
-        quad[1].texpos = vec2((src.x+src.w)/tw, (src.y+src.h)/th);
-        quad[2].texpos = vec2((src.x+src.w)/tw, src.y/th);
-        quad[3].texpos = vec2(src.x/tw        , src.y/th);
+        // fill the quad
+        detail::setup_quad(quad, *i, m_scale, tw, th);
 
         // create a vertex batch for sending vertex data
         auto batch = std::make_shared<xd::vertex_batch<detail::sprite_vertex_traits>>(&quad[0], 4, GL_QUADS);
@@ -179,34 +199,9 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& u
         auto& tex = *i->tex;
         auto tw = tex.width();
         auto th = tex.height();
-        auto& src = i->src;
-        auto& origin = i->origin;
 
-        // calculate scale
-        vec2 scale = m_scale * i->scale;
-
-        // assign position
-        quad[0].pos = vec2(scale.x*(0-origin.x)*src.w, scale.y*(1-origin.y)*src.h);
-        quad[1].pos = vec2(scale.x*(1-origin.x)*src.w, scale.y*(1-origin.y)*src.h);
-        quad[2].pos = vec2(scale.x*(1-origin.x)*src.w, scale.y*(0-origin.y)*src.h);
-        quad[3].pos = vec2(scale.x*(0-origin.x)*src.w, scale.y*(0-origin.y)*src.h);
-
-        // if there's rotation
-        if (i->rotation) {
-            // construct a rotation matrix
-            auto rotation_matrix = rotate(mat4(), i->rotation, vec3(0, 0, 1));
-            // rotate the 4 vertices
-            quad[0].pos = vec2(rotation_matrix * vec4(quad[0].pos, 0, 1));
-            quad[1].pos = vec2(rotation_matrix * vec4(quad[1].pos, 0, 1));
-            quad[2].pos = vec2(rotation_matrix * vec4(quad[2].pos, 0, 1));
-            quad[3].pos = vec2(rotation_matrix * vec4(quad[3].pos, 0, 1));
-        }
-
-        // assign texture pos
-        quad[0].texpos = vec2(src.x/tw        , (src.y+src.h)/th);
-        quad[1].texpos = vec2((src.x+src.w)/tw, (src.y+src.h)/th);
-        quad[2].texpos = vec2((src.x+src.w)/tw, src.y/th);
-        quad[3].texpos = vec2(src.x/tw        , src.y/th);
+        // fill the quad
+        detail::setup_quad(quad, *i, m_scale, tw, th);
 
         // load the batch data
         m_batch->load(&quad[0], 4);

@@ -45,8 +45,9 @@ void Image_Layer::set_image(const std::string& filename) {
     }
 
     image_source = filename;
+    auto wrap_mode = repeat ? GL_REPEAT : GL_CLAMP_TO_EDGE;
     image_texture = std::make_shared<xd::texture>(image_source,
-        *stream, image_trans_color);
+        *stream, image_trans_color, wrap_mode, wrap_mode);
 }
 
 rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
@@ -79,6 +80,10 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
         layer_ptr->velocity.y = std::stof(properties["yspeed"]) * 60.0f / logic_fps;
     }
 
+    if (!check_close(layer_ptr->velocity.x, 0.0f) || !check_close(layer_ptr->velocity.y, 0.0f)) {
+        layer_ptr->repeat = true;
+    }
+
     if (properties.contains("fixed")) {
         layer_ptr->fixed = string_utilities::string_to_bool(properties["fixed"]);
     }
@@ -109,9 +114,6 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
     }
 
     layer_ptr->renderer = std::make_unique<Image_Layer_Renderer>(*layer_ptr, camera);
-    if (!check_close(layer_ptr->velocity.x, 0.0f) || !check_close(layer_ptr->velocity.y, 0.0f)) {
-        layer_ptr->repeat = true;
-    }
 
     if (layer_ptr->sprite || layer_ptr->repeat) {
         layer_ptr->updater = std::make_unique<Image_Layer_Updater>(*layer_ptr);
