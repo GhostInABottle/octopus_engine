@@ -6,7 +6,6 @@
 #include "../glm.hpp"
 #include "../vendor/utf8.h"
 #include "exceptions.hpp"
-#include "font.hpp"
 #include "shader_program.hpp"
 #include "sprite_batch.hpp"
 #include <boost/lexical_cast.hpp>
@@ -22,6 +21,7 @@
 namespace xd {
     class texture;
     class text_formatter;
+    class font;
 
     class formatted_char {
     public:

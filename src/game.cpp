@@ -18,10 +18,11 @@
 #include "../include/decorators/typewriter_decorator.hpp"
 #include "../include/key_binder.hpp"
 #include "../include/log.hpp"
+#include "../include/exceptions.hpp"
 #include "../include/vendor/platform_folders.hpp"
 #include "../include/xd/audio.hpp"
-#include "../include/xd/graphics.hpp"
 #include "../include/xd/graphics/font.hpp"
+#include "../include/xd/graphics/stock_text_formatter.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include "../include/xd/vendor/sol/sol.hpp"
@@ -96,7 +97,7 @@ struct Game::Impl {
         auto fs = file_utilities::game_data_filesystem();
         auto stream = fs->open_binary_ifstream(filename);
         if (!stream || !*stream) {
-            throw std::runtime_error{ "Failed to load icon texture " + filename };
+            throw file_loading_exception{ "Failed to load icon texture " + filename };
         }
 
         return std::make_shared<xd::texture>(filename, *stream,
@@ -322,6 +323,8 @@ struct Game::Impl {
     Shake_Decorator shake_decorator;
     // {typewriter} decorator
     Typewriter_Decorator typewriter_decorator;
+    // Font cache
+    std::unordered_map<std::string, std::shared_ptr<xd::font>> fonts;
 };
 
 Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audio, bool editor_mode) :
@@ -740,12 +743,18 @@ xd::asset_manager& Game::get_asset_manager() {
 }
 
 std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
+    auto& fonts = pimpl->fonts;
+    if (fonts.find(filename) != fonts.end()) return fonts[filename];
+
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->file_exists(filename))
         throw std::runtime_error("Couldn't read font file " + filename);
 
-    auto stream_ptr = fs->open_binary_ifstream(filename).release();
-    return pimpl->asset_manager.load<xd::font>(filename, stream_ptr);
+    // The font face owns the filestream and loads the font as needed
+    auto stream_ptr = fs->open_binary_ifstream(filename);
+    fonts[filename] = std::make_shared<xd::font>(filename, std::move(stream_ptr));
+
+    return fonts[filename];
 }
 
 void Game::render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text) {

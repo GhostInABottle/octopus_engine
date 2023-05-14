@@ -2,7 +2,7 @@
 #define HPP_TILE_LAYER_RENDERER
 
 #include "layer_renderer.hpp"
-#include "xd/graphics.hpp"
+#include "xd/graphics/sprite_batch.hpp"
 
 class Tile_Layer_Renderer : public Layer_Renderer {
 public:

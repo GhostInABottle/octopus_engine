@@ -150,14 +150,14 @@ namespace xd { namespace detail { namespace font {
 
 using namespace xd::detail::font;
 
-xd::font::font(const std::string& font_filename, std::istream* stream)
+xd::font::font(const std::string& font_filename, std::unique_ptr<std::istream> stream)
         : m_filename(font_filename)
         , m_mvp_uniform("mvpMatrix")
         , m_position_uniform("vPosition")
         , m_color_uniform("vColor")
         , m_texture_uniform("colorMap")
         , m_face(std::make_unique<face>(font_filename,
-            std::unique_ptr<std::istream>(stream))) {
+            std::move(stream))) {
 }
 
 xd::font::~font()
@@ -170,7 +170,7 @@ xd::font::~font()
 
 void xd::font::link_font(const std::string& type, const std::string& filename, std::unique_ptr<std::istream> stream)
 {
-    auto linked_font = std::make_shared<font>(filename, stream.release());
+    auto linked_font = std::make_shared<font>(filename, std::move(stream));
     m_linked_fonts[type] = linked_font;
 }
 

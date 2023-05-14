@@ -14,7 +14,7 @@ namespace detail {
         auto fs = file_utilities::game_data_filesystem();
         auto stream = fs->open_binary_ifstream(filename);
         if (!stream || !*stream) {
-            throw xml_exception{ "Failed to load sprite image " + filename };
+            throw file_loading_exception{ "Failed to load sprite image " + filename };
         }
 
         return manager.load_persistent<xd::texture>(filename, *stream, transparent_color);

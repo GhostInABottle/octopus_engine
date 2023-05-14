@@ -4,8 +4,6 @@
 #include "../include/game.hpp"
 #include "../include/camera.hpp"
 #include "../include/xd/system.hpp"
-#include "../include/xd/graphics.hpp"
-
 
 void Tile_Layer_Renderer::render(Map& map) {
     if (!layer.visible)

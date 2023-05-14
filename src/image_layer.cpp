@@ -3,6 +3,7 @@
 #include "../include/image_layer_updater.hpp"
 #include "../include/game.hpp"
 #include "../include/audio_player.hpp"
+#include "../include/exceptions.hpp"
 #include "../include/utility/color.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
@@ -40,7 +41,7 @@ void Image_Layer::set_image(const std::string& filename) {
 
     auto stream = fs->open_binary_ifstream(image_source);
     if (!stream || !*stream) {
-        throw std::runtime_error("Failed to load image " + filename
+        throw file_loading_exception("Failed to load image " + filename
             + " for layer " + name);
     }
 

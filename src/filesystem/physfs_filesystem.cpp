@@ -2,6 +2,7 @@
 #include "../../../include/vendor/physfs.hpp"
 #include "../../../include/utility/string.hpp"
 #include "../../../include/log.hpp"
+#include "../../../include/exceptions.hpp"
 #include <chrono>
 
 namespace detail {
@@ -49,7 +50,7 @@ std::unique_ptr<std::istream> PhysFS_Filesystem::open_binary_ifstream(std::strin
 std::string PhysFS_Filesystem::read_file(std::string filename) {
     auto stream = open_binary_ifstream(filename);
     if (!stream || !*stream) {
-        throw std::runtime_error("Couldn't open file for reading: " + filename);
+        throw file_loading_exception("Couldn't open file for reading: " + filename);
     }
 
     return std::string((std::istreambuf_iterator<char>(*stream)),

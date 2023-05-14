@@ -1,6 +1,7 @@
 #include "../../../include/filesystem/disk_filesystem.hpp"
 #include "../../../include/utility/string.hpp"
 #include "../../../include/log.hpp"
+#include "../../../include/exceptions.hpp"
 #ifdef _WIN32
 #include "../../../include/vendor/utf8conv.h"
 #endif
@@ -36,7 +37,7 @@ std::unique_ptr<std::ostream> Disk_Filesystem::open_ofstream(std::string filenam
 std::string Disk_Filesystem::read_file(std::string filename) {
     auto stream = open_ifstream(filename);
     if (!stream || !*stream) {
-        throw std::runtime_error("Couldn't open file for reading: " + filename);
+        throw file_loading_exception("Couldn't open file for reading: " + filename);
     }
 
     return std::string((std::istreambuf_iterator<char>(*stream)),
@@ -45,7 +46,7 @@ std::string Disk_Filesystem::read_file(std::string filename) {
 
 std::vector<std::string> Disk_Filesystem::directory_content_names(const std::string& path) {
     if (!is_directory(path)) {
-        LOGGER_E << "Tried to list a path that is not a directory " << path;
+        LOGGER_E << "Tried to list a path that is not a directory: " << path;
         return {};
     }
 

@@ -1,5 +1,6 @@
 #include "../../include/decorators/typewriter_decorator.hpp"
 #include "../../include/game.hpp"
+#include "../../include/xd/graphics/text_formatter.hpp"
 #include "../../include/audio_player.hpp"
 
 Typewriter_Decorator::Typewriter_Decorator(Game& game) : game(game) {}

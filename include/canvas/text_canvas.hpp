@@ -3,11 +3,12 @@
 
 #include <optional>
 #include "base_canvas.hpp"
-#include "../xd/graphics/font.hpp"
+#include "../xd/graphics/font_style.hpp"
 #include "../text_parser.hpp"
 
 namespace xd {
     class simple_text_renderer;
+    class font;
 }
 
 // A canvas for displaying tet
@@ -43,9 +44,7 @@ public:
         return style.get();
     }
     // Get the name of the font file
-    const std::string get_font_filename() const {
-        return font->filename();
-    }
+    const std::string get_font_filename() const;
     // Get and set the font size
     int get_font_size() const {
         return style->size();

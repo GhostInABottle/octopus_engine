@@ -2,14 +2,16 @@
 #define H_XD_TEXT_RENDERER
 
 #include "../glm.hpp"
-#include "font.hpp"
-#include "text_formatter.hpp"
 #include "shaders.hpp"
 #include <string>
 #include <memory>
 
 namespace xd
 {
+    class font;
+    class font_style;
+    class text_formatter;
+
     class text_renderer
     {
     public:

@@ -2,7 +2,7 @@
 #define HPP_UTILITY_COLOR
 
 #include <string>
-#include "../xd/graphics.hpp"
+#include "../xd/glm.hpp"
 
 // Convert an unsigned int color value to a vec[4] of ARGB components
 xd::vec4 int_to_color(unsigned int value);

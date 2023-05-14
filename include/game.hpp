@@ -8,6 +8,7 @@
 #include "xd/graphics/framebuffer.hpp"
 #include "xd/graphics/simple_text_renderer.hpp"
 #include "xd/graphics/types.hpp"
+#include "xd/graphics/font_style.hpp"
 #include "xd/system.hpp"
 #include "xd/audio/channel_group_type.hpp"
 #include "xd/vendor/sol/forward.hpp"

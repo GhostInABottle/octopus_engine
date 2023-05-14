@@ -2,10 +2,10 @@
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/camera.hpp"
+#include "../../include/exceptions.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
 #include <stdexcept>
 #include <istream>
-
 
 Image_Canvas::Image_Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans)
     : Base_Image_Canvas(game, Base_Canvas::Type::IMAGE, position, filename)  {
@@ -19,7 +19,7 @@ void Image_Canvas::set_image(std::string image_filename, xd::vec4 trans) {
     auto fs = file_utilities::game_data_filesystem();
     auto stream = fs->open_binary_ifstream(image_filename);
     if (!stream || !*stream) {
-        throw std::runtime_error("Failed to load image canvas " + image_filename);
+        throw file_loading_exception("Failed to load image canvas: " + image_filename);
     }
 
     image_texture = std::make_shared<xd::texture>(image_filename, *stream, trans);

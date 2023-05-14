@@ -2,6 +2,7 @@
 #include "../../include/game.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/decorators/typewriter_decorator.hpp"
+#include "../../include/xd/graphics/font.hpp"
 #include <sstream>
 #include <stdexcept>
 
@@ -56,6 +57,10 @@ void Text_Canvas::set_text(const std::string& new_text) {
 
 float Text_Canvas::get_text_width(const std::string& text) {
     return game.text_width(text, font.get(), style.get());
+}
+
+const std::string Text_Canvas::get_font_filename() const {
+    return font->filename();
 }
 
 void Text_Canvas::set_font(const std::string& font_file) {

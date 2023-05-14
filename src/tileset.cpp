@@ -77,7 +77,7 @@ std::unique_ptr<Tileset> Tileset::load(rapidxml::xml_node<>& node) {
         auto fs = file_utilities::game_data_filesystem();
         auto stream = fs->open_binary_ifstream(tileset_ptr->image_source);
         if (!stream || !*stream) {
-            throw xml_exception{ "Failed to load tileset image " + tileset_ptr->image_source };
+            throw file_loading_exception{ "Failed to load tileset image " + tileset_ptr->image_source };
         }
 
         // Load the texture

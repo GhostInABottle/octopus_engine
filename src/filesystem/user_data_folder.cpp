@@ -3,6 +3,7 @@
 #include "../../../include/log.hpp"
 #include "../../../include/save_file.hpp"
 #include "../../../include/key_binder.hpp"
+#include "../../../include/exceptions.hpp"
 #include "../../../include/utility/string.hpp"
 #include "../../../include/utility/file.hpp"
 #include "../../../include/vendor/platform_folders.hpp"
@@ -134,7 +135,7 @@ void User_Data_Folder::save_config(bool force) {
 
     auto stream = filesystem.open_ofstream(config_path);
     if (!stream || !*stream) {
-        throw config_exception("Couldn't open config file for saving " + config_path);
+        throw file_loading_exception("Couldn't open config file for saving: " + config_path);
     }
 
     LOGGER_I << "Saving config file " << config_path;
@@ -162,7 +163,7 @@ bool User_Data_Folder::save(std::string filename, Save_File& save_file) {
     try {
         auto stream = filesystem.open_ofstream(filename, std::ios::out | std::ios::binary);
         if (!stream || !*stream) {
-            throw std::runtime_error("Unable to open file for writing");
+            throw file_loading_exception("Unable to open save file for writing: " + filename);
         }
         stream->exceptions(std::ios_base::failbit | std::ios_base::badbit);
         *stream << save_file;
@@ -170,8 +171,6 @@ bool User_Data_Folder::save(std::string filename, Save_File& save_file) {
         return save_file.is_valid();
     } catch (const std::ios_base::failure& e) {
         LOGGER_E << "Error saving file " << filename << " - error code: " << e.code() << " - message: " << e.what();
-    } catch (const config_exception& e) {
-        LOGGER_E << "Error while saving config file - message: " << e.what();
     } catch (const std::runtime_error& e) {
         LOGGER_E << "Error saving file " << filename << " - message: " << e.what();
     }
@@ -185,7 +184,7 @@ bool User_Data_Folder::load(std::string filename, Save_File& save_file) {
     try {
         auto stream = filesystem.open_ifstream(filename, std::ios::in | std::ios::binary);
         if (!stream || !*stream) {
-            throw std::runtime_error("File doesn't exist or can't be opened");
+            throw file_loading_exception("Unable to open save file for reading: " + filename);
         }
 
         stream->exceptions(std::ios_base::failbit | std::ios_base::badbit);

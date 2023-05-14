@@ -12,7 +12,6 @@
 #include "../include/utility/string.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
-#include "../include/xd/graphics.hpp"
 #include <algorithm>
 #include <iostream>
 #include <optional>

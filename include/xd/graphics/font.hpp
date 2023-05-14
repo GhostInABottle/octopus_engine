@@ -23,8 +23,7 @@ namespace xd
     {
     public:
         // Ownership of the stream will be transferred to the font
-        // Can't use unique_ptr because the asset_serializer will steal it
-        font(const std::string& filename, std::istream* stream);
+        font(const std::string& filename, std::unique_ptr<std::istream> stream);
         virtual ~font();
         font(const font&) = delete;
         font& operator=(const font&) = delete;
@@ -72,17 +71,6 @@ namespace xd
         std::string m_position_uniform;
         std::string m_color_uniform;
         std::string m_texture_uniform;
-    };
-
-    template <>
-    struct asset_serializer<xd::font> {
-        typedef std::string key_type;
-        key_type operator()(const std::string& filename, std::istream* stream) const {
-            return filename;
-        }
-        key_type operator()(const xd::font& font) const {
-            return font.filename();
-        }
     };
 }
 
