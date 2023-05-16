@@ -99,4 +99,182 @@ BOOST_AUTO_TEST_CASE(direction_utility_diagonal_to_four_directions) {
     BOOST_CHECK_EQUAL(diagonal_to_four_directions(Direction::UP | Direction::DOWN | Direction::LEFT | Direction::RIGHT), Direction::UP);
 }
 
+BOOST_AUTO_TEST_CASE(xd_types_rect_intersects) {
+    xd::rect r{1, 2, 5, 4 };
+    // Valid cases
+    BOOST_TEST(r.intersects(r)); // equal
+    BOOST_TEST(r.intersects(xd::rect{ 2, 3, 3, 2})); // contained
+    BOOST_TEST(r.intersects(xd::rect{ 0, 3, 2, 2 })); // left
+    BOOST_TEST(r.intersects(xd::rect{ 2, 1, 2, 2 })); // above
+    BOOST_TEST(r.intersects(xd::rect{ 5, 3, 2, 2 })); // right
+    BOOST_TEST(r.intersects(xd::rect{ 2, 5, 2, 2 })); // below
+    BOOST_TEST(r.intersects(xd::rect{ 0, 1, 2, 2 })); // left/above
+    BOOST_TEST(r.intersects(xd::rect{ 0, 5, 2, 2 })); // left/below
+    BOOST_TEST(r.intersects(xd::rect{ 5, 1, 2, 2 })); // right/above
+    BOOST_TEST(r.intersects(xd::rect{ 5, 5, 2, 2 })); // right/below
+
+    // Invalid cases
+    BOOST_TEST(!r.intersects(xd::rect{ 7, 7, 1, 1 })); // outside
+    BOOST_TEST(!r.intersects(xd::rect{ 0, 3, 1, 1 })); // touching left
+    BOOST_TEST(!r.intersects(xd::rect{ 2, 1, 1, 1 })); // touching above
+    BOOST_TEST(!r.intersects(xd::rect{ 6, 3, 1, 1 })); // touching right
+    BOOST_TEST(!r.intersects(xd::rect{ 2, 6, 1, 1 })); // touching below
+    BOOST_TEST(!r.intersects(xd::rect{ 0, 1, 1, 1 })); // touching left/above
+    BOOST_TEST(!r.intersects(xd::rect{ 0, 6, 1, 1 })); // touching left/below
+    BOOST_TEST(!r.intersects(xd::rect{ 6, 1, 1, 1 })); // touching right/above
+    BOOST_TEST(!r.intersects(xd::rect{ 6, 6, 1, 1 })); // touching right/below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_rect_touches) {
+    xd::rect r{ 1, 2, 5, 4 };
+    // Valid cases
+    BOOST_TEST(r.touches(xd::rect{ 0, 3, 1, 1 })); // touching left
+    BOOST_TEST(r.touches(xd::rect{ 2, 1, 1, 1 })); // touching above
+    BOOST_TEST(r.touches(xd::rect{ 6, 3, 1, 1 })); // touching right
+    BOOST_TEST(r.touches(xd::rect{ 2, 6, 1, 1 })); // touching below
+    BOOST_TEST(r.touches(xd::rect{ 0, 1, 1, 1 })); // touching left/above
+    BOOST_TEST(r.touches(xd::rect{ 0, 6, 1, 1 })); // touching left/below
+    BOOST_TEST(r.touches(xd::rect{ 6, 1, 1, 1 })); // touching right/above
+    BOOST_TEST(r.touches(xd::rect{ 6, 6, 1, 1 })); // touching right/below
+
+    // Invalid cases
+    BOOST_TEST(!r.touches(r)); // equal
+    BOOST_TEST(!r.touches(xd::rect{ 7, 7, 1, 1 })); // outside
+    BOOST_TEST(!r.touches(xd::rect{ 2, 3, 3, 2 })); // contained
+    BOOST_TEST(!r.touches(xd::rect{ 0, 3, 2, 2 })); // intersects left
+    BOOST_TEST(!r.touches(xd::rect{ 2, 1, 2, 2 })); // intersects above
+    BOOST_TEST(!r.touches(xd::rect{ 5, 3, 2, 2 })); // intersects right
+    BOOST_TEST(!r.touches(xd::rect{ 2, 5, 2, 2 })); // intersects below
+    BOOST_TEST(!r.touches(xd::rect{ 0, 1, 2, 2 })); // intersects left/above
+    BOOST_TEST(!r.touches(xd::rect{ 0, 5, 2, 2 })); // intersects left/below
+    BOOST_TEST(!r.touches(xd::rect{ 5, 1, 2, 2 })); // intersects right/above
+    BOOST_TEST(!r.touches(xd::rect{ 5, 5, 2, 2 })); // intersects right/below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_rect_contains) {
+    xd::rect r{ 1, 2, 5, 4 };
+    // Valid cases
+    BOOST_TEST(r.contains(2, 3)); // contained left
+    BOOST_TEST(r.contains(2, 3)); // contained above
+    BOOST_TEST(r.contains(5, 3)); // contained right
+    BOOST_TEST(r.contains(2, 5)); // contained below
+    BOOST_TEST(r.contains(2, 3)); // contained left/above
+    BOOST_TEST(r.contains(2, 5)); // contained left/below
+    BOOST_TEST(r.contains(5, 3)); // contained right/above
+    BOOST_TEST(r.contains(5, 5)); // contained right/below
+    BOOST_TEST(r.contains(1, 3)); // touching left
+    BOOST_TEST(r.contains(2, 2)); // touching above
+    BOOST_TEST(r.contains(6, 3)); // touching right
+    BOOST_TEST(r.contains(2, 6)); // touching below
+    BOOST_TEST(r.contains(1, 2)); // touching left/above
+    BOOST_TEST(r.contains(1, 6)); // touching left/below
+    BOOST_TEST(r.contains(6, 2)); // touching right/above
+    BOOST_TEST(r.contains(6, 6)); // touching right/below
+
+    // Invalid cases
+    BOOST_TEST(!r.contains(0, 2)); // outside left
+    BOOST_TEST(!r.contains(2, 1)); // outside above
+    BOOST_TEST(!r.contains(7, 3)); // outside right
+    BOOST_TEST(!r.contains(2, 7)); // outside below
+    BOOST_TEST(!r.contains(0, 1)); // outside left/above
+    BOOST_TEST(!r.contains(0, 7)); // outside left/below
+    BOOST_TEST(!r.contains(7, 1)); // outside right/above
+    BOOST_TEST(!r.contains(7, 7)); // outside right/below
+}
+
+
+BOOST_AUTO_TEST_CASE(xd_types_circle_intersects_circle) {
+    xd::circle c{ 4, 4, 2 };
+    // Valid cases
+    BOOST_TEST(c.intersects(c)); // equal
+    BOOST_TEST(c.intersects(xd::circle{ 4, 4, 1 })); // contained
+    BOOST_TEST(c.intersects(xd::circle{ 1, 4, 2 })); // left
+    BOOST_TEST(c.intersects(xd::circle{ 4, 1, 2 })); // above
+    BOOST_TEST(c.intersects(xd::circle{ 7, 4, 2 })); // right
+    BOOST_TEST(c.intersects(xd::circle{ 4, 7, 2 })); // below
+    BOOST_TEST(c.intersects(xd::circle{ 1, 2, 2 })); // left/above
+    BOOST_TEST(c.intersects(xd::circle{ 1, 6, 2 })); // left/below
+    BOOST_TEST(c.intersects(xd::circle{ 6, 2, 2 })); // right/above
+    BOOST_TEST(c.intersects(xd::circle{ 6, 6, 2 })); // right/below
+
+    // Invalid cases
+    BOOST_TEST(!c.intersects(xd::circle{ 8, 8, 1 })); // outside
+    BOOST_TEST(!c.intersects(xd::circle{ 0, 4, 1 })); // touching left
+    BOOST_TEST(!c.intersects(xd::circle{ 4, 1, 1 })); // touching above
+    BOOST_TEST(!c.intersects(xd::circle{ 7, 4, 1 })); // touching right
+    BOOST_TEST(!c.intersects(xd::circle{ 4, 7, 1 })); // touching below
+    BOOST_TEST(!c.intersects(xd::circle{ 1, 1, 2 })); // touching left/above
+    BOOST_TEST(!c.intersects(xd::circle{ 1, 7, 2 })); // touching left/below
+    BOOST_TEST(!c.intersects(xd::circle{ 7, 1, 2 })); // touching right/above
+    BOOST_TEST(!c.intersects(xd::circle{ 7, 7, 2 })); // touching right/below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_circle_intersects_rect) {
+    xd::circle c{ 4, 4, 2 };
+    // Valid cases
+    BOOST_TEST(c.intersects(static_cast<xd::rect>(c))); // equal
+    BOOST_TEST(c.intersects(xd::rect{ 3, 3, 1, 1 })); // contained
+    BOOST_TEST(c.intersects(xd::rect{ 1, 3, 2, 2 })); // left
+    BOOST_TEST(c.intersects(xd::rect{ 3, 1, 2, 2 })); // above
+    BOOST_TEST(c.intersects(xd::rect{ 5, 3, 2, 2 })); // right
+    BOOST_TEST(c.intersects(xd::rect{ 3, 5, 2, 2 })); // below
+    BOOST_TEST(c.intersects(xd::rect{ 1, 2, 2, 2 })); // left/above
+    BOOST_TEST(c.intersects(xd::rect{ 1, 5, 2, 2 })); // left/below
+    BOOST_TEST(c.intersects(xd::rect{ 5, 1, 2, 2 })); // right/above
+    BOOST_TEST(c.intersects(xd::rect{ 5, 5, 2, 2 })); // right/below
+
+    // Invalid cases
+    BOOST_TEST(!c.intersects(xd::rect{ 7, 7, 1, 1 })); // outside
+    BOOST_TEST(!c.intersects(xd::rect{ 1, 3, 1, 2 })); // touching left
+    BOOST_TEST(!c.intersects(xd::rect{ 3, 1, 2, 1 })); // touching above
+    BOOST_TEST(!c.intersects(xd::rect{ 6, 3, 1, 1 })); // touching right
+    BOOST_TEST(!c.intersects(xd::rect{ 3, 6, 1, 1 })); // touching below
+    BOOST_TEST(!c.intersects(xd::rect{ 2, 1, 1, 1 })); // outside left/above
+    BOOST_TEST(!c.intersects(xd::rect{ 2, 6, 1, 1 })); // outside left/below
+    BOOST_TEST(!c.intersects(xd::rect{ 6, 1, 1, 1 })); // outside right/above
+    BOOST_TEST(!c.intersects(xd::rect{ 6, 6, 1, 1 })); // outside right/below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_circle_touches) {
+    xd::circle c{ 4, 4, 2 };
+    // Valid cases
+    BOOST_TEST(c.touches(xd::circle{ 1, 4, 1 })); // touching left
+    BOOST_TEST(c.touches(xd::circle{ 4, 1, 1 })); // touching above
+    BOOST_TEST(c.touches(xd::circle{ 7, 4, 1 })); // touching right
+    BOOST_TEST(c.touches(xd::circle{ 4, 7, 1 })); // touching below
+
+    // Invalid cases
+    BOOST_TEST(!c.touches(c)); // equal
+    BOOST_TEST(!c.touches(xd::circle{ 4, 4, 1 })); // contained
+    BOOST_TEST(!c.touches(xd::circle{ 8, 8, 1 })); // outside
+    BOOST_TEST(!c.touches(xd::circle{ 1, 4, 2 })); // left
+    BOOST_TEST(!c.touches(xd::circle{ 4, 1, 2 })); // above
+    BOOST_TEST(!c.touches(xd::circle{ 7, 4, 2 })); // right
+    BOOST_TEST(!c.touches(xd::circle{ 4, 7, 2 })); // below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_circle_contains) {
+    xd::circle c{ 4, 4, 2 };
+
+    // Valid cases
+    BOOST_TEST(c.contains(2.1f, 4)); // contained left
+    BOOST_TEST(c.contains(4, 2.1f)); // contained above
+    BOOST_TEST(c.contains(5.9f, 4)); // contained right
+    BOOST_TEST(c.contains(4, 5.9f)); // contained below
+    BOOST_TEST(c.contains(2, 4)); // touching left
+    BOOST_TEST(c.contains(4, 2)); // touching above
+    BOOST_TEST(c.contains(6, 4)); // touching right
+    BOOST_TEST(c.contains(4, 6)); // touching below
+
+    // Invalid cases
+    BOOST_TEST(!c.contains(1.9f, 4)); // outside left
+    BOOST_TEST(!c.contains(4, 1.9f)); // outside above
+    BOOST_TEST(!c.contains(6.1f, 4)); // outside right
+    BOOST_TEST(!c.contains(4, 6.1f)); // outside below
+    BOOST_TEST(!c.contains(2, 3)); // outside left/above
+    BOOST_TEST(!c.contains(2, 5)); // outside left/below
+    BOOST_TEST(!c.contains(6, 3)); // outside right/above
+    BOOST_TEST(!c.contains(6, 6)); // outside right/below
+}
+
 BOOST_AUTO_TEST_SUITE_END()

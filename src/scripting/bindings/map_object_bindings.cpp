@@ -176,9 +176,9 @@ void bind_map_object_types(sol::state& lua, Game& game) {
             game, *obj, opacity, duration);
     };
     object_type["face"] = sol::overload(
-        (void (Map_Object::*)(xd::vec2)) & Map_Object::face,
-        (void (Map_Object::*)(float, float)) & Map_Object::face,
-        (void (Map_Object::*)(const Map_Object&)) & Map_Object::face,
+        (void (Map_Object::*)(xd::vec2)) &Map_Object::face,
+        (void (Map_Object::*)(float, float)) &Map_Object::face,
+        (void (Map_Object::*)(const Map_Object&)) &Map_Object::face,
         [&](Map_Object* obj, int dir) {
             obj->face(static_cast<Direction>(dir));
         }

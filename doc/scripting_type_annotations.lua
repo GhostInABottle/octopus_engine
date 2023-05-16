@@ -660,6 +660,7 @@ function Color(r, g, b, a) end
 ---@field h number
 ---@field position Engine_Vec2
 ---@field size Engine_Vec2
+---@field center Engine_Vec2
 local Engine_Rect = {}
 
 ---@overload fun() : Engine_Rect
@@ -674,9 +675,70 @@ local Engine_Rect = {}
 ---@return Engine_Rect
 function Rect(x, y, w, h) end
 
+-- Check if this rectangle partially overlaps with another (excluding the sides)
 ---@param other Engine_Rect
 ---@return boolean
 function Engine_Rect:intersects(other) end
+
+-- Check if the sides of this rectangle and the other one touch
+---@param other Engine_Rect
+---@return boolean
+function Engine_Rect:touches(other) end
+
+-- Check if a point falls within this rectangle (including the sides)
+---@overload fun(x : number, y : number) : boolean
+---@param point Engine_Vec2
+---@return boolean
+function Engine_Rect:contains(point) end
+
+-- Change the position of this rectangle
+---@param displacement Engine_Vec2
+---@return boolean
+function Engine_Rect:move(displacement) end
+
+-- Circle
+
+---@class Engine_Circle
+---@field x number
+---@field y number
+---@field radius number
+---@field center Engine_Vec2
+local Engine_Circle = {}
+
+---@overload fun() : Engine_Circle
+---@overload fun(other : Engine_Circle) : Engine_Circle
+---@overload fun(center : Engine_Vec2, radius: number) : Engine_Circle
+---@param x number
+---@param y number
+---@param radius number
+---@return Engine_Circle
+function Circle(x, y, radius) end
+
+-- Check if this circle partially overlaps with another circle
+-- or rectangle (excluding when the perimeters/sides touch)
+---@param other Engine_Circle|Engine_Rect
+---@return boolean
+function Engine_Circle:intersects(other) end
+
+-- Check if the perimeters of this circle and the other one touch
+---@param other Engine_Circle
+---@return boolean
+function Engine_Circle:touches(other) end
+
+-- Check if a point falls within this circle (including along the perimeters)
+---@overload fun(x : number, y : number) : boolean
+---@param point Engine_Vec2
+---@return boolean
+function Engine_Circle:contains(point) end
+
+-- Change the position of this circle
+---@param displacement Engine_Vec2
+---@return boolean
+function Engine_Circle:move(displacement) end
+
+-- Create a rectangle that covers the area of this circle
+---@return Engine_Rect
+function Engine_Circle:to_rect() end
 
 -- Command_Result
 
@@ -971,6 +1033,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field x number
 ---@field y number
 ---@field size Engine_Vec2
+---@field sprite string
 ---@field pose string
 ---@field state string
 ---@field direction Engine_Direction

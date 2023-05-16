@@ -136,8 +136,7 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
             // Skip objects with no bounding box
             const auto& box = other_object->get_bounding_box();
-            if (box.w <= 0.0f || box.h <= 0.0f)
-                continue;
+            if (box.w <= 0.0f || box.h <= 0.0f) continue;
 
             const auto intersects = this_box.intersects(other_object->get_positioned_bounding_box());
 
@@ -150,54 +149,55 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             // Areas are passthrough objects with a script
             auto other_id = object_pair.first;
             const auto is_area = passthrough && other_object->has_any_script();
-            // Skip self, invisible, or passthrough objects (except areas)
-            if (other_id == object.get_id() || !visible || (!is_area && passthrough))
-                continue;
+            // Skip non-intersecting, self, invisible, or passthrough objects (except areas)
+            bool skip = !intersects || other_id == object.get_id()
+                || !visible || (!is_area && passthrough);
+            if (skip) continue;
 
-            if (intersects) {
-                if (is_area) {
-                    if (result.type == Collision_Type::NONE)
-                        result.type = Collision_Type::AREA;
-                    result.other_area = other_object;
-                } else {
-                    result.type = Collision_Type::OBJECT;
-                    // Prefer objects with scripts
-                    if (!result.other_object || other_object->has_any_script()) {
-                        result.other_object = other_object;
-                    }
-                    check_tile_collision = false;
+            if (is_area) {
+                if (result.type == Collision_Type::NONE) {
+                    result.type = Collision_Type::AREA;
                 }
+                result.other_area = other_object;
+                continue;
             }
+
+            result.type = Collision_Type::OBJECT;
+            // Prefer objects with scripts
+            if (!result.other_object || other_object->has_any_script()) {
+                result.other_object = other_object;
+            }
+            check_tile_collision = false;
         }
     }
 
     // Check tile collisions (unless an object overrides collision)
-    if (check_tile_collision) {
-        const xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
-        // Minimum map bounds check (before small negatives are cast to 0)
-        if (tile_pos.x < 0.0f || tile_pos.y < 0.0f) {
-            result.type = Collision_Type::TILE;
-            return result;
-        }
-        const int min_x = static_cast<int>(tile_pos.x);
-        const int min_y = static_cast<int>(tile_pos.y);
-        const int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
-        const int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
-        for (int y = min_y; y <= max_y; ++y) {
-            for (int x = min_x; x <= max_x; ++x) {
-                // Maximum map bounds check (taking collision box into account)
-                if (x >= width || y >= height) {
+    if (!check_tile_collision) return result;
+
+    const xd::vec2 tile_pos{this_box.x / tile_width, this_box.y / tile_height};
+    // Minimum map bounds check (before small negatives are cast to 0)
+    if (tile_pos.x < 0.0f || tile_pos.y < 0.0f) {
+        result.type = Collision_Type::TILE;
+        return result;
+    }
+    const int min_x = static_cast<int>(tile_pos.x);
+    const int min_y = static_cast<int>(tile_pos.y);
+    const int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
+    const int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
+    for (int y = min_y; y <= max_y; ++y) {
+        for (int x = min_x; x <= max_x; ++x) {
+            // Maximum map bounds check (taking collision box into account)
+            if (x >= width || y >= height) {
+                result.type = Collision_Type::TILE;
+                return result;
+            }
+            // Check if tile is blocking
+            if (collision_layer && collision_tileset) {
+                const int tile = collision_layer->tiles[x + y * width] -
+                    collision_tileset->first_id;
+                if (tile >= 2) {
                     result.type = Collision_Type::TILE;
                     return result;
-                }
-                // Check if tile is blocking
-                if (collision_layer && collision_tileset) {
-                    const int tile = collision_layer->tiles[x + y * width] -
-                        collision_tileset->first_id;
-                    if (tile >= 2) {
-                        result.type = Collision_Type::TILE;
-                        return result;
-                    }
                 }
             }
         }
