@@ -100,10 +100,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
             one_dir_collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
             if (one_dir_collision.passable()) {
                 change.x = 0.0f;
+                change.y = change.y >= 0 ? pixels : -pixels;
             } else {
                 one_dir_collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
                 if (one_dir_collision.passable()) {
                     change.y = 0.0f;
+                    change.x = change.x >= 0 ? pixels : -pixels;
                 }
             }
         }
@@ -208,6 +210,20 @@ xd::vec2 Map_Object::get_size() const {
         return size;
 
     return sprite->get_size();
+}
+
+void Map_Object::set_size(xd::vec2 new_size) {
+    size = new_size;
+    if (!bounding_circle) {
+        bounding_box = xd::rect{ 0, 0, size[0], size[1] };
+        return;
+    }
+
+    if (!check_close(size.x, size.y)) {
+        throw std::runtime_error("Invalid non-unfirom size for circle object " + name);
+    }
+    bounding_circle = xd::circle{ size.x / 2, size.y / 2, size.x / 2 };
+    bounding_box = static_cast<xd::rect>(bounding_circle.value());
 }
 
 void Map_Object::set_outlined(std::optional<bool> new_outlined) {
@@ -315,9 +331,10 @@ void Map_Object::set_pose(const std::string& new_pose_name, const std::string& n
         obj->set_pose(new_pose_name, new_state, new_direction);
     }
 
-    if (sprite) {
-        bounding_box = sprite->get_bounding_box();
-    }
+    if (!sprite) return;
+
+    bounding_box = sprite->get_bounding_box();
+    bounding_circle = sprite->get_bounding_circle();
 }
 
 void Map_Object::face(float x, float y) {
@@ -393,10 +410,16 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     else
         throw tmx_exception("Missing Y coordinate for object with ID " + std::to_string(object_ptr->id));
 
-    if (auto width_node = node.first_attribute("width"))
-        object_ptr->size.x = std::stof(width_node->value());
-    if (auto height_node = node.first_attribute("height"))
-        object_ptr->size.y = std::stof(height_node->value());
+    float obj_width, obj_height = 0.0f;
+
+    if (auto width_node = node.first_attribute("width")) {
+        obj_width = std::stof(width_node->value());
+        object_ptr->size.x = obj_width;
+    }
+    if (auto height_node = node.first_attribute("height")) {
+        obj_height = std::stof(height_node->value());
+        object_ptr->size.y = obj_height;
+    }
 
     if (auto gid_node = node.first_attribute("gid"))
         object_ptr->gid = std::stoi(gid_node->value());
@@ -404,6 +427,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (auto visible_node = node.first_attribute("visible"))
         object_ptr->visible = string_utilities::string_to_bool(visible_node->value());
 
+    // Object properties
     auto& properties = object_ptr->properties;
     properties.read(node);
 
@@ -423,12 +447,6 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_face_state(properties["face-state"]);
     if (properties.contains("walk-state"))
         object_ptr->set_walk_state(properties["walk-state"]);
-
-    if (object_ptr->sprite) {
-        object_ptr->bounding_box = object_ptr->sprite->get_bounding_box();
-    } else {
-        object_ptr->bounding_box = xd::rect{0, 0, object_ptr->size[0], object_ptr->size[1]};
-    }
 
     if (properties.contains("script-context")) {
         auto context_string{properties["script-context"]};
@@ -532,6 +550,29 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             object_ptr->set_sound_attenuation_enabled(true);
         else if (attenuation != "FALSE")
             throw tmx_exception("Invalid object sfx-attenuation value: " + attenuation);
+    }
+
+    // Collision box and circle
+    if (node.first_node("ellipse")) {
+        if (!check_close(obj_width, obj_height)) {
+            throw tmx_exception("Only ciecle ellipse objects are supported. "
+                + object_ptr->name + " width and height don't match.");
+        }
+        object_ptr->bounding_circle = xd::circle{ obj_width / 2, obj_height / 2, obj_width / 2 };
+    }
+
+    if (object_ptr->sprite) {
+        object_ptr->bounding_box = object_ptr->sprite->get_bounding_box();
+        auto had_circle = object_ptr->bounding_circle.has_value();
+        object_ptr->bounding_circle = object_ptr->sprite->get_bounding_circle();
+        if (had_circle && !object_ptr->bounding_circle) {
+            throw tmx_exception{ "Trying to use sprite " + object_ptr->sprite->get_filename()
+                + " with no bounding circle data on ellipse object " + object_ptr->name };
+        }
+    } else if (object_ptr->bounding_circle) {
+        object_ptr->bounding_box = static_cast<xd::rect>(object_ptr->bounding_circle.value());
+    } else {
+        object_ptr->bounding_box = xd::rect{ 0, 0, object_ptr->size[0], object_ptr->size[1] };
     }
 
     object_ptr->set_pose();

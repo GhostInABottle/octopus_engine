@@ -91,6 +91,8 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
     for (auto pose_node = node.first_node("Pose");
             pose_node; pose_node = pose_node->next_sibling("Pose")) {
         Pose pose;
+
+        // Bounding box
         if (auto bb_node = pose_node->first_node("Bounding-Box")) {
             xd::rect rect;
             rect.x = std::stof(bb_node->first_attribute("X")->value());
@@ -102,6 +104,17 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             if (rect.w > 0) pose.bounding_box.w = rect.w;
             if (rect.h > 0) pose.bounding_box.h = rect.h;
         }
+
+        // Bounding circle
+        if (auto node = pose_node->first_node("Bounding-Circle")) {
+            auto x = std::stof(node->first_attribute("X")->value());
+            auto y = std::stof(node->first_attribute("Y")->value());
+            auto radius = std::stof(node->first_attribute("Radius")->value());
+            pose.bounding_circle = xd::circle{x, y, radius};
+            pose.bounding_box = static_cast<xd::rect>(pose.bounding_circle.value());
+        }
+
+        // Animation properties
         if (auto attr = pose_node->first_attribute("Duration"))
             pose.duration = std::stoi(attr->value());
 
@@ -138,6 +151,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             if (auto attr = frame_node->first_attribute("Duration"))
                 frame.duration = std::stoi(attr->value());
 
+            // Source rectangle
             if (auto node = frame_node->first_node("Rectangle")) {
                 frame.rectangle.x = std::stof(node->first_attribute("X")->value());
                 frame.rectangle.y  = std::stof(node->first_attribute("Y")->value());
@@ -145,6 +159,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
                 frame.rectangle.h  = std::stof(node->first_attribute("Height")->value());
             }
 
+            // Frame properties
             if (auto attr = frame_node->first_attribute("X-Mag"))
                 frame.magnification.x = std::stof(attr->value());
             if (auto attr = frame_node->first_attribute("Y-Mag"))
@@ -219,7 +234,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         sprite_ptr->poses.push_back(pose);
         int pose_index = sprite_ptr->poses.size() - 1;
 
-        // Tags
+        // Pose tags
         for (auto tag_node = pose_node->first_node("Tag");
                 tag_node; tag_node = tag_node->next_sibling("Tag")) {
             std::string key = tag_node->first_attribute("Key")->value();

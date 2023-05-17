@@ -65,6 +65,7 @@ namespace xd
     using glm::step;
     using glm::trunc;
     using glm::uintBitsToFloat;
+    using glm::pow;
 }
 
 #endif

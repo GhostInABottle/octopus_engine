@@ -397,6 +397,10 @@ xd::rect Sprite::get_bounding_box() const {
     return pimpl->pose->bounding_box;
 }
 
+std::optional<xd::circle> Sprite::get_bounding_circle() const {
+    return pimpl->pose->bounding_circle;
+}
+
 std::string Sprite::get_default_pose() const {
     return pimpl->data->default_pose;
 }

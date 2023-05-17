@@ -123,8 +123,10 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
     object_type["positioned_bounding_box"] = sol::property(&Map_Object::get_positioned_bounding_box);
+    object_type["positioned_bounding_circle"] = sol::property(&Map_Object::get_positioned_bounding_circle);
     object_type["centered_position"] = sol::property(&Map_Object::get_centered_position);
     object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box);
+    object_type["bounding_circle"] = sol::property(&Map_Object::get_bounding_circle);
     object_type["speed"] = sol::property(&Map_Object::get_speed, &Map_Object::set_speed);
     object_type["fps_independent_speed"] = sol::property(&Map_Object::get_fps_independent_speed);
     object_type["angle"] = sol::property(&Map_Object::get_angle, &Map_Object::set_angle);

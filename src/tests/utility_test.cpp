@@ -214,10 +214,10 @@ BOOST_AUTO_TEST_CASE(xd_types_circle_intersects_rect) {
     // Valid cases
     BOOST_TEST(c.intersects(static_cast<xd::rect>(c))); // equal
     BOOST_TEST(c.intersects(xd::rect{ 3, 3, 1, 1 })); // contained
-    BOOST_TEST(c.intersects(xd::rect{ 1, 3, 2, 2 })); // left
-    BOOST_TEST(c.intersects(xd::rect{ 3, 1, 2, 2 })); // above
-    BOOST_TEST(c.intersects(xd::rect{ 5, 3, 2, 2 })); // right
-    BOOST_TEST(c.intersects(xd::rect{ 3, 5, 2, 2 })); // below
+    BOOST_TEST(c.intersects(xd::rect{ 1, 3, 1.1f, 2 })); // left
+    BOOST_TEST(c.intersects(xd::rect{ 3, 1, 2, 1.1f })); // above
+    BOOST_TEST(c.intersects(xd::rect{ 5.9f, 3, 2, 2 })); // right
+    BOOST_TEST(c.intersects(xd::rect{ 3, 5.9f, 2, 2 })); // below
     BOOST_TEST(c.intersects(xd::rect{ 1, 2, 2, 2 })); // left/above
     BOOST_TEST(c.intersects(xd::rect{ 1, 5, 2, 2 })); // left/below
     BOOST_TEST(c.intersects(xd::rect{ 5, 1, 2, 2 })); // right/above

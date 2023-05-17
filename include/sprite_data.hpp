@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 #include "xd/graphics/types.hpp"
 #include "xd/graphics/texture.hpp"
 #include "xd/audio/channel_group_type.hpp"
@@ -45,6 +46,8 @@ struct Frame {
 struct Pose {
     // Collision bounding box
     xd::rect bounding_box;
+    // Optional collision circle
+    std::optional<xd::circle> bounding_circle;
     // Total duration of one pose cycle in milliseconds
     int duration;
     // Number of times pose is repeated (-1 = forever).

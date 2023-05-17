@@ -129,12 +129,26 @@ namespace xd
         }
 
         // check if a circles and a rectangle intersect
+        // based on: https://stackoverflow.com/a/402010
         bool intersects(const rect& rect) const {
-            return rect.contains(center()) ||
-                contains_inside(rect.x, rect.y) ||
-                contains_inside(rect.x, rect.y + rect.h) ||
-                contains_inside(rect.x + rect.w, rect.y + rect.h) ||
-                contains_inside(rect.x + rect.w, rect.y);
+            if (rect.contains(center())) return true;
+
+            auto distance = xd::abs(center() - rect.center());
+
+            auto half_size = rect.size() * 0.5f;
+            auto too_far = distance.x >= (half_size.x + radius)
+                || distance.y >= (half_size.y + radius);
+            if (too_far) return false;
+
+            auto close_enough = distance.x < half_size.x
+                || distance.y < half_size.y;
+            if (close_enough) return true;
+
+            auto delta_x = distance.x - half_size.x;
+            auto delta_y = distance.y - half_size.y;
+            auto squared_distance = delta_x * delta_x + delta_y * delta_y;
+
+            return squared_distance < radius * radius;
         }
 
         // check if a point falls inside the circle

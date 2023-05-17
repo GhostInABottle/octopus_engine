@@ -28,7 +28,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace detail {
+namespace {
     static std::string generate_unique_name(std::unordered_set<std::string> names,
             std::string base_name = "UNTITLED") {
         int i = 1;
@@ -38,6 +38,31 @@ namespace detail {
             name = base_name + std::to_string(i++);
         }
         return name;
+    }
+
+    static bool circle_intersects(const Map_Object& obj1, const Map_Object& obj2, const xd::vec2& obj1_pos) {
+        auto obj1_circle = obj1.get_bounding_circle();
+        auto obj2_circle = obj2.get_positioned_bounding_circle();
+        if (!obj1_circle && !obj2_circle) {
+            return false;
+        }
+
+        if (obj1_circle) {
+            obj1_circle->move(obj1_pos);
+        }
+
+        if (obj1_circle && obj2_circle) {
+            return obj1_circle->intersects(obj2_circle.value());
+        }
+
+        if (obj1_circle) {
+            auto boj2_box = obj2.get_positioned_bounding_box();
+            return obj1_circle->intersects(boj2_box);
+        }
+
+        xd::rect obj1_box{ obj1.get_bounding_box() };
+        obj1_box.move(obj1_pos);
+        return obj2_circle->intersects(obj1_box);
     }
 }
 
@@ -125,7 +150,8 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
         return result;
 
     auto change = direction_to_vector(direction) * speed;
-    xd::rect this_box{position + bounding_box.position() + change, bounding_box.size()};
+    auto new_pos = position + change;
+    xd::rect this_box{ bounding_box.position() + new_pos, bounding_box.size() };
 
     bool check_tile_collision = check_type & Collision_Check_Type::TILE;
 
@@ -138,7 +164,11 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
             const auto& box = other_object->get_bounding_box();
             if (box.w <= 0.0f || box.h <= 0.0f) continue;
 
-            const auto intersects = this_box.intersects(other_object->get_positioned_bounding_box());
+            auto intersects = this_box.intersects(other_object->get_positioned_bounding_box());
+
+            if (intersects && (object.get_bounding_circle() || other_object->get_bounding_circle())) {
+                intersects = circle_intersects(object, *other_object, new_pos);
+            }
 
             // Special case for skipping tile collision detection
             const auto visible = other_object->is_visible();
@@ -398,7 +428,7 @@ void Map::add_layer(Layer_Type layer_type) {
     for (auto& layer : layers) {
         names.insert(layer->name);
     }
-    new_layer->name = detail::generate_unique_name(names);
+    new_layer->name = generate_unique_name(names);
     add_layer(new_layer);
     if (layer_type == Layer_Type::OBJECT) {
         object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));

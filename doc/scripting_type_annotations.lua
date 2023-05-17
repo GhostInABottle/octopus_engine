@@ -1029,7 +1029,9 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field real_position Engine_Vec2 # position + bounding_box.position
 ---@field centered_position Engine_Vec2 # real_position + bounding_box.size / 2
 ---@field bounding_box Engine_Rect
+---@field bounding_circle Engine_Circle?
 ---@field positioned_bounding_box Engine_Rect # bounding box positioned at real_position
+---@field positioned_bounding_circle Engine_Circle?
 ---@field x number
 ---@field y number
 ---@field size Engine_Vec2

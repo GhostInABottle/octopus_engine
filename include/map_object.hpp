@@ -80,10 +80,7 @@ public:
     }
     xd::vec2 get_text_position() const;
     xd::vec2 get_size() const;
-    void set_size(xd::vec2 new_size) {
-        size = new_size;
-        bounding_box = xd::rect{0, 0, size[0], size[1]};
-    }
+    void set_size(xd::vec2 new_size);
     xd::vec4 get_color() const {
         return color;
     }
@@ -317,6 +314,10 @@ public:
     const xd::rect& get_bounding_box() const {
         return bounding_box;
     }
+    // Get bounding circle
+    std::optional<xd::circle> get_bounding_circle() const {
+        return bounding_circle;
+    }
     // Get position with bounding box
     xd::vec2 get_real_position() const {
         return xd::vec2{position.x + bounding_box.x, position.y + bounding_box.y};
@@ -326,8 +327,19 @@ public:
         return xd::rect{position.x + bounding_box.x, position.y + bounding_box.y,
             bounding_box.w, bounding_box.h};
     }
+    // Get bounding circle with real position
+    std::optional<xd::circle> get_positioned_bounding_circle() const {
+        if (!bounding_circle) return bounding_circle;
+
+        auto& circle = bounding_circle.value();
+        return xd::circle{ position.x + circle.x, position.y + circle.y, circle.radius };
+    }
     // Get the center of the object's positioned box
     xd::vec2 get_centered_position() {
+        if (bounding_circle) {
+            return position + bounding_circle->center();
+        }
+
         return xd::vec2{position.x + bounding_box.x + bounding_box.w * 0.5f,
             position.y + bounding_box.y + bounding_box.h * 0.5f};
     }
@@ -458,6 +470,8 @@ private:
     bool sound_attenuation_enabled;
     // Bounding box
     xd::rect bounding_box;
+    // Bounding circle
+    std::optional<xd::circle> bounding_circle;
     // Run a script
     void run_script(const std::string& script);
     // Load the script and add the preamble

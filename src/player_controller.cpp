@@ -72,20 +72,26 @@ void Player_Controller::update(Map_Object& object) {
 
     // Try to move around edges
     auto change_facing = true;
-    auto check_edges = moved && !is_diagonal(direction) && !collision.passable()
-        && (!collision.other_object || !collision.other_object->has_any_script());
+    auto check_edges = moved && !is_diagonal(direction) && !collision.passable();
     if (check_edges) {
-        for (auto tolerance = edge_tolerance_pixels; tolerance > 0; tolerance--) {
+        // Reduce the edge tolerance around scripted objects to make them easier to trigger
+        auto other = collision.other_object;
+        auto object_with_script = other && other->has_any_script();
+        auto factor = object_with_script ? (other->get_bounding_circle() ? 0.1f : 0.25f) : 1.0f;
+        auto max_tolerance = static_cast<int>(std::roundf(factor * edge_tolerance_pixels));
+
+        for (auto tolerance = max_tolerance; tolerance > 0; tolerance--) {
             auto vertical = direction == Direction::UP || direction == Direction::DOWN;
             auto pos1{object.get_position()};
             auto pos2{pos1};
+            auto pos_change = tolerance * speed;
             if (vertical) {
-                pos1.x -= tolerance;
-                pos2.x += tolerance;
+                pos1.x -= pos_change;
+                pos2.x += pos_change;
             }
             else {
-                pos1.y -= tolerance;
-                pos2.y += tolerance;
+                pos1.y -= pos_change;
+                pos2.y += pos_change;
             }
 
             auto new_dir = Direction::NONE;
@@ -98,7 +104,7 @@ void Player_Controller::update(Map_Object& object) {
 
             if (new_dir != Direction::NONE) {
                 change_facing = object.get_direction() != direction;
-                direction = new_dir;
+                direction = direction | new_dir;
                 break;
             }
         }

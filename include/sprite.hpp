@@ -39,6 +39,8 @@ public:
     std::string get_default_pose() const;
     // Get bounding box
     xd::rect get_bounding_box() const;
+    // Get bounding circle, if any
+    std::optional<xd::circle> get_bounding_circle() const;
     // Get size of first frame
     xd::vec2 get_size() const;
     // Get current frame
