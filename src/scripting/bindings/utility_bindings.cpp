@@ -71,6 +71,9 @@ void bind_utility_types(sol::state& lua, Game& game) {
 
     // Direction utilities
     auto dir = lua["direction"].get_or_create<sol::table>();
+    dir["contains"] = [](int dir, int other) {
+        return direction_contains(static_cast<Direction>(dir), static_cast<Direction>(other));
+    };
     dir["opposite"] = [](int dir) {
         return static_cast<int>(opposite_direction(static_cast<Direction>(dir)));
     };

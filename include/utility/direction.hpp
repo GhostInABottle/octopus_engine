@@ -16,6 +16,11 @@ constexpr Direction operator&(Direction a, Direction b) noexcept {
     return static_cast<Direction>(static_cast<int>(a) & static_cast<int>(b));
 }
 
+// Check if a direction contains a component
+constexpr bool direction_contains(Direction dir, Direction component) {
+    return (dir & component) != Direction::NONE;
+}
+
 // Get the opposite direction
 constexpr Direction opposite_direction(Direction dir) noexcept {
     const int dir_int = static_cast<int>(dir);
@@ -25,15 +30,15 @@ constexpr Direction opposite_direction(Direction dir) noexcept {
 // Check if it's a diagonal direction
 constexpr bool is_diagonal(Direction dir) noexcept {
     const Direction dir_minus_1 = static_cast<Direction>(static_cast<int>(dir) - 1);
-    return (dir & dir_minus_1) != Direction::NONE;
+    return direction_contains(dir, dir_minus_1);
 }
 
 // Convert a direction to a normalized 2D vector
 constexpr xd::vec2 direction_to_vector(Direction dir) noexcept {
-    const float x = (dir & Direction::RIGHT) != Direction::NONE ?
-        1.0f : (dir & Direction::LEFT) != Direction::NONE ? -1.0f : 0.0f;
-    const float y = (dir & Direction::DOWN) != Direction::NONE ?
-        1.0f : (dir & Direction::UP) != Direction::NONE ? -1.0f : 0.0f;
+    const float x = direction_contains(dir, Direction::RIGHT) ?
+        1.0f : direction_contains(dir, Direction::LEFT) ? -1.0f : 0.0f;
+    const float y = direction_contains(dir, Direction::DOWN) ?
+        1.0f : direction_contains(dir, Direction::UP) ? -1.0f : 0.0f;
     const xd::vec2 result{x, y};
 
     if (is_diagonal(dir)) {
@@ -147,13 +152,13 @@ constexpr Direction facing_direction(xd::ivec2 pos1, xd::ivec2 pos2) {
 }
 
 constexpr Direction diagonal_to_four_directions(Direction dir) {
-    if ((dir & Direction::UP) != Direction::NONE)
+    if (direction_contains(dir, Direction::UP))
         return Direction::UP;
-    else if ((dir & Direction::DOWN) != Direction::NONE)
+    else if (direction_contains(dir, Direction::DOWN))
         return Direction::DOWN;
-    else if ((dir & Direction::LEFT) != Direction::NONE)
+    else if (direction_contains(dir, Direction::LEFT))
         return Direction::LEFT;
-    else if ((dir & Direction::RIGHT) != Direction::NONE)
+    else if (direction_contains(dir, Direction::RIGHT))
         return Direction::RIGHT;
     else
         return Direction::NONE;

@@ -8,6 +8,45 @@
 #include "../include/utility/direction.hpp"
 #include "../include/configurations.hpp"
 
+namespace {
+    static inline Direction check_edge_movement(const Map_Object& object, const Map_Object* other,
+            const Map& map, Direction current_dir, float speed, int tolerance_pixels) {
+        auto object_with_script = other && other->has_any_script();
+        // Reduce the edge tolerance around scripted objects to make them easier to trigger
+        auto factor = object_with_script ? (other->get_bounding_circle() ? 0.1f : 0.25f) : 1.0f;
+        auto max_tolerance = static_cast<int>(std::ceil(factor * tolerance_pixels / speed));
+
+        for (auto tolerance = max_tolerance; tolerance > 0; tolerance--) {
+            auto vertical = direction_contains(current_dir, Direction::UP)
+                || direction_contains(current_dir, Direction::DOWN);
+
+            auto pos1{ object.get_position() };
+            auto pos2{ pos1 };
+            auto pos_change = tolerance * speed;
+            if (vertical) {
+                pos1.x -= pos_change;
+                pos2.x += pos_change;
+            } else {
+                pos1.y -= pos_change;
+                pos2.y += pos_change;
+            }
+
+            auto new_dir = Direction::NONE;
+            if (map.passable(object, current_dir, pos1, speed).passable()) {
+                new_dir = vertical ? Direction::LEFT : Direction::UP;
+            } else if (map.passable(object, current_dir, pos2, speed).passable()) {
+                new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
+            }
+
+            if (new_dir != Direction::NONE) {
+                return new_dir;
+            }
+        }
+
+        return Direction::NONE;
+    }
+}
+
 Player_Controller::Player_Controller(Game& game)
     : game(game),
     action_button(Configurations::get<std::string>("controls.action-button")),
@@ -74,39 +113,12 @@ void Player_Controller::update(Map_Object& object) {
     auto change_facing = true;
     auto check_edges = moved && !is_diagonal(direction) && !collision.passable();
     if (check_edges) {
-        // Reduce the edge tolerance around scripted objects to make them easier to trigger
         auto other = collision.other_object;
-        auto object_with_script = other && other->has_any_script();
-        auto factor = object_with_script ? (other->get_bounding_circle() ? 0.1f : 0.25f) : 1.0f;
-        auto max_tolerance = static_cast<int>(std::roundf(factor * edge_tolerance_pixels));
-
-        for (auto tolerance = max_tolerance; tolerance > 0; tolerance--) {
-            auto vertical = direction == Direction::UP || direction == Direction::DOWN;
-            auto pos1{object.get_position()};
-            auto pos2{pos1};
-            auto pos_change = tolerance * speed;
-            if (vertical) {
-                pos1.x -= pos_change;
-                pos2.x += pos_change;
-            }
-            else {
-                pos1.y -= pos_change;
-                pos2.y += pos_change;
-            }
-
-            auto new_dir = Direction::NONE;
-            if (map->passable(object, direction, pos1, speed).passable()) {
-                new_dir = vertical ? Direction::LEFT : Direction::UP;
-            }
-            else if (map->passable(object, direction, pos2, speed).passable()) {
-                new_dir = vertical ? Direction::RIGHT : Direction::DOWN;
-            }
-
-            if (new_dir != Direction::NONE) {
-                change_facing = object.get_direction() != direction;
-                direction = direction | new_dir;
-                break;
-            }
+        auto new_dir = check_edge_movement(object, other, *map, direction,
+            speed, edge_tolerance_pixels);
+        if (new_dir != Direction::NONE) {
+            change_facing = object.get_direction() != direction;
+            direction = direction | new_dir;
         }
     }
 

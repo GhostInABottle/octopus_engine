@@ -133,13 +133,13 @@ void Map::set_script_scheduler_paused(bool paused) {
         scheduler.resume();
 }
 
-Collision_Record Map::passable(const Map_Object& object, Direction direction, Collision_Check_Type check_type) {
+Collision_Record Map::passable(const Map_Object& object, Direction direction, Collision_Check_Type check_type) const {
     return passable(object, direction, object.get_position(),
         object.get_fps_independent_speed(), check_type);
 }
 
 Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed, Collision_Check_Type check_type) {
+        xd::vec2 position, float speed, Collision_Check_Type check_type) const {
     Collision_Record result;
 
     if (object.initiates_passthrough())

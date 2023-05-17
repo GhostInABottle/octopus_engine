@@ -503,6 +503,11 @@ function lutf8.ncasecmp(a, b) end
 direction = {}
 
 ---@param direction Engine_Direction
+---@param component Engine_Direction
+---@return boolean
+function direction.contains(direction, component) end
+
+---@param direction Engine_Direction
 ---@return Engine_Direction opposite_direction
 function direction.opposite(direction) end
 
