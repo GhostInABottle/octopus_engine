@@ -59,10 +59,11 @@ Map_Object::~Map_Object() {}
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
         Collision_Check_Type check_type, bool change_facing) {
     // Map relative directions
-    if (move_dir == Direction::FORWARD)
+    if (direction_contains(move_dir, Direction::FORWARD)) {
         move_dir = direction;
-    else if (move_dir == Direction::BACKWARD)
+    } else if (direction_contains(move_dir, Direction::BACKWARD)) {
         move_dir = opposite_direction(direction);
+    }
 
     const auto movement_vector = direction_to_vector(move_dir);
     auto change = movement_vector * pixels;
@@ -94,68 +95,71 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
     if (collision.passable()) {
         position += change;
     } else {
-        Collision_Record one_dir_collision{collision};
-        if (multiple_directions && !strict_multidirectional_movement) {
-            // Check if we can move in either direction
-            one_dir_collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
-            if (one_dir_collision.passable()) {
-                change.x = 0.0f;
-                change.y = change.y >= 0 ? pixels : -pixels;
-            } else {
-                one_dir_collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
-                if (one_dir_collision.passable()) {
-                    change.y = 0.0f;
-                    change.x = change.x >= 0 ? pixels : -pixels;
-                }
-            }
+        auto new_dir = movement && change_facing ? move_dir : Direction::NONE;
+        auto try_multi_dir = multiple_directions && !strict_multidirectional_movement;
+        if (!try_multi_dir) {
+            // Can't move due to collision
+            set_state_and_direction(face_state, new_dir);
+            return collision;
         }
 
+        // Check if we can move in either direction
+        Collision_Record one_dir_collision{ collision };
+        one_dir_collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
         if (one_dir_collision.passable()) {
-            // Move in the single passable direction
-            position += change;
-            move_dir = vector_to_direction(change);
-            collision = one_dir_collision;
-        } else {
-            // Update facing direction and state
-            if (movement && change_facing) {
-                direction = move_dir;
-                if (sprite && is_diagonal(direction) && !sprite->is_eight_directional()) {
-                    direction = diagonal_to_four_directions(direction);
-                }
-            }
-            set_state(face_state);
+            change.x = 0.0f;
+            change.y = change.y >= 0 ? pixels : -pixels;
+        } else if (one_dir_collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
+                one_dir_collision.passable()) {
+            change.y = 0.0f;
+            change.x = change.x >= 0 ? pixels : -pixels;
+        }
 
+        if (!one_dir_collision.passable()) {
+            // Can't move in either direction
+            set_state_and_direction(face_state, new_dir);
+            return collision;
+        }
+
+        // Move in the single passable direction
+        position += change;
+        // Don't change direction frequently when moving along a circular curve
+        auto change_dir = !collision.other_object
+            || !collision.other_object->get_bounding_circle();
+        if (change_dir) {
+            move_dir = vector_to_direction(change);
+        } else {
+            direction = new_dir;
+            change_facing = false;
+        }
+        collision = one_dir_collision;
+    }
+
+    // Update movement pose
+    if (!movement)  return collision;
+
+    if (change_facing) {
+        if (sprite && sprite->is_eight_directional()) {
+            direction = move_dir;
+        } else if (change.y < 0) {
+            direction = Direction::UP;
+        } else if (change.y > 0) {
+            direction = Direction::DOWN;
+        } else if (change.x < 0) {
+            direction = Direction::LEFT;
+        } else if (change.x > 0) {
+            direction = Direction::RIGHT;
+        } else {
+            set_state_and_direction(face_state, move_dir);
             return collision;
         }
     }
 
-    // Update movement pose
-    if (movement) {
-        if (change_facing) {
-            if (sprite && sprite->is_eight_directional()) {
-                direction = move_dir;
-            } else if (change.y < 0) {
-                direction = Direction::UP;
-            } else if (change.y > 0) {
-                direction = Direction::DOWN;
-            } else if (change.x < 0) {
-                direction = Direction::LEFT;
-            } else if (change.x > 0) {
-                direction = Direction::RIGHT;
-            } else {
-                direction = move_dir;
-                if (sprite && is_diagonal(direction) && !sprite->is_eight_directional()) {
-                    direction = diagonal_to_four_directions(direction);
-                }
-                set_state(face_state);
-                return collision;
-            }
-        }
-        set_state(walk_state);
-        map->set_objects_moved(true);
-        for (auto obj : linked_objects) {
-            obj->move(move_dir, pixels, check_type, change_facing);
-        }
+    set_state_and_direction(walk_state, direction);
+
+    map->set_objects_moved(true);
+    for (auto obj : linked_objects) {
+        obj->move(move_dir, pixels, check_type, change_facing);
     }
 
     return collision;
@@ -323,8 +327,12 @@ void Map_Object::set_pose(const std::string& new_pose_name, const std::string& n
     if (!new_state.empty())
         state = new_state;
 
-    if (new_direction != Direction::NONE)
+    if (new_direction != Direction::NONE) {
         direction = new_direction;
+        if (is_diagonal(direction) && sprite && !sprite->is_eight_directional()) {
+            direction = diagonal_to_four_directions(direction);
+        }
+    }
 
     Sprite_Holder::set_pose(pose_name, state, direction);
     for (auto obj : linked_objects) {
@@ -350,9 +358,14 @@ void Map_Object::face(xd::vec2 other_position) {
 }
 
 void Map_Object::face(Direction dir) {
-    if (dir == Direction::FORWARD || dir == Direction::BACKWARD)
-        return;
+    if (is_relative_direction(dir)) return;
+
     set_pose("", "", static_cast<Direction>(dir));
+}
+
+void Map_Object::set_state_and_direction(const std::string& new_state, Direction dir) {
+    set_pose("", frozen ? "" : new_state,
+        is_relative_direction(dir) ? Direction::NONE : dir);
 }
 
 void Map_Object::run_script(const std::string& script) {

@@ -198,6 +198,7 @@ public:
     void set_walk_state(const std::string& name) {
         walk_state = name;
     }
+    void set_state_and_direction(const std::string& new_state, Direction dir);
     Script_Context get_script_context() const {
         return script_context;
     }

@@ -33,6 +33,12 @@ constexpr bool is_diagonal(Direction dir) noexcept {
     return direction_contains(dir, dir_minus_1);
 }
 
+// Check if the direction is relative to the current one (forward or backward)
+constexpr bool is_relative_direction(Direction dir) noexcept {
+    return direction_contains(dir, Direction::FORWARD)
+        || direction_contains(dir, Direction::BACKWARD);
+}
+
 // Convert a direction to a normalized 2D vector
 constexpr xd::vec2 direction_to_vector(Direction dir) noexcept {
     const float x = direction_contains(dir, Direction::RIGHT) ?
