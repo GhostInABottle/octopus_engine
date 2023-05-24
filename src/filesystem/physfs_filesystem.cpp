@@ -1,8 +1,8 @@
-#include "../../../include/filesystem/physfs_filesystem.hpp"
-#include "../../../include/vendor/physfs.hpp"
-#include "../../../include/utility/string.hpp"
-#include "../../../include/log.hpp"
-#include "../../../include/exceptions.hpp"
+#include "../../include/filesystem/physfs_filesystem.hpp"
+#include "../../include/vendor/physfs.hpp"
+#include "../../include/utility/string.hpp"
+#include "../../include/log.hpp"
+#include "../../include/exceptions.hpp"
 #include <chrono>
 
 namespace detail {

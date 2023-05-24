@@ -1,12 +1,12 @@
-#include "../../../include/filesystem/user_data_folder.hpp"
-#include "../../../include/configurations.hpp"
-#include "../../../include/log.hpp"
-#include "../../../include/save_file.hpp"
-#include "../../../include/key_binder.hpp"
-#include "../../../include/exceptions.hpp"
-#include "../../../include/utility/string.hpp"
-#include "../../../include/utility/file.hpp"
-#include "../../../include/vendor/platform_folders.hpp"
+#include "../../include/filesystem/user_data_folder.hpp"
+#include "../../include/configurations.hpp"
+#include "../../include/log.hpp"
+#include "../../include/save_file.hpp"
+#include "../../include/key_binder.hpp"
+#include "../../include/exceptions.hpp"
+#include "../../include/utility/string.hpp"
+#include "../../include/utility/file.hpp"
+#include "../../include/vendor/platform_folders.hpp"
 #include <stdexcept>
 
 User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem(filesystem), parsed_default_config(false) {
