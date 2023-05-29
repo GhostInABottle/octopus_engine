@@ -55,7 +55,7 @@ std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std:
     if (!audio || filename.empty()) return nullptr;
 
     if (filename == "false") {
-        music->stop();
+        if (music) music->stop();
         music.reset();
         return nullptr;
     }
