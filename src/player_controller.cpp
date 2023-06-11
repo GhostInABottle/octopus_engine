@@ -51,6 +51,7 @@ Player_Controller::Player_Controller(Game& game)
     : game(game),
     action_button(Configurations::get<std::string>("controls.action-button")),
     last_collision_check(game.ticks()),
+    last_action_press(-1),
     collision_check_delay(Configurations::get<int>("debug.collision-check-delay")),
     edge_tolerance_pixels(Configurations::get<int>("debug.edge-tolerance-pixels")) {}
 
@@ -69,15 +70,23 @@ void Player_Controller::update(Map_Object& object) {
             direction = direction | Direction::LEFT;
     }
 
+    auto ticks = game.ticks();
     auto action_pressed = check_input && game.triggered(action_button);
+    if (action_pressed) {
+        last_action_press = ticks;
+    } else if (check_input && last_action_press > 0) {
+        // If the player pressed the action key while moving, remember it for a few frames
+        action_pressed = ticks - last_action_press <= collision_check_delay;
+    }
+
     auto moved = direction != Direction::NONE;
-    auto time_to_check = game.ticks() - last_collision_check > collision_check_delay;
+    auto time_to_check = ticks - last_collision_check > collision_check_delay;
     if (!moved && !action_pressed && !time_to_check) {
         if (check_input && object.get_state() == object.get_walk_state())
             object.set_state(object.get_face_state());
         return;
     }
-    last_collision_check = game.ticks();
+    last_collision_check = ticks;
 
     auto speed = object.get_fps_independent_speed();
     auto map = game.get_map();
@@ -126,7 +135,7 @@ void Player_Controller::update(Map_Object& object) {
         collision = object.move(direction, speed, check_type, change_facing);
         if (action_pressed && collision.passable()) {
             // Try again to see if there's an object in front of the player after moving
-            collision = map->passable(object, direction, check_type);
+            collision = map->passable(object, direction, Collision_Check_Type::OBJECT);
         }
     }
 

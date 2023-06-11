@@ -15,6 +15,7 @@ private:
     Game& game;
     std::string action_button;
     int last_collision_check;
+    int last_action_press;
     int collision_check_delay;
     int edge_tolerance_pixels;
     void process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool moved, bool action_pressed);
