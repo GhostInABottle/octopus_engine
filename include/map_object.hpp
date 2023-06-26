@@ -336,7 +336,7 @@ public:
         return xd::circle{ position.x + circle.x, position.y + circle.y, circle.radius };
     }
     // Get the center of the object's positioned box
-    xd::vec2 get_centered_position() {
+    xd::vec2 get_centered_position() const {
         if (bounding_circle) {
             return position + bounding_circle->center();
         }

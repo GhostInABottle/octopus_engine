@@ -52,6 +52,7 @@ Player_Controller::Player_Controller(Game& game)
     action_button(Configurations::get<std::string>("controls.action-button")),
     last_collision_check(game.ticks()),
     last_action_press(-1),
+    last_action_direction(Direction::NONE),
     collision_check_delay(Configurations::get<int>("debug.collision-check-delay")),
     edge_tolerance_pixels(Configurations::get<int>("debug.edge-tolerance-pixels")) {}
 
@@ -60,30 +61,34 @@ void Player_Controller::update(Map_Object& object) {
 
     auto check_input = !object.is_disabled();
     if (check_input) {
-        if (game.pressed("up"))
-            direction = direction | Direction::UP;
-        if (game.pressed("down"))
-            direction = direction | Direction::DOWN;
-        if (game.pressed("right"))
-            direction = direction | Direction::RIGHT;
-        if (game.pressed("left"))
-            direction = direction | Direction::LEFT;
+        if (game.pressed("up")) direction = direction | Direction::UP;
+        if (game.pressed("down")) direction = direction | Direction::DOWN;
+        if (game.pressed("right")) direction = direction | Direction::RIGHT;
+        if (game.pressed("left")) direction = direction | Direction::LEFT;
     }
 
     auto ticks = game.ticks();
     auto action_pressed = check_input && game.triggered(action_button);
-    if (action_pressed) {
+    auto moved = direction != Direction::NONE;
+
+    // Remember when the action key was last pressed
+    if (action_pressed && moved) {
         last_action_press = ticks;
-    } else if (check_input && last_action_press > 0) {
+        last_action_direction = direction;
+    } else if (moved && check_input && direction == last_action_direction) {
         // If the player pressed the action key while moving, remember it for a few frames
-        action_pressed = ticks - last_action_press <= collision_check_delay;
+        action_pressed = last_action_press > 0
+            && ticks - last_action_press <= collision_check_delay;
     }
 
-    auto moved = direction != Direction::NONE;
+    // Early exit if the player hasn't moved (or it's not time for regular check)
     auto time_to_check = ticks - last_collision_check > collision_check_delay;
     if (!moved && !action_pressed && !time_to_check) {
-        if (check_input && object.get_state() == object.get_walk_state())
+        if (check_input && object.get_state() == object.get_walk_state()) {
+            // Reset to face state if not moving
             object.set_state(object.get_face_state());
+        }
+
         return;
     }
     last_collision_check = ticks;
@@ -91,7 +96,7 @@ void Player_Controller::update(Map_Object& object) {
     auto speed = object.get_fps_independent_speed();
     auto map = game.get_map();
     auto check_type = Collision_Check_Type::BOTH;
-    if (direction == Direction::NONE) {
+    if (!moved) {
         direction = object.get_direction();
     }
 
@@ -111,6 +116,7 @@ void Player_Controller::update(Map_Object& object) {
                 break;
             }
         }
+
         // If surrounded by objects in all directions, ignore object collisions
         if (!passable) {
             check_type = Collision_Check_Type::TILE;
@@ -131,6 +137,7 @@ void Player_Controller::update(Map_Object& object) {
         }
     }
 
+    // Actually move
     if (moved) {
         collision = object.move(direction, speed, check_type, change_facing);
         if (action_pressed && collision.passable()) {

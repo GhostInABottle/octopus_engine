@@ -350,11 +350,11 @@ void Map_Object::face(float x, float y) {
 }
 
 void Map_Object::face(const Map_Object& other) {
-    face(other.get_real_position());
+    face(other.get_centered_position());
 }
 
 void Map_Object::face(xd::vec2 other_position) {
-    set_pose("", "", facing_direction(get_real_position(), other_position));
+    set_pose("", "", facing_direction(get_centered_position(), other_position));
 }
 
 void Map_Object::face(Direction dir) {
