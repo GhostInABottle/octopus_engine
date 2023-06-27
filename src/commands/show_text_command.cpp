@@ -287,7 +287,7 @@ struct Show_Text_Command::Impl : Timed_Command {
                 canvas_updater->stop();
             }
             canvas_updater->execute();
-            return;
+            if (!force_stopped) return;
         }
 
         // Mark the command as complete when text is done / stopped
@@ -370,7 +370,7 @@ void Show_Text_Command::execute(int ticks) {
 }
 
 bool Show_Text_Command::is_complete() const {
-    return pimpl->is_complete() || force_stopped;
+    return pimpl->is_complete();
 }
 
 int Show_Text_Command::choice_index() {
