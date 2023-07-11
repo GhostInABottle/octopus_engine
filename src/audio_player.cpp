@@ -11,7 +11,8 @@
 Audio_Player::Audio_Player(std::shared_ptr<xd::audio> audio)
         : audio(audio),
         audio_folder(Configurations::get<std::string>("audio.audio-folder")),
-        music_was_paused(false) {
+        music_was_paused(false),
+        ambient_was_paused(false) {
     // Set default volumes
     set_global_music_volume(Configurations::get<float>("audio.music-volume"));
     set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
@@ -47,52 +48,78 @@ void Audio_Player::load_map_audio(Map& map) {
     load_audio_from_map_prop(map, "cached-sounds", false);
 }
 
-std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, float volume) {
-    return play_music(current_map, current_map.get_bg_music_filename(), volume);
+std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Map& current_map, std::optional<float> volume) {
+    std::string map_filename = is_music
+        ? current_map.get_bg_music_filename()
+        : current_map.get_bg_ambient_filename();
+    float map_volume = volume.value_or(
+        is_music
+        ? current_map.get_bg_music_volume()
+        : current_map.get_bg_ambient_volume());
+
+    // Ambient sound doesn't carry across maps
+    if (!is_music && map_filename.empty()) {
+        map_filename = "false";
+    }
+
+    return play_music_or_ambient(is_music, current_map, map_filename, true, map_volume);
 }
 
-std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std::string& filename, bool looping, float volume) {
+std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Map& current_map,
+        const std::string& filename, bool looping, std::optional<float> volume) {
     if (!audio || filename.empty()) return nullptr;
 
+    auto& music_ptr = is_music ? music : ambient;
+
     if (filename == "false") {
-        if (music) music->stop();
-        music.reset();
+        if (music_ptr) music_ptr->stop();
+        music_ptr.reset();
         return nullptr;
     }
 
-    auto playing_music{ music ? music->get_filename() : "" };
-    if (audio_folder + filename == playing_music) return music;
+    auto already_playing = music_ptr
+        && music_ptr->playing()
+        && music_ptr->get_filename() == audio_folder + filename;
+    if (already_playing) {
+        music_ptr->set_volume(volume.value_or(1.0f));
+        return music_ptr;
+    }
 
-    std::shared_ptr<xd::music> music;
+    std::shared_ptr<xd::music> new_music;
     auto& map_cache = current_map.get_audio_cache();
     if (map_cache.find(filename) != map_cache.end()) {
-        music = load_music(current_map, filename);
+        new_music = load_music(current_map, filename);
         LOGGER_D << "Playing cached music file: " << filename;
     } else {
         auto fs = file_utilities::game_data_filesystem();
         auto full_name = audio_folder + filename;
-        music = std::make_shared<xd::music>(*audio, full_name,
+        new_music = std::make_shared<xd::music>(*audio, full_name,
             fs->open_binary_ifstream(full_name));
         LOGGER_D << "Playing non-cached music file: " << filename;
     }
 
-    music->set_volume(volume);
+    new_music->set_volume(volume.value_or(1.0f));
 
-    return play_music(current_map, music, looping);
+    return play_music_or_ambient(is_music, current_map, new_music, looping);
 }
 
-std::shared_ptr<xd::music> Audio_Player::play_music(Map& current_map, const std::shared_ptr<xd::music>& new_music, bool looping) {
+std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Map& current_map, const std::shared_ptr<xd::music>& new_music, bool looping) {
     if (!audio) return nullptr;
 
-    if (music) {
-        music->stop();
+    auto& music_ptr = is_music ? music : ambient;
+    if (music_ptr) {
+        music_ptr->stop();
     }
 
-    set_playing_music(new_music);
-    music->set_looping(looping);
-    music->play();
+    if (is_music) {
+        set_playing_music(new_music);
+    } else {
+        set_playing_ambient(new_music);
+    }
+    music_ptr->set_looping(looping);
+    music_ptr->play();
 
-    return music;
+    return music_ptr;
 }
 
 std::shared_ptr<xd::sound> Audio_Player::play_sound(Game& game, const std::string& filename,
@@ -170,10 +197,16 @@ void Audio_Player::update() {
 void Audio_Player::pause() {
     if (!audio) return;
 
-    if (music && Configurations::get<bool>("audio.mute-on-pause")) {
-        music_was_paused = music->paused();
-        if (!music_was_paused)
-            music->pause();
+    if ((music || ambient) && Configurations::get<bool>("audio.mute-on-pause")) {
+        if (music) {
+            music_was_paused = music->paused();
+            if (!music_was_paused) music->pause();
+        }
+
+        if (ambient) {
+            ambient_was_paused = ambient->paused();
+            if (!ambient_was_paused) ambient->pause();
+        }
     }
 
     audio->pause_sounds();
@@ -184,6 +217,10 @@ void Audio_Player::resume() {
 
     if (music && music->paused() && !music_was_paused) {
         music->play();
+    }
+
+    if (ambient && ambient->paused() && !ambient_was_paused) {
+        ambient->play();
     }
 
     audio->resume_sounds();

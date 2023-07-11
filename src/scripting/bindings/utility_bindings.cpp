@@ -110,10 +110,9 @@ void bind_utility_types(sol::state& lua, Game& game) {
     cmd_result_type["completed"] = sol::property((bool (Command_Result::*)() const) & Command_Result::is_complete);
     cmd_result_type["stopped"] = sol::property(&Command_Result::is_stopped);
     cmd_result_type["paused"] = sol::property(&Command_Result::is_paused);
-    cmd_result_type["is_complete"] = sol::overload(
-        &Command_Result::operator(),
-        (bool (Command_Result::*)(int) const) & Command_Result::is_complete
-    );
+    cmd_result_type["is_complete"] = [](Command_Result& result, std::optional<int> ticks) {
+        return ticks.has_value() ? result.is_complete(ticks.value()) : result.is_complete();
+    };
     cmd_result_type["execute"] = sol::overload(
         (void (Command_Result::*)()) & Command_Result::execute,
         (void (Command_Result::*)(int)) & Command_Result::execute

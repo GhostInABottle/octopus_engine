@@ -194,10 +194,28 @@ public:
         return objects_moved;
     }
     std::string get_bg_music_filename() const {
-        return background_music;
+        return background_music_filename;
     }
     void set_bg_music_filename(const std::string& music_filename) {
-        background_music = music_filename;
+        background_music_filename = music_filename;
+    }
+    float get_bg_music_volume() const {
+        return background_music_volume;
+    }
+    void set_bg_music_volume(float music_volume) {
+        background_music_volume = music_volume;
+    }
+    std::string get_bg_ambient_filename() const {
+        return background_ambient_filename;
+    }
+    void set_bg_ambient_filename(const std::string& ambient_filename) {
+        background_ambient_filename = ambient_filename;
+    }
+    float get_bg_ambient_volume() const {
+        return background_ambient_volume;
+    }
+    void set_bg_ambient_volume(float ambinet_volume) {
+        background_ambient_volume = ambinet_volume;
     }
     std::string get_startup_scripts() const {
         return get_property("scripts");
@@ -263,7 +281,11 @@ private:
     // Lookup table of canvas IDs to canvases
     std::unordered_map<int, std::weak_ptr<Base_Canvas>> canvases_by_id;
     // Background music
-    std::string background_music;
+    std::string background_music_filename;
+    float background_music_volume;
+    // Background ambient
+    std::string background_ambient_filename;
+    float background_ambient_volume;
     // Startup script filenames
     std::vector<std::string> start_scripts;
     // Should object outlines be drawn?

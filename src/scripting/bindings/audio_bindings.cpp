@@ -73,15 +73,17 @@ void bind_audio_types(sol::state& lua, Game& game) {
     music["pause"] = &xd::music::pause;
     music["stop"] = &xd::music::stop;
     music["set_loop_points"] = &xd::music::set_loop_points;
-    music["fade"] = [&](xd::music* music, float volume, long duration) {
+    music["fade"] = [&](std::shared_ptr<xd::music> music, float volume, long duration) {
         auto si = game.get_current_scripting_interface();
-        return si->register_command<Fade_Music_Command>(game, volume, duration);
+        return si->register_command<Fade_Music_Command>(game, music, volume, duration);
     };
 
     // Cached audio player
     auto audio_player = lua.new_usertype<Audio_Player>("Audio_Player");
     audio_player["playing_music"] = sol::property(&Audio_Player::get_playing_music,
         &Audio_Player::set_playing_music);
+    audio_player["playing_ambient"] = sol::property(&Audio_Player::get_playing_ambient,
+        &Audio_Player::set_playing_ambient);
     audio_player["global_music_volume"] = sol::property(&Audio_Player::get_global_music_volume,
         &Audio_Player::set_global_music_volume);
     audio_player["global_sound_volume"] = sol::property(&Audio_Player::get_global_sound_volume,
@@ -129,6 +131,27 @@ void bind_audio_types(sol::state& lua, Game& game) {
         },
         [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& music, bool looping) {
             return audio_player.play_music(*game.get_map(), music, looping);
+        }
+    );
+
+    audio_player["play_ambient"] = sol::overload(
+        [&game](Audio_Player& audio_player, const std::string& filename) {
+            return audio_player.play_ambient(*game.get_map(), filename);
+        },
+        [&game](Audio_Player& audio_player, const std::string& filename, float volume) {
+            return audio_player.play_ambient(*game.get_map(), filename, true, volume);
+        },
+        [&game](Audio_Player& audio_player, const std::string& filename, bool looping) {
+            return audio_player.play_ambient(*game.get_map(), filename, looping);
+        },
+        [&game](Audio_Player& audio_player, const std::string& filename, bool looping, float volume) {
+            return audio_player.play_ambient(*game.get_map(), filename, looping, volume);
+        },
+        [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& ambient) {
+            return audio_player.play_ambient(*game.get_map(), ambient);
+        },
+        [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& ambient, bool looping) {
+            return audio_player.play_ambient(*game.get_map(), ambient, looping);
         }
     );
 

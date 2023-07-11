@@ -224,8 +224,10 @@ elseif c.selected == 5 then
     game:set_float_config('audio.sound-volume', 0.25)
     wait(1)
     Sound(sound_file):play()
-    text(o, 'Resuming music'):wait()
+    text(o, 'Resuming and fading in music'):wait()
+    music.volume = 0
     music:play()
+    music:fade(1, 2000):wait()
     text(o, 'Changing global music volume'):wait()
     local old_music_volume = audio_player.global_music_volume
     audio_player.global_music_volume = 0.3

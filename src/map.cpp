@@ -76,6 +76,8 @@ Map::Map(Game& game) :
         scripting_interface(std::make_unique<Scripting_Interface>(game)),
         collision_tileset(nullptr),
         collision_layer(nullptr),
+        background_music_volume(1.0f),
+        background_ambient_volume(1.0f),
         draw_object_outlines(true),
         needs_redraw(true),
         objects_moved(true),
@@ -644,17 +646,27 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     // Map properties
     map_ptr->properties.read(node);
 
-    // Background music
+    // Background music and ambient
     if (map_ptr->properties.contains("music")) {
-        map_ptr->background_music = map_ptr->properties["music"];
+        map_ptr->background_music_filename = map_ptr->properties["music"];
+    }
+    if (map_ptr->properties.contains("music-volume")) {
+        map_ptr->background_music_volume = std::stof(map_ptr->properties["music-volume"]);
+    }
+
+    if (map_ptr->properties.contains("ambient")) {
+        map_ptr->background_ambient_filename = map_ptr->properties["ambient"];
+    }
+    if (map_ptr->properties.contains("ambient-volume")) {
+        map_ptr->background_ambient_volume = std::stof(map_ptr->properties["ambient-volume"]);
     }
     
     if (map_ptr->properties.contains("music-script")) {
-        if (!map_ptr->background_music.empty())
-            throw tmx_exception("Tried to set a map music script, but music was already specified as: " + map_ptr->background_music);
+        if (!map_ptr->background_music_filename.empty())
+            throw tmx_exception("Tried to set a map music script, but music was already specified as: " + map_ptr->background_music_filename);
 
         auto si = game.get_current_scripting_interface();
-        map_ptr->background_music = si->call<std::string>(map_ptr->properties["music-script"]);
+        map_ptr->background_music_filename = si->call<std::string>(map_ptr->properties["music-script"]);
     }
 
     // Startup scripts

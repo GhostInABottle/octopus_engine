@@ -354,13 +354,13 @@ function text(object, text, duration) end
 ---@return Engine_Command_Result
 function centered_text(y, text, duration) end
 
----@overload fun(text_options : Engine_Text_Options) : Engine_Command_Result
----@overload fun(position : Engine_Vec2, text : string, choice_list : string[], cancelable? : boolean) : Engine_Command_Result
+---@overload fun(text_options : Engine_Text_Options) : Engine_Choice_Command_Result
+---@overload fun(position : Engine_Vec2, text : string, choice_list : string[], cancelable? : boolean) : Engine_Choice_Command_Result
 ---@param object Engine_Map_Object
 ---@param text string
 ---@param choice_list string[]
 ---@param cancelable? boolean
----@return Engine_Command_Result
+---@return Engine_Choice_Command_Result
 function choices(object, text, choice_list, cancelable) end
 
 lutf8 = {}
@@ -567,7 +567,6 @@ function logger.error(message) end
 ---@operator add(Engine_Vec2) : Engine_Vec2
 ---@operator sub(Engine_Vec2) : Engine_Vec2
 ---@operator mul(number) : Engine_Vec2
----@operator div(number) : Engine_Vec2
 local Engine_Vec2 = {}
 
 ---@overload fun() : Engine_Vec2
@@ -592,7 +591,6 @@ function Engine_Vec2:normal() end
 ---@operator add(Engine_Vec3) : Engine_Vec3
 ---@operator sub(Engine_Vec3) : Engine_Vec3
 ---@operator mul(number) : Engine_Vec3
----@operator div(number) : Engine_Vec3
 local Engine_Vec3 = {}
 
 ---@overload fun() : Engine_Vec3
@@ -619,7 +617,6 @@ function Engine_Vec3:normal() end
 ---@operator add(Engine_Vec4) : Engine_Vec4
 ---@operator sub(Engine_Vec4) : Engine_Vec4
 ---@operator mul(number) : Engine_Vec4
----@operator div(number) : Engine_Vec4
 local Engine_Vec4 = {}
 
 ---@overload fun() : Engine_Vec4
@@ -751,7 +748,6 @@ function Engine_Circle:to_rect() end
 ---@field completed boolean # readonly
 ---@field stopped boolean # readonly
 ---@field paused boolean # readonly
----@field selected integer # 1-based choice index, -1 if canceled
 local Engine_Command_Result = {}
 
 function Engine_Command_Result:wait() end
@@ -772,6 +768,9 @@ function Engine_Command_Result:execute(ticks) end
 ---@param ticks? integer
 ---@return boolean
 function Engine_Command_Result:is_complete(ticks) end
+
+---@class Engine_Choice_Command_Result : Engine_Command_Result
+---@field selected integer # 1-based choice index, -1 if canceled
 
 ---@param ms_duration integer
 ---@param seconds_start_time integer
@@ -947,7 +946,7 @@ function Text_Canvas(x, y, text) end
 ---@field filename string # readonly
 ---@field magnification Engine_Vec2
 ---@field angle integer # in degrees
----@field origin Engine_Vec2
+---@field origin Engine_Vec2? # defaults to (0, 0) for sprites, (0.5, 0.5) for images
 ---@field outline_color Engine_Color?
 local Engine_Base_Image_Canvas = {}
 
@@ -1379,6 +1378,7 @@ function Sound(filename, pausable) end
 
 ---@class Engine_Audio_Player
 ---@field playing_music Engine_Music?
+---@field playing_ambient Engine_Music?
 ---@field global_music_volume number
 ---@field global_sound_volume number
 local Engine_Audio_Player = {}
@@ -1418,6 +1418,14 @@ function Engine_Audio_Player:load_music(filename) end
 ---@param volume? number # defaults to 1
 ---@return Engine_Music? # nil if filename is '' or 'false'
 function Engine_Audio_Player:play_music(filename, looping, volume) end
+
+---@overload fun(self : Engine_Audio_Player, music : Engine_Music, looping? : boolean) : Engine_Music?
+---@overload fun(self : Engine_Audio_Player, filename : string, volume : number) : Engine_Music?
+---@param filename string
+---@param looping? boolean # defaults to true
+---@param volume? number # defaults to 1
+---@return Engine_Music? # nil if filename is '' or 'false'
+function Engine_Audio_Player:play_ambient(filename, looping, volume) end
 
 ---@param filename string
 ---@param pitch? number

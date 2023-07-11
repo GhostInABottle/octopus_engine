@@ -11,7 +11,7 @@ class Game;
 
 class Fade_Music_Command : public Timed_Command {
 public:
-    Fade_Music_Command(Game& game, float volume, long duration);
+    Fade_Music_Command(Game& game, std::shared_ptr<xd::music> music, float volume, long duration);
     void execute() override;
     bool is_complete() const override;
 private:

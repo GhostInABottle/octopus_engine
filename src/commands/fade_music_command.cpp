@@ -4,12 +4,11 @@
 #include "../../include/utility/math.hpp"
 #include "../../include/xd/audio.hpp"
 
-Fade_Music_Command::Fade_Music_Command(Game& game, float volume, long duration) :
+Fade_Music_Command::Fade_Music_Command(Game& game, std::shared_ptr<xd::music> playing_music, float volume, long duration) :
         Timed_Command(game, duration),
         new_volume(volume),
         complete(false) {
     auto& audio_player = game.get_audio_player();
-    auto playing_music = audio_player.get_playing_music();
     music = playing_music;
     old_volume = playing_music->get_volume();
 }

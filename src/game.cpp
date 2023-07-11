@@ -436,8 +436,9 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
     player->add_component(controller);
     // Add player to the map
     map->add_object(player);
-    // Play background music
+    // Play background music and ambient
     pimpl->audio_player.play_music(*map);
+    pimpl->audio_player.play_ambient(*map);
     // Track player by camera
     camera->set_object(player.get());
     // Bind game keys
@@ -807,11 +808,12 @@ void Game::load_next_map() {
     camera->set_object(player.get());
     camera->update();
 
-    // Play background music
+    // Play background music and ambient
     auto& audio_player = pimpl->audio_player;
     audio_player.load_map_audio(*map);
     auto bg_music = pimpl->next_music.value_or(map->get_bg_music_filename());
-    audio_player.play_music(*map, bg_music);
+    audio_player.play_music(*map, bg_music, true, map->get_bg_music_volume());
+    audio_player.play_ambient(*map);
 
     map->run_startup_scripts();
     pimpl->next_map = "";
