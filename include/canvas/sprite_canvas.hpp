@@ -2,7 +2,7 @@
 #define HPP_SPRITE_CANVAS
 
 #include "base_image_canvas.hpp"
-#include "../sprite_holder.hpp"
+#include "../interfaces/sprite_holder.hpp"
 #include "../sprite.hpp"
 
 // A canvas for displaying a sprite

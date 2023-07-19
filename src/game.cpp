@@ -7,7 +7,6 @@
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
 #include "../include/scripting/scripting_interface.hpp"
-#include "../include/command.hpp"
 #include "../include/configurations.hpp"
 #include "../include/utility/color.hpp"
 #include "../include/utility/direction.hpp"

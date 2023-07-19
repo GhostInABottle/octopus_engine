@@ -2,7 +2,7 @@
 #define HPP_MOVE_OBJECT_TO_COMMAND
 
 #include <memory>
-#include "../command.hpp"
+#include "../commands/command.hpp"
 #include "../collision_check_types.hpp"
 
 class Map_Object;

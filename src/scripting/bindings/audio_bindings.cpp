@@ -4,7 +4,7 @@
 #include "../../../include/map.hpp"
 #include "../../../include/audio_player.hpp"
 #include "../../../include/utility/file.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/fade_music_command.hpp"
 #include "../../../include/xd/lua.hpp"
 #include "../../../include/xd/audio.hpp"

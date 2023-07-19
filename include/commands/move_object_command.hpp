@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../direction.hpp"
-#include "../command.hpp"
+#include "../commands/command.hpp"
 
 class Game;
 class Map_Object;

@@ -1,7 +1,7 @@
 #ifndef LAYER_MAPPER_HPP
 #define LAYER_MAPPER_HPP
 
-#include "../../include/editable.hpp"
+#include "../../include/interfaces/editable.hpp"
 
 struct Layer;
 

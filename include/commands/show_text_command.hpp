@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include "../xd/graphics/types.hpp"
-#include "../command.hpp"
+#include "../commands/command.hpp"
 #include "text_options.hpp"
 
 class Game;

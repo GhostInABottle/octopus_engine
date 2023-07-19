@@ -3,8 +3,12 @@
 #include "../../../include/canvas/text_canvas.hpp"
 #include "../../../include/canvas/image_canvas.hpp"
 #include "../../../include/canvas/sprite_canvas.hpp"
-#include "../../../include/commands.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/move_canvas_command.hpp"
+#include "../../../include/commands/show_pose_command.hpp"
+#include "../../../include/commands/update_color_command.hpp"
+#include "../../../include/commands/update_image_command.hpp"
+#include "../../../include/commands/update_opacity_command.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/xd/lua.hpp"
 #include "../../../include/utility/color.hpp"
 #include "../../../include/game.hpp"
@@ -126,6 +130,11 @@ namespace detail {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Update_Opacity_Command>(
                 game, canvas, opacity, duration);
+        };
+        canvas_type["update_color"] = [&](T& canvas, xd::vec4 color, long duration) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_command<Update_Color_Command>(
+                game, canvas, color, duration);
         };
     }
 

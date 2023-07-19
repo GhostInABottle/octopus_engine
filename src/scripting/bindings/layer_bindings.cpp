@@ -5,8 +5,9 @@
 #include "../../../include/map_object.hpp"
 #include "../../../include/image_layer.hpp"
 #include "../../../include/object_layer.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_pose_command.hpp"
+#include "../../../include/commands/update_color_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
 #include "../../../include/xd/graphics/types.hpp"
 #include "../../../include/xd/lua.hpp"
@@ -32,6 +33,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
     image_layer_type["name"] = sol::readonly(&Image_Layer::name);
     image_layer_type["visible"] = &Image_Layer::visible;
     image_layer_type["opacity"] = &Image_Layer::opacity;
+    image_layer_type["color"] = sol::property(&Image_Layer::get_color, &Image_Layer::set_color);
     image_layer_type["velocity"] = &Image_Layer::velocity;
     image_layer_type["sprite"] = sol::property(
         &Image_Layer::get_sprite_filename,
@@ -44,6 +46,11 @@ void bind_layer_types(sol::state& lua, Game& game) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Update_Opacity_Command>(
             game, *layer, opacity, duration);
+    };
+    image_layer_type["update_color"] = [&](Image_Layer* layer, xd::vec4 color, long duration) {
+        auto si = game.get_current_scripting_interface();
+        return si->register_command<Update_Color_Command>(
+            game, *layer, color, duration);
     };
     image_layer_type["reset"] = &Image_Layer::reset;
     image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {
@@ -62,15 +69,20 @@ void bind_layer_types(sol::state& lua, Game& game) {
     object_layer_type["name"] = sol::readonly(&Object_Layer::name);
     object_layer_type["visible"] = &Object_Layer::visible;
     object_layer_type["opacity"] = &Object_Layer::opacity;
-    object_layer_type["tint_color"] = &Object_Layer::tint_color;
+    object_layer_type["tint_color"] = sol::property(&Object_Layer::get_color, &Object_Layer::set_color);
     object_layer_type["objects"] = sol::property([&](Object_Layer* layer) {
         return sol::as_table(layer->objects);
-        });
+    });
     object_layer_type["get_property"] = &Object_Layer::get_property;
     object_layer_type["set_property"] = &Object_Layer::set_property;
     object_layer_type["update_opacity"] = [&](Object_Layer* layer, float opacity, long duration) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Update_Opacity_Command>(
             game, *layer, opacity, duration);
+    };
+    object_layer_type["update_color"] = [&](Object_Layer* layer, xd::vec4 color, long duration) {
+        auto si = game.get_current_scripting_interface();
+        return si->register_command<Update_Color_Command>(
+            game, *layer, color, duration);
     };
 }

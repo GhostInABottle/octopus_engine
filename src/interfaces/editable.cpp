@@ -1,4 +1,4 @@
-#include "../include/editable.hpp"
+#include "../../include/interfaces/editable.hpp"
 
 Editable::~Editable() {}
 

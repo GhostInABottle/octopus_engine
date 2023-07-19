@@ -4,7 +4,7 @@
 #include <string>
 #include <functional>
 #include "../direction.hpp"
-#include "../command.hpp"
+#include "../commands/command.hpp"
 
 class Map;
 class Sprite_Holder;

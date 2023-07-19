@@ -9,7 +9,8 @@
 #include "../xd/graphics/types.hpp"
 #include "../xd/graphics/texture.hpp"
 #include "../scripting/lua_object.hpp"
-#include "../translucent_object.hpp"
+#include "../interfaces/opacity_holder.hpp"
+#include "../interfaces/color_holder.hpp"
 
 class Game;
 class Camera;
@@ -18,7 +19,7 @@ namespace xd {
     class sprite_batch;
 }
 
-class Base_Canvas : public Translucent_Object {
+class Base_Canvas : public Opacity_Holder, public Color_Holder {
 public:
     enum class Type { IMAGE, SPRITE, TEXT, MIXED };
     Base_Canvas(const Base_Canvas&) = delete;
@@ -165,10 +166,10 @@ public:
         color.a = opacity;
         redraw_needed = true;
     }
-    virtual xd::vec4 get_color() const {
+    xd::vec4 get_color() const override {
         return color;
     }
-    virtual void set_color(xd::vec4 new_color) {
+    void set_color(xd::vec4 new_color) override {
         if (color == new_color) return;
 
         color = new_color;

@@ -73,7 +73,7 @@
    eJzt17ENgDAMBMDUwASINdh/tUzgICwSEeVO+vYbN+9SAACAme1BjmTf1ujs6Q5yJfvOoA8AYKTWtmolu+V6ibbVU7JbblZ/vd9bq96P74z+J3vxU8KaKl7xCIw=
   </data>
  </layer>
- <imagelayer id="5" name="some image" opacity="0.4">
+ <imagelayer id="5" name="snow" opacity="0.4">
   <image source="data/snowstorm.png" trans="7c7c7c" width="320" height="240"/>
   <properties>
    <property name="fixed" value="1"/>

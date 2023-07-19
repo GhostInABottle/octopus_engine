@@ -3,7 +3,7 @@
 
 #include "../xd/graphics/types.hpp"
 #include "../direction.hpp"
-#include "../command.hpp"
+#include "../commands/command.hpp"
 
 class Camera;
 class Map_Object;

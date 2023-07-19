@@ -358,10 +358,10 @@ void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, con
     pimpl->render(batch,
         pos,
         image_layer.opacity,
-        xd::vec2(1.0f),     // magnification
-        xd::vec4(1.0f),     // Color
-        std::nullopt,       // angle
-        std::nullopt,       // origin
+        xd::vec2(1.0f),             // magnification
+        image_layer.get_color(),    // Color
+        std::nullopt,               // angle
+        std::nullopt,               // origin
         image_layer.repeat,
         image_layer.position);
 }

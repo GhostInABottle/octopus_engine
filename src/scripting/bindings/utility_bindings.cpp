@@ -4,7 +4,7 @@
 #include "../../../include/map.hpp"
 #include "../../../include/map_object.hpp"
 #include "../../../include/log.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_text_command.hpp"
 #include "../../../include/commands/show_pose_command.hpp"
 #include "../../../include/commands/wait_command.hpp"

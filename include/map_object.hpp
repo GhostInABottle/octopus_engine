@@ -14,16 +14,17 @@
 #include "direction.hpp"
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
-#include "sprite_holder.hpp"
-#include "editable.hpp"
-#include "translucent_object.hpp"
+#include "interfaces/sprite_holder.hpp"
+#include "interfaces/editable.hpp"
+#include "interfaces/opacity_holder.hpp"
+#include "interfaces/color_holder.hpp"
 
 class Game;
 struct Object_Layer;
 class Sprite;
 
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder,
-    public Editable, public Tmx_Object, public Translucent_Object {
+    public Editable, public Tmx_Object, public Opacity_Holder, public Color_Holder {
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
@@ -81,10 +82,10 @@ public:
     xd::vec2 get_text_position() const;
     xd::vec2 get_size() const;
     void set_size(xd::vec2 new_size);
-    xd::vec4 get_color() const {
+    xd::vec4 get_color() const override {
         return color;
     }
-    void set_color(xd::vec4 new_color) {
+    void set_color(xd::vec4 new_color) override {
         color = new_color;
     }
     xd::vec2 get_magnification() const {

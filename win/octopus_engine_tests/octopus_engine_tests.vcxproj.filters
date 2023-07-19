@@ -103,6 +103,12 @@
     <Filter Include="Source Files\filesystem">
       <UniqueIdentifier>{b54a7c72-0286-486d-acd0-f387c00f8073}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\interfaces">
+      <UniqueIdentifier>{dac7c33a-5f39-43b3-8c8b-b35acf079d41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\interfaces">
+      <UniqueIdentifier>{7776f9ce-6303-4c11-b8ac-fb8ad5e68336}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -162,9 +168,6 @@
     <ClCompile Include="..\..\src\configurations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\command_result.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\pathfinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,13 +180,7 @@
     <ClCompile Include="..\..\src\save_file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sprite_holder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\layer_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\commands\fade_music_command.cpp">
@@ -205,9 +202,6 @@
       <Filter>Source Files\commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\commands\show_text_command.cpp">
-      <Filter>Source Files\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\commands\tint_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\commands\update_image_command.cpp">
@@ -248,9 +242,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\commands\zoom_command.cpp">
       <Filter>Source Files\commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Editable.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\xd\audio\audio.cpp">
       <Filter>Source Files\xd\audio</Filter>
@@ -438,6 +429,24 @@
     <ClCompile Include="..\..\src\filesystem\physfs_filesystem.cpp">
       <Filter>Source Files\filesystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\interfaces\editable.cpp">
+      <Filter>Source Files\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\interfaces\sprite_holder.cpp">
+      <Filter>Source Files\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\commands\command_result.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\commands\command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\commands\tint_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\commands\update_color_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -494,15 +503,6 @@
     <ClInclude Include="..\..\include\player_controller.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\command.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\command_result.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\commands.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\log.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -518,9 +518,6 @@
     <ClInclude Include="..\..\include\collision_record.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\sprite_holder.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\collision_check_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -531,9 +528,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\save_file.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\editable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\commands\fade_music_command.hpp">
@@ -555,9 +549,6 @@
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\commands\show_text_command.hpp">
-      <Filter>Header Files\commands</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\commands\tint_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\commands\update_image_command.hpp">
@@ -865,6 +856,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\vendor\physfs.hpp">
       <Filter>Header Files\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\interfaces\editable.hpp">
+      <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\interfaces\opacity_holder.hpp">
+      <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\interfaces\sprite_holder.hpp">
+      <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\command.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\command_result.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\tint_command.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\update_color_command.hpp">
+      <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

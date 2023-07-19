@@ -4,7 +4,7 @@
 #include "../../include/camera.hpp"
 #include "../../include/map.hpp"
 #include "../../include/map_object.hpp"
-#include "../../include/command.hpp"
+#include "../../include/commands/command.hpp"
 #include "../../include/configurations.hpp"
 #include "../../include/log.hpp"
 #include "../../include/utility/file.hpp"

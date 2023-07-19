@@ -2,7 +2,7 @@
 #define HPP_SPRITE_HOLDER
 
 #include <string>
-#include "direction.hpp"
+#include "../direction.hpp"
 
 class Game;
 class Sprite;

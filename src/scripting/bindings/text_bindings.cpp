@@ -3,7 +3,7 @@
 #include "../../../include/game.hpp"
 #include "../../../include/map_object.hpp"
 #include "../../../include/text_parser.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_text_command.hpp"
 #include "../../../include/xd/lua.hpp"
 #include "../../../include/xd/glm.hpp"

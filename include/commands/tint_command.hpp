@@ -1,5 +1,5 @@
-#ifndef HPP_TINT_SCREEN_COMMAND
-#define HPP_TINT_SCREEN_COMMAND
+#ifndef HPP_TINT_COMMAND
+#define HPP_TINT_COMMAND
 
 #include "../xd/graphics/types.hpp"
 #include "timed_command.hpp"
@@ -11,6 +11,7 @@ enum class Tint_Target {
     SCREEN
 };
 
+// Update the map or screen tint color
 class Tint_Command : public Timed_Command {
 public:
     Tint_Command(Tint_Target target, Game& game, xd::vec4 color, long duration);

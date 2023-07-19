@@ -1,5 +1,5 @@
 #include "../../include/commands/show_pose_command.hpp"
-#include "../../include/sprite_holder.hpp"
+#include "../../include/interfaces/sprite_holder.hpp"
 #include "../../include/sprite.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/map.hpp"

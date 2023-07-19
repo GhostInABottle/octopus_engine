@@ -1,7 +1,7 @@
 #ifndef HPP_TIMED_COMMAND
 #define HPP_TIMED_COMMAND
 
-#include "../command.hpp"
+#include "../commands/command.hpp"
 
 class Game;
 

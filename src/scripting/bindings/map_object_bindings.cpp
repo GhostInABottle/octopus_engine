@@ -3,11 +3,12 @@
 #include "../../../include/game.hpp"
 #include "../../../include/map.hpp"
 #include "../../../include/map_object.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_pose_command.hpp"
 #include "../../../include/commands/move_object_command.hpp"
 #include "../../../include/commands/move_object_to_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
+#include "../../../include/commands/update_color_command.hpp"
 #include "../../../include/xd/graphics/types.hpp"
 #include "../../../include/xd/lua.hpp"
 #include <sstream>
@@ -176,6 +177,11 @@ void bind_map_object_types(sol::state& lua, Game& game) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Update_Opacity_Command>(
             game, *obj, opacity, duration);
+    };
+    object_type["update_color"] = [&](Map_Object* obj, xd::vec4 color, long duration) {
+        auto si = game.get_current_scripting_interface();
+        return si->register_command<Update_Color_Command>(
+            game, *obj, color, duration);
     };
     object_type["face"] = sol::overload(
         (void (Map_Object::*)(xd::vec2)) &Map_Object::face,

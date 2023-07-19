@@ -3,7 +3,7 @@
 #include "../../../include/game.hpp"
 #include "../../../include/camera.hpp"
 #include "../../../include/map_object.hpp"
-#include "../../../include/command_result.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/tint_command.hpp"
 #include "../../../include/commands/zoom_command.hpp"
 #include "../../../include/commands/shake_screen_command.hpp"

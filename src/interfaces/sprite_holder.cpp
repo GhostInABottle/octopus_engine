@@ -1,9 +1,9 @@
-#include "../include/sprite_holder.hpp"
-#include "../include/sprite.hpp"
-#include "../include/game.hpp"
-#include "../include/sprite_data.hpp"
-#include "../include/utility/direction.hpp"
-#include "../include/utility/string.hpp"
+#include "../../include/interfaces/sprite_holder.hpp"
+#include "../../include/sprite.hpp"
+#include "../../include/game.hpp"
+#include "../../include/sprite_data.hpp"
+#include "../../include/utility/direction.hpp"
+#include "../../include/utility/string.hpp"
 
 Sprite_Holder::~Sprite_Holder() {}
 

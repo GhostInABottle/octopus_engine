@@ -16,7 +16,7 @@
 #include "tileset.hpp"
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
-#include "editable.hpp"
+#include "interfaces/editable.hpp"
 #include "layer_types.hpp"
 #include "scripting/lua_object.hpp"
 

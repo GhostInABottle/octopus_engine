@@ -4,15 +4,15 @@
 #include<memory>
 #include <string>
 #include "tmx_properties.hpp"
-#include "editable.hpp"
-#include "translucent_object.hpp"
+#include "interfaces/editable.hpp"
+#include "interfaces/opacity_holder.hpp"
 #include "xd/graphics/types.hpp"
 #include "vendor/rapidxml.hpp"
 
 class Layer_Renderer;
 class Layer_Updater;
 
-struct Layer : public Editable, public Tmx_Object, public Translucent_Object {
+struct Layer : public Editable, public Tmx_Object, public Opacity_Holder {
     // Layer ID
     int id;
     // Layer name

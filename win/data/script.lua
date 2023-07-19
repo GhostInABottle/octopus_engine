@@ -111,15 +111,18 @@ if c.selected == 1 then
     text_canvas = nil
 elseif c.selected == 2 then
     -- Canvas
-    text(o, "Showing a canvas"):wait()
+    text(o, "Showing and updating canvas"):wait()
     local canvas = Image_Canvas("data/player.png", 100, 100, "#FF00FF")
     canvas.outline_color = Color('blue')
     canvas.magnification = Vec2(0, 0)
     canvas:show()
-    text(o, "Updating it"):wait()
-    canvas:update(200, 100, 1, 1, 180, 1, 1500):wait()
+    local cv_c = canvas:update(200, 100, 1, 1, 180, 1, 1500)
+    cv_c:wait()
     wait(500)
-    canvas:update(100, 100, 1, 1, 0, 0, 1500):wait()
+    cv_c = canvas:update(100, 100, 1, 1, 0, 0, 1500)
+    canvas:update_color(Color('yellow'), 1500)
+    cv_c:wait()
+
     canvas = nil
     text(o, "Garbage collecting canvases"):wait()
     collectgarbage()
@@ -141,8 +144,36 @@ elseif c.selected == 3 then
     o:show_pose("Pose Test"):wait()
     o:show_pose("Default"):wait()
     o:face(LEFT)
+    text(o, "Updating color and opacity"):wait()
+    local old_obj_opacity = o.opacity
+    local old_obj_color = o.color
+    local op_c = o:update_opacity(0.5, 250)
+    o:update_color(Color('green'), 250)
+    op_c:wait()
+    text(o, "Resetting color and opacity"):wait()
+    o.opacity = old_obj_opacity
+    o.color = old_obj_color
+    text(o, "Updating layer color and opacity"):wait()
+    local object_layer = current_map:get_object_layer('objects')
+    old_obj_opacity = object_layer.opacity
+    old_obj_color = object_layer.tint_color
+    op_c = object_layer:update_opacity(0.25, 250)
+    object_layer:update_color(Color('blue'), 250)
+    op_c:wait()
+    text(o, "Resetting layer color and opacity"):wait()
+    object_layer.opacity = old_obj_opacity
+    object_layer.tint_color = old_obj_color
 elseif c.selected == 4 then
     -- Camera
+    local snow_layer = current_map:get_image_layer('snow')
+    local old_opacity, old_color = snow_layer.opacity, snow_layer.color
+    text(o, "Updating opacity of snow layer"):wait()
+    snow_layer:update_opacity(1, 500):wait()
+    text(o, "Updating color of snow layer"):wait()
+    snow_layer:update_color(Color('red'), 500):wait()
+    text(o, "Resetting color and opacity of snow layer"):wait()
+    snow_layer.opacity = old_opacity
+    snow_layer.color = old_color
     game:set_float_config('graphics.brightness', -0.1)
     text(o, "Changed brightness to -0.1"):wait()
     game:set_float_config('graphics.brightness', 0.1)
@@ -416,4 +447,3 @@ elseif c.selected == 8 then
 end
 text(o, "That's all!"):wait()
 player.disabled = false
-

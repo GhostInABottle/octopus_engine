@@ -858,6 +858,11 @@ function Engine_Base_Canvas:move(x, y, duration) end
 ---@return Engine_Command_Result
 function Engine_Base_Canvas:update_opacity(opacity, duration) end
 
+---@param color Engine_Color
+---@param duration integer
+---@return Engine_Command_Result
+function Engine_Base_Canvas:update_color(color, duration) end
+
 ---@overload fun(self : Engine_Base_Canvas, child_name : string, filename : string, pos : Engine_Vec2, transparent_color : Engine_Color|string?) : Engine_Image_Canvas
 ---@param child_name string
 ---@param image_filename string
@@ -1108,6 +1113,11 @@ function Engine_Map_Object:move(direction, pixels, skip, change_facing) end
 ---@return Engine_Command_Result
 function Engine_Map_Object:update_opacity(new_opacity, duration) end
 
+---@param color Engine_Color
+---@param duration integer
+---@return Engine_Command_Result
+function Engine_Map_Object:update_color(color, duration) end
+
 ---@overload fun(position : Engine_Vec2, keep_trying? : boolean) : Engine_Command_Result
 ---@param x number
 ---@param y number
@@ -1145,10 +1155,6 @@ player = {}
 ---@class Engine_Layer
 ---@field visible boolean
 ---@field opacity number
----@field tint_color Engine_Color
----@field velocity Engine_Vec2
----@field sprite string
----@field objects Engine_Map_Object[]
 local Engine_Layer = {}
 
 ---@param new_opacity number
@@ -1164,17 +1170,42 @@ function Engine_Layer:get_property(name) end
 ---@param value string
 function Engine_Layer:set_property(name, value) end
 
+-- Image layer
+
+---@class Engine_Image_Layer : Engine_Layer
+---@field velocity Engine_Vec2
+---@field sprite string
+---@field color Engine_Color
+local Engine_Image_Layer = {}
+
 ---@param pose string
 ---@param state? string
 ---@param direction? string
 ---@return Engine_Command_Result
-function Engine_Layer:show_pose(pose, state, direction) end
+function Engine_Image_Layer:show_pose(pose, state, direction) end
 
 ---@param filename string
 ---@param pose? string
-function Engine_Layer:set_sprite(filename, pose) end
+function Engine_Image_Layer:set_sprite(filename, pose) end
 
-function Engine_Layer:reset() end
+function Engine_Image_Layer:reset() end
+
+---@param new_color Engine_Color
+---@param duration integer
+---@return Engine_Command_Result
+function Engine_Image_Layer:update_color(new_color, duration) end
+
+-- Object Layer
+
+---@class Engine_Object_Layer : Engine_Layer
+---@field tint_color Engine_Color
+---@field objects Engine_Map_Object[]
+local Engine_Object_Layer = {}
+
+---@param new_color Engine_Color
+---@param duration integer
+---@return Engine_Command_Result
+function Engine_Object_Layer:update_color(new_color, duration) end
 
 -- Map
 
@@ -1217,12 +1248,12 @@ function current_map:get_layer(name) end
 
 ---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
----@return Engine_Layer
+---@return Engine_Object_Layer
 function current_map:get_object_layer(name) end
 
 ---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
----@return Engine_Layer
+---@return Engine_Image_Layer
 function current_map:get_image_layer(name) end
 
 ---@param object Engine_Map_Object

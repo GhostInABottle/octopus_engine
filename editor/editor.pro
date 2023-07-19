@@ -32,8 +32,8 @@ SOURCES += main.cpp\
     ../src/canvas/text_canvas.cpp \
     ../src/audio_player.cpp \
     ../src/clock.cpp \
-    ../src/command.cpp \
-    ../src/command_result.cpp \
+    ../src/commands/command.cpp \
+    ../src/commands/command_result.cpp \
     ../src/commands/timed_command.cpp \
     ../src/commands/fade_music_command.cpp \
     ../src/commands/move_camera_command.cpp \
@@ -46,13 +46,14 @@ SOURCES += main.cpp\
     ../src/commands/text_options.cpp \
     ../src/commands/tint_command.cpp \
     ../src/commands/update_image_command.cpp \
+    ../src/commands/update_color_command.cpp \
     ../src/commands/update_opacity_command.cpp \
     ../src/commands/wait_command.cpp \
     ../src/commands/zoom_command.cpp \
     ../src/configurations.cpp \
     ../src/custom_shaders.cpp \
-    ../src/editable.cpp \
-    ../src/Editable.cpp \
+    ../src/interfaces/editable.cpp \
+    ../src/interfaces/sprite_holder.cpp \
     ../src/game.cpp \
     ../src/image_layer.cpp \
     ../src/image_layer_renderer.cpp \
@@ -86,7 +87,6 @@ SOURCES += main.cpp\
     ../src/decorators/typewriter_decorator.cpp \
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
-    ../src/sprite_holder.cpp \
     ../src/text_parser.cpp \
     ../src/tile_layer.cpp \
     ../src/tile_layer_renderer.cpp \
@@ -159,9 +159,8 @@ HEADERS  += main_window.hpp \
     ../include/clock.hpp \
     ../include/collision_check_types.hpp \
     ../include/collision_record.hpp \
-    ../include/command.hpp \
-    ../include/command_result.hpp \
-    ../include/commands.hpp \
+    ../include/commands/command.hpp \
+    ../include/commands/command_result.hpp \
     ../include/commands/timed_command.hpp \
     ../include/commands/fade_music_command.hpp \
     ../include/commands/move_camera_command.hpp \
@@ -174,15 +173,18 @@ HEADERS  += main_window.hpp \
     ../include/commands/text_options.hpp \
     ../include/commands/tint_command.hpp \
     ../include/commands/update_image_command.hpp \
+    ../include/commands/update_color_command.hpp \
     ../include/commands/update_opacity_command.hpp \
     ../include/commands/wait_command.hpp \
     ../include/commands/zoom_command.hpp \
     ../include/configurations.hpp \
     ../include/custom_shaders.hpp \
     ../include/direction.hpp \
-    ../include/editable.hpp \
     ../include/exceptions.hpp \
     ../include/game.hpp \
+    ../include/interfaces/editable.hpp \
+    ../include/interfaces/opacity_holder.hpp \
+    ../include/interfaces/sprite_holder.hpp \
     ../include/image_layer.hpp \
     ../include/image_layer_renderer.hpp \
     ../include/image_layer_updater.hpp \
@@ -209,14 +211,12 @@ HEADERS  += main_window.hpp \
     ../include/decorators/typewriter_decorator.hpp \
     ../include/sprite.hpp \
     ../include/sprite_data.hpp \
-    ../include/sprite_holder.hpp \
     ../include/tests/game_fixture.hpp \
     ../include/text_parser.hpp \
     ../include/tile_layer.hpp \
     ../include/tile_layer_renderer.hpp \
     ../include/tileset.hpp \
     ../include/tmx_properties.hpp \
-    ../include/translucent_object.hpp \
     ../include/utility/color.hpp \
     ../include/utility/direction.hpp \
     ../include/utility/file.hpp \
