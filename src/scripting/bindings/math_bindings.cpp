@@ -20,6 +20,10 @@ void bind_math_types(sol::state& lua) {
         [](const xd::vec2& v1, float f) { return v1 * f; },
         [](float f, const xd::vec2& v1) { return f * v1; }
     );
+    vec2_type[sol::meta_function::division] = sol::overload(
+        [](const xd::vec2& v1, float f) { return v1 / f; },
+        [](float f, const xd::vec2& v1) { return f / v1; }
+    );
     vec2_type[sol::meta_function::to_string] = [](const xd::vec2& val) {
         std::stringstream ss;
         ss.setf(std::ios::fixed, std::ios::floatfield);
@@ -41,6 +45,10 @@ void bind_math_types(sol::state& lua) {
     vec3_type[sol::meta_function::multiplication] = sol::overload(
         [](const xd::vec3& v1, float f) { return v1 * f; },
         [](float f, const xd::vec3& v1) { return f * v1; }
+    );
+    vec3_type[sol::meta_function::division] = sol::overload(
+        [](const xd::vec3& v1, float f) { return v1 / f; },
+        [](float f, const xd::vec3& v1) { return f / v1; }
     );
     vec3_type[sol::meta_function::to_string] = [](const xd::vec3& val) {
         std::stringstream ss;
@@ -68,6 +76,10 @@ void bind_math_types(sol::state& lua) {
     vec4_type[sol::meta_function::multiplication] = sol::overload(
         [](const xd::vec4& v1, float f) { return v1 * f; },
         [](float f, const xd::vec4& v1) { return f * v1; }
+    );
+    vec4_type[sol::meta_function::division] = sol::overload(
+        [](const xd::vec4& v1, float f) { return v1 / f; },
+        [](float f, const xd::vec4& v1) { return f / v1; }
     );
     vec4_type[sol::meta_function::to_string] = [](const xd::vec4& val) {
         std::stringstream ss;

@@ -15,7 +15,7 @@ Update_Color_Command::Update_Color_Command(Game& game, Color_Holder& holder, xd:
 void Update_Color_Command::execute() {
     if (complete) return;
 
-    complete = stopped || game.is_paused() || is_done();
+    complete = stopped || is_done();
 
     auto color = lerp(old_color, new_color, get_alpha(complete));
     color_holder.set_color(color);

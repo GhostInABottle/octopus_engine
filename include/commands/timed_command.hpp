@@ -18,9 +18,11 @@ public:
     float get_alpha(bool complete, int ticks = -1) const;
 protected:
     Game& game;
+    bool game_was_paused;
     int start_time;
     int duration;
     int pause_start;
+    int get_ticks() const;
 };
 
 #endif

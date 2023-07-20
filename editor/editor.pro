@@ -48,6 +48,7 @@ SOURCES += main.cpp\
     ../src/commands/update_image_command.cpp \
     ../src/commands/update_color_command.cpp \
     ../src/commands/update_opacity_command.cpp \
+    ../src/commands/update_layer_velocity_command.cpp \
     ../src/commands/wait_command.cpp \
     ../src/commands/zoom_command.cpp \
     ../src/configurations.cpp \
@@ -175,6 +176,7 @@ HEADERS  += main_window.hpp \
     ../include/commands/update_image_command.hpp \
     ../include/commands/update_color_command.hpp \
     ../include/commands/update_opacity_command.hpp \
+    ../include/commands/update_layer_velocity_command.hpp \
     ../include/commands/wait_command.hpp \
     ../include/commands/zoom_command.hpp \
     ../include/configurations.hpp \

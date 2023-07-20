@@ -135,6 +135,7 @@
     <ClCompile Include="..\..\src\commands\timed_command.cpp" />
     <ClCompile Include="..\..\src\commands\tint_command.cpp" />
     <ClCompile Include="..\..\src\commands\update_color_command.cpp" />
+    <ClCompile Include="..\..\src\commands\update_layer_velocity_command.cpp" />
     <ClCompile Include="..\..\src\decorators\shake_decorator.cpp" />
     <ClCompile Include="..\..\src\decorators\typewriter_decorator.cpp" />
     <ClCompile Include="..\..\src\interfaces\editable.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="..\..\include\commands\timed_command.hpp" />
     <ClInclude Include="..\..\include\commands\tint_command.hpp" />
     <ClInclude Include="..\..\include\commands\update_color_command.hpp" />
+    <ClInclude Include="..\..\include\commands\update_layer_velocity_command.hpp" />
     <ClInclude Include="..\..\include\decorators\shake_decorator.hpp" />
     <ClInclude Include="..\..\include\decorators\typewriter_decorator.hpp" />
     <ClInclude Include="..\..\include\direction.hpp" />

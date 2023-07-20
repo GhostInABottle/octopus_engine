@@ -567,6 +567,7 @@ function logger.error(message) end
 ---@operator add(Engine_Vec2) : Engine_Vec2
 ---@operator sub(Engine_Vec2) : Engine_Vec2
 ---@operator mul(number) : Engine_Vec2
+---@operator div(number) : Engine_Vec2
 local Engine_Vec2 = {}
 
 ---@overload fun() : Engine_Vec2
@@ -591,6 +592,7 @@ function Engine_Vec2:normal() end
 ---@operator add(Engine_Vec3) : Engine_Vec3
 ---@operator sub(Engine_Vec3) : Engine_Vec3
 ---@operator mul(number) : Engine_Vec3
+---@operator div(number) : Engine_Vec3
 local Engine_Vec3 = {}
 
 ---@overload fun() : Engine_Vec3
@@ -617,6 +619,7 @@ function Engine_Vec3:normal() end
 ---@operator add(Engine_Vec4) : Engine_Vec4
 ---@operator sub(Engine_Vec4) : Engine_Vec4
 ---@operator mul(number) : Engine_Vec4
+---@operator div(number) : Engine_Vec4
 local Engine_Vec4 = {}
 
 ---@overload fun() : Engine_Vec4
@@ -1194,6 +1197,11 @@ function Engine_Image_Layer:reset() end
 ---@param duration integer
 ---@return Engine_Command_Result
 function Engine_Image_Layer:update_color(new_color, duration) end
+
+---@param new_velocity Engine_Vec2
+---@param duration integer
+---@return Engine_Command_Result
+function Engine_Image_Layer:update_velocity(new_velocity, duration) end
 
 -- Object Layer
 

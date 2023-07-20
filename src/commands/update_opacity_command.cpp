@@ -15,7 +15,7 @@ Update_Opacity_Command::Update_Opacity_Command(Game& game, Opacity_Holder& holde
 void Update_Opacity_Command::execute() {
     if (complete) return;
 
-    complete = stopped|| game.is_paused() || is_done();
+    complete = stopped || is_done();
 
     auto opacity = lerp(old_opacity, new_opacity, get_alpha(complete));
     opacity_holder.set_opacity(opacity);

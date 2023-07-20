@@ -447,6 +447,9 @@
     <ClCompile Include="..\..\src\commands\update_color_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\commands\update_layer_velocity_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tileset.hpp">
@@ -876,6 +879,9 @@
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\commands\update_color_command.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\commands\update_layer_velocity_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>

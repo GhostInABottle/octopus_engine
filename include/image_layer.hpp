@@ -50,6 +50,14 @@ struct Image_Layer : public Layer, public Sprite_Holder, public Color_Holder {
     void set_color(xd::vec4 new_color) override {
         image_color = new_color;
     }
+    // Get current scroll speed
+    xd::vec2 get_velocity() const {
+        return velocity;
+    }
+    // Set current scroll speed
+    void set_velocity(xd::vec2 new_velocity) {
+        velocity = new_velocity;
+    }
     // Save as XML
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) override;
     // Load from XML

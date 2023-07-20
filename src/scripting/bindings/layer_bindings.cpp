@@ -9,6 +9,7 @@
 #include "../../../include/commands/show_pose_command.hpp"
 #include "../../../include/commands/update_color_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
+#include "../../../include/commands/update_layer_velocity_command.hpp"
 #include "../../../include/xd/graphics/types.hpp"
 #include "../../../include/xd/lua.hpp"
 #include <string>
@@ -34,7 +35,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
     image_layer_type["visible"] = &Image_Layer::visible;
     image_layer_type["opacity"] = &Image_Layer::opacity;
     image_layer_type["color"] = sol::property(&Image_Layer::get_color, &Image_Layer::set_color);
-    image_layer_type["velocity"] = &Image_Layer::velocity;
+    image_layer_type["velocity"] = sol::property(&Image_Layer::get_velocity, &Image_Layer::set_velocity);
     image_layer_type["sprite"] = sol::property(
         &Image_Layer::get_sprite_filename,
         [&](Image_Layer* layer, const std::string& filename) {
@@ -51,6 +52,11 @@ void bind_layer_types(sol::state& lua, Game& game) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Update_Color_Command>(
             game, *layer, color, duration);
+    };
+    image_layer_type["update_velocity"] = [&](Image_Layer* layer, xd::vec2 velocity, long duration) {
+        auto si = game.get_current_scripting_interface();
+        return si->register_command<Update_Layer_Velocity_Command>(
+            game, *layer, velocity, duration);
     };
     image_layer_type["reset"] = &Image_Layer::reset;
     image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {

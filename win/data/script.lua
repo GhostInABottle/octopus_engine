@@ -29,7 +29,7 @@ end
 player.disabled = true
 local o = current_map:get_object("jimbo")
 local c = choices(o, "What do you want to test?",
-    { 'Text', 'Canvas', 'Object', 'Camera', 'Audio', 'Input', 'Filesystem', 'Other', 'Nothing' }, true)
+    { 'Text', 'Canvas', 'Object', 'Map', 'Camera', 'Audio', 'Input', 'Filesystem', 'Other', 'Nothing' }, true)
 c:wait()
 print("Choice: ", c.selected)
 if c.selected == 1 then
@@ -153,27 +153,33 @@ elseif c.selected == 3 then
     text(o, "Resetting color and opacity"):wait()
     o.opacity = old_obj_opacity
     o.color = old_obj_color
-    text(o, "Updating layer color and opacity"):wait()
-    local object_layer = current_map:get_object_layer('objects')
-    old_obj_opacity = object_layer.opacity
-    old_obj_color = object_layer.tint_color
-    op_c = object_layer:update_opacity(0.25, 250)
-    object_layer:update_color(Color('blue'), 250)
-    op_c:wait()
-    text(o, "Resetting layer color and opacity"):wait()
-    object_layer.opacity = old_obj_opacity
-    object_layer.tint_color = old_obj_color
 elseif c.selected == 4 then
-    -- Camera
+    -- Map
     local snow_layer = current_map:get_image_layer('snow')
+    local old_velocity = snow_layer.velocity
+    text(o, "Slowing down snow layer"):wait()
+    snow_layer:update_velocity(old_velocity / 10, 500):wait()
     local old_opacity, old_color = snow_layer.opacity, snow_layer.color
     text(o, "Updating opacity of snow layer"):wait()
     snow_layer:update_opacity(1, 500):wait()
     text(o, "Updating color of snow layer"):wait()
     snow_layer:update_color(Color('red'), 500):wait()
-    text(o, "Resetting color and opacity of snow layer"):wait()
+    text(o, "Resetting color, opacity and velocity of snow layer"):wait()
     snow_layer.opacity = old_opacity
     snow_layer.color = old_color
+    snow_layer.velocity = old_velocity
+    text(o, "Updating object layer color and opacity"):wait()
+    local object_layer = current_map:get_object_layer('objects')
+    old_opacity = object_layer.opacity
+    old_color = object_layer.tint_color
+    local op_c = object_layer:update_opacity(0.25, 250)
+    object_layer:update_color(Color('blue'), 250)
+    op_c:wait()
+    text(o, "Resetting object layer color and opacity"):wait()
+    object_layer.opacity = old_opacity
+    object_layer.tint_color = old_color
+elseif c.selected == 5 then
+    -- Camera
     game:set_float_config('graphics.brightness', -0.1)
     text(o, "Changed brightness to -0.1"):wait()
     game:set_float_config('graphics.brightness', 0.1)
@@ -230,7 +236,7 @@ elseif c.selected == 4 then
     camera:track_object(player)
     text(o, "Tinting screen back"):wait()
     camera:tint_screen(Color(0.4, 0.2, 0.6, 0), 500):wait()
-elseif c.selected == 5 then
+elseif c.selected == 6 then
     -- Audio
     local audio_player = game.audio_player
     local music = audio_player.playing_music
@@ -265,7 +271,7 @@ elseif c.selected == 5 then
     text(o, "Resetting music volume"):wait()
     audio_player.global_sound_volume = old_sound_volume
     audio_player.global_music_volume = old_music_volume
-elseif c.selected == 6 then
+elseif c.selected == 7 then
     -- Input
     print('Controller names: ')
     for id, name in pairs(game.gamepad_names) do
@@ -310,12 +316,12 @@ elseif c.selected == 6 then
    end
    local char_input = game:end_character_input()
    text(o, "You entered: " .. char_input):wait()
-elseif c.selected == 7 then
+elseif c.selected == 8 then
+    -- Filesystem
     local fc = choices(o, "Which filesystem?", { "Game", "User" })
     fc:wait()
     local filesystem = fc.selected == 1 and game.game_data_filesystem
         or game.user_data_filesystem
-    -- Filesystem
     local function test_list(method, processor)
         print('Files in current folder (' .. method .. '):')
         local files = filesystem[method](filesystem, '.')
@@ -419,7 +425,7 @@ elseif c.selected == 7 then
         filesystem:remove(copy_name)
         print('File exists: ' .. tostring(filesystem:exists(copy_name)))
     end
-elseif c.selected == 8 then
+elseif c.selected == 9 then
     -- Other
     text(o, "Are we in debug mode? " .. (game.debug and "Yes!" or "No!")):wait()
     local pause_unfocused = game:get_config('game.pause-unfocused')

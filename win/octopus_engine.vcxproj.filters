@@ -423,6 +423,9 @@
     <ClCompile Include="..\src\commands\tint_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\commands\update_layer_velocity_command.cpp">
+      <Filter>Source Files\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\xd\detail\entity.hpp">
@@ -858,6 +861,9 @@
       <Filter>Header Files\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\include\commands\tint_command.hpp">
+      <Filter>Header Files\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\commands\update_layer_velocity_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
   </ItemGroup>
