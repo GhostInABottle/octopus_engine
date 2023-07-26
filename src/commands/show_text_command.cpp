@@ -135,6 +135,9 @@ struct Show_Text_Command::Impl : Timed_Command {
             typewriter_options->slot = game.get_map()->next_typewriter_slot();
             typewriter_options->delay = this->options.typewriter_delay;
             typewriter_options->sound_filename = this->options.typewriter_sound;
+            typewriter_options->sound_volume = this->options.typewriter_sound_volume;
+            typewriter_options->sound_pitch = this->options.typewriter_sound_pitch;
+            typewriter_options->sound_max_pitch = this->options.typewriter_sound_max_pitch;
         }
 
         // Create the text canvas and show it

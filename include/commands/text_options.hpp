@@ -53,6 +53,9 @@ struct Text_Options
     bool typewriter_on;
     int typewriter_delay;
     std::string typewriter_sound;
+    float typewriter_sound_volume;
+    float typewriter_sound_pitch;
+    float typewriter_sound_max_pitch;
     bool typewriter_skippable;
 
     Text_Options() :
@@ -71,6 +74,9 @@ struct Text_Options
         background_color(hex_to_color(Configurations::get<std::string>("text.background-color"))),
         typewriter_on(false),
         typewriter_delay(-1),
+        typewriter_sound_volume(1.0f),
+        typewriter_sound_pitch(1.0f),
+        typewriter_sound_max_pitch(-1.0f),
         typewriter_skippable(true) {}
 
 
@@ -170,6 +176,21 @@ struct Text_Options
 
     Text_Options& set_typewriter_sound(const std::string& sound) {
         this->typewriter_sound = sound;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_sound_volume(float volume) {
+        this->typewriter_sound_volume = volume;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_sound_pitch(float pitch) {
+        this->typewriter_sound_pitch = pitch;
+        return *this;
+    }
+
+    Text_Options& set_typewriter_sound_max_pitch(float pitch) {
+        this->typewriter_sound_max_pitch = pitch;
         return *this;
     }
 

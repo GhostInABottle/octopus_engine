@@ -21,6 +21,12 @@ public:
         int delay{-1};
         // The sound effect to play when showing each character
         std::string sound_filename;
+        // The sound volume
+        float sound_volume{1.0f};
+        // The sound pitch
+        float sound_pitch{1.0f};
+        // If specified, a random value between pitch and max will be used
+        float sound_max_pitch{-1.0f};
     };
     Text_Canvas(const Text_Canvas&) = delete;
     Text_Canvas& operator=(const Text_Canvas&) = delete;

@@ -128,8 +128,13 @@ void Text_Canvas::render_text(const std::string& text_to_render, float x, float 
     std::string text;
     if (apply_typewriter) {
         std::stringstream ss;
-        ss << "{typewriter=" << slot << "," << typewriter_options->delay << ","
-             << typewriter_options->sound_filename << "}" << text_to_render << "{/typewriter}";
+        ss << "{typewriter=" << slot << ","
+           << typewriter_options->delay << ","
+           << typewriter_options->sound_filename << ","
+           << typewriter_options->sound_volume << ","
+           << typewriter_options->sound_pitch << ","
+           << typewriter_options->sound_max_pitch << "}"
+           << text_to_render << "{/typewriter}";
         text = ss.str();
     }
 

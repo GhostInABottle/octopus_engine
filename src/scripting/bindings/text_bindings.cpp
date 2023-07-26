@@ -90,6 +90,18 @@ namespace detail {
             options.set_typewriter_sound(table["typewriter_sound"]);
         }
 
+        if (table["typewriter_sound_volume"].valid()) {
+            options.set_typewriter_sound_volume(table["typewriter_sound_volume"]);
+        }
+
+        if (table["typewriter_sound_pitch"].valid()) {
+            options.set_typewriter_sound_pitch(table["typewriter_sound_pitch"]);
+        }
+
+        if (table["typewriter_sound_max_pitch"].valid()) {
+            options.set_typewriter_sound_max_pitch(table["typewriter_sound_max_pitch"]);
+        }
+
         if (table["typewriter_skippable"].valid()) {
             options.set_typewriter_skippable(table["typewriter_skippable"]);
         }

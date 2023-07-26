@@ -61,7 +61,7 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game),
-            typewriter_decorator(game) {
+            typewriter_decorator(game, audio_player) {
 
         // Register decorators
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 class Game;
+class Audio_Player;
 namespace xd {
     class text_decorator;
     class formatted_text;
@@ -13,7 +14,7 @@ namespace xd {
 
 class Typewriter_Decorator {
 public:
-    Typewriter_Decorator(Game& game);
+    Typewriter_Decorator(Game& game, Audio_Player& audio_player);
     void operator()(xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args);
     bool is_done(int slot) const {
         if (states.find(slot) == states.end()) return false;
@@ -27,6 +28,7 @@ public:
     }
 private:
     Game& game;
+    Audio_Player& audio_player;
     struct State {
         long start_time{0};
         bool game_paused{false};

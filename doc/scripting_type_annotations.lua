@@ -238,25 +238,28 @@ function Engine_User_Data_Folder:save_keymap_file() end
 
 -- All properties are read only once created
 ---@class Engine_Text_Options
----@field text string
----@field choices string[]
----@field object Engine_Map_Object
----@field position Engine_Vec2
----@field position_type Engine_Text_Position_Type
----@field duration integer
----@field centered boolean
----@field show_dashes boolean
----@field cancelable boolean
----@field choice_indent integer
----@field canvas_priority integer
----@field fade_in_duration integer
----@field fade_out_duration integer
----@field background_visible boolean
----@field background_color Engine_Color
----@field typewriter_on boolean
----@field typewriter_delay integer
----@field typewriter_sound string
----@field typewriter_skippable boolean
+---@field text string?
+---@field choices string[]?
+---@field object Engine_Map_Object?
+---@field position Engine_Vec2?
+---@field position_type Engine_Text_Position_Type?
+---@field duration integer?
+---@field centered boolean?
+---@field show_dashes boolean?
+---@field cancelable boolean?
+---@field choice_indent integer?
+---@field canvas_priority integer?
+---@field fade_in_duration integer?
+---@field fade_out_duration integer?
+---@field background_visible boolean?
+---@field background_color Engine_Color?
+---@field typewriter_on boolean?
+---@field typewriter_delay integer?
+---@field typewriter_sound string?
+---@field typewriter_sound_volume number?
+---@field typewriter_sound_pitch number?
+---@field typewriter_sound_max_pitch number?
+---@field typewriter_skippable boolean?
 local Engine_Text_Options = {}
 
 ---@param text string
@@ -326,6 +329,18 @@ function Engine_Text_Options:set_typewriter_delay(typewriter_delay) end
 ---@param typewriter_sound string
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_typewriter_sound(typewriter_sound) end
+
+---@param volume number
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_sound_volume(volume) end
+
+---@param pitch number
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_sound_pitch(pitch) end
+
+---@param pitch number
+---@return Engine_Text_Options
+function Engine_Text_Options:set_typewriter_sound_max_pitch(pitch) end
 
 ---@param typewriter_skippable boolean
 ---@return Engine_Text_Options
@@ -610,7 +625,6 @@ function Engine_Vec3:length() end
 function Engine_Vec3:normal() end
 
 -- Vec4 / Color
-
 ---@class Engine_Vec4
 ---@field x number
 ---@field y number
@@ -1151,6 +1165,7 @@ function Engine_Map_Object:run_touch_script() end
 function Engine_Map_Object:run_leave_script() end
 
 ---@type Engine_Map_Object
+---@diagnostic disable-next-line: missing-fields
 player = {}
 
 -- Layer
