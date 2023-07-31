@@ -3,10 +3,10 @@
 #include "../../include/xd/asset_manager.hpp"
 #include "../../include/vendor/rapidxml.hpp"
 #include "../../include/map.hpp"
-#include "../../include/tile_layer.hpp"
-#include "../../include/image_layer.hpp"
+#include "../../include/layers/tile_layer.hpp"
+#include "../../include/layers/image_layer.hpp"
+#include "../../include/layers/object_layer.hpp"
 #include "../../include/map_object.hpp"
-#include "../../include/object_layer.hpp"
 #include "../../include/tests/game_fixture.hpp"
 #include "../..//include/utility/direction.hpp"
 

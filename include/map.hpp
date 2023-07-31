@@ -17,7 +17,7 @@
 #include "collision_record.hpp"
 #include "collision_check_types.hpp"
 #include "interfaces/editable.hpp"
-#include "layer_types.hpp"
+#include "layers/layer_types.hpp"
 #include "scripting/lua_object.hpp"
 
 namespace xd {

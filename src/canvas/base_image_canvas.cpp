@@ -3,7 +3,7 @@
 #include "../../include/configurations.hpp"
 
 Base_Image_Canvas::Base_Image_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position, const std::string& filename)
-	: Base_Canvas(game, type, position),
+    : Base_Canvas(game, type, position),
     filename(filename),
     magnification(1.0f, 1.0f),
     outline_color(std::nullopt)

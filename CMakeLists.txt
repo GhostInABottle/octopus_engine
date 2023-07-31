@@ -12,6 +12,7 @@ file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false
     src/decorators/*.cpp
     src/filesystem/*.cpp
     src/interfaces/*.cpp
+    src/layers/*.cpp
     src/scripting/*.cpp
     src/scripting/bindings/*.cpp
     src/utility/*.cpp

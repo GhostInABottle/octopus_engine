@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <vector>
-#include "xd/graphics/types.hpp"
+#include "../xd/graphics/types.hpp"
+#include "../interfaces/color_holder.hpp"
 #include "layer.hpp"
-#include "interfaces/color_holder.hpp"
 
 class Game;
 class Camera;

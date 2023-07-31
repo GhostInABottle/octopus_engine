@@ -3,11 +3,11 @@
 
 #include<memory>
 #include <string>
-#include "tmx_properties.hpp"
-#include "interfaces/editable.hpp"
-#include "interfaces/opacity_holder.hpp"
-#include "xd/graphics/types.hpp"
-#include "vendor/rapidxml.hpp"
+#include "../tmx_properties.hpp"
+#include "../interfaces/editable.hpp"
+#include "../interfaces/opacity_holder.hpp"
+#include "../xd/graphics/types.hpp"
+#include "../vendor/rapidxml.hpp"
 
 class Layer_Renderer;
 class Layer_Updater;

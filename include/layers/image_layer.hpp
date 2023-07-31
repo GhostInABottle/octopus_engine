@@ -3,11 +3,11 @@
 
 #include <memory>
 #include <string>
-#include "xd/graphics/texture.hpp"
-#include "xd/graphics/types.hpp"
-#include "interfaces/sprite_holder.hpp"
-#include "interfaces/color_holder.hpp"
-#include "sprite.hpp"
+#include "../xd/graphics/texture.hpp"
+#include "../xd/graphics/types.hpp"
+#include "../interfaces/sprite_holder.hpp"
+#include "../interfaces/color_holder.hpp"
+#include "../sprite.hpp"
 #include "layer.hpp"
 
 class Game;

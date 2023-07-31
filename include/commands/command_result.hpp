@@ -12,7 +12,7 @@ public:
     bool is_complete(int ticks) const { return command->is_complete(ticks); }
     void execute() { command->execute(); }
     void execute(int ticks) { command->execute(ticks); }
-	void stop() { command->stop(); }
+    void stop() { command->stop(); }
     void force_stop() { command->force_stop(); }
     bool is_stopped() const { return command->is_stopped(); }
     void pause() { command->pause(); }

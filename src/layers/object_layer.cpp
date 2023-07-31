@@ -1,11 +1,11 @@
-#include "../include/object_layer.hpp"
-#include "../include/object_layer_renderer.hpp"
-#include "../include/object_layer_updater.hpp"
-#include "../include/map_object.hpp"
-#include "../include/map.hpp"
-#include "../include/utility/color.hpp"
-#include "../include/utility/xml.hpp"
-#include "../include/exceptions.hpp"
+#include "../../include/layers/object_layer.hpp"
+#include "../../include/layers/object_layer_renderer.hpp"
+#include "../../include/layers/object_layer_updater.hpp"
+#include "../../include/map_object.hpp"
+#include "../../include/map.hpp"
+#include "../../include/utility/color.hpp"
+#include "../../include/utility/xml.hpp"
+#include "../../include/exceptions.hpp"
 #include <algorithm>
 
 rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {

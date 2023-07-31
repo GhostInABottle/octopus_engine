@@ -2,8 +2,8 @@
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/map.hpp"
 #include "../../../include/map_object.hpp"
-#include "../../../include/image_layer.hpp"
-#include "../../../include/object_layer.hpp"
+#include "../../../include/layers/image_layer.hpp"
+#include "../../../include/layers/object_layer.hpp"
 #include "../../../include/utility/file.hpp"
 #include "../../../include/xd/lua.hpp"
 #include <string>

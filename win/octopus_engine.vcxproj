@@ -144,6 +144,16 @@
     <ClCompile Include="..\src\interfaces\editable.cpp" />
     <ClCompile Include="..\src\interfaces\sprite_holder.cpp" />
     <ClCompile Include="..\src\key_binder.cpp" />
+    <ClCompile Include="..\src\layers\image_layer.cpp" />
+    <ClCompile Include="..\src\layers\image_layer_renderer.cpp" />
+    <ClCompile Include="..\src\layers\image_layer_updater.cpp" />
+    <ClCompile Include="..\src\layers\layer.cpp" />
+    <ClCompile Include="..\src\layers\layer_renderer.cpp" />
+    <ClCompile Include="..\src\layers\object_layer.cpp" />
+    <ClCompile Include="..\src\layers\object_layer_renderer.cpp" />
+    <ClCompile Include="..\src\layers\object_layer_updater.cpp" />
+    <ClCompile Include="..\src\layers\tile_layer.cpp" />
+    <ClCompile Include="..\src\layers\tile_layer_renderer.cpp" />
     <ClCompile Include="..\src\scripting\bindings\audio_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\camera_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\canvas_bindings.cpp" />
@@ -207,18 +217,10 @@
     <ClCompile Include="..\src\commands\zoom_command.cpp" />
     <ClCompile Include="..\src\configurations.cpp" />
     <ClCompile Include="..\src\game.cpp" />
-    <ClCompile Include="..\src\image_layer.cpp" />
-    <ClCompile Include="..\src\image_layer_renderer.cpp" />
-    <ClCompile Include="..\src\image_layer_updater.cpp" />
-    <ClCompile Include="..\src\layer.cpp" />
-    <ClCompile Include="..\src\layer_renderer.cpp" />
     <ClCompile Include="..\src\log.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\map.cpp" />
     <ClCompile Include="..\src\map_object.cpp" />
-    <ClCompile Include="..\src\object_layer.cpp" />
-    <ClCompile Include="..\src\object_layer_renderer.cpp" />
-    <ClCompile Include="..\src\object_layer_updater.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
     <ClCompile Include="..\src\player_controller.cpp" />
     <ClCompile Include="..\src\save_file.cpp" />
@@ -229,8 +231,6 @@
     <ClCompile Include="..\src\sprite_data.cpp" />
     <ClCompile Include="..\src\text_parser.cpp" />
     <ClCompile Include="..\src\tileset.cpp" />
-    <ClCompile Include="..\src\tile_layer.cpp" />
-    <ClCompile Include="..\src\tile_layer_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\audio_player.hpp" />
@@ -254,6 +254,18 @@
     <ClInclude Include="..\include\interfaces\opacity_holder.hpp" />
     <ClInclude Include="..\include\interfaces\sprite_holder.hpp" />
     <ClInclude Include="..\include\key_binder.hpp" />
+    <ClInclude Include="..\include\layers\image_layer.hpp" />
+    <ClInclude Include="..\include\layers\image_layer_renderer.hpp" />
+    <ClInclude Include="..\include\layers\image_layer_updater.hpp" />
+    <ClInclude Include="..\include\layers\layer.hpp" />
+    <ClInclude Include="..\include\layers\layer_renderer.hpp" />
+    <ClInclude Include="..\include\layers\layer_types.hpp" />
+    <ClInclude Include="..\include\layers\layer_updater.hpp" />
+    <ClInclude Include="..\include\layers\object_layer.hpp" />
+    <ClInclude Include="..\include\layers\object_layer_renderer.hpp" />
+    <ClInclude Include="..\include\layers\object_layer_updater.hpp" />
+    <ClInclude Include="..\include\layers\tile_layer.hpp" />
+    <ClInclude Include="..\include\layers\tile_layer_renderer.hpp" />
     <ClInclude Include="..\include\scripting\script_bindings.hpp" />
     <ClInclude Include="..\include\utility\color.hpp" />
     <ClInclude Include="..\include\utility\direction.hpp" />
@@ -352,19 +364,9 @@
     <ClInclude Include="..\include\direction.hpp" />
     <ClInclude Include="..\include\exceptions.hpp" />
     <ClInclude Include="..\include\game.hpp" />
-    <ClInclude Include="..\include\image_layer.hpp" />
-    <ClInclude Include="..\include\image_layer_renderer.hpp" />
-    <ClInclude Include="..\include\image_layer_updater.hpp" />
-    <ClInclude Include="..\include\layer.hpp" />
-    <ClInclude Include="..\include\layer_renderer.hpp" />
-    <ClInclude Include="..\include\layer_types.hpp" />
-    <ClInclude Include="..\include\layer_updater.hpp" />
     <ClInclude Include="..\include\log.hpp" />
     <ClInclude Include="..\include\map.hpp" />
     <ClInclude Include="..\include\map_object.hpp" />
-    <ClInclude Include="..\include\object_layer.hpp" />
-    <ClInclude Include="..\include\object_layer_renderer.hpp" />
-    <ClInclude Include="..\include\object_layer_updater.hpp" />
     <ClInclude Include="..\include\pathfinder.hpp" />
     <ClInclude Include="..\include\player_controller.hpp" />
     <ClInclude Include="..\include\vendor\rapidxml.hpp" />
@@ -377,8 +379,6 @@
     <ClInclude Include="..\include\sprite_data.hpp" />
     <ClInclude Include="..\include\text_parser.hpp" />
     <ClInclude Include="..\include\tileset.hpp" />
-    <ClInclude Include="..\include\tile_layer.hpp" />
-    <ClInclude Include="..\include\tile_layer_renderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

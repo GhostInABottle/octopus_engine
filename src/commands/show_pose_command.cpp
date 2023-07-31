@@ -4,7 +4,7 @@
 #include "../../include/sprite_data.hpp"
 #include "../../include/map.hpp"
 #include "../../include/map_object.hpp"
-#include "../../include/image_layer.hpp"
+#include "../../include/layers/image_layer.hpp"
 #include "../../include/canvas/sprite_canvas.hpp"
 #include <exception>
 

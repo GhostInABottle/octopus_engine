@@ -1,7 +1,7 @@
 #ifndef HPP_OBJECT_LAYER_RENDERER
 #define HPP_OBJECT_LAYER_RENDERER
 
-#include "xd/graphics/types.hpp"
+#include "../xd/graphics/types.hpp"
 #include "layer_renderer.hpp"
 
 class Object_Layer_Renderer : public Layer_Renderer {

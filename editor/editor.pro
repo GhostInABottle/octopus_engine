@@ -56,18 +56,18 @@ SOURCES += main.cpp\
     ../src/interfaces/editable.cpp \
     ../src/interfaces/sprite_holder.cpp \
     ../src/game.cpp \
-    ../src/image_layer.cpp \
-    ../src/image_layer_renderer.cpp \
-    ../src/image_layer_updater.cpp \
+    ../src/layers/image_layer.cpp \
+    ../src/layers/image_layer_renderer.cpp \
+    ../src/layers/image_layer_updater.cpp \
     ../src/key_binder.cpp \
-    ../src/layer.cpp \
-    ../src/layer_renderer.cpp \
+    ../src/layers/layer.cpp \
+    ../src/layers/layer_renderer.cpp \
     ../src/log.cpp \
     ../src/map.cpp \
     ../src/map_object.cpp \
-    ../src/object_layer.cpp \
-    ../src/object_layer_renderer.cpp \
-    ../src/object_layer_updater.cpp \
+    ../src/layers/object_layer.cpp \
+    ../src/layers/object_layer_renderer.cpp \
+    ../src/layers/object_layer_updater.cpp \
     ../src/pathfinder.cpp \
     ../src/player_controller.cpp \
     ../src/save_file.cpp \
@@ -89,8 +89,8 @@ SOURCES += main.cpp\
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
     ../src/text_parser.cpp \
-    ../src/tile_layer.cpp \
-    ../src/tile_layer_renderer.cpp \
+    ../src/layers/tile_layer.cpp \
+    ../src/layers/tile_layer_renderer.cpp \
     ../src/tileset.cpp \
     ../src/tmx_properties.cpp \
     ../src/utility/math.cpp \
@@ -187,20 +187,20 @@ HEADERS  += main_window.hpp \
     ../include/interfaces/editable.hpp \
     ../include/interfaces/opacity_holder.hpp \
     ../include/interfaces/sprite_holder.hpp \
-    ../include/image_layer.hpp \
-    ../include/image_layer_renderer.hpp \
-    ../include/image_layer_updater.hpp \
+    ../include/layers/image_layer.hpp \
+    ../include/layers/image_layer_renderer.hpp \
+    ../include/layers/image_layer_updater.hpp \
     ../include/key_binder.hpp \
-    ../include/layer.hpp \
-    ../include/layer_renderer.hpp \
-    ../include/layer_types.hpp \
-    ../include/layer_updater.hpp \
+    ../include/layers/layer.hpp \
+    ../include/layers/layer_renderer.hpp \
+    ../include/layers/layer_types.hpp \
+    ../include/layers/layer_updater.hpp \
     ../include/log.hpp \
     ../include/map.hpp \
     ../include/map_object.hpp \
-    ../include/object_layer.hpp \
-    ../include/object_layer_renderer.hpp \
-    ../include/object_layer_updater.hpp \
+    ../include/layers/object_layer.hpp \
+    ../include/layers/object_layer_renderer.hpp \
+    ../include/layers/object_layer_updater.hpp \
     ../include/pathfinder.hpp \
     ../include/player_controller.hpp \
     ../include/vendor/rapidxml.hpp \
@@ -215,8 +215,8 @@ HEADERS  += main_window.hpp \
     ../include/sprite_data.hpp \
     ../include/tests/game_fixture.hpp \
     ../include/text_parser.hpp \
-    ../include/tile_layer.hpp \
-    ../include/tile_layer_renderer.hpp \
+    ../include/layers/tile_layer.hpp \
+    ../include/layers/tile_layer_renderer.hpp \
     ../include/tileset.hpp \
     ../include/tmx_properties.hpp \
     ../include/utility/color.hpp \

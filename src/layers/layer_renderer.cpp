@@ -1,8 +1,8 @@
-#include "../include/layer_renderer.hpp"
-#include "../include/layer.hpp"
-#include "../include/custom_shaders.hpp"
-#include "../include/utility/file.hpp"
-#include "../include/log.hpp"
+#include "../../include/layers/layer_renderer.hpp"
+#include "../../include/layers/layer.hpp"
+#include "../../include/custom_shaders.hpp"
+#include "../../include/utility/file.hpp"
+#include "../../include/log.hpp"
 #include <utility>
 
 Layer_Renderer::Layer_Renderer(const Layer& layer, const Camera& camera) :

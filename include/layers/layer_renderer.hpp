@@ -1,10 +1,9 @@
 #ifndef HPP_LAYER_RENDERER
 #define HPP_LAYER_RENDERER
 
-#include "xd/entity.hpp"
-#include "xd/graphics/sprite_batch.hpp"
-#include "xd/graphics/types.hpp"
-#include "map.hpp"
+#include "../xd/entity.hpp"
+#include "../xd/graphics/sprite_batch.hpp"
+#include "../map.hpp"
 
 struct Layer;
 class Camera;

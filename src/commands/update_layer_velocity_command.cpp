@@ -1,5 +1,5 @@
 #include "../../include/commands/update_layer_velocity_command.hpp"
-#include "../../include/image_layer.hpp"
+#include "../../include/layers/image_layer.hpp"
 #include "../../include/game.hpp"
 #include "../../include/utility/math.hpp"
 

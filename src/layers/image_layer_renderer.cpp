@@ -1,8 +1,8 @@
-#include "../include/image_layer_renderer.hpp"
-#include "../include/image_layer.hpp"
-#include "../include/camera.hpp"
-#include "../include/game.hpp"
-#include "../include/sprite_data.hpp"
+#include "../../include/layers/image_layer_renderer.hpp"
+#include "../../include/layers/image_layer.hpp"
+#include "../../include/camera.hpp"
+#include "../../include/game.hpp"
+#include "../../include/sprite_data.hpp"
 
 void Image_Layer_Renderer::render(Map& map) {
     if (!layer.visible)
