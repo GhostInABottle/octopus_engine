@@ -77,10 +77,25 @@ void bind_camera_types(sol::state& lua, Game& game) {
     );
     camera_type["track_object"] = [&](Camera& camera, Map_Object& object) { camera.set_object(&object); };
     camera_type["stop_tracking"] = [&](Camera& camera) { camera.set_object(nullptr); };
-    camera_type["start_shaking"] = &Camera::start_shaking;
+    camera_type["start_shaking"] = sol::overload(
+        [](Camera& camera, xd::vec2 strength, xd::vec2 speed) {
+            camera.start_shaking(strength, speed);
+        },
+        [](Camera& camera, float strength, float speed) {
+            camera.start_shaking(xd::vec2{strength, 0}, xd::vec2{speed, 0});
+        }
+    );
     camera_type["cease_shaking"] = &Camera::cease_shaking;
-    camera_type["shake_screen"] = [&](Camera* camera, float strength, float speed, long duration) {
-        auto si = game.get_current_scripting_interface();
-        return si->register_command<Shake_Screen_Command>(game, strength, speed, duration);
-    };
+    camera_type["shake_screen"] = sol::overload(
+        [&](Camera* camera, xd::vec2 strength, xd::vec2 speed, long duration) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_command<Shake_Screen_Command>(game,
+                strength, speed, duration);
+        },
+        [&](Camera* camera, float strength, float speed, long duration) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_command<Shake_Screen_Command>(game,
+                xd::vec2{strength, 0}, xd::vec2{speed, 0}, duration);
+        }
+    );
 }

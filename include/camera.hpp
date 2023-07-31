@@ -21,7 +21,7 @@ public:
     // Calculate viewport rectangle based on screen width and height
     void calculate_viewport(int width, int height);
     // Setup viewport for rendering
-    void update_viewport(float shake_offset = 0.0f) const;
+    void update_viewport(xd::vec2 shake_offset = xd::vec2{0.0f}) const;
     // Setup initial OpenGL state
     void setup_opengl() const;
     // Set OpenGL clear color
@@ -53,7 +53,7 @@ public:
     // Render current shader
     void render_shader();
     // Start shaking screen
-    void start_shaking(float strength, float speed);
+    void start_shaking(xd::vec2 strength, xd::vec2 speed);
     // Cease shaking screen
     void cease_shaking();
     // Getters and setters
@@ -108,7 +108,7 @@ public:
         return shaker != nullptr;
     }
     // Get current shake offset
-    float shake_offset() const;
+    xd::vec2 shake_offset() const;
 private:
     // Game instance
     Game& game;
@@ -151,18 +151,18 @@ public:
 
 class Screen_Shaker : public xd::logic_component<Camera> {
 public:
-    Screen_Shaker(float strength, float speed);
-    float shake_offset() { return offset; }
+    Screen_Shaker(xd::vec2 strength, xd::vec2 speed);
+    xd::vec2 shake_offset() { return offset; }
     void update(Camera& camera);
 private:
     // Shake strength
-    float strength;
+    xd::vec2 strength;
     // Shake speed
-    float speed;
-    // Shake direction (-1 left, 1 right)
-    float direction;
+    xd::vec2 speed;
+    // Last shake direction (-1 left or up, 1 right or down)
+    xd::vec2 last_direction;
     // Shake offset
-    float offset;
+    xd::vec2 offset;
 };
 
 #endif

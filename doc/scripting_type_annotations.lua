@@ -1355,12 +1355,14 @@ function camera:tint_screen(color, duration) end
 ---@return Engine_Vec2
 function camera:get_centered_position(pos_or_object) end
 
+---@overload fun(self : Engine_Camera, strength : Engine_Vec2, speed : Engine_Vec2, duration : integer) : Engine_Command_Result
 ---@param strength number
 ---@param speed number
 ---@param duration integer
 ---@return Engine_Command_Result
 function camera:shake_screen(strength, speed, duration) end
 
+---@overload fun(self : Engine_Camera, strength : Engine_Vec2, speed : Engine_Vec2)
 ---@param strength number
 ---@param speed number
 function camera:start_shaking(strength, speed) end

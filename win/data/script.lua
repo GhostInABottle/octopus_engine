@@ -180,6 +180,17 @@ elseif c.selected == 4 then
     object_layer.tint_color = old_color
 elseif c.selected == 5 then
     -- Camera
+    text(o, "Starting horitontal screen shake"):wait()
+    camera:start_shaking(3, 14)
+    wait(250)
+    camera:cease_shaking()
+    camera:shake_screen(3, 14, 250):wait()
+    text(o, "Stopping multi-directional screen shake"):wait()
+    camera:start_shaking(Vec2(2, 3), Vec2(12, 13))
+    wait(250)
+    camera:cease_shaking()
+    camera:shake_screen(Vec2(3, 2), Vec2(-14, 13), 250):wait()
+    text(o, "Done shaking. Changing graphic config"):wait()
     game:set_float_config('graphics.brightness', -0.1)
     text(o, "Changed brightness to -0.1"):wait()
     game:set_float_config('graphics.brightness', 0.1)

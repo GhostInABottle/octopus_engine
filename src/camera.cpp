@@ -19,15 +19,16 @@
 #endif
 #include <algorithm>
 #include <stdexcept>
+#include <cstdlib>
 
 struct Camera::Impl {
     explicit Impl()
         : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled"))
         , clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color"))) {}
     // Update OpenGL viewport
-    void update_viewport(xd::rect viewport, float shake_offset = 0.0f) const {
-        glViewport(static_cast<int>(viewport.x + shake_offset),
-            static_cast<int>(viewport.y),
+    void update_viewport(xd::rect viewport, xd::vec2 shake_offset = xd::vec2{0.0f}) const {
+        glViewport(static_cast<int>(viewport.x + shake_offset.x),
+            static_cast<int>(viewport.y + shake_offset.y),
             static_cast<int>(viewport.w),
             static_cast<int>(viewport.h));
     }
@@ -205,7 +206,7 @@ void Camera::calculate_viewport(int width, int height) {
     }
 }
 
-void Camera::update_viewport(float shake_offset) const {
+void Camera::update_viewport(xd::vec2 shake_offset) const {
     pimpl->update_viewport(viewport, shake_offset);
 }
 
@@ -301,7 +302,7 @@ void Camera::render_shader() {
     pimpl->render_shader(game, viewport, geometry, brightness, contrast);
 }
 
-void Camera::start_shaking(float strength, float speed) {
+void Camera::start_shaking(xd::vec2 strength, xd::vec2 speed) {
     shaker = std::make_shared<Screen_Shaker>(strength, speed);
     add_component(shaker);
 }
@@ -312,8 +313,8 @@ void Camera::cease_shaking() {
     update_viewport();
 }
 
-float Camera::shake_offset() const {
-    return is_shaking() ? shaker->shake_offset() : 0.0f;
+xd::vec2 Camera::shake_offset() const {
+    return is_shaking() ? shaker->shake_offset() : xd::vec2{0.0f};
 }
 
 void Camera::draw_map_tint() const {
@@ -363,16 +364,23 @@ void Object_Tracker::update(Camera& camera) {
     camera.center_at(*obj);
 }
 
-Screen_Shaker::Screen_Shaker(float strength, float speed)
-    : strength(strength)
-    , speed(speed * 60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps"))
-    , direction(1)
-    , offset(0) {}
+Screen_Shaker::Screen_Shaker(xd::vec2 strength, xd::vec2 speed)
+        : strength(strength)
+        , speed(speed * (60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps")))
+        , last_direction(1.0f, 1.0f)
+        , offset(0.0f, 0.0f) {
+    // Randomize the starting direction
+    auto max = static_cast<double>(RAND_MAX);
+    if (std::rand() / max < 0.5) last_direction.x = -1.0f;
+    if (std::rand() / max < 0.5) last_direction.y = -1.0f;
+}
 
 void Screen_Shaker::update(Camera&) {
-    offset += (strength * speed * direction) / 10.0f;
-    if (offset > strength * 2)
-        direction = -1;
-    else if (offset < -strength * 2)
-        direction = 1;
+    offset += (strength * speed * last_direction) / 10.0f;
+    if (offset.x > strength.x * 2 || offset.x < -strength.x * 2) {
+        last_direction.x *= -1.0f;
+    }
+    if (offset.y > strength.y * 2 || offset.y < -strength.y * 2) {
+        last_direction.y *= -1.0f;
+    }
 }
