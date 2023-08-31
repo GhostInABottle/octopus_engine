@@ -199,6 +199,7 @@ struct Sprite::Impl {
     void reset() {
         frame_index = 0;
         old_time = game.ticks();
+        frame_duration = -1;
         repeat_count = 0;
         last_sound_frame = -1;
         completed = false;
