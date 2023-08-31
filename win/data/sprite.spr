@@ -127,6 +127,32 @@
     <Frame X-Mag="2" Angle="32" Opacity="0.25">
       <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>
+    <Frame Duration="600" X-Mag="2" Angle="32" Opacity="0.25" Tween="true">
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
+    </Frame>
+  </Pose>
+  <Pose Duration="180" Require-Completion="true">
+    <Bounding-Box X="2" Y="32" Width="16" Height="8" />
+    <Tag Key="Name" Value="Infinite Pose" />
+    <Tag Key="State" Value="Face" />
+    <Frame>
+      <Rectangle X="1" Y="41" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="1" Y="82" Width="21" Height="41" />
+    </Frame>
+    <Frame>
+      <Rectangle X="1" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame Duration="100" Max-Duration="1000" X-Mag="1.9713604" Angle="-43" Opacity="0.27147973" Tween="true">
+      <Rectangle X="1" Y="123" Width="21" Height="41" />
+    </Frame>
+    <Frame X-Mag="2" Angle="-45" Opacity="0.25">
+      <Rectangle X="1" Y="164" Width="21" Height="41" />
+    </Frame>
     <Frame Duration="600" Tween="true">
       <Rectangle X="1" Y="164" Width="21" Height="41" />
     </Frame>

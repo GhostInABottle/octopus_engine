@@ -29,7 +29,7 @@ Sprite_Holder* Show_Pose_Command::get_holder() {
 
 Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
         const std::string& pose_name, const std::string& state,
-        Direction dir) : holder_info(holder_info), complete(false) {
+        Direction dir) : holder_info(holder_info), sprite(nullptr) {
     map_ptr = &map;
     auto holder = get_holder();
     if (!holder) {
@@ -39,21 +39,23 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
     }
 
     holder->set_pose(pose_name, state, dir);
+    sprite = holder->get_sprite();
 }
 
 void Show_Pose_Command::execute() {
     auto holder = get_holder();
     if (!holder) return;
 
-    auto sprite = holder->get_sprite();
-    auto& pose = sprite->get_pose();
-    auto infinite_pose_complete = pose.repeats == -1 &&
-        (!pose.require_completion || sprite->is_completed());
-    complete = stopped || infinite_pose_complete || sprite->is_stopped();
+    sprite = holder->get_sprite();
 }
 
 bool Show_Pose_Command::is_complete() const {
-    return complete || force_stopped;
+    if (!sprite) return true;
+
+    auto& pose = sprite->get_pose();
+    auto infinite_pose_complete = pose.repeats == -1 && !pose.require_completion;
+
+    return infinite_pose_complete || sprite->is_complete() || stopped || force_stopped;
 }
 
 void Show_Pose_Command::pause() {

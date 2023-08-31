@@ -9,14 +9,15 @@ Sprite_Holder::~Sprite_Holder() {}
 
 void Sprite_Holder::set_pose(const std::string& pose_name,
         const std::string& state, Direction direction) {
-    if (get_sprite()) {
-        get_sprite()->set_pose(pose_name, state, direction);
+    auto sprite = get_sprite();
+    if (sprite) {
+        sprite->set_pose(pose_name, state, direction);
     }
 }
 
 void Sprite_Holder::reset() {
-    if (get_sprite())
-        get_sprite()->reset();
+    auto sprite = get_sprite();
+    if (sprite) sprite->reset();
 }
 
 std::string Sprite_Holder::get_sprite_filename() {

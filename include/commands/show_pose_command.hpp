@@ -8,7 +8,7 @@
 
 class Map;
 class Sprite_Holder;
-
+class Sprite;
 
 class Show_Pose_Command : public Command {
 public:
@@ -29,7 +29,7 @@ public:
 private:
     Sprite_Holder* get_holder();
     Holder_Info holder_info;
-    bool complete;
+    const Sprite* sprite;
 };
 
 #endif

@@ -148,8 +148,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         for (auto frame_node = pose_node->first_node("Frame");
                 frame_node; frame_node = frame_node->next_sibling("Frame")) {
             Frame frame;
-            if (auto attr = frame_node->first_attribute("Duration"))
+            if (auto attr = frame_node->first_attribute("Duration")) {
                 frame.duration = std::stoi(attr->value());
+            }
+            if (auto attr = frame_node->first_attribute("Max-Duration")) {
+                frame.max_duration = std::stoi(attr->value());
+            }
 
             // Source rectangle
             if (auto node = frame_node->first_node("Rectangle")) {

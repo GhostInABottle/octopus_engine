@@ -17,6 +17,7 @@
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include <cstdlib>
 
 namespace detail {
     static xd::vec4 default_color(1, 1, 1, 1);
@@ -43,6 +44,8 @@ struct Sprite::Impl {
     int frame_index;
     // Used to check if enough time has passed since last frame
     long old_time;
+    // Calculated duration of the current frame
+    int frame_duration;
     // Number of times the animation repeated so far
     int repeat_count;
     // Total number of frames
@@ -51,8 +54,12 @@ struct Sprite::Impl {
     bool tweening;
     // Default color
     const static xd::vec4 default_color;
-    // Is the pose finished
-    bool finished;
+    // Is the pose completed
+    bool completed;
+    // Index at which the sprite should complete
+    int completion_index;
+    // If true, the pose won't be updated anymore
+    bool stop_updating;
     // Is the sprite paused
     bool paused;
     // Time when sprite got paused
@@ -74,10 +81,13 @@ struct Sprite::Impl {
         current_pose_direction(Direction::NONE),
         frame_index(0),
         old_time(game.ticks()),
+        frame_duration(-1),
         repeat_count(0),
         frame_count(0),
         tweening(false),
-        finished(false),
+        completed(false),
+        completion_index(-1),
+        stop_updating(false),
         paused(false),
         pause_start(-1),
         last_sound_frame(-1),
@@ -113,11 +123,14 @@ struct Sprite::Impl {
     }
 
     void update() {
-        if (frame_count == 0 || finished)
+        if (frame_count == 0 || stop_updating)
             return;
 
         auto current_frame = &pose->frames[frame_index];
-        int frame_time = get_frame_time(*current_frame);
+
+        if (frame_duration < 0) {
+            frame_duration = get_frame_time(*current_frame);
+        }
 
         auto audio = game.get_audio_player().get_audio();
         auto sound_file = current_frame->sound_file.get();
@@ -129,19 +142,30 @@ struct Sprite::Impl {
             last_sound_frame = frame_index;
         }
 
-        if (passed_time() > frame_time) {
+        if (passed_time() > frame_duration) {
+            if (!completed && completion_index > -1 && frame_index == completion_index) {
+                // When a pose requires completion, mark it as complete for 1 frame
+                completed = true;
+                return;
+            }
+
             old_time = game.ticks();
-            if (tweening) tweening = false;
+            tweening = false;
 
             if (frame_index + 1 >= frame_count) {
                 repeat_count++;
                 last_sound_frame = -1;
                 if (finished_repeating()) {
-                    finished = true;
+                    completed = true;
+                    stop_updating = true;
                     return;
                 }
             }
             frame_index = (frame_index + 1) % frame_count;
+            frame_duration = -1;
+            if (completion_index > -1 && pose->require_completion) {
+                completed = false;
+            }
         }
 
         current_frame = &pose->frames[frame_index];
@@ -152,13 +176,15 @@ struct Sprite::Impl {
             current_frame->rectangle.w = prev_frame.rectangle.w;
             current_frame->rectangle.h = prev_frame.rectangle.h;
             old_time = game.ticks();
+            frame_duration = get_frame_time(*current_frame);
             tweening = true;
         }
+
         if (tweening) {
             Frame& prev_frame = pose->frames[frame_index - 1];
             Frame& next_frame = pose->frames[frame_index + 1];
             const float time_diff = static_cast<float>(passed_time());
-            float alpha = time_diff / frame_time;
+            float alpha = time_diff / frame_duration;
             alpha = std::min(std::max(alpha, 0.0f), 1.0f);
             current_frame->magnification = lerp(prev_frame.magnification,
                 next_frame.magnification, alpha);
@@ -175,14 +201,30 @@ struct Sprite::Impl {
         old_time = game.ticks();
         repeat_count = 0;
         last_sound_frame = -1;
-        if (pose)
-            frame_count = pose->frames.size();
-        finished = false;
+        completed = false;
+        completion_index = -1;
+        stop_updating = false;
         tweening = false;
+
+        if (!pose) return;
+
+        frame_count = pose->frames.size();
+        if (!pose->require_completion) return;
+
+        if (frame_count > 0) {
+            completion_index = frame_count - 1;
+        } else {
+            completed = true;
+        }
     }
 
     int get_frame_time(const Frame& frame) const {
-        const int frame_time = frame.duration == -1 ? pose->duration : frame.duration;
+        int frame_time = frame.duration == -1
+            ? pose->duration
+            : frame.duration;
+        if (frame.max_duration && frame_time < frame.max_duration) {
+            frame_time += std::rand() % (frame.max_duration.value() - frame_time + 1);
+        }
         return static_cast<int>(frame_time * speed);
     }
 
@@ -211,12 +253,6 @@ struct Sprite::Impl {
 
     long passed_time() const {
         return game.ticks() - old_time - paused_time();
-    }
-
-    bool is_completed() const {
-        return frame_count > 0
-            && frame_index == frame_count - 1
-            && passed_time() >= get_frame_time(pose->frames[frame_index]);
     }
 
     void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir) {
@@ -273,7 +309,7 @@ struct Sprite::Impl {
             tag_map[tag_string] = matched_pose;
         }
         // Set matched pose and reset the sprite
-        if (pose != &data->poses[matched_pose] || finished) {
+        if (pose != &data->poses[matched_pose] || stop_updating) {
             pose = &data->poses[matched_pose];
             reset();
         }
@@ -359,7 +395,7 @@ void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, con
         pos,
         image_layer.opacity,
         xd::vec2(1.0f),             // magnification
-        image_layer.get_color(),    // Color
+        image_layer.get_color(),    // color
         std::nullopt,               // angle
         std::nullopt,               // origin
         image_layer.repeat,
@@ -393,6 +429,10 @@ Pose& Sprite::get_pose() {
     return *pimpl->pose;
 }
 
+const Pose& Sprite::get_pose() const {
+    return *pimpl->pose;
+}
+
 xd::rect Sprite::get_bounding_box() const {
     return pimpl->pose->bounding_box;
 }
@@ -423,13 +463,28 @@ const Frame& Sprite::get_frame() const {
      return pimpl->pose->frames[pimpl->frame_index];
 }
 
-
-bool Sprite::is_stopped() const {
-    return pimpl->finished;
+int Sprite::get_frame_index() const {
+    return pimpl->frame_index;
 }
 
-void Sprite::stop() {
-    pimpl->finished = true;
+
+bool Sprite::is_complete() const {
+    return pimpl->completed;
+}
+
+void Sprite::complete() {
+    if (pimpl->completed) return;
+    complete_at(pimpl->frame_count - 1);
+}
+
+void Sprite::complete_at(int frame_index) {
+    if (frame_index < 0) {
+        pimpl->completion_index = -1;
+        pimpl->completed = true;
+        return;
+    }
+
+    pimpl->completion_index = frame_index;
 }
 
 bool Sprite::is_paused() const {
@@ -444,24 +499,21 @@ void Sprite::resume() {
     pimpl->resume();
 }
 
-bool Sprite::is_completed() const {
-    return pimpl->is_completed();
-}
-
 float Sprite::get_speed() const {
     return pimpl->speed;
 }
 
 void Sprite::set_speed(float speed) {
+    auto max_speed = pimpl->max_speed;
     // Scale sprite speed in the opposite direction of object speed,
     // between 0.5 for max speed (10) and 2 for min speed (0)
     // but also make sure object speed 1 maps to sprite speed 1
     // s-speed = s-min + (s-max - s-min) * (o-speed - o-min) / (o-max - o-min)
-    speed = std::max(0.0f, std::min(pimpl->max_speed, speed));
+    speed = std::max(0.0f, std::min(max_speed, speed));
     if (speed <= 1)
         pimpl->speed = 2.0f - speed;
     else
-        pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (pimpl->max_speed - 1.0f);
+        pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (max_speed - 1.0f);
 }
 
 bool Sprite::is_eight_directional() const {

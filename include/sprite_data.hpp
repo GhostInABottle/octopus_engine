@@ -20,6 +20,8 @@ namespace xd {
 struct Frame {
     // Frame duration in milliseconds
     int duration;
+    // If specified, a random value between duration and max will be used
+    std::optional<int> max_duration;
     // Source rectangle
     xd::rect rectangle;
     // X and Y magnification

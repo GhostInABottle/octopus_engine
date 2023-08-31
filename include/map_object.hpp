@@ -300,10 +300,10 @@ public:
     void set_draw_order(Draw_Order order) {
         draw_order = order;
     }
-    Sprite* get_sprite() noexcept override {
+    Sprite* get_sprite() override {
         return sprite.get();
     }
-    const Sprite* get_sprite() const {
+    const Sprite* get_sprite() const override {
         return sprite.get();
     }
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;

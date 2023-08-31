@@ -16,6 +16,7 @@ public:
     // Set sprite
     virtual void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") = 0;
     virtual Sprite* get_sprite() = 0;
+    virtual const Sprite* get_sprite() const = 0;
     std::string get_sprite_filename();
 };
 

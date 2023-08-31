@@ -35,6 +35,7 @@ public:
     void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir);
     // Get the current pose
     Pose& get_pose();
+    const Pose& get_pose() const;
     // Get the default pose name
     std::string get_default_pose() const;
     // Get bounding box
@@ -46,18 +47,20 @@ public:
     // Get current frame
     Frame& get_frame();
     const Frame& get_frame() const;
+    // Get current frame index
+    int get_frame_index() const;
     // Is the current animation done?
-    bool is_stopped() const;
-    // Mark the sprite as completed
-    void stop();
+    bool is_complete() const;
+    // Wait for pose to reach a specific frame index before marking it as complete
+    void complete_at(int frame_index);
+    // Wait for the pose to reach the final frame and mark it as complete
+    void complete();
     // Is the sprite paused / not updating
     bool is_paused() const;
     // Stop updating the sprite
     void pause();
     // Resume updating the sprite
     void resume();
-    // Did we reach the last frame?
-    bool is_completed() const;
     // Gets animation speed modifier;
     float get_speed() const;
     // Sets animation speed modifier

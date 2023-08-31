@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
           <Pose Duration=\"10\" > \
             <Tag Key=\"Name\" Value=\"Circle Pose\"/> \
             <Bounding-Circle X=\"5\" Y=\"7\" Radius=\"4\" /> \
-            <Frame> \
+            <Frame Max-Duration=\"350\"> \
               <Rectangle X=\"11\" Y=\"12\" Width=\"13\" Height=\"14\" /> \
             </Frame> \
           </Pose> \
@@ -61,6 +61,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(main_pose.frames[0].rectangle.h, 4);
     BOOST_CHECK_EQUAL(main_pose.frames[0].tween_frame, true);
     BOOST_CHECK_EQUAL(main_pose.frames[0].duration, 200);
+    BOOST_CHECK(!main_pose.frames[0].max_duration.has_value());
     BOOST_CHECK_EQUAL(main_pose.frames[0].angle, 10);
     float epsilon = 0.01f;
     BOOST_CHECK_CLOSE(main_pose.frames[0].magnification.x, 2.5f, epsilon);
@@ -86,6 +87,8 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(circle_pose.frames[0].rectangle.h, 14);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].tween_frame, false);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].duration, -1);
+    BOOST_CHECK(circle_pose.frames[0].max_duration.has_value());
+    BOOST_CHECK_EQUAL(circle_pose.frames[0].max_duration.value(), 350);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].angle, 0);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.x, 1.0f);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.y, 1.0f);

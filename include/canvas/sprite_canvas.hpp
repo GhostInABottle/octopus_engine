@@ -16,6 +16,7 @@ public:
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
     // Get the sprite, if any
     Sprite* get_sprite() override { return sprite.get(); }
+    const Sprite* get_sprite() const override { return sprite.get(); }
     // Get pose name
     std::string get_pose_name();
     // Get pose state

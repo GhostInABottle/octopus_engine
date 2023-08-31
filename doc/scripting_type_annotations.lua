@@ -139,7 +139,7 @@ function bit.bnot(a) end
 
 -- File system
 
----@class Engine_Calendar_Time
+---@class (exact) Engine_Calendar_Time
 ---@field second integer # 0-60
 ---@field minute integer # 0-59
 ---@field hour integer # 0-23
@@ -150,14 +150,14 @@ function bit.bnot(a) end
 ---@field year_day integer # 0-365
 ---@field is_dst? boolean # if nil, no info is available
 
----@class Engine_Path_Info
+---@class (exact) Engine_Path_Info
 ---@field name string
 ---@field is_regular boolean
 ---@field is_directory boolean
 ---@field timestamp integer
 ---@field calendar_time Engine_Calendar_Time
 
----@class Engine_Readable_Filesystem
+---@class (exact) Engine_Readable_Filesystem
 local Engine_Readable_Filesystem = {}
 
 ---@param path string
@@ -196,7 +196,7 @@ function Engine_Readable_Filesystem:list_directory(path) end
 ---@return Engine_Path_Info[]
 function Engine_Readable_Filesystem:list_detailed_directory(path) end
 
----@class Engine_Writable_Filesystem : Engine_Readable_Filesystem
+---@class (exact) Engine_Writable_Filesystem : Engine_Readable_Filesystem
 local Engine_Writable_Filesystem = {}
 
 ---@param source string
@@ -208,7 +208,7 @@ function Engine_Writable_Filesystem:copy(source, destination) end
 ---@return boolean removed
 function Engine_Writable_Filesystem:remove(path) end
 
----@class Engine_User_Data_Folder
+---@class (exact) Engine_User_Data_Folder
 ---@field base_path string # readonly
 ---@field game_path string # readonly
 ---@field version_path string # readonly
@@ -237,7 +237,7 @@ function Engine_User_Data_Folder:save_keymap_file() end
 -- Text and Choices
 
 -- All properties are read only once created
----@class Engine_Text_Options
+---@class (exact) Engine_Text_Options
 ---@field text string?
 ---@field choices string[]?
 ---@field object Engine_Map_Object?
@@ -559,24 +559,16 @@ function direction.to_four_directions(direction) end
 
 -- Logging
 
----@class Engine_Logger
+---@class (exact) Engine_Logger
+---@field info fun(message : string)
+---@field debug fun(message : string)
+---@field warning fun(message : string)
+---@field error fun(message : string)
 logger = {}
-
----@param message string
-function logger.info(message) end
-
----@param message string
-function logger.debug(message) end
-
----@param message string
-function logger.warning(message) end
-
----@param message string
-function logger.error(message) end
 
 -- Vec2
 
----@class Engine_Vec2
+---@class (exact) Engine_Vec2
 ---@field x number
 ---@field y number
 ---@operator add(Engine_Vec2) : Engine_Vec2
@@ -600,7 +592,7 @@ function Engine_Vec2:normal() end
 
 -- Vec3
 
----@class Engine_Vec3
+---@class (exact) Engine_Vec3
 ---@field x number
 ---@field y number
 ---@field z number
@@ -625,7 +617,7 @@ function Engine_Vec3:length() end
 function Engine_Vec3:normal() end
 
 -- Vec4 / Color
----@class Engine_Vec4
+---@class (exact) Engine_Vec4
 ---@field x number
 ---@field y number
 ---@field z number
@@ -651,7 +643,7 @@ function Engine_Vec4:length() end
 ---@return Engine_Vec3
 function Engine_Vec4:normal() end
 
----@class Engine_Color
+---@class (exact) Engine_Color
 ---@field r number
 ---@field g number
 ---@field b number
@@ -672,7 +664,7 @@ function Color(r, g, b, a) end
 
 -- Rect
 
----@class Engine_Rect
+---@class (exact) Engine_Rect
 ---@field x number
 ---@field y number
 ---@field w number
@@ -717,7 +709,7 @@ function Engine_Rect:move(displacement) end
 
 -- Circle
 
----@class Engine_Circle
+---@class (exact) Engine_Circle
 ---@field x number
 ---@field y number
 ---@field radius number
@@ -761,7 +753,7 @@ function Engine_Circle:to_rect() end
 
 -- Command_Result
 
----@class Engine_Command_Result
+---@class (exact) Engine_Command_Result
 ---@field completed boolean # readonly
 ---@field stopped boolean # readonly
 ---@field paused boolean # readonly
@@ -786,7 +778,7 @@ function Engine_Command_Result:execute(ticks) end
 ---@return boolean
 function Engine_Command_Result:is_complete(ticks) end
 
----@class Engine_Choice_Command_Result : Engine_Command_Result
+---@class (exact) Engine_Choice_Command_Result : Engine_Command_Result
 ---@field selected integer # 1-based choice index, -1 if canceled
 
 ---@param ms_duration integer
@@ -819,7 +811,7 @@ function Text_Command(object, text, duration, start_time) end
 
 -- Token
 
----@class Engine_Token
+---@class (exact) Engine_Token
 ---@field type Engine_Token_Type
 ---@field tag string
 ---@field value string
@@ -837,12 +829,10 @@ Text_Parser = {}
 ---@return Engine_Token[]
 function Text_Parser:parse(text, permissive) end
 
----@class Engine_Map_Data
-
 -- Shared canvas properties and methods
 
 ---@class Engine_Base_Canvas
----@field data Engine_Map_Data
+---@field data table
 ---@field id integer
 ---@field name string
 ---@field position Engine_Vec2
@@ -926,7 +916,7 @@ function Engine_Base_Canvas:get_sprite_child(child_name) end
 
 -- Text canvas
 
----@class Engine_Text_Canvas : Engine_Base_Canvas
+---@class (exact) Engine_Text_Canvas : Engine_Base_Canvas
 ---@field text string
 ---@field font_size number
 ---@field line_height number
@@ -964,7 +954,7 @@ function Text_Canvas(x, y, text) end
 
 -- Shared image/sprite canvas properties and methods
 
----@class Engine_Base_Image_Canvas : Engine_Base_Canvas
+---@class (exact) Engine_Base_Image_Canvas : Engine_Base_Canvas
 ---@field filename string # readonly
 ---@field magnification Engine_Vec2
 ---@field angle integer # in degrees
@@ -998,7 +988,7 @@ function Engine_Base_Image_Canvas:rotate(angle, duration) end
 
 -- Image canvas
 
----@class Engine_Image_Canvas : Engine_Base_Image_Canvas
+---@class (exact) Engine_Image_Canvas : Engine_Base_Image_Canvas
 ---@field width integer # readonly
 ---@field height integer # readonly
 local Engine_Image_Canvas = {}
@@ -1017,7 +1007,7 @@ function Image_Canvas(image_filename, x, y, transparent_color) end
 
 -- Sprite canvas
 
----@class Engine_Sprite_Canvas : Engine_Base_Image_Canvas
+---@class (exact) Engine_Sprite_Canvas : Engine_Base_Image_Canvas
 ---@field pose_name string # readonly
 ---@field pose_state string # readonly
 ---@field pose_direction Engine_Direction # readonly
@@ -1047,7 +1037,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 
 -- Map_Object
 
----@class Engine_Map_Object
+---@class (exact) Engine_Map_Object
 ---@field id integer
 ---@field name string
 ---@field type string
@@ -1170,7 +1160,7 @@ player = {}
 
 -- Layer
 
----@class Engine_Layer
+---@class (exact) Engine_Layer
 ---@field visible boolean
 ---@field opacity number
 local Engine_Layer = {}
@@ -1190,7 +1180,7 @@ function Engine_Layer:set_property(name, value) end
 
 -- Image layer
 
----@class Engine_Image_Layer : Engine_Layer
+---@class (exact) Engine_Image_Layer : Engine_Layer
 ---@field velocity Engine_Vec2
 ---@field sprite string
 ---@field color Engine_Color
@@ -1220,7 +1210,7 @@ function Engine_Image_Layer:update_velocity(new_velocity, duration) end
 
 -- Object Layer
 
----@class Engine_Object_Layer : Engine_Layer
+---@class (exact) Engine_Object_Layer : Engine_Layer
 ---@field tint_color Engine_Color
 ---@field objects Engine_Map_Object[]
 local Engine_Object_Layer = {}
@@ -1232,8 +1222,8 @@ function Engine_Object_Layer:update_color(new_color, duration) end
 
 -- Map
 
----@class Engine_Map
----@field data Engine_Map_Data
+---@class (exact) Engine_Map
+---@field data table
 ---@field name string # from TMX file
 ---@field filename string # full filename including folders
 ---@field filename_stem string # last part of filename without the extension
@@ -1307,7 +1297,7 @@ function current_map:run_script_file(filename) end
 
 -- Camera
 
----@class Engine_Camera
+---@class (exact) Engine_Camera
 ---@field position Engine_Vec2
 ---@field position_bounds Engine_Rect
 ---@field screen_tint Engine_Color # Drawn above everything
@@ -1376,7 +1366,7 @@ function camera:zoom(scale, duration) end
 
 -- Music
 
----@class Engine_Music
+---@class (exact) Engine_Music
 ---@field playing boolean
 ---@field paused boolean
 ---@field stopped boolean
@@ -1404,7 +1394,7 @@ function Engine_Music:set_loop_points(loop_start, loop_end) end
 
 --- Sound
 
----@class Engine_Sound
+---@class (exact) Engine_Sound
 ---@field playing boolean
 ---@field paused boolean
 ---@field stopped boolean
@@ -1432,7 +1422,7 @@ function Sound(filename, pausable) end
 
 -- Audio_Player
 
----@class Engine_Audio_Player
+---@class (exact) Engine_Audio_Player
 ---@field playing_music Engine_Music?
 ---@field playing_ambient Engine_Music?
 ---@field global_music_volume number
@@ -1497,7 +1487,7 @@ function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 
 -- Game
 
----@class Engine_Game
+---@class (exact) Engine_Game
 ---@field ticks integer
 ---@field window_ticks integer
 ---@field seconds integer

@@ -41,7 +41,8 @@ struct Image_Layer : public Layer, public Sprite_Holder, public Color_Holder {
     // Set image
     void set_image(const std::string& filename);
     // Get the sprite, if any
-    Sprite* get_sprite() noexcept override { return sprite.get(); }
+    Sprite* get_sprite() override { return sprite.get(); }
+    const Sprite* get_sprite() const override { return sprite.get(); }
     // Get the image tint color (for color holder)
     xd::vec4 get_color() const override {
         return image_color;
