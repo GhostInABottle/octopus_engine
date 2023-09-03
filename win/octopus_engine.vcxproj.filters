@@ -112,6 +112,12 @@
     <Filter Include="Source Files\layers">
       <UniqueIdentifier>{89d1175c-c889-40bb-92ee-3fe6aad2d8e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\environments">
+      <UniqueIdentifier>{ee102b8b-bb30-4a23-881a-e7a191037044}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\environments">
+      <UniqueIdentifier>{042f9ea3-0c39-4cf7-8915-31a9b84f0728}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -431,6 +437,15 @@
     </ClCompile>
     <ClCompile Include="..\src\layers\tile_layer_renderer.cpp">
       <Filter>Source Files\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\environments\default_environment.cpp">
+      <Filter>Source Files\environments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scripting\bindings\environment_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\environments\steam_environment.cpp">
+      <Filter>Source Files\environments</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -871,6 +886,15 @@
     </ClInclude>
     <ClInclude Include="..\include\layers\tile_layer_renderer.hpp">
       <Filter>Header Files\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\environments\default_environment.hpp">
+      <Filter>Header Files\environments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\environments\environment.hpp">
+      <Filter>Header Files\environments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\environments\steam_environment.hpp">
+      <Filter>Header Files\environments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

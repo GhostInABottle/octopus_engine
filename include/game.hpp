@@ -23,6 +23,7 @@ class Clock;
 class Audio_Player;
 class Typewriter_Decorator;
 class Key_Binder;
+class Environment;
 
 namespace xd {
     class audio;
@@ -37,7 +38,10 @@ class Game {
 public:
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
-    explicit Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audio, bool editor_mode = false);
+    explicit Game(const std::vector<std::string>& args,
+        std::shared_ptr<xd::audio> audio,
+        std::shared_ptr<Environment> environment,
+        bool editor_mode = false);
     ~Game();
 
     // Get the active channel group for sound effects
@@ -251,6 +255,7 @@ public:
     }
     Typewriter_Decorator& get_typewriter_decorator();
     Key_Binder& get_key_binder();
+    Environment& get_environment();
 private:
     std::vector<std::string> command_line_args;
     // Window needs to be constructed before pimpl

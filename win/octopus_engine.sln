@@ -11,6 +11,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
+		Steam Release|Win32 = Steam Release|Win32
 		Test Release|Win32 = Test Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -18,14 +19,16 @@ Global
 		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Debug|Win32.Build.0 = Debug|Win32
 		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Release|Win32.ActiveCfg = Release|Win32
 		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Release|Win32.Build.0 = Release|Win32
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Steam Release|Win32.ActiveCfg = Steam Release|Win32
+		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Steam Release|Win32.Build.0 = Steam Release|Win32
 		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Test Release|Win32.ActiveCfg = Test Release|Win32
 		{2D827BB7-26EB-41A5-8153-E7CE326643CD}.Test Release|Win32.Build.0 = Test Release|Win32
 		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Debug|Win32.Build.0 = Debug|Win32
 		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Release|Win32.ActiveCfg = Release|Win32
 		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Release|Win32.Build.0 = Release|Win32
+		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Steam Release|Win32.ActiveCfg = Release|Win32
 		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Test Release|Win32.ActiveCfg = Release|Win32
-		{4AB955B7-A8A4-4079-AB41-85A7D023FDB0}.Test Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,10 @@
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/clock.hpp"
 #include "../../../include/audio_player.hpp"
+#include "../../../include/clock.hpp"
 #include "../../../include/configurations.hpp"
+#include "../../../include/environments/environment.hpp"
+#include "../../../include/game.hpp"
 #include "../../../include/save_file.hpp"
 #include "../../../include/utility/file.hpp"
 #include "../../../include/xd/lua.hpp"
@@ -72,6 +73,7 @@ void bind_game_types(sol::state& lua, Game& game) {
         return sol::as_table(game.get_command_line_args());
     });
     game_type["audio_player"] = sol::property(&Game::get_audio_player);
+    game_type["environment"] = sol::property(&Game::get_environment);
 
     game_type["set_size"] = &Game::set_size;
 
@@ -182,6 +184,11 @@ void bind_game_types(sol::state& lua, Game& game) {
     };
 
     game_type["open_url"] = [](Game& game, const std::string& url) {
+        auto& environment = game.get_environment();
+        if (environment.can_open_url()) {
+            return environment.open_url(url);
+        }
+
         return file_utilities::open_url(url);
     };
 }

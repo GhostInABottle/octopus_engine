@@ -114,6 +114,8 @@ void Configurations::load_defaults() {
     defaults["startup.tint-color"] = std::string{"00000000"};
     defaults["startup.clear-color"] = std::string{"00000000"};
     defaults["startup.scripts-list"] = std::string{};
+
+    defaults["steam.app-id"] = 0;
 }
 
 std::vector<std::string> Configurations::parse(std::istream& stream) {

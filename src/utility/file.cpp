@@ -1,6 +1,8 @@
 #include "../../include/utility/file.hpp"
 #include "../../include/filesystem/standard_filesystem.hpp"
-#include "../../include/filesystem/boost_filesystem.hpp"
+#if OCB_USE_BOOST_FILESYSTEM
+    #include "../../include/filesystem/boost_filesystem.hpp"
+#endif
 #include "../../include/filesystem/physfs_filesystem.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/configurations.hpp"

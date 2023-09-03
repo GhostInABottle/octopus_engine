@@ -1,6 +1,10 @@
 #include "../include/vendor/rapidxml.hpp"
 #include "../include/log.hpp"
 #include "../include/game.hpp"
+#include "../include/environments/default_environment.hpp"
+#ifdef OCB_USE_STEAM_SDK
+#include "../include/environments/steam_environment.hpp"
+#endif
 #include "../include/utility/file.hpp"
 #include "../include/xd/audio.hpp"
 #include <vector>
@@ -38,13 +42,30 @@ int main(int argc, char* argv[]) {
             LOGGER_I << warning;
         }
         user_data_folder->parse_config();
- 
-        // Initialize the audio system
-        auto audio = std::make_shared<xd::audio>();
 
         LOGGER_I << "Reticulating Splines";
+ 
+        // Initialize the audio system
+        LOGGER_I << "Initializing the audio system";
+        auto audio = std::make_shared<xd::audio>();
 
-        Game game(args, audio);
+        // Initialize the environment
+        LOGGER_I << "Initializing the environment";
+#ifdef OCB_USE_STEAM_SDK
+        auto environment = std::make_shared<Steam_Environment>();
+#else
+        auto environment = std::make_shared<Default_Environment>();
+#endif
+
+        if (environment->should_restart()) {
+            LOGGER_I << "Environment requested a restart. Exiting...";
+            return 0;
+        }
+
+        LOGGER_I << "Initializing the god object";
+        Game game(args, audio, environment);
+
+        LOGGER_I << "We have a liftoff!";
         game.run();
 
         LOGGER_I << "Splines Reticulated";

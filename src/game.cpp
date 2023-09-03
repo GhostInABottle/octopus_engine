@@ -5,6 +5,7 @@
 #include "../include/configurations.hpp"
 #include "../include/decorators/shake_decorator.hpp"
 #include "../include/decorators/typewriter_decorator.hpp"
+#include "../include/environments/default_environment.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/key_binder.hpp"
 #include "../include/map.hpp"
@@ -21,8 +22,12 @@
 #include <unordered_set>
 
 struct Game::Impl {
-    explicit Impl(Game& game, std::shared_ptr<xd::audio> audio, bool editor_mode) :
+    explicit Impl(Game& game,
+                std::shared_ptr<xd::audio> audio,
+                std::shared_ptr<Environment> environment,
+                bool editor_mode) :
             audio_player(audio),
+            environment(environment),
             editor_mode(editor_mode),
             show_fps(Configurations::get<bool>("debug.show-fps")),
             show_time(Configurations::get<bool>("debug.show-time")),
@@ -50,6 +55,13 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game),
             typewriter_decorator(game, audio_player) {
+
+        // Fall back to default environment
+        if (!this->environment || !this->environment->is_ready()) {
+            auto env_name = this->environment ? this->environment->get_name() : "NA";
+            LOGGER_W << "Environment " << env_name << " is missing or not ready. Falling back to default.";
+            this->environment.reset(new Default_Environment{});
+        }
 
         // Register decorators
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
@@ -246,6 +258,8 @@ struct Game::Impl {
     }
     // Audio subsystem
     Audio_Player audio_player;
+    // Running environment
+    std::shared_ptr<Environment> environment;
     // Was game started in editor mode?
     bool editor_mode;
     // Texture asset manager
@@ -314,7 +328,10 @@ struct Game::Impl {
     std::unordered_map<std::string, std::shared_ptr<xd::font>> fonts;
 };
 
-Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audio, bool editor_mode) :
+Game::Game(const std::vector<std::string>& args,
+            std::shared_ptr<xd::audio> audio,
+            std::shared_ptr<Environment> environment,
+            bool editor_mode) :
         command_line_args(args),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
             Configurations::get<std::string>("game.title"),
@@ -342,7 +359,7 @@ Game::Game(const std::vector<std::string>& args, std::shared_ptr<xd::audio> audi
                 0, // antialiasing
                 2, // GL major version
                 0))), // GL minor version
-        pimpl(std::make_unique<Impl>(*this, audio, editor_mode)),
+        pimpl(std::make_unique<Impl>(*this, audio, environment, editor_mode)),
         paused(false),
         pausing_enabled(true),
         magnification(Configurations::get<float>("graphics.magnification", "debug.magnification")),
@@ -855,4 +872,12 @@ Typewriter_Decorator& Game::get_typewriter_decorator() {
 
 Key_Binder& Game::get_key_binder() {
     return *pimpl->key_binder;
+}
+
+Environment& Game::get_environment() {
+    if (!pimpl->environment) {
+        throw std::runtime_error("Game environment is not set!");
+    }
+
+    return *pimpl->environment;
 }

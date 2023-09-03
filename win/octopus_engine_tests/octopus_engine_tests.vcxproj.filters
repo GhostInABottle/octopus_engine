@@ -115,6 +115,12 @@
     <Filter Include="Source Files\layers">
       <UniqueIdentifier>{19b71310-b315-4309-999b-242d3c9fda77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\environments">
+      <UniqueIdentifier>{bf4921f0-09a9-425f-8985-01c74c20f82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\environments">
+      <UniqueIdentifier>{825b82f9-21c1-48cf-9b80-8506a6fc5c55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tileset.cpp">
@@ -455,6 +461,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\layers\tile_layer_renderer.cpp">
       <Filter>Source Files\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\environments\default_environment.cpp">
+      <Filter>Source Files\environments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\environments\steam_environment.cpp">
+      <Filter>Source Files\environments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\scripting\bindings\environment_bindings.cpp">
+      <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -892,6 +907,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\layers\tile_layer_renderer.hpp">
       <Filter>Header Files\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\environments\default_environment.hpp">
+      <Filter>Header Files\environments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\environments\environment.hpp">
+      <Filter>Header Files\environments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\environments\steam_environment.hpp">
+      <Filter>Header Files\environments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -72,6 +72,7 @@ SOURCES += main.cpp\
     ../src/player_controller.cpp \
     ../src/save_file.cpp \
     ../src/scripting/bindings/canvas_bindings.cpp \
+    ../src/scripting/bindings/environment_bindings.cpp \
     ../src/scripting/bindings/game_bindings.cpp \
     ../src/scripting/bindings/audio_bindings.cpp \
     ../src/scripting/bindings/camera_bindings.cpp \
@@ -86,6 +87,8 @@ SOURCES += main.cpp\
     ../src/scripting/scripting_interface.cpp \
     ../src/decorators/shake_decorator.cpp \
     ../src/decorators/typewriter_decorator.cpp \
+    ../src/environments/default_environment.cpp \
+    ../src/environments/steam_environment.cpp \
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
     ../src/text_parser.cpp \
@@ -211,6 +214,9 @@ HEADERS  += main_window.hpp \
     ../include/scripting/scripting_interface.hpp \
     ../include/decorators/shake_decorator.hpp \
     ../include/decorators/typewriter_decorator.hpp \
+    ../include/environments/default_environment.hpp \
+    ../include/environments/environment.hpp \
+    ../include/environments/steam_environment.hpp \
     ../include/sprite.hpp \
     ../include/sprite_data.hpp \
     ../include/tests/game_fixture.hpp \

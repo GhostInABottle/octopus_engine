@@ -1,9 +1,11 @@
 ipch
 Test Release
+Steam Release
 Release
 Debug
 data/test_save.txt
 data/test_save_header.txt
+steam_appid.txt
 *.sdf
 *.suo
 *.user

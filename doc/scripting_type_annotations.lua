@@ -1485,35 +1485,54 @@ function Engine_Audio_Player:play_sound(filename, pitch, volume) end
 ---@return Engine_Sound? # nil if config has no value
 function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 
+-- Environment
+
+---@class (exact) Engine_Environment
+---@field is_ready boolean # readonly
+---@field name string # readonly
+---@field can_open_store_page boolean # readonly
+---@field can_open_url boolean # readonly
+local Engine_Environment = {}
+
+---@return boolean success
+function Engine_Environment:open_store_page() end
+
+---@param url string
+---@return boolean success
+function Engine_Environment:open_url(url) end
+
 -- Game
 
 ---@class (exact) Engine_Game
----@field ticks integer
----@field window_ticks integer
----@field seconds integer
----@field fps integer
----@field frame_count integer
----@field character_input string
----@field triggered_keys string[]
----@field gamepad_enabled boolean
----@field gamepad_names table<string, string>
----@field gamepad_name string
+---@field ticks integer # readonly
+---@field window_ticks integer # readonly
+---@field seconds integer # readonly
+---@field fps integer # readonly
+---@field frame_count integer # readonly
+---@field character_input string # readonly
+---@field triggered_keys string[] # readonly
+---@field gamepad_enabled boolean # readonly
+---@field gamepad_names table<string, string> # readonly
+---@field gamepad_name string # readonly
 ---@field last_input_type Engine_Input_Type
----@field game_width integer
----@field game_height integer
----@field width integer
----@field height integer
----@field monitor_resolution Engine_Vec2
----@field monitor_resolutions Engine_Vec2[]
----@field paused boolean
+---@field game_width integer # readonly
+---@field game_height integer # readonly
+---@field width integer # readonly
+---@field height integer # readonly
+---@field framebuffer_width integer # readonly
+---@field framebuffer_height integer # readonly
+---@field monitor_resolution Engine_Vec2 # readonly
+---@field monitor_resolutions Engine_Vec2[] # readonly
+---@field paused boolean # readonly
 ---@field pausing_enabled boolean
----@field stopped boolean
+---@field stopped boolean # readonly
 ---@field script_scheduler_paused boolean
----@field debug boolean
----@field command_line_args string[]
+---@field debug boolean # readonly
+---@field command_line_args string[] # readonly
 ---@field fullscreen boolean
 ---@field magnification integer
 ---@field audio_player Engine_Audio_Player # readonly
+---@field environment Engine_Environment # readonly
 ---@field game_data_filesystem Engine_Readable_Filesystem # readonly
 ---@field user_data_filesystem Engine_Writable_Filesystem # readonly
 ---@field data_folder Engine_User_Data_Folder # readonly

@@ -140,6 +140,8 @@ void Scripting_Interface::setup_scripts() {
 
     bind_audio_types(lua, *game);
 
+    bind_environment_types(lua);
+
     bind_game_types(lua, *game);
 
     bind_layer_types(lua, *game);

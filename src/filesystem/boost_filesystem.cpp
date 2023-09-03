@@ -131,8 +131,8 @@ bool Boost_Filesystem::create_directories(const std::string& path) {
     try {
         return fs::create_directories(detail::string_to_utf8_path(path));
     } catch (fs::filesystem_error& e) {
+        LOGGER_E << "Error creating directories " << path << ": " << e.what();
         return false;
     }
 }
-
 #endif
