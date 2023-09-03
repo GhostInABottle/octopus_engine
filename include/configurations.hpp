@@ -18,6 +18,8 @@ public:
 // A class for dealing with configuration options read from file
 class Configurations {
 public:
+    typedef std::variant<std::string, int, unsigned int, float, bool> value_type;
+    typedef std::unordered_map<std::string, value_type> value_map;
     typedef std::function<void(const std::string&)> callback;
     // Load default values
     static void load_defaults();
@@ -86,12 +88,17 @@ public:
         changed_since_save = true;
         LOGGER_I << "Config " << name << " changed to " << value;
     }
+    // Directly set a value without notifying observers or logging
+    template<typename T>
+    static void override_value(const std::string& name, T value) {
+        values[name] = value;
+        changed_since_save = true;
+    }
 private:
-    typedef std::variant<std::string, int, unsigned int, float, bool> value_type;
     inline static bool changed_since_save = false;
     // Variable map to store the options
-    inline static std::unordered_map<std::string, value_type> values;
-    inline static std::unordered_map<std::string, value_type> defaults;
+    inline static value_map values;
+    inline static value_map defaults;
     inline static std::unordered_map<std::string, callback> observers;
     inline static std::unordered_map<std::string, std::string> comment_lines;
 };

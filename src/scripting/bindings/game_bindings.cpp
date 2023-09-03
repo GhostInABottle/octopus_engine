@@ -184,11 +184,6 @@ void bind_game_types(sol::state& lua, Game& game) {
     };
 
     game_type["open_url"] = [](Game& game, const std::string& url) {
-        auto& environment = game.get_environment();
-        if (environment.can_open_url()) {
-            return environment.open_url(url);
-        }
-
         return file_utilities::open_url(url);
     };
 }

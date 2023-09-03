@@ -463,10 +463,10 @@ elseif c.selected == 9 then
     game:set_bool_config('game.pause-unfocused', pause_unfocused == "0")
     text(o, "Type of Object:" .. type(o) .. " - type of Vec2: " .. type(Vec2(0,0))):wait()
     text(o, "UP | RIGHT = " .. bit.bor(UP, RIGHT)):wait()
-    if game.environment.can_open_store_page then
+    if game.environment:can_open_store_page() then
         text(o, "Opening store page"):wait()
         game.environment:open_store_page()
-    elseif game.environment.can_open_url then
+    elseif game.environment:can_open_url() then
         text(o, "Opening a url"):wait()
         game.environment:open_url("https://octopuscityblues.com")
     else

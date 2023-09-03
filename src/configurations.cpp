@@ -15,6 +15,7 @@ void Configurations::load_defaults() {
     defaults["game.map-loaded-script"] = std::string{};
     defaults["game.pause-script"] = std::string{};
     defaults["game.scripts-folder"] = std::string{};
+    defaults["game.store-url"] = std::string{};
     defaults["game.archive-path"] = std::string{};
 
     defaults["text.fade-in-duration"] = 250;
@@ -116,6 +117,7 @@ void Configurations::load_defaults() {
     defaults["startup.scripts-list"] = std::string{};
 
     defaults["steam.app-id"] = 0;
+    defaults["steam.restart-in-steam"] = false;
 }
 
 std::vector<std::string> Configurations::parse(std::istream& stream) {

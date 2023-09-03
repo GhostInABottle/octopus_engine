@@ -92,6 +92,18 @@ Outline_Condition = {
     never = 8
 }
 
+---@enum Engine_Open_Page_Mode
+Open_Page_Mode = {
+    -- The environment's preferred mode
+    any = 0,
+    -- Launch the default browser
+    external = 1,
+    -- Open through the environment's app/client
+    internal = 2,
+    -- Open as an overlay on top of the game
+    overlay = 3,
+}
+
 -- Global functions
 
 ---@overload fun(function : fun() : boolean)
@@ -1488,18 +1500,25 @@ function Engine_Audio_Player:play_config_sound(config_name, pitch, volume) end
 -- Environment
 
 ---@class (exact) Engine_Environment
----@field is_ready boolean # readonly
 ---@field name string # readonly
----@field can_open_store_page boolean # readonly
----@field can_open_url boolean # readonly
 local Engine_Environment = {}
 
+---@param mode? Engine_Open_Page_Mode
 ---@return boolean success
-function Engine_Environment:open_store_page() end
+function Engine_Environment:can_open_store_page(mode) end
+
+---@param mode? Engine_Open_Page_Mode
+---@return boolean success
+function Engine_Environment:open_store_page(mode) end
+
+---@param mode? Engine_Open_Page_Mode
+---@return boolean success
+function Engine_Environment:can_open_url(mode) end
 
 ---@param url string
+---@param mode? Engine_Open_Page_Mode
 ---@return boolean success
-function Engine_Environment:open_url(url) end
+function Engine_Environment:open_url(url, mode) end
 
 -- Game
 

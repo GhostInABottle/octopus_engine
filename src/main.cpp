@@ -57,6 +57,11 @@ int main(int argc, char* argv[]) {
         auto environment = std::make_shared<Default_Environment>();
 #endif
 
+        auto preferred_configs = environment->get_preferred_configs();
+        for (auto& [key, value] : preferred_configs) {
+            Configurations::override_value(key, value);
+        }
+
         if (environment->should_restart()) {
             LOGGER_I << "Environment requested a restart. Exiting...";
             return 0;
