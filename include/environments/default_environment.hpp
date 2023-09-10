@@ -23,7 +23,7 @@ public:
         return mode == Open_Page_Mode::EXTERNAL || mode == Open_Page_Mode::ANY;
     }
     virtual bool open_url(const std::string& url, Open_Page_Mode mode = Open_Page_Mode::ANY,
-        const std::string& fallback_url = "");
+        const std::string& fallback_url = "") override;
 };
 
 #endif

@@ -1,4 +1,4 @@
-# FindSteamApi
+# FindSteam_Api
 # ------------
 #
 # Locate the Steam SDK library
@@ -41,6 +41,6 @@ find_library(STEAM_API_LIBRARY NAMES steam_api steam_api64 libsteam_api
 set(STEAM_API_INCLUDE_DIRS "${STEAM_API_INCLUDE_DIR}")
 set(STEAM_API_LIBRARIES "${STEAM_API_LIBRARY}")
 
-find_package_handle_standard_args(STEAM_API DEFAULT_MSG STEAM_API_LIBRARIES STEAM_API_INCLUDE_DIRS)
+find_package_handle_standard_args(Steam_Api DEFAULT_MSG STEAM_API_LIBRARIES STEAM_API_INCLUDE_DIRS)
 
 mark_as_advanced(STEAM_API_INCLUDE_DIR STEAM_API_LIBRARY STEAM_API_INCLUDE_DIRS STEAM_API_LIBRARIES)

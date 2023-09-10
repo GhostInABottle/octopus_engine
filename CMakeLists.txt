@@ -50,7 +50,7 @@ find_package(GLEW REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(FMOD REQUIRED)
 find_package(PhysFS REQUIRED)
-find_package(SteamApi)
+find_package(Steam_Api)
 
 set(INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${Boost_INCLUDE_DIRS}
 ${FREETYPE_INCLUDE_DIR_ft2build} ${PHYSFS_INCLUDE_DIR})

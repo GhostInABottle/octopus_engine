@@ -16,7 +16,7 @@ public:
     virtual bool is_ready() const override {
         return ready;
     }
-    virtual bool should_restart() const { return restart; }
+    virtual bool should_restart() const override { return restart; }
     virtual std::string get_name() const override;
     virtual bool can_open_store_page(Open_Page_Mode mode = Open_Page_Mode::ANY) const override {
         if (!ready) return false;
@@ -31,7 +31,7 @@ public:
         return ready && mode != Open_Page_Mode::INTERNAL;
     }
     virtual bool open_url(const std::string& url, Open_Page_Mode mode = Open_Page_Mode::ANY,
-        const std::string& fallback_url = "");
+        const std::string& fallback_url = "") override;
     virtual const Configurations::value_map get_preferred_configs() const override;
 private:
     bool ready;
