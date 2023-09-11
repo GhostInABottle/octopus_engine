@@ -10,6 +10,6 @@ Game_Fixture::Game_Fixture() {
     }
     file_utilities::user_data_folder(*environment);
     if (!game) {
-        game = std::make_unique<Game>(std::vector<std::string>{}, nullptr, nullptr);
+        game = std::make_unique<Game>(std::vector<std::string>{}, nullptr, *environment);
     }
 }
