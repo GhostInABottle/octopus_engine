@@ -17,6 +17,7 @@
 #include "../include/utility/string.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/graphics/stock_text_formatter.hpp"
+#include "../include/xd/graphics/image.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include <stdexcept>
 #include <unordered_set>
@@ -248,6 +249,37 @@ struct Game::Impl {
                 Configurations::get<int>("graphics.window-height"));
         }
     }
+    void set_icons(xd::window& window) {
+        auto base_name = Configurations::get<std::string>("game.icon_base_name");
+        auto sizes_string = Configurations::get<std::string>("game.icon_sizes");
+
+        auto extension = std::string{".png"};
+        auto last_period = base_name.find_last_of('.');
+        if (last_period != std::string::npos && last_period > 1) {
+            extension = base_name.substr(last_period);
+            base_name = base_name.substr(0, last_period);
+        }
+
+        if (base_name.empty() or sizes_string.empty()) return;
+
+        auto filesystem = file_utilities::game_data_filesystem();
+        std::vector<std::shared_ptr<xd::image>> images;
+        auto size_strings = string_utilities::split(sizes_string, ",");
+        for (const auto& size : size_strings) {
+            auto trimmed = string_utilities::trim(size);
+
+            auto filename = base_name + "_" + trimmed + extension;
+            if (!filesystem->file_exists(filename)) {
+                LOGGER_W << "Couldn't find icon file. Skipping: " << filename;
+                continue;
+            }
+            auto stream = filesystem->open_binary_ifstream(filename);
+            images.emplace_back(std::make_shared<xd::image>(filename, *stream));
+        }
+
+        LOGGER_I << "Loading " << images.size() << " icons";
+        window.set_icons(images);
+    }
     // Audio subsystem
     Audio_Player audio_player;
     // Running environment
@@ -359,6 +391,9 @@ Game::Game(const std::vector<std::string>& args,
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         editor_ticks(0),
         editor_size(1, 1) {
+    // Set executable icons
+    pimpl->set_icons(*window);
+
     // Set members
     clock = std::make_unique<Clock>(*this);
     camera = std::make_unique<Camera>(*this);

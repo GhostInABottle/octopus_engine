@@ -17,6 +17,8 @@ void Configurations::load_defaults() {
     defaults["game.scripts-folder"] = std::string{};
     defaults["game.store-url"] = std::string{};
     defaults["game.archive-path"] = std::string{};
+    defaults["game.icon_base_name"] = std::string{};
+    defaults["game.icon_sizes"] = std::string{};
 
     defaults["text.fade-in-duration"] = 250;
     defaults["text.fade-out-duration"] = 250;

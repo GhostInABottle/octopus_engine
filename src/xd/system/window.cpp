@@ -471,6 +471,21 @@ void xd::window::set_gamma(float gamma) const {
     glfwSetGamma(glfwGetPrimaryMonitor(), gamma);
 }
 
+void xd::window::set_icons(std::vector<std::shared_ptr<xd::image>> icon_images) const {
+    if (icon_images.empty()) return;
+
+    std::vector<GLFWimage> glfw_images;
+    for (auto& icon : icon_images) {
+        GLFWimage image{};
+        image.width = icon->width();
+        image.height = icon->height();
+        image.pixels = static_cast<unsigned char*>(icon->data());
+        glfw_images.push_back(image);
+    }
+
+    glfwSetWindowIcon(m_window, glfw_images.size(), glfw_images.data());
+}
+
 void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key)
 {
     // find if the physical key is bound

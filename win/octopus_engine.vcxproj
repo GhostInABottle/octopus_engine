@@ -423,6 +423,13 @@
     <ClInclude Include="..\include\sprite_data.hpp" />
     <ClInclude Include="..\include\text_parser.hpp" />
     <ClInclude Include="..\include\tileset.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="octopus_engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

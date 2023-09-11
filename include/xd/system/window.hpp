@@ -5,6 +5,7 @@
 #include "input.hpp"
 #include "../graphics/transform_geometry.hpp"
 #include "..//graphics/types.hpp"
+#include "..//graphics/image.hpp"
 #include "../event_bus.hpp"
 #include <cstdint>
 #include <unordered_map>
@@ -49,6 +50,7 @@ namespace xd
         void set_fullscreen(bool fullscreen);
         void set_vsync(bool vsync) const;
         void set_gamma(float gamma) const;
+        void set_icons(std::vector<std::shared_ptr<xd::image>> icon_images) const;
 
         // ticks stuff
         int ticks() const noexcept { return m_current_ticks; }
