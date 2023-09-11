@@ -117,10 +117,15 @@ bool Standard_Filesystem::remove_file(const std::string& filename) {
 }
 
 bool Standard_Filesystem::create_directories(const std::string& path) {
-    if (file_exists(path)) return true;
+    auto fs_path = fs::u8path(path);
+    if (fs::exists(fs_path)) return true;
+
     try {
-        return fs::create_directories(fs::u8path(path));
-    } catch (fs::filesystem_error&) {
+        fs::create_directories(fs_path);
+        // Can't rely on create_directories's return value; it returns false for trailing /
+        return fs::exists(fs_path);
+    } catch (fs::filesystem_error& e) {
+        LOGGER_E << "Error creating directory " << path << ": " << e.what();
         return false;
     }
 }

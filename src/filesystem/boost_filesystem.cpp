@@ -127,11 +127,15 @@ bool Boost_Filesystem::remove_file(const std::string& filename) {
 }
 
 bool Boost_Filesystem::create_directories(const std::string& path) {
-    if (file_exists(path)) return true;
+    auto fs_path = detail::string_to_utf8_path(path);
+    if (fs::exists(fs_path)) return true;
+
     try {
-        return fs::create_directories(detail::string_to_utf8_path(path));
+        fs::create_directories(fs_path);
+        // Can't rely on create_directories's return value; it returns false for trailing /
+        return fs::exists(fs_path);
     } catch (fs::filesystem_error& e) {
-        LOGGER_E << "Error creating directories " << path << ": " << e.what();
+        LOGGER_E << "Error creating directory " << path << ": " << e.what();
         return false;
     }
 }
