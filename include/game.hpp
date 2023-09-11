@@ -40,7 +40,7 @@ public:
     Game& operator=(const Game&) = delete;
     explicit Game(const std::vector<std::string>& args,
         std::shared_ptr<xd::audio> audio,
-        std::shared_ptr<Environment> environment,
+        Environment& environment,
         bool editor_mode = false);
     ~Game();
 

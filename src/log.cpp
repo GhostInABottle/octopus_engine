@@ -1,5 +1,6 @@
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
+#include "../include/environments/environment.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
 #include <iostream>
@@ -9,6 +10,7 @@ std::unique_ptr<std::ostream> Log::log_file;
 std::ostream* Log::log_fallback = &std::cerr;
 bool Log::log_file_opened = false;
 bool Log::enabled = false;
+std::shared_ptr<Environment> Log::environment;
 
 void Log::open_log_file() {
     if (Configurations::defaults_loaded()) {
@@ -26,10 +28,13 @@ void Log::open_log_file() {
     if (filename.empty()) filename = "game.log";
 
     string_utilities::normalize_slashes(filename);
-    auto data_folder = file_utilities::user_data_folder();
-    auto data_dir = data_folder->get_version_path();
-    if (filename.find("/") == std::string::npos) {
-        filename = data_dir + filename;
+    std::shared_ptr<User_Data_Folder> data_folder;
+    if (environment) {
+        data_folder = file_utilities::user_data_folder(*environment);
+        auto data_dir = data_folder->get_version_path();
+        if (filename.find("/") == std::string::npos) {
+            filename = data_dir + filename;
+        }
     }
 
     int mode = static_cast<int>(std::ios_base::out);
@@ -39,7 +44,10 @@ void Log::open_log_file() {
     else if (config_mode == "append")
         mode |= std::ios_base::app;
 
-    log_file = data_folder->get_filesystem().open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
+    auto& filesystem = data_folder
+        ? data_folder->get_filesystem()
+        : *file_utilities::disk_filesystem();
+    log_file = filesystem.open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
     log_file_opened = static_cast<bool>(log_file);
 
     std::string config_level = Configurations::get<std::string>("logging.level");

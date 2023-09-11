@@ -14,12 +14,18 @@
 // Levels of log messages
 enum class Log_Level { error, warning, info, debug };
 
+class Environment;
+
 // A simple logging class. Usage:
 // Log(level).lvalue() << stuff
 // LOGGER(level) << stuff
 // LOGGER_L << stuff
 class Log : public std::stringstream {
 public:
+    // Call this before logging anything
+    static void set_environment(std::shared_ptr<Environment> env) {
+        environment = env;
+    }
     // Constructor: sets the level
     explicit Log(Log_Level level = Log_Level::info) : current_level(level) {
         if (!log_file_opened) {
@@ -32,8 +38,15 @@ public:
 
         auto file = log_file_opened ? log_file.get() : log_fallback;
 
-        *file << "- " << timestamp() << " " << log_level_to_string(current_level)
+        *file << "- " << timestamp() << " "
+            << log_level_to_string(current_level)
             << ": " << this->str() << std::endl;
+
+        if (!environment) {
+            *file << "- " << timestamp()
+                << " ERROR: Logging without setting the environment!"
+                << std::endl;
+        }
 
         if (log_file && !*log_file) {
             log_file_opened = false;
@@ -110,6 +123,8 @@ private:
     static bool log_file_opened;
     // Is logging disabled? (e.g. by config)
     static bool enabled;
+    // Current environment
+    static std::shared_ptr<Environment> environment;
     // Open the log file for the first time
     static void open_log_file();
 };

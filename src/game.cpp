@@ -24,7 +24,7 @@
 struct Game::Impl {
     explicit Impl(Game& game,
                 std::shared_ptr<xd::audio> audio,
-                std::shared_ptr<Environment> environment,
+                Environment& environment,
                 bool editor_mode) :
             audio_player(audio),
             environment(environment),
@@ -55,14 +55,6 @@ struct Game::Impl {
                 xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game),
             typewriter_decorator(game, audio_player) {
-
-        // Fall back to default environment
-        if (!this->environment || !this->environment->is_ready()) {
-            auto env_name = this->environment ? this->environment->get_name() : "NA";
-            LOGGER_W << "Environment " << env_name << " is missing or not ready. Falling back to default.";
-            this->environment.reset(new Default_Environment{});
-        }
-
         // Register decorators
         text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);
@@ -167,7 +159,7 @@ struct Game::Impl {
             key_binder = std::make_unique<Key_Binder>(game);
         }
 
-        auto user_data_folder = file_utilities::user_data_folder();
+        auto user_data_folder = file_utilities::user_data_folder(environment);
         if (!user_data_folder->load_keymap_file(*key_binder)) {
             key_binder->bind_defaults();
         }
@@ -259,7 +251,7 @@ struct Game::Impl {
     // Audio subsystem
     Audio_Player audio_player;
     // Running environment
-    std::shared_ptr<Environment> environment;
+    Environment& environment;
     // Was game started in editor mode?
     bool editor_mode;
     // Texture asset manager
@@ -330,7 +322,7 @@ struct Game::Impl {
 
 Game::Game(const std::vector<std::string>& args,
             std::shared_ptr<xd::audio> audio,
-            std::shared_ptr<Environment> environment,
+            Environment& environment,
             bool editor_mode) :
         command_line_args(args),
         window(editor_mode ? nullptr : std::make_unique<xd::window>(
@@ -486,7 +478,8 @@ void Game::run() {
         render();
     }
 
-    file_utilities::user_data_folder()->try_to_save_config();
+    auto user_folder = file_utilities::user_data_folder(pimpl->environment);
+    user_folder->try_to_save_config();
 }
 
 void Game::frame_update() {
@@ -875,9 +868,5 @@ Key_Binder& Game::get_key_binder() {
 }
 
 Environment& Game::get_environment() {
-    if (!pimpl->environment) {
-        throw std::runtime_error("Game environment is not set!");
-    }
-
-    return *pimpl->environment;
+    return pimpl->environment;
 }

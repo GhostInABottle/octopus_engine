@@ -52,8 +52,8 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["user_data_filesystem"] = sol::property([](Game&) {
         return file_utilities::user_data_filesystem();
         });
-    game_type["data_folder"] = sol::property([](Game&) {
-        return file_utilities::user_data_folder();
+    game_type["data_folder"] = sol::property([](Game& game) {
+        return file_utilities::user_data_folder(game.get_environment());
     });
 
     game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });

@@ -16,6 +16,8 @@ public:
     };
     // Get the preferred mode for opening URLs
     virtual Open_Page_Mode get_preferred_open_page_mode() const = 0;
+    // Get the current user's ID as a string (empty if it's not applicable)
+    virtual std::string get_user_id_string() const { return ""; }
     // Is the environment initialized and ready to be used?
     // If this is false after construction, we'll fallback to the default env
     virtual bool is_ready() const = 0;

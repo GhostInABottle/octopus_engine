@@ -4,12 +4,16 @@
 #include "../../include/save_file.hpp"
 #include "../../include/key_binder.hpp"
 #include "../../include/exceptions.hpp"
+#include "../../include/environments/environment.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/vendor/platform_folders.hpp"
 #include <stdexcept>
 
-User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem(filesystem), parsed_default_config(false) {
+bool User_Data_Folder::parsed_default_config = false;
+
+User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Environment& env)
+        : filesystem(filesystem) {
     std::string default_folder;
     auto add_game_folder = false;
 
@@ -57,10 +61,17 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem
         default_folder += title + "/";
         game_path = default_folder;
 
+        auto user_id = env.get_user_id_string();
+        if (!user_id.empty()) {
+            default_folder += user_id + "/";
+        }
+        user_path = default_folder;
+
         auto data_dir_version = Configurations::get<std::string>("game.data-folder-version");
         default_folder += data_dir_version + "/";
     } else {
         game_path = default_folder;
+        user_path = default_folder;
     }
 
     version_path = default_folder;
@@ -74,12 +85,14 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem) : filesystem
 
     base_path = "";
     game_path = "";
+    user_path = "";
     version_path = "";
 }
 
 void User_Data_Folder::parse_config() {
     if (!parsed_default_config) {
         parse_default_config();
+        LOGGER_I << "Parsed the default config.ini file";
     }
 
     if (version_path.empty()) return;
@@ -115,7 +128,6 @@ void User_Data_Folder::parse_default_config() {
     }
 
     auto warnings = Configurations::parse(*default_stream);
-    LOGGER_I << "Parsed the default config.ini file";
 
     for (auto& warning : warnings) {
         LOGGER_W << warning;

@@ -10,9 +10,6 @@ Steam_Environment::Steam_Environment()
         , restart(false)
         , app_id(Configurations::get<int>("steam.app-id"))
         , is_steam_deck(false) {
-
-    LOGGER_I << "Initializing Steam API";
-
     auto try_to_restart = Configurations::get<bool>("steam.restart-in-steam");
     if (try_to_restart && SteamAPI_RestartAppIfNecessary(app_id)) {
         // Starts Steam and launches the game again.
@@ -21,7 +18,6 @@ Steam_Environment::Steam_Environment()
     }
 
     if (!SteamAPI_Init()) {
-        LOGGER_I << "Steam failed to initialize.";
         return;
     }
 
@@ -33,6 +29,13 @@ Steam_Environment::~Steam_Environment() {
     if (!ready) return;
 
     SteamAPI_Shutdown();
+}
+
+std::string Steam_Environment::get_user_id_string() const {
+    if (!ready || !SteamUser()) return "";
+
+    auto account_id = SteamUser()->GetSteamID().GetAccountID();
+    return std::to_string(account_id);
 }
 
 std::string Steam_Environment::get_name() const {
@@ -76,7 +79,7 @@ bool Steam_Environment::open_url(const std::string& url, Open_Page_Mode mode,
         return false;
     }
 
-    if (mode == Open_Page_Mode::OVERLAY) {
+    if (mode == Open_Page_Mode::OVERLAY && SteamFriends()) {
         LOGGER_I << "Opening URL using Steam Overlay " << url;
         SteamFriends()->ActivateGameOverlayToWebPage(url.c_str(),
             k_EActivateGameOverlayToWebPageMode_Modal);

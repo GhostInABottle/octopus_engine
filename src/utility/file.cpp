@@ -94,7 +94,7 @@ Readable_Filesystem* file_utilities::game_data_filesystem(std::string_view arg) 
     if (detail::game_data_filesystem) return detail::game_data_filesystem;
 
     if (!Configurations::defaults_loaded()) {
-        user_data_folder()->parse_default_config();
+        User_Data_Folder::parse_default_config();
     }
 
     std::shared_ptr<Readable_Filesystem> fs = disk_filesystem(arg);
@@ -164,11 +164,11 @@ void file_utilities::set_user_data_filesystem(Writable_Filesystem* fs) {
     detail::user_data_filesystem = fs;
 }
 
-std::shared_ptr<User_Data_Folder> file_utilities::user_data_folder() {
+std::shared_ptr<User_Data_Folder> file_utilities::user_data_folder(const Environment& env) {
     if (detail::user_data_folder) return detail::user_data_folder;
 
     auto fs = user_data_filesystem();
-    detail::user_data_folder = std::make_shared<User_Data_Folder>(*fs);
+    detail::user_data_folder = std::make_shared<User_Data_Folder>(*fs, env);
     return detail::user_data_folder;
 }
 

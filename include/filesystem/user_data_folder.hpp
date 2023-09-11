@@ -7,18 +7,19 @@
 
 class Save_File;
 class Key_Binder;
+class Environment;
 
 // The folder where user data (save files, config, log, etc.) are written
 class User_Data_Folder {
 public:
     // The constructor will get the system's data path and create the folder if needed
-    User_Data_Folder(Writable_Filesystem& filesystem);
+    User_Data_Folder(Writable_Filesystem& filesystem, const Environment& env);
     // Destructor
     ~User_Data_Folder() {}
     // Parse config file and save it to data directory if needed
     void parse_config();
     // Parse the default config (not the one in user data directory)
-    void parse_default_config();
+    static void parse_default_config();
     // Save config file if it changed since last save (or if forced)
     void save_config(bool force = false);
     // Try to save the file, logging any errors
@@ -37,7 +38,10 @@ public:
     std::string get_base_path() const { return base_path; }
     // Get the game specific folder (e.g. C:\users\abc\Documents\My Games\GameTitle\)
     std::string get_game_path() const { return game_path; }
-    // Get the folder for the current version (e.g. C:\users\abc\Documents\My Games\GameTitle\v2\)
+    // In certain scenarios (e.g. on Steam), get user's folder, otherwise it's the same as game path
+    // (e.g. C:\users\abc\Documents\My Games\GameTitle\123\)
+    std::string get_user_path() const { return user_path; }
+    // Get the folder for the current version (e.g. C:\users\abc\Documents\My Games\GameTitle\123\v2\)
     std::string get_version_path() const { return version_path; }
     // Get the underlying filesystem
     Writable_Filesystem& get_filesystem() { return filesystem; }
@@ -47,8 +51,9 @@ private:
     Writable_Filesystem& filesystem;
     std::string base_path;
     std::string game_path;
+    std::string user_path;
     std::string version_path;
-    bool parsed_default_config;
+    static bool parsed_default_config;
     std::vector<std::string> warnings;
     // Add directory to save filename
     void cleanup_save_filename(std::string& filename);

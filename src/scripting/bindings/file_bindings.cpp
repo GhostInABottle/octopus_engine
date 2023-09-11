@@ -61,6 +61,7 @@ void bind_file_types(sol::state& lua, Game& game) {
     auto user_data_type = lua.new_usertype<User_Data_Folder>("User_Data_Folder");
     user_data_type["base_path"] = sol::property(&User_Data_Folder::get_base_path);
     user_data_type["game_path"] = sol::property(&User_Data_Folder::get_game_path);
+    user_data_type["user_path"] = sol::property(&User_Data_Folder::get_user_path);
     user_data_type["version_path"] = sol::property(&User_Data_Folder::get_version_path);
 
     user_data_type["save"] = [&lua](User_Data_Folder* folder, const std::string& filename, sol::table obj,

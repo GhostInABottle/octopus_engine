@@ -5,6 +5,8 @@
 #include <memory>
 #include "../filesystem/user_data_folder.hpp"
 
+class Environment;
+
 namespace file_utilities {
     // Get a non-virtual filesystem implementation such as std or boost
     std::shared_ptr<Writable_Filesystem> disk_filesystem(std::string_view arg = {});
@@ -24,7 +26,7 @@ namespace file_utilities {
     // Override the user data filesystem
     void set_user_data_filesystem(Writable_Filesystem* filesystem);
     // Get a helper class for accessing and writing to the user data folder
-    std::shared_ptr<User_Data_Folder> user_data_folder();
+    std::shared_ptr<User_Data_Folder> user_data_folder(const Environment& env);
     // Try to open a URL
     bool open_url(const std::string& url);
 }

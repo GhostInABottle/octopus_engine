@@ -31,44 +31,68 @@ int main(int argc, char* argv[]) {
 
         std::vector<std::string> args{ argv, argv + argc };
 
-        // Init the filesystems
+        // Parse the config.ini file in the executable directory
+        // (needed for archive path and Steam app ID)
+        User_Data_Folder::parse_default_config();
+
+        // Initialize the environment
+        std::shared_ptr<Environment> environment;
+#ifdef OCB_USE_STEAM_SDK
+        auto default_env = false;
+        environment = std::make_shared<Steam_Environment>();
+#else
+        auto default_env = true;
+        environment = std::make_shared<Default_Environment>();
+#endif
+
+        auto should_restart = environment->should_restart();
+        auto env_name = environment->get_name();
+        auto use_default = !default_env && !environment->is_ready();
+        if (use_default) {
+            // Fall back to default environment
+            environment.reset(new Default_Environment{});
+        }
+
+        Log::set_environment(environment);
+
+        // Initialize the filesystems
         file_utilities::default_config_filesystem(argv[0]);
         file_utilities::game_data_filesystem(argv[0]);
         file_utilities::user_data_filesystem(argv[0]);
 
-        // Parse the config file
-        auto user_data_folder = file_utilities::user_data_folder();
-        for (auto& warning : user_data_folder->get_warnings()) {
-            LOGGER_I << warning;
-        }
+        // Parse the user's config file
+        auto user_data_folder = file_utilities::user_data_folder(*environment);
         user_data_folder->parse_config();
 
+        // Safe to log now that the correct log file configs are loaded
         LOGGER_I << "Reticulating Splines";
+        for (auto& warning : user_data_folder->get_warnings()) {
+            LOGGER_W << warning;
+        }
+
+        // Check if the environment wanted to launch the executable
+        if (should_restart) {
+            LOGGER_I << "Environment requested a restart. Exiting...";
+            return 0;
+        }
+
+        // Log earlier non-default environment failure
+        if (use_default) {
+            LOGGER_W << "Environment " << env_name
+                << " failed to initialize. Falling back to default";
+        }
  
         // Initialize the audio system
         LOGGER_I << "Initializing the audio system";
         auto audio = std::make_shared<xd::audio>();
-
-        // Initialize the environment
-        LOGGER_I << "Initializing the environment";
-#ifdef OCB_USE_STEAM_SDK
-        auto environment = std::make_shared<Steam_Environment>();
-#else
-        auto environment = std::make_shared<Default_Environment>();
-#endif
 
         auto preferred_configs = environment->get_preferred_configs();
         for (auto& [key, value] : preferred_configs) {
             Configurations::override_value(key, value);
         }
 
-        if (environment->should_restart()) {
-            LOGGER_I << "Environment requested a restart. Exiting...";
-            return 0;
-        }
-
         LOGGER_I << "Initializing the god object";
-        Game game(args, audio, environment);
+        Game game(args, audio, *environment);
 
         LOGGER_I << "We have a liftoff!";
         game.run();

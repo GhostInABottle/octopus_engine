@@ -223,6 +223,7 @@ function Engine_Writable_Filesystem:remove(path) end
 ---@class (exact) Engine_User_Data_Folder
 ---@field base_path string # readonly
 ---@field game_path string # readonly
+---@field user_path string # readonly
 ---@field version_path string # readonly
 local Engine_User_Data_Folder = {}
 

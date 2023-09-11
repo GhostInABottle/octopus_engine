@@ -16,6 +16,7 @@ public:
     virtual bool is_ready() const override {
         return ready;
     }
+    virtual std::string get_user_id_string() const override;
     virtual bool should_restart() const override { return restart; }
     virtual std::string get_name() const override;
     virtual bool can_open_store_page(Open_Page_Mode mode = Open_Page_Mode::ANY) const override {
