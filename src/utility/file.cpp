@@ -188,7 +188,7 @@ bool file_utilities::open_url(const std::string& url) {
         #endif
 
         string_utilities::replace_all(command, "%", url);
-        result = std::system(command.c_str()) != 0;
+        result = std::system(command.c_str()) == 0;
     #endif
 
     if (result) {
