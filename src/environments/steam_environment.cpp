@@ -67,7 +67,7 @@ bool Steam_Environment::open_store_page(Open_Page_Mode mode) {
 
     // Could use ActivateGameOverlayToStore for overlay mode, but it doesn't have
     // positioning options and is more suited for adding DLC to the user's cart
-    return open_url(url, mode);
+    return open_url(url, mode, fallback_url);
 }
 
 bool Steam_Environment::open_url(const std::string& url, Open_Page_Mode mode,
