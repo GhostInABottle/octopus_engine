@@ -10,7 +10,7 @@ std::unique_ptr<std::ostream> Log::log_file;
 std::ostream* Log::log_fallback = &std::cerr;
 bool Log::log_file_opened = false;
 bool Log::enabled = false;
-std::shared_ptr<Environment> Log::environment;
+const Environment* Log::environment = nullptr;
 
 void Log::open_log_file() {
     if (Configurations::defaults_loaded()) {

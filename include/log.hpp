@@ -23,7 +23,7 @@ class Environment;
 class Log : public std::stringstream {
 public:
     // Call this before logging anything
-    static void set_environment(std::shared_ptr<Environment> env) {
+    static void set_environment(const Environment* env) {
         environment = env;
     }
     // Constructor: sets the level
@@ -124,7 +124,7 @@ private:
     // Is logging disabled? (e.g. by config)
     static bool enabled;
     // Current environment
-    static std::shared_ptr<Environment> environment;
+    static const Environment* environment;
     // Open the log file for the first time
     static void open_log_file();
 };

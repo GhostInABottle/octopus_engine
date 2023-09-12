@@ -36,21 +36,20 @@ int main(int argc, char* argv[]) {
         User_Data_Folder::parse_default_config();
 
         // Initialize the environment
-        std::shared_ptr<Environment> environment;
+        Default_Environment default_environment;
+        Environment* environment = &default_environment;
 #ifdef OCB_USE_STEAM_SDK
-        auto default_env = false;
-        environment = std::make_shared<Steam_Environment>();
-#else
-        auto default_env = true;
-        environment = std::make_shared<Default_Environment>();
+        Steam_Environment steam_environment;
+        environment = &steam_environment;
 #endif
 
         auto should_restart = environment->should_restart();
         auto env_name = environment->get_name();
-        auto use_default = !default_env && !environment->is_ready();
+        auto use_default = environment != &default_environment
+            && !environment->is_ready();
         if (use_default) {
             // Fall back to default environment
-            environment.reset(new Default_Environment{});
+            environment = &default_environment;
         }
 
         Log::set_environment(environment);
