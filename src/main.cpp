@@ -44,7 +44,6 @@ int main(int argc, char* argv[]) {
 #endif
 
         auto should_restart = environment->should_restart();
-        auto env_name = environment->get_name();
         auto use_default = environment != &default_environment
             && !environment->is_ready();
         if (use_default) {
@@ -77,8 +76,10 @@ int main(int argc, char* argv[]) {
 
         // Log earlier non-default environment failure
         if (use_default) {
-            LOGGER_W << "Environment " << env_name
+            LOGGER_W << "Environment " << environment->get_name()
                 << " failed to initialize. Falling back to default";
+        } else {
+            LOGGER_I << "Started in " << environment->get_name() << " environment";
         }
  
         // Initialize the audio system

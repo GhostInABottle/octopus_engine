@@ -47,6 +47,7 @@ struct Game::Impl {
             game_height(Configurations::get<int>("graphics.game-height", "debug.height")),
             gamepad_id(Configurations::get<int>("controls.gamepad-number")),
             preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
+            gamepad_disconnected(false),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
             scripts_folder(Configurations::get<std::string>("game.scripts-folder")),
             reset_scripting(false),
@@ -167,15 +168,30 @@ struct Game::Impl {
     }
     // Get preferred gamepad ID (or first one)
     int get_gamepad_id(xd::window& window) {
-        if (gamepad_id == -1 || !window.joystick_present(gamepad_id)) {
-            if (gamepad_id != preferred_gamepad_id
-                    && preferred_gamepad_id != -1
-                    && window.joystick_present(preferred_gamepad_id)) {
-                gamepad_id = preferred_gamepad_id;
-            } else {
-                gamepad_id = window.first_joystick_id();
+        auto cached = gamepad_id != -1 && window.joystick_present(gamepad_id);
+        if (cached) return gamepad_id;
+
+        // Handle disconnect
+        if (gamepad_id != -1 && !gamepad_disconnected) {
+            auto config = Configurations::get<std::string>("controls.pause-on-gamepad-disconnect");
+            LOGGER_I << "Gamepad " << gamepad_id << " disconnected. Pause settings: " << config;
+            gamepad_disconnected = config == "always" || (config == "auto"
+                && window.last_input_type() == xd::input_type::INPUT_GAMEPAD);
+        }
+
+        auto preferred_gamepad_exists = gamepad_id != preferred_gamepad_id
+            && preferred_gamepad_id != -1
+            && window.joystick_present(preferred_gamepad_id);
+        if (preferred_gamepad_exists) {
+            gamepad_id = preferred_gamepad_id;
+            LOGGER_I << "Setting gamepad ID to preferred ID: " << gamepad_id;
+        } else {
+            gamepad_id = window.first_joystick_id();
+            if (gamepad_id != -1) {
+                LOGGER_I << "Setting gamepad ID to first available ID: " << gamepad_id;
             }
         }
+
         return gamepad_id;
     }
     void reset_scripting_interface(Game& game) {
@@ -328,6 +344,8 @@ struct Game::Impl {
     int gamepad_id;
     // Configured gamepad ID
     int preferred_gamepad_id;
+    // Was gamepad disconnected
+    bool gamepad_disconnected;
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
     // Keymap file reader and binder
@@ -525,8 +543,10 @@ void Game::frame_update() {
         Configurations::set("graphics.fullscreen", !is_fullscreen());
     }
 
-    // Pause or resume game if needed
-    bool triggered_pause = triggered(pimpl->pause_button);
+    // Pause or resume game if button is pressed or gamepad is disconnect
+    bool triggered_pause = triggered(pimpl->pause_button)
+        || (pimpl->gamepad_disconnected && !paused);
+
     // Only resume if there is no pause script, otherwise the script should do it
     if (paused && !pimpl->pause_scripting_interface) {
         if (triggered_pause)
@@ -542,6 +562,10 @@ void Game::frame_update() {
             pause();
             pimpl->focus_pause = true;
         }
+    }
+
+    if (paused && pimpl->gamepad_disconnected) {
+        pimpl->gamepad_disconnected = false;
     }
 
     if (paused) {
@@ -626,7 +650,10 @@ void Game::pause() {
 
     if (pimpl->pause_scripting_interface) {
         auto pause_script = Configurations::get<std::string>("game.pause-script");
+        LOGGER_I << "Paused game. Running pause script: " << pause_script;
         run_script_file(pause_script);
+    } else {
+        LOGGER_I << "Paused game";
     }
 }
 
@@ -641,7 +668,12 @@ void Game::resume(const std::string& script) {
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
 
-    if (!script.empty()) run_script(script);
+    if (!script.empty()) {
+        LOGGER_I << "Resumed game. Running script: " << script;
+        run_script(script);
+    } else {
+        LOGGER_I << "Resumed game";
+    }
 }
 
 void Game::exit() {

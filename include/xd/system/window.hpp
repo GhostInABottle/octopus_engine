@@ -135,6 +135,8 @@ namespace xd
         void on_input(input_type type, int key, int action, int device_id = 0);
         // character input event handler, for internal use
         void on_character_input(unsigned int codepoint);
+        // Joysticks are connected or disconnected
+        void on_joystick_changed(int id, int event);
 
         // handle errors
         void on_error(int code, const char* description) const {
@@ -202,6 +204,8 @@ namespace xd
         };
 
         std::unordered_map<int, joystick_state> m_joystick_states;
+        std::vector<int> m_joysticks_to_add;
+        std::vector<int> m_joysticks_to_remove;
 
         // to keep track whether we're in update or not
         bool m_in_update;

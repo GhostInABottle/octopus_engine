@@ -92,7 +92,6 @@ bool Steam_Environment::open_url(const std::string& url, Open_Page_Mode mode,
     return file_utilities::open_url(fallback_url);
 }
 
-
 const Configurations::value_map Steam_Environment::get_preferred_configs() const {
     if (!is_steam_deck) return {};
 

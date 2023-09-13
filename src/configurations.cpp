@@ -88,6 +88,7 @@ void Configurations::load_defaults() {
     defaults["controls.cancel-button"] = std::string{"b"};
     defaults["controls.pause-button"] = std::string{"pause"};
     defaults["controls.mapping-file"] = std::string{"keymap.ini"};
+    defaults["controls.pause-on-gamepad-disconnect"] = std::string{"auto"};
 
     defaults["logging.enabled"] = true;
     defaults["logging.filename"] = std::string{"game.log"};

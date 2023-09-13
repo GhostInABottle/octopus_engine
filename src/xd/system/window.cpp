@@ -30,11 +30,7 @@ namespace
     }
 
     void on_joystick_changed(int id, int event) {
-        if (event == GLFW_CONNECTED) {
-            window_instance->add_joystick(id);
-        } else if (event == GLFW_DISCONNECTED) {
-            window_instance->remove_joystick(id);
-        }
+        window_instance->on_joystick_changed(id, event);
     }
 
     void on_error(int error, const char* description) {
@@ -135,7 +131,7 @@ xd::window::window(const std::string& title, int width, int height, const window
     // register input callbacks
     glfwSetKeyCallback(m_window, &on_key_proxy);
     glfwSetMouseButtonCallback(m_window, &on_mouse_proxy);
-    glfwSetJoystickCallback(&on_joystick_changed);
+    glfwSetJoystickCallback(&::on_joystick_changed);
 
     glfwSetErrorCallback(&::on_error);
 
@@ -220,6 +216,14 @@ void xd::window::on_character_input(unsigned int codepoint) {
     utf8::append(codepoint, std::back_inserter(m_character_buffer));
 }
 
+void xd::window::on_joystick_changed(int id, int event) {
+    if (event == GLFW_CONNECTED) {
+        m_joysticks_to_add.push_back(id);
+    } else if (event == GLFW_DISCONNECTED) {
+        m_joysticks_to_remove.push_back(id);
+    }
+}
+
 void xd::window::update()
 {
     // this is used to keep track which triggered keys list triggered() uses
@@ -262,6 +266,20 @@ void xd::window::update()
 void xd::window::update_joysticks()
 {
     if (!m_joystick_enabled) return;
+
+    if (!m_joysticks_to_add.empty()) {
+        for (int id : m_joysticks_to_add) {
+            add_joystick(id);
+        }
+        m_joysticks_to_add.clear();
+    }
+
+    if (!m_joysticks_to_remove.empty()) {
+        for (int id : m_joysticks_to_remove) {
+            remove_joystick(id);
+        }
+        m_joysticks_to_remove.clear();
+    }
 
     for (auto& pair : m_joystick_states) {
         int joystick_id = pair.first;
