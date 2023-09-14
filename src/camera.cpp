@@ -170,6 +170,11 @@ void Camera::calculate_viewport(int width, int height) {
     auto game_width = static_cast<float>(game.game_width(false));
     auto game_height = static_cast<float>(game.game_height(false));
 
+    if (scale_mode == "default") {
+        // The environment can override "default" at startup if it needs to
+        scale_mode = "aspect";
+    }
+
     if (scale_mode == "stretch") {
         viewport.x = 0.0f;
         viewport.y = 0.0f;

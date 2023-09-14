@@ -44,8 +44,8 @@ void Configurations::load_defaults() {
     defaults["graphics.canvas-fps"] = 40;
     defaults["graphics.fullscreen"] = false;
     defaults["graphics.vsync"] = false;
-    // Scaling modes: aspect, window, stretch
-    defaults["graphics.scale-mode"] = std::string{"window"};
+    // Scaling modes: aspect, window, stretch, default
+    defaults["graphics.scale-mode"] = std::string{"default"};
     defaults["graphics.vertex-shader"] = std::string{};
     defaults["graphics.fragment-shader"] = std::string{};
     defaults["graphics.pause-vertex-shader"] = std::string{};

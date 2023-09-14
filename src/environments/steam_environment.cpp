@@ -8,8 +8,8 @@
 Steam_Environment::Steam_Environment()
         : ready(false)
         , restart(false)
-        , app_id(Configurations::get<int>("steam.app-id"))
-        , is_steam_deck(false) {
+        , app_id(Configurations::get<int>("steam.app-id")) {
+
     auto try_to_restart = Configurations::get<bool>("steam.restart-in-steam");
     if (try_to_restart && SteamAPI_RestartAppIfNecessary(app_id)) {
         // Starts Steam and launches the game again.
@@ -22,13 +22,19 @@ Steam_Environment::Steam_Environment()
     }
 
     ready = true;
-    is_steam_deck = SteamUtils()->IsSteamRunningOnSteamDeck();
 }
 
 Steam_Environment::~Steam_Environment() {
     if (!ready) return;
 
     SteamAPI_Shutdown();
+}
+
+Environment::Open_Page_Mode Steam_Environment::get_preferred_open_page_mode() const {
+    if (!ready) return Open_Page_Mode::EXTERNAL;
+
+    auto is_steam_deck = SteamUtils() && SteamUtils()->IsSteamRunningOnSteamDeck();
+    return is_steam_deck ? Open_Page_Mode::OVERLAY : Open_Page_Mode::INTERNAL;
 }
 
 std::string Steam_Environment::get_user_id_string() const {
@@ -39,8 +45,12 @@ std::string Steam_Environment::get_user_id_string() const {
 }
 
 std::string Steam_Environment::get_name() const {
-    return !ready || !is_steam_deck
-        ? "STEAM" : "STEAMDECK";
+    if (ready && SteamUtils()) {
+        if (SteamUtils()->IsSteamRunningOnSteamDeck()) return "STEAM (DECK)";
+        if (SteamUtils()->IsSteamInBigPictureMode()) return "STEAM (BIG PICTURE)";
+    }
+
+    return "STEAM";
 }
 
 bool Steam_Environment::open_store_page(Open_Page_Mode mode) {
@@ -93,11 +103,21 @@ bool Steam_Environment::open_url(const std::string& url, Open_Page_Mode mode,
 }
 
 const Configurations::value_map Steam_Environment::get_preferred_configs() const {
-    if (!is_steam_deck) return {};
+    if (!ready || !SteamUtils()) return {};
 
     Configurations::value_map configs;
-    configs["graphics.fullscreen"] = true;
-    configs["graphics.scale-mode"] = std::string{ "stretch" };
+
+    auto is_steam_deck = SteamUtils()->IsSteamRunningOnSteamDeck();
+    auto is_big_picture = SteamUtils()->IsSteamInBigPictureMode();
+    if (is_steam_deck || is_big_picture) {
+        configs["graphics.fullscreen"] = true;
+    }
+
+    auto stretch_scale = is_steam_deck
+        && Configurations::get<std::string>("graphics.scale-mode") == "default";
+    if (stretch_scale) {
+        configs["graphics.scale-mode"] = std::string{"stretch"};
+    }
 
     return configs;
 }

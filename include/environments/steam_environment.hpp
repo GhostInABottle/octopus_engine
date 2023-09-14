@@ -8,11 +8,7 @@ class Steam_Environment : public Environment {
 public:
     Steam_Environment();
     ~Steam_Environment();
-    virtual Open_Page_Mode get_preferred_open_page_mode() const override {
-        return is_steam_deck
-            ? Open_Page_Mode::OVERLAY
-            : Open_Page_Mode::INTERNAL;
-    }
+    virtual Open_Page_Mode get_preferred_open_page_mode() const override;
     virtual bool is_ready() const override {
         return ready;
     }
@@ -38,7 +34,6 @@ private:
     bool ready;
     bool restart;
     int app_id;
-    bool is_steam_deck;
 };
 
 #endif

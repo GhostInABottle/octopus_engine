@@ -82,6 +82,7 @@ struct Game::Impl {
 
         object_script_preamble = preamble + ";";
     }
+
     // Create icon texture
     static std::shared_ptr<xd::texture> make_icon_texture() {
         auto filename = Configurations::get<std::string>("font.icon-image");
@@ -97,13 +98,16 @@ struct Game::Impl {
             hex_to_color(Configurations::get<std::string>("font.icon-transparent-color"))
         );
     }
+
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
         config_changes.insert(config_key);
     }
+
     bool config_changed(const std::string& config_key) const {
         return config_changes.find(config_key) != config_changes.end();
     }
+
     // Process configuration changes
     void process_config_changes(Game& game, xd::window* window) {
         if (config_changes.empty()) return;
@@ -155,6 +159,7 @@ struct Game::Impl {
         }
         config_changes.clear();
     }
+
     // Process key-mapping string
     void process_keymap(Game& game) {
         if (!key_binder) {
@@ -194,6 +199,7 @@ struct Game::Impl {
 
         return gamepad_id;
     }
+
     void reset_scripting_interface(Game& game) {
         scripting_interface = std::make_unique<Scripting_Interface>(game);
         scripting_interface->set_globals();
@@ -222,6 +228,7 @@ struct Game::Impl {
 
         reset_scripting = false;
     }
+
     void run_script(Game& game, const std::string& script_or_filename, bool is_filename) {
         auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
         auto old_interface = game.get_current_scripting_interface();
@@ -233,6 +240,7 @@ struct Game::Impl {
         }
         game.set_current_scripting_interface(old_interface);
     }
+
     void run_function(Game& game, const sol::protected_function& function) {
         auto& si = game.is_paused() ? pause_scripting_interface : scripting_interface;
         auto old_interface = game.get_current_scripting_interface();
@@ -240,6 +248,7 @@ struct Game::Impl {
         si->schedule_function(function, "GLOBAL");
         game.set_current_scripting_interface(old_interface);
     }
+
     void start_fullscreen_change(Game& game) {
         if (fullscreen_change_ticks != -1) {
             end_fullscreen_change(game);
@@ -248,6 +257,7 @@ struct Game::Impl {
         was_fullscreen = game.is_fullscreen();
         game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
     }
+
     void end_fullscreen_change(Game& game) {
         // Need to wait in some operating systems for the mode change to apply
         if (game.window_ticks() - fullscreen_change_ticks < fullscreen_update_delay) {
@@ -265,6 +275,7 @@ struct Game::Impl {
                 Configurations::get<int>("graphics.window-height"));
         }
     }
+
     void set_icons(xd::window& window) {
         auto base_name = Configurations::get<std::string>("game.icon_base_name");
         auto sizes_string = Configurations::get<std::string>("game.icon_sizes");
@@ -296,6 +307,7 @@ struct Game::Impl {
         LOGGER_I << "Loading " << images.size() << " icons";
         window.set_icons(images);
     }
+
     // Audio subsystem
     Audio_Player audio_player;
     // Running environment
@@ -543,7 +555,7 @@ void Game::frame_update() {
         Configurations::set("graphics.fullscreen", !is_fullscreen());
     }
 
-    // Pause or resume game if button is pressed or gamepad is disconnect
+    // Pause/resume game if pause button is triggered, or pause if gamepad disconnected
     bool triggered_pause = triggered(pimpl->pause_button)
         || (pimpl->gamepad_disconnected && !paused);
 
@@ -569,6 +581,7 @@ void Game::frame_update() {
     }
 
     if (paused) {
+        // Update the paused state script
         if (pimpl->pause_scripting_interface) {
             set_current_scripting_interface(pimpl->pause_scripting_interface.get());
             pimpl->pause_scripting_interface->update();
