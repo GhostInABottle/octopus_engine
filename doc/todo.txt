@@ -1,2 +1,2 @@
 - Non-blocking data saving.
-- Hide the OpenGL-dependent code behind an abstraction.
+- Hide the OpenGL-dependent code behind an abstraction (LLGL?).

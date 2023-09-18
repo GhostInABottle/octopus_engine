@@ -54,7 +54,7 @@ bool xd::sound::paused() const
 
 bool xd::sound::stopped() const
 {
-    return !m_handle->is_stopped();
+    return m_handle->is_stopped();
 }
 
 void xd::sound::set_offset(unsigned int offset)
