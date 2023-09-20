@@ -3,6 +3,7 @@
 #include "../include/xd/lua.hpp"
 #include <iostream>
 #include <cstdio>
+#include <cstdint>
 #include <string>
 #include <stdexcept>
 #include <cmath>
@@ -32,13 +33,13 @@ namespace detail {
             && std::trunc(value) == value;
 
         if (can_be_int) {
-            if (value <= std::numeric_limits<signed char>().max())
+            if (value <= std::numeric_limits<std::int8_t>().max())
                 return type_tag::byte_number;
-            else if (value <= std::numeric_limits<short>().max())
+            else if (value <= std::numeric_limits<std::int16_t>().max())
                 return type_tag::short_number;
-            else if (value <= std::numeric_limits<long>().max())
+            else if (value <= std::numeric_limits<std::int32_t>().max())
                 return type_tag::long_number;
-            else if (value <= std::numeric_limits<long long>().max())
+            else if (value <= std::numeric_limits<std::int64_t>().max())
                 return type_tag::long_long_number;
         }
 
@@ -110,16 +111,16 @@ namespace detail {
             write(stream, value.as<std::string>(), tag);
             break;
         case type_tag::byte_number:
-            write(stream, object_to_number<signed char>(value));
+            write(stream, object_to_number<std::int8_t>(value));
             break;
         case type_tag::short_number:
-            write(stream, object_to_number<short>(value));
+            write(stream, object_to_number<std::int16_t>(value));
             break;
         case type_tag::long_number:
-            write(stream, object_to_number<long>(value));
+            write(stream, object_to_number<std::int32_t>(value));
             break;
         case type_tag::long_long_number:
-            write(stream, object_to_number<long long>(value));
+            write(stream, object_to_number<std::int64_t>(value));
             break;
         case type_tag::float_number:
             write(stream, object_to_number<float>(value));
@@ -176,13 +177,13 @@ namespace detail {
             read(stream, temp_bool);
             return sol::make_object(state, temp_bool);
         case type_tag::byte_number:
-            return read_numeric_value<signed char>(stream, state);
+            return read_numeric_value<std::int8_t>(stream, state);
         case type_tag::short_number:
-            return read_numeric_value<short>(stream, state);
+            return read_numeric_value<std::int16_t>(stream, state);
         case type_tag::long_number:
-            return read_numeric_value<long>(stream, state);
+            return read_numeric_value<std::int32_t>(stream, state);
         case type_tag::long_long_number:
-            return read_numeric_value<long long>(stream, state);
+            return read_numeric_value<std::int64_t>(stream, state);
         case type_tag::float_number:
             return read_numeric_value<float>(stream, state);
         case type_tag::double_number:
@@ -192,7 +193,8 @@ namespace detail {
             read(stream, temp_str, tag);
             return sol::make_object(state, temp_str);
         default:
-            throw std::runtime_error("Unexpected value type");
+            throw std::runtime_error("Unexpected value type "
+                + std::to_string(static_cast<int>(tag)));
         }
     }
 
