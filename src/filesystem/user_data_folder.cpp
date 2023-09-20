@@ -26,7 +26,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
 
     if (config_folder.empty()) {
         try {
-            default_folder = sago::getSaveGamesFolder1();
+            default_folder = sago::getDataHome();
             add_game_folder = true;
         } catch (std::runtime_error& e) {
             warnings.push_back("Unable to retrieve default save folder. Using executable folder - "
