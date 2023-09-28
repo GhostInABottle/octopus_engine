@@ -33,7 +33,7 @@ add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
 target_compile_definitions(octopus_engine PRIVATE NDEBUG)
 target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
-set(OpenGL_GL_PREFERENCE "GLVND")
+set(OpenGL_GL_PREFERENCE LEGACY)
 set(IS_GNU "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
 if (APPLE OR (${IS_GNU} AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8))
