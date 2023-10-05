@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(octopus_engine)
 
-option(STEAM_BUILD "Link with the Steam SDK?")
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 file(GLOB SOURCES LIST_DIRECTORIES false src/*.cpp)
@@ -27,11 +25,6 @@ file(GLOB XD_SOURCES LIST_DIRECTORIES false
     src/xd/graphics/*.cpp
     src/xd/lua/*.cpp
     src/xd/system/*.cpp)
-
-add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
-
-target_compile_definitions(octopus_engine PRIVATE NDEBUG)
-target_compile_features(octopus_engine PRIVATE cxx_std_17)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
 set(IS_GNU "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -61,12 +54,6 @@ ${HarfBuzz_LIBRARIES} ${PHYSFS_LIBRARY} GLEW::GLEW glfw)
 
 set(DEFINITIONS "")
 
-if (STEAM_BUILD AND STEAM_API_FOUND)
-    list(APPEND INCLUDE_DIRS ${STEAM_API_INCLUDE_DIRS})
-    list(APPEND DEPENDENCIES ${STEAM_API_LIBRARIES})
-    list(APPEND DEFINITIONS OCB_USE_STEAM_SDK)
-endif()
-
 if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(IOKIT_LIBRARY IOKit)
@@ -87,6 +74,18 @@ elseif(UNIX AND ${IS_GNU})
     endif()
 endif()
 
+if (STEAM_API_FOUND)
+    add_executable(octopus_engine_steam ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
+    target_compile_definitions(octopus_engine_steam PRIVATE NDEBUG)
+    target_compile_features(octopus_engine_steam PRIVATE cxx_std_17)
+    target_compile_definitions(octopus_engine_steam PRIVATE ${DEFINITIONS} OCB_USE_STEAM_SDK)
+    target_include_directories(octopus_engine_steam PUBLIC ${INCLUDE_DIRS} ${STEAM_API_INCLUDE_DIRS})
+    target_link_libraries(octopus_engine_steam ${DEPENDENCIES} ${STEAM_API_LIBRARIES})
+endif()
+
+add_executable(octopus_engine ${SOURCES} ${EXTRA_SOURCES} ${XD_SOURCES})
+target_compile_definitions(octopus_engine PRIVATE NDEBUG)
+target_compile_features(octopus_engine PRIVATE cxx_std_17)
 target_compile_definitions(octopus_engine PRIVATE ${DEFINITIONS})
 target_include_directories(octopus_engine PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(octopus_engine ${DEPENDENCIES})
