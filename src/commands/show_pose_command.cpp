@@ -44,9 +44,7 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
 
 void Show_Pose_Command::execute() {
     auto holder = get_holder();
-    if (!holder) return;
-
-    sprite = holder->get_sprite();
+    sprite = holder ? holder->get_sprite() : nullptr;
 }
 
 bool Show_Pose_Command::is_complete() const {
