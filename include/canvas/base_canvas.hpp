@@ -59,13 +59,13 @@ public:
     // Inherit certain properties from another canvas
     virtual void inherit_properties(const Base_Canvas& parent) = 0;
     // Find a child by name
-    Base_Canvas* get_child_by_name(const std::string& child_name) {
+    Base_Canvas* get_child_by_name(const std::string& child_name) const {
         auto child = std::find_if(children.begin(), children.end(),
             [&](auto& child) { return child->name == child_name; });
         return child != children.end() ? child->get() : nullptr;
     }
     // Find a child by ID
-    Base_Canvas* get_child_by_id(int id) {
+    Base_Canvas* get_child_by_id(int id) const {
         auto child = children_by_id.find(id);
         if (child != children_by_id.end()) {
             return child->second;

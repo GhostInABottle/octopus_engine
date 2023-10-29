@@ -27,9 +27,9 @@ public:
     void pause() override;
     void resume() override;
 private:
-    Sprite_Holder* get_holder();
+    Sprite_Holder* get_holder() const;
     Holder_Info holder_info;
-    const Sprite* sprite;
+    bool complete;
 };
 
 #endif

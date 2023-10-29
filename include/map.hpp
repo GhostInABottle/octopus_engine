@@ -92,9 +92,9 @@ public:
         std::optional<Direction> dir = std::nullopt,
         std::optional<Object_Layer*> layer = std::nullopt);
     // Get object by name
-    Map_Object* get_object(std::string name);
+    Map_Object* get_object(std::string name) const;
     // Get object by ID
-    Map_Object* get_object(int id);
+    Map_Object* get_object(int id) const;
     // Get all objects
     std::unordered_map<int, std::shared_ptr<Map_Object>>& get_objects() {
         return objects;
@@ -106,23 +106,23 @@ public:
     // Get number of layers
     int layer_count() const;
     // Get layer by index (starting from 1, lua convention)
-    Layer* get_layer_by_index(int index);
+    Layer* get_layer_by_index(int index) const;
     // Get layer by unique TMX ID
-    Layer* get_layer_by_id(int id);
+    Layer* get_layer_by_id(int id) const;
     // Get layer by name
-    Layer* get_layer_by_name(std::string name);
+    Layer* get_layer_by_name(std::string name) const;
     // Get image layer by index (starting from 1, lua convention)
-    Image_Layer* get_image_layer_by_index(int index);
+    Image_Layer* get_image_layer_by_index(int index) const;
     // Get image layer by unique TMX ID
-    Image_Layer* get_image_layer_by_id(int id);
+    Image_Layer* get_image_layer_by_id(int id) const;
     // Get image layer by name
-    Image_Layer* get_image_layer_by_name(const std::string& name);
+    Image_Layer* get_image_layer_by_name(const std::string& name) const;
     // Get object layer by index (starting from 1, lua convention)
-    Object_Layer* get_object_layer_by_index(int index);
+    Object_Layer* get_object_layer_by_index(int index) const;
     // Get object layer by unique TMX ID
-    Object_Layer* get_object_layer_by_id(int id);
+    Object_Layer* get_object_layer_by_id(int id) const;
     // Get object layer by name
-    Object_Layer* get_object_layer_by_name(const std::string& name);
+    Object_Layer* get_object_layer_by_name(const std::string& name) const;
     // Add a new layer
     void add_layer(Layer_Type type);
     // Add an existing layer
@@ -136,7 +136,7 @@ public:
     // Return a sorted list of canvases
     const std::vector<Canvas_Ref>& get_canvases();
     // Get a canvas by its ID
-    Base_Canvas* get_canvas(int id);
+    Base_Canvas* get_canvas(int id) const;
     // Resize map and layers
     void resize(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Save map to specified file name

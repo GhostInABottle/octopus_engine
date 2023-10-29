@@ -37,8 +37,8 @@ void bind_map_types(sol::state& lua) {
     map_type["set_property"] = &Map::set_property;
     map_type["script_scheduler_paused"] = sol::property(&Map::is_script_scheduler_paused, &Map::set_script_scheduler_paused);
     map_type["get_object"] = sol::overload(
-        (Map_Object * (Map::*)(int)) &Map::get_object,
-        (Map_Object * (Map::*)(std::string)) &Map::get_object
+        sol::resolve<Map_Object* (int) const>(&Map::get_object),
+        sol::resolve<Map_Object* (std::string) const>(&Map::get_object)
     );
     map_type["add_new_object"] = &Map::add_new_object;
     map_type["delete_object"] = (void (Map::*)(Map_Object*)) &Map::delete_object;

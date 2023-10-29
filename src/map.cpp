@@ -300,7 +300,7 @@ Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<s
         pos.value_or(xd::vec2{}), dir.value_or(Direction::DOWN)), layer.value_or(nullptr));
 }
 
-Map_Object* Map::get_object(std::string name) {
+Map_Object* Map::get_object(std::string name) const {
     string_utilities::capitalize(name);
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
         return get_object(object_name_to_id.at(name));
@@ -308,7 +308,7 @@ Map_Object* Map::get_object(std::string name) {
     return nullptr;
 }
 
-Map_Object* Map::get_object(int id) {
+Map_Object* Map::get_object(int id) const {
     auto obj = objects.find(id);
     return obj != objects.end() ? obj->second.get() : nullptr;
 }
@@ -357,14 +357,14 @@ int Map::layer_count() const {
     return layers.size();
 }
 
-Layer* Map::get_layer_by_index(int index) {
+Layer* Map::get_layer_by_index(int index) const {
     if (index >= 1 && index <= layer_count())
         return layers[index - 1].get();
     else
         return nullptr;
 }
 
-Layer* Map::get_layer_by_id(int id) {
+Layer* Map::get_layer_by_id(int id) const {
     auto result = layers_by_id.find(id);
 
     if (result != layers_by_id.end())
@@ -373,7 +373,7 @@ Layer* Map::get_layer_by_id(int id) {
         return nullptr;
 }
 
-Layer* Map::get_layer_by_name(std::string name) {
+Layer* Map::get_layer_by_name(std::string name) const {
     string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
@@ -387,27 +387,27 @@ Layer* Map::get_layer_by_name(std::string name) {
         return nullptr;
 }
 
-Image_Layer* Map::get_image_layer_by_index(int index) {
+Image_Layer* Map::get_image_layer_by_index(int index) const {
     return dynamic_cast<Image_Layer*>(get_layer_by_index(index));
 }
 
-Image_Layer* Map::get_image_layer_by_id(int id) {
+Image_Layer* Map::get_image_layer_by_id(int id) const {
     return dynamic_cast<Image_Layer*>(get_layer_by_id(id));
 }
 
-Image_Layer* Map::get_image_layer_by_name(const std::string& name) {
+Image_Layer* Map::get_image_layer_by_name(const std::string& name) const {
     return dynamic_cast<Image_Layer*>(get_layer_by_name(name));
 }
 
-Object_Layer* Map::get_object_layer_by_index(int index) {
+Object_Layer* Map::get_object_layer_by_index(int index) const {
     return dynamic_cast<Object_Layer*>(get_layer_by_index(index));
 }
 
-Object_Layer* Map::get_object_layer_by_id(int id) {
+Object_Layer* Map::get_object_layer_by_id(int id) const {
     return dynamic_cast<Object_Layer*>(get_layer_by_id(id));
 }
 
-Object_Layer* Map::get_object_layer_by_name(const std::string& name) {
+Object_Layer* Map::get_object_layer_by_name(const std::string& name) const {
     return dynamic_cast<Object_Layer*>(get_layer_by_name(name));
 }
 
@@ -532,7 +532,7 @@ const std::vector<Map::Canvas_Ref>& Map::get_canvases() {
     return canvases;
 }
 
-Base_Canvas* Map::get_canvas(int id) {
+Base_Canvas* Map::get_canvas(int id) const {
     auto result = canvases_by_id.find(id);
 
     if (result != canvases_by_id.end() && result->second.lock())

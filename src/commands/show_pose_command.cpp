@@ -8,7 +8,7 @@
 #include "../../include/canvas/sprite_canvas.hpp"
 #include <exception>
 
-Sprite_Holder* Show_Pose_Command::get_holder() {
+Sprite_Holder* Show_Pose_Command::get_holder() const {
     auto& map = *map_ptr;
     if (holder_info.type == Holder_Type::MAP_OBJECT) {
         return map.get_object(holder_info.id);
@@ -29,7 +29,7 @@ Sprite_Holder* Show_Pose_Command::get_holder() {
 
 Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
         const std::string& pose_name, const std::string& state,
-        Direction dir) : holder_info(holder_info), sprite(nullptr) {
+        Direction dir) : holder_info(holder_info), complete(false) {
     map_ptr = &map;
     auto holder = get_holder();
     if (!holder) {
@@ -39,21 +39,25 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
     }
 
     holder->set_pose(pose_name, state, dir);
-    sprite = holder->get_sprite();
 }
 
 void Show_Pose_Command::execute() {
-    auto holder = get_holder();
-    sprite = holder ? holder->get_sprite() : nullptr;
-}
+    if (stopped) return;
 
-bool Show_Pose_Command::is_complete() const {
-    if (!sprite) return true;
+    auto holder = get_holder();
+    if (!holder) return;
+
+    auto sprite = holder->get_sprite();
+    if (!sprite) return;
 
     auto& pose = sprite->get_pose();
     auto infinite_pose_complete = pose.repeats == -1 && !pose.require_completion;
 
-    return infinite_pose_complete || sprite->is_complete() || stopped || force_stopped;
+    complete = infinite_pose_complete || sprite->is_complete();
+}
+
+bool Show_Pose_Command::is_complete() const {
+    return complete || stopped;
 }
 
 void Show_Pose_Command::pause() {
