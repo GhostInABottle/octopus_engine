@@ -100,12 +100,19 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
             logs.push_back(std::make_tuple(Log_Level::info,
                 "Data folder exists. Not copying old version data " + version_to_copy));
         } else {
+            logs.push_back(std::make_tuple(Log_Level::info,
+                "Copying data folder from old version " + version_to_copy
+                + " to " + default_folder));
             auto copied = filesystem.copy(version_to_copy, default_folder);
             if (copied) return;
         }
     }
 
+    if (filesystem.exists(default_folder)) return;
+
     // Create the folder if needed
+    logs.push_back(std::make_tuple(Log_Level::info,
+        "Creating user data folder: " + default_folder));
     auto created = filesystem.create_directories(default_folder);
     if (created) return;
 
@@ -122,7 +129,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
 void User_Data_Folder::parse_config() {
     if (!parsed_default_config) {
         parse_default_config();
-        LOGGER_I << "Parsed the default config.ini file";
+        logs.push_back(std::make_tuple(Log_Level::info, "Parsed the default config.ini file"));
     }
 
     if (version_path.empty()) return;
@@ -130,7 +137,7 @@ void User_Data_Folder::parse_config() {
     auto config_path = version_path + "config.ini";
     try {
         if (!filesystem.exists(config_path)) {
-            save_config(true);
+            save_config(true, false);
             return;
         }
 
@@ -144,7 +151,8 @@ void User_Data_Folder::parse_config() {
             logs.push_back(std::make_tuple(Log_Level::warning, warning));
         }
     } catch (config_exception& e) {
-        LOGGER_E << "Unable to write config file to " << version_path << ": " << e.what();
+        logs.push_back(std::make_tuple(Log_Level::error,
+            "Unable to write config file to " + version_path + ": " + e.what()));
     }
 }
 
@@ -166,7 +174,7 @@ void User_Data_Folder::parse_default_config() {
     parsed_default_config = true;
 }
 
-void User_Data_Folder::save_config(bool force) {
+void User_Data_Folder::save_config(bool force, bool write_logs) {
     auto update_config = Configurations::get<bool>("debug.update-config-files");
     auto save = force || (update_config && Configurations::changed());
     if (!save) {
@@ -180,11 +188,21 @@ void User_Data_Folder::save_config(bool force) {
         throw file_loading_exception("Couldn't open config file for saving: " + config_path);
     }
 
-    LOGGER_I << "Saving config file " << config_path;
+    auto log_message = "Saving config file " + config_path;
+    if (write_logs) {
+        LOGGER_I << log_message;
+    } else {
+        logs.push_back(std::make_tuple(Log_Level::info, log_message));
+    }
 
     Configurations::save(*stream);
 
-    LOGGER_I << "Saved config file " << config_path;
+    log_message = "Saved config file " + config_path;
+    if (write_logs) {
+        LOGGER_I << log_message;
+    } else {
+        logs.push_back(std::make_tuple(Log_Level::info, log_message));
+    }
 }
 
 bool User_Data_Folder::try_to_save_config() {

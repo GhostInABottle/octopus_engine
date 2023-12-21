@@ -23,7 +23,7 @@ public:
     // Parse the default config (not the one in user data directory)
     static void parse_default_config();
     // Save config file if it changed since last save (or if forced)
-    void save_config(bool force = false);
+    void save_config(bool force = false, bool write_logs = true);
     // Try to save the file, logging any errors
     bool try_to_save_config();
     // Save the Lua data in the save file to the specified filename
