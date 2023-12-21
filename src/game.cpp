@@ -296,7 +296,7 @@ struct Game::Impl {
             auto trimmed = string_utilities::trim(size);
 
             auto filename = base_name + "_" + trimmed + extension;
-            if (!filesystem->file_exists(filename)) {
+            if (!filesystem->exists(filename)) {
                 LOGGER_W << "Couldn't find icon file. Skipping: " << filename;
                 continue;
             }
@@ -446,14 +446,14 @@ Game::Game(const std::vector<std::string>& args,
 
 
     auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(font_file)) {
+    if (!fs->exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
     }
     font = create_font(font_file);
 
     auto bold_font_file = Configurations::get<std::string>("font.bold");
     if (!bold_font_file.empty()) {
-        if (!fs->file_exists(bold_font_file)) {
+        if (!fs->exists(bold_font_file)) {
             throw std::runtime_error("Couldn't read bold font file " + bold_font_file);
         }
         font->link_font("bold", create_font(bold_font_file));
@@ -461,7 +461,7 @@ Game::Game(const std::vector<std::string>& args,
 
     auto italic_font_file = Configurations::get<std::string>("font.italic");
     if (!italic_font_file.empty()) {
-        if (!fs->file_exists(italic_font_file)) {
+        if (!fs->exists(italic_font_file)) {
             throw std::runtime_error("Couldn't read bold font file " + italic_font_file);
         }
         font->link_font("italic", create_font(italic_font_file));
@@ -825,7 +825,7 @@ std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {
     if (fonts.find(filename) != fonts.end()) return fonts[filename];
 
     auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(filename))
+    if (!fs->exists(filename))
         throw std::runtime_error("Couldn't read font file " + filename);
 
     // The font face owns the filestream and loads the font as needed

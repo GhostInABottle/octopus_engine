@@ -2,8 +2,10 @@
 #define HPP_USER_DATA_FOLDER
 
 #include <string>
+#include <tuple>
 #include <vector>
 #include "writable_filesystem.hpp"
+#include "../log_levels.hpp"
 
 class Save_File;
 class Key_Binder;
@@ -45,8 +47,10 @@ public:
     std::string get_version_path() const { return version_path; }
     // Get the underlying filesystem
     Writable_Filesystem& get_filesystem() { return filesystem; }
-    // Get any warnings encountered when getting the system path
-    const std::vector<std::string>& get_warnings() const { return warnings; }
+    // Get any warnings or logs encountered when getting the system path
+    const std::vector<std::tuple<Log_Level, std::string>>& get_logs() const { return logs; }
+    // Clear the logs
+    void clear_logs() { logs.clear(); }
 private:
     Writable_Filesystem& filesystem;
     std::string base_path;
@@ -54,7 +58,7 @@ private:
     std::string user_path;
     std::string version_path;
     static bool parsed_default_config;
-    std::vector<std::string> warnings;
+    std::vector<std::tuple<Log_Level, std::string>> logs;
     // Add directory to save filename
     void cleanup_save_filename(std::string& filename);
 };

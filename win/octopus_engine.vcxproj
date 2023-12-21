@@ -310,6 +310,7 @@
     <ClInclude Include="..\include\layers\object_layer_updater.hpp" />
     <ClInclude Include="..\include\layers\tile_layer.hpp" />
     <ClInclude Include="..\include\layers\tile_layer_renderer.hpp" />
+    <ClInclude Include="..\include\log_levels.hpp" />
     <ClInclude Include="..\include\scripting\script_bindings.hpp" />
     <ClInclude Include="..\include\utility\color.hpp" />
     <ClInclude Include="..\include\utility\direction.hpp" />

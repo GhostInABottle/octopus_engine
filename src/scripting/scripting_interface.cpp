@@ -20,7 +20,7 @@ namespace detail {
         filename += ".lua";
 
         auto filesystem = file_utilities::game_data_filesystem();
-        if (!filesystem->file_exists(filename)) {
+        if (!filesystem->exists(filename)) {
             // Push error string and return its stack index
             sol::stack::push(state, " file does not exist: " + filename);
             return 1;

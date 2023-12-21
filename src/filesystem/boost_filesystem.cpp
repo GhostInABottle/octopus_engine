@@ -19,8 +19,8 @@ namespace detail {
     }
 }
 
-bool Boost_Filesystem::file_exists(const std::string& filename) {
-    return fs::exists(detail::string_to_utf8_path(filename));
+bool Boost_Filesystem::exists(const std::string& path) {
+    return fs::exists(detail::string_to_utf8_path(path));
 }
 
 bool Boost_Filesystem::is_regular_file(const std::string& path) {
@@ -105,10 +105,31 @@ std::string Boost_Filesystem::get_stem_component(const std::string& path) {
     return fs::path{ detail::string_to_utf8_path(path) }.stem().string();
 }
 
-bool Boost_Filesystem::copy_file(const std::string& source, const std::string& destination) {
+bool Boost_Filesystem::copy(const std::string& source, const std::string& destination) {
     try {
-        fs::copy_file(detail::string_to_utf8_path(source), detail::string_to_utf8_path(destination),
-            fs::copy_option::overwrite_if_exists);
+        auto source_is_dir = is_directory(source);
+        auto destination_exists = exists(destination);
+        auto destination_path = detail::string_to_utf8_path(destination);
+        if (source_is_dir) {
+            if (destination_exists) {
+                if (!remove(destination)) return false;
+            }
+            auto created = create_directories(destination);
+            if (!created) return false;
+
+            for (auto& entry : fs::directory_iterator(source)) {
+                auto copied = copy(entry.path().string(),
+                    (destination_path / entry.path().filename()).string());
+                if (!copied) {
+                    remove(destination);
+                    return false;
+                }
+            }
+
+        } else {
+            fs::copy_file(detail::string_to_utf8_path(source), destination_path,
+                fs::copy_option::overwrite_if_exists);
+        }
 
         return true;
     } catch (fs::filesystem_error& e) {
@@ -117,11 +138,14 @@ bool Boost_Filesystem::copy_file(const std::string& source, const std::string& d
     }
 }
 
-bool Boost_Filesystem::remove_file(const std::string& filename) {
+bool Boost_Filesystem::remove(const std::string& path) {
     try {
-        return fs::remove(detail::string_to_utf8_path(filename));
+        if (is_directory(path))
+            return fs::remove_all(detail::string_to_utf8_path(path));
+        else
+            return fs::remove(detail::string_to_utf8_path(path));
     } catch (fs::filesystem_error& e) {
-        LOGGER_E << "Error deleting file " << filename << ": " << e.what();
+        LOGGER_E << "Error deleting file " << path << ": " << e.what();
         return false;
     }
 }

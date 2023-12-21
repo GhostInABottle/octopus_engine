@@ -168,7 +168,7 @@ void bind_game_types(sol::state& lua, Game& game) {
 
     game_type["load_lua_file"] = [&lua](Game& game, const std::string& filename) {
         auto filesystem = file_utilities::game_data_filesystem();
-        if (!filesystem->file_exists(filename)) {
+        if (!filesystem->exists(filename)) {
             throw std::runtime_error{ "File was not found while trying to load Lua file: " + filename };
         }
         auto script = filesystem->read_file(filename);

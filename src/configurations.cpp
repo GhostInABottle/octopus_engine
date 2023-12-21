@@ -10,6 +10,7 @@ void Configurations::load_defaults() {
     defaults["game.pause-unfocused"] = true;
     defaults["game.data-folder"] = std::string{};
     defaults["game.data-folder-version"] = std::string{"v0_1"};
+    defaults["game.copy-old-data-folder"] = std::string{""};
     defaults["game.object-outline-color"] = std::string{"#FFFFFF00"};
     defaults["game.object-script-preamble"] = std::string{};
     defaults["game.map-loaded-script"] = std::string{};

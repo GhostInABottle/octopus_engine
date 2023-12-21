@@ -7,12 +7,11 @@
 #include <ctime>
 #include <iomanip>
 #include <memory>
+#include "log_levels.hpp"
 
 // Ignore 'inheritance by dominance' warning
 #pragma warning(push)
 #pragma warning(disable: 4250)
-// Levels of log messages
-enum class Log_Level { error, warning, info, debug };
 
 class Environment;
 
@@ -46,6 +45,7 @@ public:
             *file << "- " << timestamp()
                 << " ERROR: Logging without setting the environment!"
                 << std::endl;
+            log_file_opened = false;
         }
 
         if (log_file && !*log_file) {

@@ -270,7 +270,7 @@ Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
     auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(filename)) {
+    if (!fs->exists(filename)) {
         throw std::runtime_error("Tried to set sprite for map object " + name +
             " to nonexistent file " + filename);
     }
@@ -525,12 +525,13 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
                 throw tmx_exception("Unknown object outlined value: " + outlined);
             } else {
                 auto conditions = Outline_Condition::NONE;
-                for (auto& part : parts) {
-                    if (part == "TOUCHED") {
+                for (const auto& part : parts) {
+                    auto trimmed = string_utilities::trim(part);
+                    if (trimmed == "TOUCHED") {
                         conditions = conditions | Outline_Condition::TOUCHED;
-                    } else if (part == "SOLID") {
+                    } else if (trimmed == "SOLID") {
                         conditions = conditions | Outline_Condition::SOLID;
-                    } else if (part == "SCRIPT") {
+                    } else if (trimmed == "SCRIPT") {
                         conditions = conditions | Outline_Condition::SCRIPT;
                     } else {
                         throw tmx_exception("Unknown object outlined value: " + outlined);

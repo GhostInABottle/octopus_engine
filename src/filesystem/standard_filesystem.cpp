@@ -6,8 +6,8 @@
 
 namespace fs = std::filesystem;
 
-bool Standard_Filesystem::file_exists(const std::string& filename) {
-    return fs::exists(fs::u8path(filename));
+bool Standard_Filesystem::exists(const std::string& path) {
+    return fs::exists(fs::u8path(path));
 }
 
 bool Standard_Filesystem::is_regular_file(const std::string& path) {
@@ -95,10 +95,10 @@ std::string Standard_Filesystem::get_stem_component(const std::string& path) {
     return fs::path{ fs::u8path(path) }.stem().string();
 }
 
-bool Standard_Filesystem::copy_file(const std::string& source, const std::string& destination) {
+bool Standard_Filesystem::copy(const std::string& source, const std::string& destination) {
     try {
         fs::copy(fs::u8path(source), fs::u8path(destination),
-            fs::copy_options::overwrite_existing);
+            fs::copy_options::overwrite_existing | fs::copy_options::recursive);
 
         return true;
     } catch (fs::filesystem_error& e) {
@@ -107,11 +107,14 @@ bool Standard_Filesystem::copy_file(const std::string& source, const std::string
     }
 }
 
-bool Standard_Filesystem::remove_file(const std::string& filename) {
+bool Standard_Filesystem::remove(const std::string& path) {
     try {
-        return fs::remove(fs::u8path(filename));
+        if (is_directory(path))
+            return fs::remove_all(fs::u8path(path));
+        else
+            return fs::remove(fs::u8path(path));
     } catch (fs::filesystem_error& e) {
-        LOGGER_E << "Error deleting file " << filename << ": " << e.what();
+        LOGGER_E << "Error deleting file " << path << ": " << e.what();
         return false;
     }
 }

@@ -18,7 +18,7 @@
 void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
     auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(filename)) {
+    if (!fs->exists(filename)) {
         throw std::runtime_error("Tried to set sprite for layer " + name +
                     " to nonexistent file " + filename);
     }
@@ -34,7 +34,7 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
 
 void Image_Layer::set_image(const std::string& filename) {
     auto fs = file_utilities::game_data_filesystem();
-    if (!fs->file_exists(filename)) {
+    if (!fs->exists(filename)) {
         throw std::runtime_error("Tried to set image for layer " + name +
             " to nonexistent file " + filename);
     }

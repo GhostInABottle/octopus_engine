@@ -29,8 +29,9 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
             default_folder = sago::getDataHome();
             add_game_folder = true;
         } catch (std::runtime_error& e) {
-            warnings.push_back("Unable to retrieve default save folder. Using executable folder - "
-                + std::string{ e.what() });
+            logs.push_back(std::make_tuple(Log_Level::warning,
+                "Unable to retrieve default save folder. Using executable folder - "
+                    + std::string{ e.what() }));
         }
     } else {
         default_folder = config_folder;
@@ -55,6 +56,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
 
     if (add_game_folder) {
         auto title = Configurations::get<std::string>("game.title");
+        string_utilities::trim(title);
         if (title.empty()) {
             title = "OctopusEngine";
         }
@@ -68,6 +70,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
         user_path = default_folder;
 
         auto data_dir_version = Configurations::get<std::string>("game.data-folder-version");
+        string_utilities::trim(data_dir_version);
         default_folder += data_dir_version + "/";
     } else {
         game_path = default_folder;
@@ -76,12 +79,39 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
 
     version_path = default_folder;
 
+    // Check if we can copy old versions of the folder
+    std::string version_to_copy;
+    auto copy_old_version = Configurations::get<std::string>("game.copy-old-data-folder");
+    if (!copy_old_version.empty()) {
+        auto versions = string_utilities::split(copy_old_version, ",");
+        for (const auto& version : versions) {
+            auto trimmed_version = string_utilities::trim(version);
+            if (trimmed_version.empty()) continue;
+            auto version_path = user_path + trimmed_version + "/";
+            if (filesystem.exists(version_path)) {
+                version_to_copy = version_path;
+                break;
+            }
+        }
+    }
+
+    if (!version_to_copy.empty()) {
+        if (filesystem.exists(default_folder)) {
+            logs.push_back(std::make_tuple(Log_Level::info,
+                "Data folder exists. Not copying old version data " + version_to_copy));
+        } else {
+            auto copied = filesystem.copy(version_to_copy, default_folder);
+            if (copied) return;
+        }
+    }
+
     // Create the folder if needed
     auto created = filesystem.create_directories(default_folder);
     if (created) return;
 
-    warnings.push_back("Unable to create save folder. " + default_folder
-        + " Using the executable's folder instead");
+    logs.push_back(std::make_tuple(Log_Level::warning,
+        "Unable to create save folder. " + default_folder
+        + " Using the executable's folder instead"));
 
     base_path = "";
     game_path = "";
@@ -99,7 +129,7 @@ void User_Data_Folder::parse_config() {
 
     auto config_path = version_path + "config.ini";
     try {
-        if (!filesystem.file_exists(config_path)) {
+        if (!filesystem.exists(config_path)) {
             save_config(true);
             return;
         }
@@ -109,9 +139,9 @@ void User_Data_Folder::parse_config() {
             throw config_exception("Couldn't read file " + config_path);
         }
 
-        warnings = Configurations::parse(*existing_file_stream);
-        for (auto& warning : warnings) {
-            LOGGER_W << warning;
+        auto new_warnings = Configurations::parse(*existing_file_stream);
+        for (auto& warning : new_warnings) {
+            logs.push_back(std::make_tuple(Log_Level::warning, warning));
         }
     } catch (config_exception& e) {
         LOGGER_E << "Unable to write config file to " << version_path << ": " << e.what();
@@ -222,7 +252,7 @@ std::string User_Data_Folder::get_keymap_filename() const {
 bool User_Data_Folder::load_keymap_file(Key_Binder& key_binder) {
     std::string filename = get_keymap_filename();
     Readable_Filesystem* fs = &filesystem;
-    if (!filesystem.file_exists(filename)) {
+    if (!filesystem.exists(filename)) {
         filename = Configurations::get<std::string>("controls.mapping-file");
         fs = file_utilities::game_data_filesystem();
     }

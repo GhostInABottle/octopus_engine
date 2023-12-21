@@ -917,5 +917,8 @@
     <ClInclude Include="..\..\include\environments\steam_environment.hpp">
       <Filter>Header Files\environments</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\log_levels.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

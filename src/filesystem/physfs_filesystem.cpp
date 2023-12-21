@@ -57,8 +57,8 @@ std::string PhysFS_Filesystem::read_file(std::string filename) {
         std::istreambuf_iterator<char>());
 }
 
-bool PhysFS_Filesystem::file_exists(const std::string& filename) {
-    return PhysFS::exists(detail::clean_relative_path(filename));
+bool PhysFS_Filesystem::exists(const std::string& path) {
+    return PhysFS::exists(detail::clean_relative_path(path));
 }
 
 bool PhysFS_Filesystem::is_regular_file(const std::string& path) {

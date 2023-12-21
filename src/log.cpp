@@ -47,6 +47,7 @@ void Log::open_log_file() {
     auto& filesystem = data_folder
         ? data_folder->get_filesystem()
         : *file_utilities::disk_filesystem();
+
     log_file = filesystem.open_ofstream(filename, static_cast<std::ios_base::openmode>(mode));
     log_file_opened = static_cast<bool>(log_file);
 

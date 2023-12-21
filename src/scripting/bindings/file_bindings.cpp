@@ -33,7 +33,7 @@ void bind_file_types(sol::state& lua, Game& game) {
 
     // Readable filesystem
     auto readable_fs_type = lua.new_usertype<Readable_Filesystem>("Readable_Filesystem");
-    readable_fs_type["exists"] = &Readable_Filesystem::file_exists;
+    readable_fs_type["exists"] = &Readable_Filesystem::exists;
     readable_fs_type["is_regular_file"] = &Readable_Filesystem::is_regular_file;
     readable_fs_type["is_directory"] = &Readable_Filesystem::is_directory;
     readable_fs_type["list_directory"] = &Readable_Filesystem::directory_content_names;
@@ -45,7 +45,7 @@ void bind_file_types(sol::state& lua, Game& game) {
 
     // Writable filesystem
     auto writable_fs_type = lua.new_usertype<Writable_Filesystem>("Writable_Filesystem");
-    writable_fs_type["exists"] = &Writable_Filesystem::file_exists;
+    writable_fs_type["exists"] = &Writable_Filesystem::exists;
     writable_fs_type["is_regular_file"] = &Writable_Filesystem::is_regular_file;
     writable_fs_type["is_directory"] = &Writable_Filesystem::is_directory;
     writable_fs_type["list_directory"] = &Writable_Filesystem::directory_content_names;
@@ -54,8 +54,8 @@ void bind_file_types(sol::state& lua, Game& game) {
     writable_fs_type["get_basename"] = &Writable_Filesystem::get_filename_component;
     writable_fs_type["get_stem"] = &Writable_Filesystem::get_stem_component;
     writable_fs_type["last_write_time"] = &Writable_Filesystem::last_write_time;
-    writable_fs_type["copy"] = &Writable_Filesystem::copy_file;
-    writable_fs_type["remove"] = &Writable_Filesystem::remove_file;
+    writable_fs_type["copy"] = &Writable_Filesystem::copy;
+    writable_fs_type["remove"] = &Writable_Filesystem::remove;
 
     // User Data Folder
     auto user_data_type = lua.new_usertype<User_Data_Folder>("User_Data_Folder");

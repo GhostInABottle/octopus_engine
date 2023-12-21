@@ -64,9 +64,10 @@ int main(int argc, char* argv[]) {
 
         // Safe to log now that the correct log file configs are loaded
         LOGGER_I << "Reticulating Splines";
-        for (auto& warning : user_data_folder->get_warnings()) {
-            LOGGER_W << warning;
+        for (auto& [level, message] : user_data_folder->get_logs()) {
+            Log(level) << message;
         }
+        user_data_folder->clear_logs();
 
         // Check if the environment wanted to launch the executable
         if (should_restart) {

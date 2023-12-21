@@ -100,7 +100,7 @@ Readable_Filesystem* file_utilities::game_data_filesystem(std::string_view arg) 
     std::shared_ptr<Readable_Filesystem> fs = disk_filesystem(arg);
     auto archive_name = Configurations::get<std::string>("game.archive-path");
     if (!archive_name.empty()) {
-        if (!fs->file_exists(archive_name)) {
+        if (!fs->exists(archive_name)) {
             throw config_exception { "Configured archive file was not found in executable directory: " + archive_name };
         }
         fs = virtual_filesystem(arg, archive_name);
@@ -119,7 +119,7 @@ Readable_Filesystem* file_utilities::default_config_filesystem(std::string_view 
 
     // Check if config.ini exists in the same physical directory as the executable
     auto disk_fs = disk_filesystem(arg);
-    if (disk_fs->file_exists("config.ini")) {
+    if (disk_fs->exists("config.ini")) {
         detail::default_config_filesystem = disk_fs.get();
         return detail::default_config_filesystem;
     }
@@ -135,9 +135,9 @@ Readable_Filesystem* file_utilities::default_config_filesystem(std::string_view 
     for (auto& name : default_archive_names) {
         for (auto& ext : default_archive_extensions) {
             auto archive_name = name + ext;
-            if (!disk_fs->file_exists(archive_name)) continue;
+            if (!disk_fs->exists(archive_name)) continue;
             auto vfs = virtual_filesystem(arg, archive_name);
-            if (!vfs->file_exists("config.ini")) {
+            if (!vfs->exists("config.ini")) {
                 throw config_exception{ "Unable to find config.ini file in archive " + archive_name };
             }
             detail::default_config_filesystem = vfs.get();
