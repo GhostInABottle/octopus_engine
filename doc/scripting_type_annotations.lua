@@ -220,6 +220,11 @@ function Engine_Writable_Filesystem:copy(source, destination) end
 ---@return boolean removed
 function Engine_Writable_Filesystem:remove(path) end
 
+---@param old_path string
+---@param new_path string
+---@return boolean renamed
+function Engine_Writable_Filesystem:rename(old_path, new_path) end
+
 ---@class (exact) Engine_User_Data_Folder
 ---@field base_path string # readonly
 ---@field game_path string # readonly

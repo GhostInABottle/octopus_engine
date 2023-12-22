@@ -150,6 +150,16 @@ bool Boost_Filesystem::remove(const std::string& path) {
     }
 }
 
+bool Boost_Filesystem::rename(const std::string& old_path, const std::string& new_path) {
+    try {
+        fs::rename(detail::string_to_utf8_path(old_path), detail::string_to_utf8_path(new_path));
+        return true;
+    } catch (fs::filesystem_error& e) {
+        LOGGER_E << "Error renameing file " << old_path << " to " << new_path << ": " << e.what();
+        return false;
+    }
+}
+
 bool Boost_Filesystem::create_directories(const std::string& path) {
     auto fs_path = detail::string_to_utf8_path(path);
     if (fs::exists(fs_path)) return true;

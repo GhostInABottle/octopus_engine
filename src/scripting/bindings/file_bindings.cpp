@@ -56,6 +56,7 @@ void bind_file_types(sol::state& lua, Game& game) {
     writable_fs_type["last_write_time"] = &Writable_Filesystem::last_write_time;
     writable_fs_type["copy"] = &Writable_Filesystem::copy;
     writable_fs_type["remove"] = &Writable_Filesystem::remove;
+    writable_fs_type["rename"] = &Writable_Filesystem::rename;
 
     // User Data Folder
     auto user_data_type = lua.new_usertype<User_Data_Folder>("User_Data_Folder");

@@ -12,6 +12,8 @@ public:
     virtual bool copy(const std::string& source, const std::string& destination) = 0;
     // Remove a file or directory, returns a boolean indicating success
     virtual bool remove(const std::string& path) = 0;
+    // Rename a file or directory, returns a boolean indicating success
+    virtual bool rename(const std::string& old_path, const std::string& new_path) = 0;
     // Create one or more directories specified in the path
     virtual bool create_directories(const std::string& path) = 0;
 };

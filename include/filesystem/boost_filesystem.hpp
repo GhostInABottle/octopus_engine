@@ -17,8 +17,9 @@ class Boost_Filesystem : public Disk_Filesystem {
     virtual std::string get_filename_component(const std::string& path) override;
     virtual std::string get_stem_component(const std::string& path) override;
     virtual bool copy(const std::string& source, const std::string& destination) override;
-    virtual bool remove(const std::string& filename) override;
-    virtual bool create_directories(const std::string& filename) override;
+    virtual bool remove(const std::string& path) override;
+    virtual bool rename(const std::string& old_path, const std::string& new_path) override;
+    virtual bool create_directories(const std::string& path) override;
 };
 
 #endif

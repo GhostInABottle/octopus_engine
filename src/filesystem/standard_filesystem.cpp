@@ -119,6 +119,16 @@ bool Standard_Filesystem::remove(const std::string& path) {
     }
 }
 
+bool Standard_Filesystem::rename(const std::string& old_path, const std::string& new_path) {
+    try {
+        fs::rename(fs::u8path(old_path), fs::u8path(new_path));
+        return true;
+    } catch (fs::filesystem_error& e) {
+        LOGGER_E << "Error renameing file " << old_path << " to " << new_path << ": " << e.what();
+        return false;
+    }
+}
+
 bool Standard_Filesystem::create_directories(const std::string& path) {
     auto fs_path = fs::u8path(path);
     if (fs::exists(fs_path)) return true;

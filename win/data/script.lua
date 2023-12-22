@@ -439,6 +439,20 @@ elseif c.selected == 8 then
         text(o, 'Removing the copy'):wait()
         filesystem:remove(copy_name)
         print('File exists: ' .. tostring(filesystem:exists(copy_name)))
+
+        text(o, "Renaming file"):wait()
+        local old_name = "data/test_save.txt"
+        local new_name = "data/test_save2.txt"
+        filesystem:rename(old_name, new_name)
+        local tbl3 = folder:load(new_name)
+        print('Loaded renamed file:')
+        print(print_table(tbl3))
+        print('Old name exists: ' .. tostring(filesystem:exists(old_name)))
+        print('New name exists: ' .. tostring(filesystem:exists(new_name)))
+        text(o, 'Renaming it back'):wait()
+        filesystem:rename(new_name, old_name)
+        print('Old name exists: ' .. tostring(filesystem:exists(old_name)))
+        print('New name exists: ' .. tostring(filesystem:exists(new_name)))
     end
 elseif c.selected == 9 then
     -- Other
