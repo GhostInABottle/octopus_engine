@@ -86,6 +86,9 @@ public:
         }
 
         changed_since_save = true;
+
+        // Log level is usually changed to suppress logs, so don't log it
+        if (name == "logging.level") return;
         LOGGER_I << "Config " << name << " changed to " << value;
     }
     // Directly set a value without notifying observers or logging

@@ -54,4 +54,15 @@ void Log::open_log_file() {
     std::string config_level = Configurations::get<std::string>("logging.level");
     string_utilities::capitalize(config_level);
     reporting_level = log_level_from_string(config_level);
+
+    // Listen to config changes
+    Configurations::add_observer("Log",
+        [](const std::string& key) {
+            if (key != "logging.level") return;
+
+            auto config_level = Configurations::get<std::string>(key);
+            string_utilities::capitalize(config_level);
+            Log::set_reporting_level(Log::log_level_from_string(config_level));
+        }
+    );
 }
