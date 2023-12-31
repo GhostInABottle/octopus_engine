@@ -20,7 +20,7 @@ LEFT = 8
 ---@type Engine_Direction
 FORWARD = 16
 ---@type Engine_Direction
-BACKWARD =32
+BACKWARD = 32
 
 ---@type 'GLOBAL'|'MAP'
 SCRIPT_CONTEXT = nil
@@ -250,6 +250,7 @@ function Engine_User_Data_Folder:load(filename, compact) end
 function Engine_User_Data_Folder:load_header(filename, compact) end
 
 function Engine_User_Data_Folder:save_config_file() end
+
 function Engine_User_Data_Folder:save_keymap_file() end
 
 -- Text and Choices
@@ -869,6 +870,7 @@ function Text_Parser:parse(text, permissive) end
 local Engine_Base_Canvas = {}
 
 function Engine_Base_Canvas:show() end
+
 function Engine_Base_Canvas:hide() end
 
 ---@overload fun(self : Engine_Base_Canvas, pos : Engine_Vec2, duration : integer) : Engine_Command_Result
@@ -1622,6 +1624,7 @@ function game:pause() end
 function game:resume(script) end
 
 function game:stop_time() end
+
 function game:resume_time() end
 
 ---@param key string
@@ -1637,6 +1640,7 @@ function game:triggered_once(key) end
 function game:pressed(key) end
 
 function game:begin_character_input() end
+
 function game:end_character_input() end
 
 ---@param logical_key_name string

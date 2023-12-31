@@ -184,7 +184,7 @@ bool file_utilities::open_url(const std::string& url) {
         #if defined(__APPLE__)
             command = "open \"%\"";
         #else
-            command = "xdg-open \"%\"";
+            command = "xdg-open \"%\" &";
         #endif
 
         string_utilities::replace_all(command, "%", url);
