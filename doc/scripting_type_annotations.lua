@@ -1092,6 +1092,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field sprite_magnification Engine_Vec2
 ---@field color Engine_Color
 ---@field opacity number
+---@field angle number
 ---@field uses_layer_color boolean
 ---@field script string
 ---@field touch_script string

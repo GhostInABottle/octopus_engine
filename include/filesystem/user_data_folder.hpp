@@ -61,6 +61,8 @@ private:
     std::vector<std::tuple<Log_Level, std::string>> logs;
     // Add directory to save filename
     void cleanup_save_filename(std::string& filename);
+    // Copy an older version of the data folder to the latest one
+    void try_to_copy_old_version();
 };
 
 #endif

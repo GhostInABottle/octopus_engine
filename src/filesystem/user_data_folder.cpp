@@ -12,6 +12,73 @@
 
 bool User_Data_Folder::parsed_default_config = false;
 
+void User_Data_Folder::try_to_copy_old_version() {
+    std::string version_to_copy;
+    auto copy_old_version = Configurations::get<std::string>("game.copy-old-data-folder");
+    if (copy_old_version.empty()) return;
+
+    auto versions = string_utilities::split(copy_old_version, ",");
+    for (const auto& version : versions) {
+        auto trimmed_version = string_utilities::trim(version);
+        if (trimmed_version.empty()) continue;
+
+        auto old_version_path = user_path + trimmed_version + "/";
+        if (filesystem.exists(old_version_path)) {
+            version_to_copy = old_version_path;
+            break;
+        }
+    }
+
+    // Only copy if we found a valid old version path
+    auto has_old_version = !version_to_copy.empty() && version_to_copy != version_path;
+    if (!has_old_version) return;
+
+    // If the new version folder doesn't exist, copy the old one
+    auto folder_exists = filesystem.exists(version_path);
+    if (!folder_exists) {
+        logs.push_back(std::make_tuple(Log_Level::info,
+            "Copying data folder from old version " + version_to_copy
+            + " to " + version_path));
+        filesystem.copy(version_to_copy, version_path);
+        return;
+    }
+
+    // If there is a new version folder, and it has a config file, do nothing
+    if (filesystem.exists(version_path + "config.ini")) {
+        logs.push_back(std::make_tuple(Log_Level::info,
+            "Data folder exists. Not copying old version data " + version_to_copy));
+        return;
+    }
+
+    // If the new version folder doesn't have a config file, try to copy the old one
+    // This could happen if cloud saves are copied (without config) before starting
+    auto old_config_path = version_to_copy + "config.ini";
+    logs.push_back(std::make_tuple(Log_Level::info,
+        "Copying config files from old version " + old_config_path
+        + " to " + version_path));
+
+    if (filesystem.exists(old_config_path)) {
+        filesystem.copy(old_config_path, version_path + "config.ini");
+    } else {
+        logs.push_back(std::make_tuple(Log_Level::warning,
+            "Config file was not found in old folder"));
+    }
+
+    // Do the same for the keymap file
+    std::string keymap_filename = Configurations::get<std::string>("controls.mapping-file");
+    auto keymap_path_absolute = filesystem.is_absolute_path(keymap_filename);
+    if (keymap_path_absolute || filesystem.exists(version_path + keymap_filename)) return;
+
+    auto old_keymap_path = version_to_copy + keymap_filename;
+    // No warning if it doesn't exist—it just means the mappings weren't modified
+    if (!filesystem.exists(old_keymap_path)) return;
+
+    logs.push_back(std::make_tuple(Log_Level::info,
+        "Copying keymap file from old version " + old_keymap_path
+        + " to " + version_path));
+    filesystem.copy(old_keymap_path, version_path + keymap_filename);
+}
+
 User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Environment& env)
         : filesystem(filesystem) {
     std::string default_folder;
@@ -52,9 +119,12 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
         default_folder += '/';
     }
 
+    // We break up the path as follows: base_path/game_path/user_path/version_path
+    // The base path is the home directory for data files e.g. ~/AppData/Roaming
     base_path = default_folder;
 
     if (add_game_folder) {
+        // Game path is the game-specific folder. E.g. ~/AppData/Roaming/GameTitle
         auto title = Configurations::get<std::string>("game.title");
         string_utilities::trim(title);
         if (title.empty()) {
@@ -63,12 +133,18 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
         default_folder += title + "/";
         game_path = default_folder;
 
+        // In some environments (e.g. Steam), each user account has its own folder
+        // The user path will include the user ID. E.g. ~/AppData/Roaming/GameTitle/123
+        // If the environment doesn't have user IDs, it'll be the same as the game path
         auto user_id = env.get_user_id_string();
         if (!user_id.empty()) {
             default_folder += user_id + "/";
         }
         user_path = default_folder;
 
+        // Finally, there will be a folder for each "version" of user data,
+        // as specified in the config file. The version path is where config
+        // and save files are written. E.g. ~/AppData/Roaming/Gametitle/123/V5
         auto data_dir_version = Configurations::get<std::string>("game.data-folder-version");
         string_utilities::trim(data_dir_version);
         default_folder += data_dir_version + "/";
@@ -80,33 +156,7 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
     version_path = default_folder;
 
     // Check if we can copy old versions of the folder
-    std::string version_to_copy;
-    auto copy_old_version = Configurations::get<std::string>("game.copy-old-data-folder");
-    if (!copy_old_version.empty()) {
-        auto versions = string_utilities::split(copy_old_version, ",");
-        for (const auto& version : versions) {
-            auto trimmed_version = string_utilities::trim(version);
-            if (trimmed_version.empty()) continue;
-            auto version_path = user_path + trimmed_version + "/";
-            if (filesystem.exists(version_path)) {
-                version_to_copy = version_path;
-                break;
-            }
-        }
-    }
-
-    if (!version_to_copy.empty()) {
-        if (filesystem.exists(default_folder)) {
-            logs.push_back(std::make_tuple(Log_Level::info,
-                "Data folder exists. Not copying old version data " + version_to_copy));
-        } else {
-            logs.push_back(std::make_tuple(Log_Level::info,
-                "Copying data folder from old version " + version_to_copy
-                + " to " + default_folder));
-            auto copied = filesystem.copy(version_to_copy, default_folder);
-            if (copied) return;
-        }
-    }
+    try_to_copy_old_version();
 
     if (filesystem.exists(default_folder)) return;
 
