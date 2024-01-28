@@ -113,6 +113,12 @@ void bind_math_types(sol::state& lua) {
                 return xd::vec4{ 1.0f, 1.0f, 0.0f, 1.0f };
             } else if (name == "white") {
                 return xd::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+            } else if (name == "gray") {
+                return xd::vec4{ 0.5f, 0.5f, 0.5f, 1.0f };
+            } else if (name == "purple") {
+                return xd::vec4{ 1.0f, 0.0f, 1.0f, 1.0f };
+            } else if (name == "cyan") {
+                return xd::vec4{ 0.0f, 1.0f, 1.0f, 1.0f };
             }
 
             // Throws if name is not a valid hex

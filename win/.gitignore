@@ -16,3 +16,4 @@ steam_appid.txt
 *.db-shm
 *.db-wal
 *.aps
+compileData.*

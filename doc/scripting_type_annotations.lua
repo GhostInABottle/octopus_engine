@@ -672,8 +672,21 @@ local Engine_Color = {}
 ---@return string
 function Engine_Color:to_hex() end
 
+---@alias Engine_Color_Name
+---|'clear'
+---|'none'
+---|'black'
+---|'red'
+---|'green'
+---|'blue'
+---|'yellow'
+---|'white'
+---|'gray'
+---|'purple'
+---|'cyan'
+
 ---@overload fun(color : Engine_Color) : Engine_Color
----@overload fun(color_name : string) : Engine_Color
+---@overload fun(color_name : string|Engine_Color_Name) : Engine_Color
 ---@param r number
 ---@param g number
 ---@param b number
