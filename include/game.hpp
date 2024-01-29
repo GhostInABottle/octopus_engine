@@ -226,7 +226,7 @@ public:
     // Is time stopped
     bool stopped() const;
     // Total game time in seconds
-    int seconds() const;
+    float seconds() const;
     // Time elapsed since game started (in ms) not including pauses
     int ticks() const;
     // Manually set ticks

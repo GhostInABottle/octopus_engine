@@ -849,7 +849,7 @@ bool Game::stopped() const {
     return clock->stopped();
 }
 
-int Game::seconds() const {
+float Game::seconds() const {
     return clock->seconds();
 }
 

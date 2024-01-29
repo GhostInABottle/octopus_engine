@@ -1547,7 +1547,7 @@ function Engine_Environment:open_url(url, mode) end
 ---@class (exact) Engine_Game
 ---@field ticks integer # readonly
 ---@field window_ticks integer # readonly
----@field seconds integer # readonly
+---@field seconds number # readonly
 ---@field fps integer # readonly
 ---@field frame_count integer # readonly
 ---@field character_input string # readonly
