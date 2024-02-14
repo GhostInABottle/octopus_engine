@@ -43,7 +43,8 @@ struct Camera::Impl {
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
-    void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry, float brightness, float contrast);
+    void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry,
+        float brightness, float contrast, float saturation);
     // Draw a quad (for screen tint)
     struct quad_vertex
     {
@@ -81,7 +82,8 @@ void Camera::Impl::set_shader(const std::string& vertex, const std::string& frag
     }
 }
 
-void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry, float brightness, float contrast) {
+void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry,
+        float brightness, float contrast, float saturation) {
     if (!postprocessing_enabled) return;
 
     int w = game.framebuffer_width();
@@ -107,7 +109,8 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     auto same_viewport = viewport == xd::rect{0, 0, w, h};
     if (!same_viewport)
         glViewport(0, 0, w, h);
-    full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(), brightness, contrast});
+    full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(),
+        brightness, contrast, saturation});
     if (!same_viewport)
         update_viewport(viewport);
     geometry.model_view().pop();
@@ -138,6 +141,7 @@ Camera::Camera(Game& game)
         screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         brightness(Configurations::get<float>("graphics.brightness")),
         contrast(Configurations::get<float>("graphics.contrast")),
+        saturation(Configurations::get<float>("graphics.saturation")),
         object(nullptr),
         shaker(nullptr),
         pimpl(std::make_unique<Impl>())
@@ -304,7 +308,7 @@ void Camera::set_shader(const std::string& vertex, const std::string& fragment) 
 }
 
 void Camera::render_shader() {
-    pimpl->render_shader(game, viewport, geometry, brightness, contrast);
+    pimpl->render_shader(game, viewport, geometry, brightness, contrast, saturation);
 }
 
 void Camera::start_shaking(xd::vec2 strength, xd::vec2 speed) {

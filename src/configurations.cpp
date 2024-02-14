@@ -53,6 +53,7 @@ void Configurations::load_defaults() {
     defaults["graphics.pause-fragment-shader"] = std::string{};
     defaults["graphics.brightness"] = 1.0f;
     defaults["graphics.contrast"] = 1.0f;
+    defaults["graphics.saturation"] = 1.0f;
     defaults["graphics.gamma"] = 1.0f;
     defaults["graphics.use-fbo"] = true;
     defaults["graphics.postprocessing-enabled"] = true;

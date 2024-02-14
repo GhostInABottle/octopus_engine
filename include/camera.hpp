@@ -97,6 +97,12 @@ public:
     void set_contrast(float contrast) {
         this->contrast = contrast;
     }
+    float get_saturation() const {
+        return saturation;
+    }
+    void set_saturation(float saturation) {
+        this->saturation = saturation;
+    }
     const Map_Object* get_object() const {
         return object;
     }
@@ -122,10 +128,12 @@ private:
     xd::vec4 screen_tint;
     // Map tint color (doesn't apply to canvases)
     xd::vec4 map_tint;
-    // Screen brightness
+    // Screen brightness (-1 to 1, defaults to 0)
     float brightness;
-    // Screen contrast
+    // Screen contrast (0+, defaults to 1)
     float contrast;
+    // Screen color saturation (0+, defaults to 1)
+    float saturation;
     // Tracked map object
     Map_Object* object;
     // Screen shaker component

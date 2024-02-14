@@ -137,6 +137,9 @@ struct Game::Impl {
         if (config_changed("graphics.contrast")) {
             game.get_camera()->set_contrast(Configurations::get<float>("graphics.contrast"));
         }
+        if (config_changed("graphics.saturation")) {
+            game.get_camera()->set_saturation(Configurations::get<float>("graphics.saturation"));
+        }
         if (config_changed("graphics.gamma") && window) {
             window->set_gamma(Configurations::get<float>("graphics.gamma"));
         }

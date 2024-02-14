@@ -152,9 +152,11 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& u
     // setup the shader
     shader.use();
     shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    shader.bind_uniform("vOutlineColor", m_outline_color);
     if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
     if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
     if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
+    if (uniforms.saturation) shader.bind_uniform("saturation", *uniforms.saturation);
 
     // iterate through all sprites
     for (unsigned int i = 0; i < m_data->sprites.size(); ++i) {
@@ -186,10 +188,11 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& u
     // setup the shader
     shader.use();
     shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    shader.bind_uniform("vOutlineColor", m_outline_color);
     if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
     if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
     if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
-    shader.bind_uniform("vOutlineColor", m_outline_color);
+    if (uniforms.saturation) shader.bind_uniform("saturation", *uniforms.saturation);
 
     // create a quad for rendering sprites
     detail::sprite_vertex quad[4];

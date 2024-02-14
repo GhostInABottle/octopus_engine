@@ -11,11 +11,17 @@ namespace xd
         std::optional<int> ticks;
         std::optional<float> brightness;
         std::optional<float> contrast;
+        std::optional<float> saturation;
         shader_uniforms(mat4 mvp_matrix,
             std::optional<int> ticks = std::nullopt,
             std::optional<float> brightness = std::nullopt,
-            std::optional<float> contrast = std::nullopt)
-            : mvp_matrix(mvp_matrix), ticks(ticks), brightness(brightness), contrast(contrast) {}
+            std::optional<float> contrast = std::nullopt,
+            std::optional<float> saturation = std::nullopt)
+            : mvp_matrix(mvp_matrix)
+            , ticks(ticks)
+            , brightness(brightness)
+            , contrast(contrast)
+            , saturation(saturation) {}
     };
 
 }

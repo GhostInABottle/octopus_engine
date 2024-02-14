@@ -2,7 +2,7 @@ local time_multiplier = tonumber(game:get_config('debug.time-multiplier'))
 
 -- Adjusted total seconds, includes added/paused time and modified by multiplier
 function total_seconds()
-    return game.seconds * time_multiplier
+    return math.floor(game.seconds * time_multiplier)
 end
 
 -- Get the seconds portion of given time
