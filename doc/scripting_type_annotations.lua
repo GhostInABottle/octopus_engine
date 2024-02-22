@@ -257,28 +257,28 @@ function Engine_User_Data_Folder:save_keymap_file() end
 
 -- All properties are read only once created
 ---@class (exact) Engine_Text_Options
----@field text string?
----@field choices string[]?
----@field object Engine_Map_Object?
----@field position Engine_Vec2?
----@field position_type Engine_Text_Position_Type?
----@field duration integer?
----@field centered boolean?
----@field show_dashes boolean?
----@field cancelable boolean?
----@field choice_indent integer?
----@field canvas_priority integer?
----@field fade_in_duration integer?
----@field fade_out_duration integer?
----@field background_visible boolean?
----@field background_color Engine_Color?
----@field typewriter_on boolean?
----@field typewriter_delay integer?
----@field typewriter_sound string?
----@field typewriter_sound_volume number?
----@field typewriter_sound_pitch number?
----@field typewriter_sound_max_pitch number?
----@field typewriter_skippable boolean?
+---@field text? string
+---@field choices? string[]
+---@field object? Engine_Map_Object
+---@field position? Engine_Vec2
+---@field position_type? Engine_Text_Position_Type
+---@field duration? integer
+---@field centered? boolean
+---@field show_dashes? boolean
+---@field cancelable? boolean
+---@field choice_indent? integer
+---@field canvas_priority? integer
+---@field fade_in_duration? integer
+---@field fade_out_duration? integer
+---@field background_visible? boolean
+---@field background_color? Engine_Color
+---@field typewriter_on? boolean
+---@field typewriter_delay? integer
+---@field typewriter_sound? string
+---@field typewriter_sound_volume? number
+---@field typewriter_sound_pitch? number
+---@field typewriter_sound_max_pitch? number
+---@field typewriter_skippable? boolean
 local Engine_Text_Options = {}
 
 ---@param text string
@@ -378,7 +378,7 @@ function Text_Options(position) end
 ---@overload fun(position : Engine_Vec2, text : string, duration? : integer) : Engine_Command_Result
 ---@param object Engine_Map_Object
 ---@param text string
----@param duration integer?
+---@param duration? integer
 ---@return Engine_Command_Result
 function text(object, text, duration) end
 
@@ -908,7 +908,7 @@ function Engine_Base_Canvas:update_color(color, duration) end
 ---@param image_filename string
 ---@param x number
 ---@param y number
----@param transparent_color Engine_Color|string?
+---@param transparent_color? Engine_Color|string
 ---@return Engine_Image_Canvas
 function Engine_Base_Canvas:add_child_image(child_name, image_filename, x, y, transparent_color) end
 
@@ -917,7 +917,7 @@ function Engine_Base_Canvas:add_child_image(child_name, image_filename, x, y, tr
 ---@param image_filename string
 ---@param x number
 ---@param y number
----@param pose string?
+---@param pose? string
 ---@return Engine_Sprite_Canvas
 function Engine_Base_Canvas:add_child_sprite(child_name, image_filename, x, y, pose) end
 
@@ -991,8 +991,8 @@ function Text_Canvas(x, y, text) end
 ---@field filename string # readonly
 ---@field magnification Engine_Vec2
 ---@field angle integer # in degrees
----@field origin Engine_Vec2? # defaults to (0, 0) for sprites, (0.5, 0.5) for images
----@field outline_color Engine_Color?
+---@field origin? Engine_Vec2 # defaults to (0, 0) for sprites, (0.5, 0.5) for images
+---@field outline_color? Engine_Color
 local Engine_Base_Image_Canvas = {}
 
 ---@overload fun(self : Engine_Base_Image_Canvas, pos : Engine_Vec2, mag : Engine_Vec2, angle : integer, opacity : number, duration : integer) : Engine_Command_Result
@@ -1034,7 +1034,7 @@ function Engine_Image_Canvas:set_image(filename, transparent) end
 ---@param image_filename string
 ---@param x number
 ---@param y number
----@param transparent_color Engine_Color|string?
+---@param transparent_color? Engine_Color|string
 ---@return Engine_Image_Canvas
 function Image_Canvas(image_filename, x, y, transparent_color) end
 
@@ -1064,7 +1064,7 @@ function Engine_Sprite_Canvas:reset() end
 ---@param sprite_filename string
 ---@param x number
 ---@param y number
----@param pose string?
+---@param pose? string
 ---@return Engine_Sprite_Canvas
 function Sprite_Canvas(sprite_filename, x, y, pose) end
 
@@ -1078,9 +1078,9 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field real_position Engine_Vec2 # position + bounding_box.position
 ---@field centered_position Engine_Vec2 # real_position + bounding_box.size / 2
 ---@field bounding_box Engine_Rect
----@field bounding_circle Engine_Circle?
+---@field bounding_circle? Engine_Circle
 ---@field positioned_bounding_box Engine_Rect # bounding box positioned at real_position
----@field positioned_bounding_circle Engine_Circle?
+---@field positioned_bounding_circle? Engine_Circle
 ---@field x number
 ---@field y number
 ---@field size Engine_Vec2
@@ -1098,9 +1098,9 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field passthrough_type Engine_Passthrough_Type
 ---@field speed number
 ---@field fps_independent_speed number # readonly
----@field collision_object Engine_Map_Object?
----@field triggered_object Engine_Map_Object?
----@field collision_area Engine_Map_Object?
+---@field collision_object? Engine_Map_Object
+---@field triggered_object? Engine_Map_Object
+---@field collision_area? Engine_Map_Object
 ---@field magnification Engine_Vec2
 ---@field sprite_magnification Engine_Vec2
 ---@field color Engine_Color
@@ -1116,9 +1116,9 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field strict_multidirectional_movement boolean
 ---@field player_facing boolean
 ---@field outline_color Engine_Color
----@field outlined boolean?
----@field outlined_object Engine_Map_Object?
----@field outlining_object Engine_Map_Object?
+---@field outlined? boolean
+---@field outlined_object? Engine_Map_Object
+---@field outlining_object? Engine_Map_Object
 ---@field outline_conditions Engine_Outline_Condition
 ---@field sfx_attenuation boolean
 ---@field draw_order Engine_Draw_Order
@@ -1457,8 +1457,8 @@ function Sound(filename, pausable) end
 -- Audio_Player
 
 ---@class (exact) Engine_Audio_Player
----@field playing_music Engine_Music?
----@field playing_ambient Engine_Music?
+---@field playing_music? Engine_Music
+---@field playing_ambient? Engine_Music
 ---@field global_music_volume number
 ---@field global_sound_volume number
 local Engine_Audio_Player = {}
@@ -1629,7 +1629,7 @@ function game:set_unsigned_config(name, value) end
 ---@param x number
 ---@param y number
 ---@param direction Engine_Direction
----@param music_file string?
+---@param music_file? string
 function game:load_map(filename, x, y, direction, music_file) end
 
 function game:pause() end

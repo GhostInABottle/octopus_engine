@@ -6,6 +6,8 @@
 #include <iostream>
 
 void Configurations::load_defaults() {
+    defaults["config.version"] = 0;
+
     defaults["game.title"] = std::string{"Untitled"};
     defaults["game.pause-unfocused"] = true;
     defaults["game.data-folder"] = std::string{};
@@ -131,19 +133,19 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
     }
 
     values.clear();
+    section_order.clear();
     std::vector<std::string> errors;
     std::string current_section;
+    section_order.push_back({ "", std::vector<std::string>{} });
     std::string line;
-    std::string comments;
     int line_number = -1;
     while (std::getline(stream, line)) {
         line_number++;
         string_utilities::trim(line);
         // Empty line and comments
         if (line.empty() || line[0] == '#' || line[0] == ';') {
-            if (!line.empty()) {
-                comments = comments + line + "\n";
-            }
+            auto& lines = std::get<1>(section_order.back());
+            lines.push_back(line);
             continue;
         }
 
@@ -157,10 +159,8 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
                 current_section = line.substr(1, end - 1);
                 string_utilities::trim(current_section);
             }
-            if (!comments.empty()) {
-                comment_lines[current_section] = comments;
-                comments = "";
-            }
+
+            section_order.push_back({ current_section, std::vector<std::string>{} });
 
             continue;
         }
@@ -190,11 +190,6 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
                 + std::to_string(line_number) + ", line content: " + line);
         }
 
-        if (!comments.empty()) {
-            comment_lines[key] = comments;
-            comments = "";
-        }
-
         auto value_string = line.substr(eq + 1);
         string_utilities::trim(value_string);
         if (has_default(key)) {
@@ -206,10 +201,12 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
                     return Configurations::value_type{boost::lexical_cast<T>(value_string)};
                 },
                 defaults[key]);
-            continue;
+        } else {
+            values[key] = value_string;
         }
 
-        values[key] = value_string;
+        auto& keys = std::get<1>(section_order.back());
+        keys.push_back(key);
     }
 
     changed_since_save = false;
@@ -221,46 +218,40 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
 }
 
 void Configurations::save(std::ostream& stream) {
-    std::unordered_map<std::string, std::vector<std::pair<std::string, Configurations::value_type>>> sections;
-    for (auto& [full_key, value] : values) {
-        auto dot = full_key.find(".");
-        if (dot == std::string::npos) {
-            sections["global"].emplace_back(full_key, value);
-        } else {
-            auto section = full_key.substr(0, dot);
-            auto key = full_key.substr(dot + 1);
-            sections[section].emplace_back(key, value);
+    for (const auto& [section, lines_or_keys] : section_order) {
+        if (!section.empty()) {
+            stream << "[" << section << "]\n";
+            if (!stream) {
+                throw config_exception("Error writing section " + section + " to config file");
+            }
+        }
+
+        for (const auto& line_or_key : lines_or_keys) {
+            const auto is_line = line_or_key.empty()
+                || line_or_key[0] == '#'
+                || line_or_key[0] == ';';
+            if (is_line) {
+                stream << line_or_key << "\n";
+                if (!stream) {
+                    throw config_exception("Error writing line " + line_or_key + " to config file");
+                }
+            } else {
+                if (!has_value(line_or_key)) continue;
+                const auto dot = line_or_key.find(".");
+                const auto key = dot == std::string::npos
+                    ? line_or_key
+                    : line_or_key.substr(dot + 1);
+                const auto value = get_string(line_or_key);
+                const auto space = value.empty() ? "" : " ";
+
+                stream << key << " =" << space << value << "\n";
+                if (!stream) {
+                    throw config_exception("Error writing key " + line_or_key + " to config file");
+                }
+            }
         }
     }
 
-    bool first_section = true;
-    for (auto& [section, section_values] : sections) {
-        if (section != "global") {
-            if (comment_lines.find(section) != comment_lines.end()) {
-                stream << comment_lines[section];
-            }
-            if (first_section) {
-                first_section = false;
-            } else {
-                stream << "\n";
-            }
-            stream << "[" << section << "]\n";
-        }
-        if (!stream) {
-            throw config_exception("Error writing section " + section + " to config file");
-        }
-        for (auto& [key, val] : section_values) {
-            auto full_key = section == "global" ? key : section + "." + key;
-            if (!has_value(full_key)) continue;
-            if (comment_lines.find(full_key) != comment_lines.end()) {
-                stream << comment_lines[full_key];
-            }
-            stream << key << " = " << get_string(full_key) << "\n";
-            if (!stream) {
-                throw config_exception("Error writing key " + full_key + " to config file");
-            }
-        }
-    }
     changed_since_save = false;
 }
 

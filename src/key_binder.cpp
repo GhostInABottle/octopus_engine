@@ -220,7 +220,7 @@ bool Key_Binder::process_keymap_file(std::istream& stream) {
             continue;
         }
 
-        auto virtual_name = parts[0];
+        std::string virtual_name{parts[0]};
         string_utilities::trim(virtual_name);
         if (virtual_name.empty()) {
             LOGGER_E << "Error processing key mapping file  at line "
@@ -233,7 +233,7 @@ bool Key_Binder::process_keymap_file(std::istream& stream) {
                 << counter << ", no keys specified.";
         }
 
-        for (auto key : keys) {
+        for (std::string key : keys) {
             string_utilities::trim(key);
             string_utilities::capitalize(key);
             if (keys_for_name.find(key) != keys_for_name.end()) {

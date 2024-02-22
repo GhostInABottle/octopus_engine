@@ -102,8 +102,11 @@ private:
     // Variable map to store the options
     inline static value_map values;
     inline static value_map defaults;
+    // Order of the parsed config file
+    typedef std::tuple<std::string, std::vector<std::string>> section_ordered_values;
+    inline static std::vector<section_ordered_values> section_order;
+    // Observers to be called when the config changes
     inline static std::unordered_map<std::string, callback> observers;
-    inline static std::unordered_map<std::string, std::string> comment_lines;
 };
 
 #endif
