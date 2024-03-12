@@ -230,12 +230,6 @@ public:
     bool has_any_script() const {
         return !trigger_script.empty() || !touch_script.empty() || !leave_script.empty();
     }
-    bool is_player_facing() const {
-        return player_facing;
-    }
-    void set_player_facing(bool facing) {
-        player_facing = facing;
-    }
     Map_Object* get_collision_object() {
         return collision_object;
     }
@@ -452,8 +446,6 @@ private:
     std::string touch_script;
     // Script executed when leaving/no longer touching this object
     std::string leave_script;
-    // Should the object face player when triggered?
-    bool player_facing;
     // Object currently colliding with player
     Map_Object* collision_object;
     // Area the plaer is inside

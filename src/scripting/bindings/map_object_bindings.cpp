@@ -96,7 +96,6 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["overrides_tile_collision"] = sol::property(&Map_Object::overrides_tile_collision, &Map_Object::set_override_tile_collision);
     object_type["strict_multidirectional_movement"] = sol::property(&Map_Object::get_strict_multidirectional_movement, &Map_Object::set_strict_multidirectional_movement);
     object_type["uses_layer_color"] = sol::property(&Map_Object::uses_layer_color, &Map_Object::set_use_layer_color);
-    object_type["player_facing"] = sol::property(&Map_Object::is_player_facing, &Map_Object::set_player_facing);
     object_type["triggered_object"] = sol::property(&Map_Object::get_triggered_object, &Map_Object::set_triggered_object);
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);

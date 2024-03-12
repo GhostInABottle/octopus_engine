@@ -1114,7 +1114,6 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field script_context Engine_Script_Context
 ---@field overrides_tile_collision boolean
 ---@field strict_multidirectional_movement boolean
----@field player_facing boolean
 ---@field outline_color Engine_Color
 ---@field outlined? boolean
 ---@field outlined_object? Engine_Map_Object

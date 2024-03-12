@@ -41,7 +41,6 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         face_state("FACE"),
         walk_state("WALK"),
         script_context(Script_Context::MAP),
-        player_facing(true),
         collision_object(nullptr),
         collision_area(nullptr),
         triggered_object(nullptr),
@@ -484,9 +483,6 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (properties.contains("leave-script"))
         object_ptr->set_leave_script(properties["leave-script"]);
-
-    if (properties.contains("player-facing"))
-        object_ptr->set_player_facing(string_utilities::string_to_bool(properties["player-facing"]));
 
     if (properties.contains("passthrough"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));

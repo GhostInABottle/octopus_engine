@@ -176,9 +176,6 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
 
     if (touched || triggered) {
         object.set_triggered_object(other);
-        if (other->is_player_facing()) {
-            other->face(object);
-        }
 
         if (touched) {
             other->run_touch_script();
