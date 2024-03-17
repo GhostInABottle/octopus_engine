@@ -318,21 +318,34 @@ std::string User_Data_Folder::get_keymap_filename() const {
 }
 
 bool User_Data_Folder::load_keymap_file(Key_Binder& key_binder) {
-    std::string filename = get_keymap_filename();
-    Readable_Filesystem* fs = &filesystem;
-    if (!filesystem.exists(filename)) {
-        filename = Configurations::get<std::string>("controls.mapping-file");
-        fs = file_utilities::game_data_filesystem();
-    }
-
-    auto input = fs->open_ifstream(filename);
-    if (!input || !*input) {
-        LOGGER_W << "Couldn't read key mapping file \"" << filename << "\", using default key mapping.";
+    // Always load the default keymap file first to register new virtual key names
+    auto default_filename = Configurations::get<std::string>("controls.mapping-file");
+    Readable_Filesystem* default_fs = file_utilities::game_data_filesystem();
+    auto default_input = default_fs->open_ifstream(default_filename);
+    if (!default_input || !*default_input) {
+        LOGGER_W << "Couldn't read key default mapping file \"" << default_filename
+            << "\", using default key mapping.";
         return false;
     }
 
-    LOGGER_I << "Processing keymap file " << filename;
-    return key_binder.process_keymap_file(*input);
+    LOGGER_I << "Processing default keymap file " << default_filename;
+    if (!key_binder.process_keymap_file(*default_input)) return false;
+
+    // User key map file won't be created if it's the same as the default one
+    auto user_filename = get_keymap_filename();
+    if (!filesystem.exists(user_filename) || default_filename == user_filename) return true;
+
+    // Load the user key map file and overwrite the default values
+    Readable_Filesystem* user_fs = &filesystem;
+    auto user_input = user_fs->open_ifstream(user_filename);
+    if (!user_input || !*user_input) {
+        LOGGER_W << "Couldn't read key user mapping file \"" << user_filename
+            << "\", using default mapping file values.";
+        return false;
+    }
+
+    LOGGER_I << "Processing keymap file " << user_filename;
+    return key_binder.process_keymap_file(*user_input);
 }
 
 bool User_Data_Folder::save_keymap_file(Key_Binder& key_binder) {

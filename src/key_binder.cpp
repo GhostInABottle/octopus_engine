@@ -121,12 +121,13 @@ void Key_Binder::bind_key(const std::string& physical_name, const std::string& v
             game.bind_key(xd_key, virtual_name);
         }
         auto& values = bound_keys[virtual_name];
-        if (std::find(std::begin(values), std::end(values), key) == std::end(values)) {
+        auto is_new_key = std::find(std::begin(values), std::end(values), key) == std::end(values);
+        if (is_new_key) {
             values.push_back(key);
             changed_since_save = true;
         }
     } else {
-        LOGGER_W << "Physical key name " << physical_name <<
+        LOGGER_E << "Physical key name " << physical_name <<
             " was not found while trying to bind key " << virtual_name;
     }
 }
@@ -198,13 +199,12 @@ void Key_Binder::unbind_key(const xd::key& key) {
     if (name_for_key.find(key) != name_for_key.end()) {
         unbind_key(name_for_key[key]);
     } else {
-        LOGGER_W << "Name of key with code" << key.code <<
+        LOGGER_W << "Name of key with code " << key.code <<
             " was not found while trying unbind it";
     }
 }
 
 bool Key_Binder::process_keymap_file(std::istream& stream) {
-    bound_keys.clear();
     // Read keymap file and bind keys based on name
     std::string line;
     int counter = 0;
@@ -232,6 +232,9 @@ bool Key_Binder::process_keymap_file(std::istream& stream) {
             LOGGER_W << "Error processing key mapping file  at line "
                 << counter << ", no keys specified.";
         }
+
+        // Overwrite any existing bindings
+        game.unbind_virtual_key(virtual_name);
 
         for (std::string key : keys) {
             string_utilities::trim(key);
