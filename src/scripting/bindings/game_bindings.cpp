@@ -144,7 +144,9 @@ void bind_game_types(sol::state& lua, Game& game) {
         Configurations::set(key, value);
     };
     game_type["set_string_config"] = [](Game*, const std::string& key, const std::string& value) {
-        Configurations::set(key, value);
+        // Log level is usually changed to suppress logs, so don't log it
+        bool should_log = key != "logging.level";
+        Configurations::set(key, value, should_log);
     };
 
     game_type["wait_for_input"] = sol::yielding(sol::overload(

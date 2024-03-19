@@ -94,7 +94,8 @@ Readable_Filesystem* file_utilities::game_data_filesystem(std::string_view arg) 
     if (detail::game_data_filesystem) return detail::game_data_filesystem;
 
     if (!Configurations::defaults_loaded()) {
-        User_Data_Folder::parse_default_config();
+        throw config_exception{"Trying to get game data FS but default configs were not loaded."
+            " Make sure User_Data_Folder::parse_default_config is called"};
     }
 
     std::shared_ptr<Readable_Filesystem> fs = disk_filesystem(arg);

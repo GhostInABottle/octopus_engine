@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
         // Parse the config.ini file in the executable directory
         // (needed for archive path and Steam app ID)
-        User_Data_Folder::parse_default_config();
+        auto default_logs = User_Data_Folder::parse_default_config();
 
         // Initialize the environment
         Default_Environment default_environment;
@@ -64,6 +64,11 @@ int main(int argc, char* argv[]) {
 
         // Safe to log now that the correct log file configs are loaded
         LOGGER_I << "Reticulating Splines";
+
+        for (auto& [level, message] : default_logs) {
+            Log(level) << message;
+        }
+
         for (auto& [level, message] : user_data_folder->get_logs()) {
             Log(level) << message;
         }

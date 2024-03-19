@@ -178,8 +178,8 @@ User_Data_Folder::User_Data_Folder(Writable_Filesystem& filesystem, const Enviro
 
 void User_Data_Folder::parse_config() {
     if (!parsed_default_config) {
-        parse_default_config();
-        logs.push_back(std::make_tuple(Log_Level::info, "Parsed the default config.ini file"));
+        throw config_exception{"Trying to parse user config but default configs"
+            " were not loaded. Make sure parse_default_config is called"};
     }
 
     if (version_path.empty()) return;
@@ -196,7 +196,10 @@ void User_Data_Folder::parse_config() {
             throw config_exception("Couldn't read file " + config_path);
         }
 
-        auto new_warnings = Configurations::parse(*existing_file_stream);
+        auto new_warnings = Configurations::parse(*existing_file_stream, false);
+
+        logs.push_back(std::make_tuple(Log_Level::info, "Parsed " + config_path));
+
         for (auto& warning : new_warnings) {
             logs.push_back(std::make_tuple(Log_Level::warning, warning));
         }
@@ -206,8 +209,8 @@ void User_Data_Folder::parse_config() {
     }
 }
 
-void User_Data_Folder::parse_default_config() {
-    if (parsed_default_config) return;
+std::vector<std::tuple<Log_Level, std::string>> User_Data_Folder::parse_default_config() {
+    if (parsed_default_config) return {};
 
     auto config_fs = file_utilities::default_config_filesystem();
     auto default_stream = config_fs->open_ifstream("config.ini");
@@ -215,13 +218,18 @@ void User_Data_Folder::parse_default_config() {
         throw config_exception("Couldn't read file config.ini");
     }
 
-    auto warnings = Configurations::parse(*default_stream);
+    auto warnings = Configurations::parse(*default_stream, true);
+
+    std::vector<std::tuple<Log_Level, std::string>> logs;
+    logs.push_back(std::make_tuple(Log_Level::info, "Parsed the default config.ini"));
 
     for (auto& warning : warnings) {
-        LOGGER_W << warning;
+        logs.push_back(std::make_tuple(Log_Level::warning, warning));
     }
 
     parsed_default_config = true;
+
+    return logs;
 }
 
 void User_Data_Folder::save_config(bool force, bool write_logs) {
@@ -368,7 +376,7 @@ bool User_Data_Folder::save_keymap_file(Key_Binder& key_binder) {
     return saved;
 }
 
-void User_Data_Folder::cleanup_save_filename(std::string& filename) {
+void User_Data_Folder::cleanup_save_filename(std::string& filename) const {
     string_utilities::normalize_slashes(filename);
     if (filename.find('/') == std::string::npos) {
         filename = version_path + filename;

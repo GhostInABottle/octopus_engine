@@ -21,7 +21,7 @@ public:
     // Parse config file and save it to data directory if needed
     void parse_config();
     // Parse the default config (not the one in user data directory)
-    static void parse_default_config();
+    static std::vector<std::tuple<Log_Level, std::string>> parse_default_config();
     // Save config file if it changed since last save (or if forced)
     void save_config(bool force = false, bool write_logs = true);
     // Try to save the file, logging any errors
@@ -60,7 +60,7 @@ private:
     static bool parsed_default_config;
     std::vector<std::tuple<Log_Level, std::string>> logs;
     // Add directory to save filename
-    void cleanup_save_filename(std::string& filename);
+    void cleanup_save_filename(std::string& filename) const;
     // Copy an older version of the data folder to the latest one
     void try_to_copy_old_version();
 };

@@ -1,14 +1,16 @@
 #ifndef HPP_CONFIGURATIONS
 #define HPP_CONFIGURATIONS
 
-#include <variant>
-#include <unordered_map>
-#include <stdexcept>
-#include <string>
-#include <vector>
+#include "log.hpp"
 #include <functional>
 #include <iosfwd>
-#include "log.hpp"
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
 class config_exception : public std::runtime_error {
 public:
@@ -26,7 +28,7 @@ public:
     // Check if configuration defaults are loaded
     static bool defaults_loaded() noexcept { return !defaults.empty(); }
     // Parse the configuration file and returns list of parse errors
-    static std::vector<std::string> parse(std::istream& stream);
+    static std::vector<std::string> parse(std::istream& stream, bool is_default);
     // Save the configuration file
     static void save(std::ostream& stream);
     // Has the configurations changed since it was last saved?
@@ -75,26 +77,38 @@ public:
     }
     // Update an option with given name
     template<typename T>
-    static void set(const std::string& name, T value) {
-        if (exists(name) && get<T>(name) == value) {
+    static void set(const std::string& name, T value, bool log = true) {
+        bool value_exists = exists(name);
+        if (value_exists && get<T>(name) == value) {
             return;
         }
 
         values[name] = value;
+
         for (auto& pair : observers) {
             pair.second(name);
         }
 
-        changed_since_save = true;
+        if (log) {
+            LOGGER_I << "Config " << name << " changed to " << value;
+        }
 
-        // Log level is usually changed to suppress logs, so don't log it
-        if (name == "logging.level") return;
-        LOGGER_I << "Config " << name << " changed to " << value;
+        // Add any new values to the end of the ordered section (for saving)
+        if (!value_exists) {
+            add_to_section_order(name);
+        }
+
+        changed_since_save = true;
     }
     // Directly set a value without notifying observers or logging
     template<typename T>
     static void override_value(const std::string& name, T value) {
         values[name] = value;
+
+        if (!exists(name)) {
+            add_to_section_order(name);
+        }
+
         changed_since_save = true;
     }
 private:
@@ -104,9 +118,52 @@ private:
     inline static value_map defaults;
     // Order of the parsed config file
     typedef std::tuple<std::string, std::vector<std::string>> section_ordered_values;
-    inline static std::vector<section_ordered_values> section_order;
+    typedef std::vector<section_ordered_values> section_order_list;
+    inline static section_order_list section_order;
     // Observers to be called when the config changes
     inline static std::unordered_map<std::string, callback> observers;
+    // Add an ordered section/keys tuple
+    static section_order_list::iterator add_section(const std::string& section, bool should_add) {
+        if (!should_add) return section_order.end();
+
+        section_order.push_back({ section, std::vector<std::string>{} });
+        return section_order.end() - 1;
+    }
+    // Add an ordered key to the section/keys tuple
+    static void add_to_section_order(section_ordered_values& section_values,
+            const std::string& value, bool should_add) {
+        if (!should_add) return;
+
+        auto& keys = std::get<1>(section_values);
+        keys.push_back(value);
+    }
+    // Find the ordered tuple for a named section
+    static section_order_list::iterator find_ordered_section(const std::string& section_name) {
+        for (auto i = std::begin(section_order); i < std::end(section_order); ++i) {
+            if (std::get<0>(*i) == section_name) return i;
+        }
+
+        return std::end(section_order);
+    }
+    // Add a section if it's missing
+    static void add_to_section_order(const std::string& config_key) {
+        std::string section, key;
+        auto first_dot = config_key.find_first_of('.');
+        if (first_dot != std::string::npos) {
+            section = config_key.substr(0, first_dot);
+            key = config_key.substr(first_dot + 1);
+        } else {
+            key = section;
+        }
+
+        auto section_iterator = find_ordered_section(section);
+        if (section_iterator == section_order.end()) {
+            section_iterator = add_section(section, true);
+            if (section_iterator == section_order.end()) return;
+        }
+
+        add_to_section_order(*section_iterator, config_key, true);
+    }
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "../include/log.hpp"
 #include "../include/utility/string.hpp"
 #include <boost/lexical_cast.hpp>
+#include <unordered_set>
 #include <typeinfo>
 #include <iostream>
 
@@ -127,25 +128,30 @@ void Configurations::load_defaults() {
     defaults["steam.restart-in-steam"] = false;
 }
 
-std::vector<std::string> Configurations::parse(std::istream& stream) {
+std::vector<std::string> Configurations::parse(std::istream& stream, bool is_default) {
     if (defaults.size() == 0) {
         load_defaults();
     }
 
-    values.clear();
-    section_order.clear();
+    if (is_default) {
+        section_order.clear();
+    }
+
+    add_section("", is_default);
+
     std::vector<std::string> errors;
     std::string current_section;
-    section_order.push_back({ "", std::vector<std::string>{} });
     std::string line;
+    std::unordered_set<std::string> seen_keys;
     int line_number = -1;
+
     while (std::getline(stream, line)) {
         line_number++;
         string_utilities::trim(line);
+
         // Empty line and comments
         if (line.empty() || line[0] == '#' || line[0] == ';') {
-            auto& lines = std::get<1>(section_order.back());
-            lines.push_back(line);
+            add_to_section_order(section_order.back(), line, is_default);
             continue;
         }
 
@@ -160,8 +166,7 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
                 string_utilities::trim(current_section);
             }
 
-            section_order.push_back({ current_section, std::vector<std::string>{} });
-
+            add_section(current_section, is_default);
             continue;
         }
 
@@ -185,28 +190,37 @@ std::vector<std::string> Configurations::parse(std::istream& stream) {
             key = current_section + "." + key;
         }
 
-        if (has_value(key)) {
+        if (seen_keys.find(key) != std::end(seen_keys)) {
             errors.push_back("Config file contains duplicate key '" + key + "' at line "
                 + std::to_string(line_number) + ", line content: " + line);
         }
+
+        // Is the key part of the default config file or config default values
+        auto is_default_key = is_default || exists(key);
 
         auto value_string = line.substr(eq + 1);
         string_utilities::trim(value_string);
         if (has_default(key)) {
             if (value_string == "true") value_string = "1";
             if (value_string == "false") value_string = "0";
-            values[key] = std::visit(
-                [&value_string](auto&& arg) {
-                    using T = std::decay_t<decltype(arg)>;
-                    return Configurations::value_type{boost::lexical_cast<T>(value_string)};
-                },
-                defaults[key]);
+
+            auto cast_to_default_type = [&value_string](auto&& default_value) {
+                using T = std::decay_t<decltype(default_value)>;
+                return Configurations::value_type{ boost::lexical_cast<T>(value_string) };
+            };
+            values[key] = std::visit(cast_to_default_type, defaults[key]);
+            seen_keys.insert(key);
         } else {
             values[key] = value_string;
+            seen_keys.insert(key);
         }
 
-        auto& keys = std::get<1>(section_order.back());
-        keys.push_back(key);
+        add_to_section_order(section_order.back(), key, is_default);
+
+        if (!is_default_key) {
+            // Add any non-default config keys to the end of the section
+            add_to_section_order(key);
+        }
     }
 
     changed_since_save = false;
