@@ -1552,8 +1552,9 @@ function Engine_Environment:open_url(url, mode) end
 ---@field character_input string # readonly
 ---@field triggered_keys string[] # readonly
 ---@field gamepad_enabled boolean # readonly
----@field gamepad_names table<string, string> # readonly
+---@field gamepad_names table<integer, string> # readonly
 ---@field gamepad_name string # readonly
+---@field gamepad_guid string # readonly
 ---@field last_input_type Engine_Input_Type
 ---@field game_width integer # readonly
 ---@field game_height integer # readonly
@@ -1676,6 +1677,14 @@ function game:get_key_name(physical_key_name) end
 
 ---@param key? string
 function game:wait_for_input(key) end
+
+---@param id integer
+---@return string
+function game:get_gamepad_name(id) end
+
+---@param id integer
+---@return string
+function game:get_gamepad_guid(id) end
 
 ---@param text string
 ---@return number

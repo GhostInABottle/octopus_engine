@@ -8,7 +8,6 @@
 #include "window_options.hpp"
 #include <cstdint>
 #include <functional>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -42,9 +41,9 @@ namespace xd
         int height() const;
         int framebuffer_width() const;
         int framebuffer_height() const;
-        void set_size(int width, int height);
-        xd::vec2 get_size() const;
-        std::vector<xd::vec2> get_sizes() const;
+        void set_window_size(int width, int height);
+        xd::vec2 current_resolution() const;
+        std::vector<xd::vec2> monitor_resolutions() const;
         bool is_fullscreen() const;
         void set_fullscreen(bool fullscreen);
         void set_vsync(bool vsync) const;
@@ -101,15 +100,42 @@ namespace xd
         void set_joystick_enabled(bool enabled) {
             m_joystick_enabled = enabled;
             reset_joystick_states();
+            m_active_joystick_id = -1;
         }
         bool joystick_present(int id) const {
-            return m_joystick_states.find(id) != m_joystick_states.end();
+            return id < 0 ? false
+                : m_joystick_states.find(id) != m_joystick_states.end();
         }
         bool joystick_is_gamepad(int id) const;
         void add_joystick(int id);
         void remove_joystick(int id);
-        int first_joystick_id() const;
-        std::optional<std::string> first_joystick_name() const;
+        int active_joystick_id() const {
+            return m_active_joystick_id;
+        }
+        bool joystick_was_disconnected() const {
+            return m_joystick_was_disconnected;
+        }
+        void reset_joystick_disconnect_state() {
+            m_joystick_was_disconnected = false;
+        }
+        bool is_preferred_joystick(int id) const;
+        void set_preferred_joystick_guid(const std::string& guid) {
+            m_preferred_joystick_guid = guid;
+        }
+        std::string preferred_joystick_guid() const {
+            return m_preferred_joystick_guid;
+        }
+        std::string joystick_name(int id = -1) const;
+        std::string joystick_guid(int id = -1) const {
+            if (id == -1 && m_active_joystick_id != -1) {
+                id = m_active_joystick_id;
+            } else if (id == -1) {
+                return "";
+            }
+
+            auto iter = m_joystick_guid_for_id.find(id);
+            return iter != m_joystick_guid_for_id.end() ? iter->second : "";
+        }
         std::unordered_map<int, std::string> joystick_names() const;
         void reset_joystick_states();
         input_type last_input_type() const { return m_last_input_type; }
@@ -125,8 +151,7 @@ namespace xd
         // an utility template function for member function callbacks, so user doesn't have to use std::bind directly
         template <typename T>
         event_link bind_input_event(const std::string& event_name, bool (T::*callback)(const input_args&), T* instance,
-            const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND)
-        {
+            const input_filter& filter = input_filter(), event_placement place = event_placement::EVENT_PREPEND) {
             return bind_input_event(event_name, std::bind(callback, instance, std::placeholders::_1), filter, place);
         }
 
@@ -205,6 +230,11 @@ namespace xd
         std::unordered_map<int, joystick_state> m_joystick_states;
         std::vector<int> m_joysticks_to_add;
         std::vector<int> m_joysticks_to_remove;
+
+        std::string m_preferred_joystick_guid;
+        int m_active_joystick_id;
+        bool m_joystick_was_disconnected;
+        std::unordered_map<int, std::string> m_joystick_guid_for_id;
 
         // to keep track whether we're in update or not
         bool m_in_update;

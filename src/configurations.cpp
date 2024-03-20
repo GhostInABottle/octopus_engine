@@ -82,7 +82,7 @@ void Configurations::load_defaults() {
 
     defaults["controls.gamepad-enabled"] = true;
     defaults["controls.gamepad-detection"] = true;
-    defaults["controls.gamepad-number"] = -1;
+    defaults["controls.preferred-gamepad-guid"] = std::string{""};
     defaults["controls.axis-as-dpad"] = true;
     defaults["controls.stick-sensitivity"] = 0.5f;
     defaults["controls.trigger-sensitivity"] = 0.5f;

@@ -15,13 +15,11 @@ namespace
 {
     xd::window *window_instance = nullptr;
 
-    void on_key_proxy(GLFWwindow*, int key, int, int action, int)
-    {
+    void on_key_proxy(GLFWwindow*, int key, int, int action, int) {
         window_instance->on_input(xd::input_type::INPUT_KEYBOARD, key, action);
     }
 
-    void on_mouse_proxy(GLFWwindow*, int key, int action, int)
-    {
+    void on_mouse_proxy(GLFWwindow*, int key, int action, int) {
         window_instance->on_input(xd::input_type::INPUT_MOUSE, key, action);
     }
 
@@ -39,13 +37,26 @@ namespace
 };
 
 xd::window::window(const std::string& title, int width, int height, const window_options& options)
-    : m_width(width)
-    , m_height(height)
-    , m_last_input_type(input_type::INPUT_KEYBOARD)
-    , m_in_update(false)
-    , m_tick_handler_counter(0)
-    , m_tick_handler_interval(0)
-{
+        : m_window(nullptr)
+        , m_width(width)
+        , m_height(height)
+        , m_joystick_enabled(true)
+        , m_gamepad_detection(true)
+        , m_axis_as_dpad(false)
+        , m_stick_sensitivity(0.5f)
+        , m_trigger_sensitivity(0.5f)
+        , m_last_input_type(input_type::INPUT_KEYBOARD)
+        , m_current_ticks(0)
+        , m_last_ticks(0)
+        , m_tick_handler_counter(0)
+        , m_tick_handler_interval(0)
+        , m_fps(0)
+        , m_frame_count(0)
+        , m_last_fps_update(0)
+        , m_active_joystick_id(-1)
+        , m_joystick_was_disconnected(false)
+        , m_in_update(false) {
+
     // check if there's already a window alive
     if (window_instance) {
         throw xd::window_creation_failed();
@@ -65,24 +76,28 @@ xd::window::window(const std::string& title, int width, int height, const window
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     // Calculate windowed size
-    auto screen_size = get_size();
-    auto missing_size = m_width == -1 || m_height == -1;
-    if (!missing_size && !options.fullscreen) {
+    auto resolution = current_resolution();
+    auto size_not_specified = m_width == -1 || m_height == -1;
+
+    if (!size_not_specified && !options.fullscreen) {
         m_windowed_size = xd::vec2(m_width, m_height);
     } else {
-        auto screen_dim = screen_size.x < screen_size.y ? screen_size.x : screen_size.y;
-        auto game_dim = static_cast<float>(screen_size.x < screen_size.y ? options.game_width : options.game_height);
+        auto screen_dim = resolution.x < resolution.y ? resolution.x : resolution.y;
+        auto game_dim = static_cast<float>(resolution.x < resolution.y
+            ? options.game_width : options.game_height);
         int factor = 1;
+
         while (factor * game_dim / screen_dim < options.max_windowed_size_percentage) {
             factor++;
         }
+
         m_windowed_size = xd::ivec2(options.game_width, options.game_height) * (factor - 1);
     }
 
-    if (missing_size && options.fullscreen) {
-        m_width = static_cast<int>(screen_size.x);
-        m_height = static_cast<int>(screen_size.y);
-    } else if (missing_size) {
+    if (size_not_specified && options.fullscreen) {
+        m_width = static_cast<int>(resolution.x);
+        m_height = static_cast<int>(resolution.y);
+    } else if (size_not_specified) {
         m_width = m_windowed_size.x;
         m_height = m_windowed_size.y;
     }
@@ -97,8 +112,8 @@ xd::window::window(const std::string& title, int width, int height, const window
     }
 
     // Calculate windowed position
-    m_windowed_pos.x = (static_cast<int>(screen_size.x) - m_windowed_size.x) / 2;
-    m_windowed_pos.y = (static_cast<int>(screen_size.y) - m_windowed_size.y) / 2;
+    m_windowed_pos.x = (static_cast<int>(resolution.x) - m_windowed_size.x) / 2;
+    m_windowed_pos.y = (static_cast<int>(resolution.y) - m_windowed_size.y) / 2;
     glfwSetWindowPos(m_window, m_windowed_pos.x, m_windowed_pos.y);
     glfwShowWindow(m_window);
 
@@ -126,7 +141,6 @@ xd::window::window(const std::string& title, int width, int height, const window
 
     // initialize ticks
     m_current_ticks = m_last_ticks = m_last_fps_update = static_cast<std::uint32_t>(glfwGetTime() * 1000);
-    m_fps = m_frame_count = 0;
 
     // register input callbacks
     glfwSetKeyCallback(m_window, &on_key_proxy);
@@ -142,14 +156,14 @@ xd::window::window(const std::string& title, int width, int height, const window
     m_axis_as_dpad = options.axis_as_dpad;
     m_stick_sensitivity = options.stick_sensitivity;
     m_trigger_sensitivity = options.trigger_sensitivity;
+    m_preferred_joystick_guid = options.preferred_joystick_guid;
 
     for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
         add_joystick(joystick);
     }
 }
 
-xd::window::~window()
-{
+xd::window::~window() {
     glfwDestroyWindow(m_window);
     glfwTerminate();
     window_instance = nullptr;
@@ -160,14 +174,22 @@ bool xd::window::joystick_is_gamepad(int id) const {
 }
 
 void xd::window::add_joystick(int id) {
-    if (glfwJoystickPresent(id)) {
-        // + 3 because we add two pseudo-buttons for the triggers
-        for (int button = 0; button < GLFW_GAMEPAD_BUTTON_LAST + 3; ++button) {
-            m_joystick_states[id].buttons[button] = GLFW_RELEASE;
-        }
-        for (int axis = 0; axis < GLFW_GAMEPAD_AXIS_LAST + 1; ++axis) {
-            m_joystick_states[id].axes[axis] = 0.0f;
-        }
+    if (!glfwJoystickPresent(id)) return;
+
+    // + 3 because we add two pseudo-buttons for the triggers
+    for (int button = 0; button < GLFW_GAMEPAD_BUTTON_LAST + 3; ++button) {
+        m_joystick_states[id].buttons[button] = GLFW_RELEASE;
+    }
+
+    for (int axis = 0; axis < GLFW_GAMEPAD_AXIS_LAST + 1; ++axis) {
+        m_joystick_states[id].axes[axis] = 0.0f;
+    }
+
+    auto guid = glfwGetJoystickGUID(id);
+    if (guid) {
+        m_joystick_guid_for_id[id] = guid;
+    } else {
+        m_joystick_guid_for_id.erase(id);
     }
 }
 
@@ -175,10 +197,20 @@ void xd::window::remove_joystick(int id) {
     if (joystick_present(id)) {
         m_joystick_states.erase(id);
     }
+
+    if (m_joystick_guid_for_id.find(id) != m_joystick_guid_for_id.end()) {
+        m_joystick_guid_for_id.erase(id);
+    }
+
+    if (id == m_active_joystick_id) {
+        m_joystick_was_disconnected = true;
+        m_active_joystick_id = -1;
+    }
 }
 
-void xd::window::on_input(input_type type, int key, int action, int device_id)
-{
+void xd::window::on_input(input_type type, int key, int action, int device_id) {
+    if (type == input_type::INPUT_GAMEPAD && !m_joystick_enabled) return;
+
     input_args args;
 
     // find associated virtual key
@@ -187,20 +219,20 @@ void xd::window::on_input(input_type type, int key, int action, int device_id)
         args.virtual_key = i->second;
     }
 
-    switch (type) {
-    case input_type::INPUT_KEYBOARD:
+    if (type == input_type::INPUT_KEYBOARD) {
         args.physical_key = KEY(key);
-        break;
-    case input_type::INPUT_GAMEPAD:
+    } else if (type == input_type::INPUT_GAMEPAD) {
         args.physical_key = GAMEPAD(key, device_id);
-        break;
-    case input_type::INPUT_MOUSE:
+        if (m_active_joystick_id == -1 || is_preferred_joystick(device_id)) {
+            m_active_joystick_id = device_id;
+        }
+    } else if (type == input_type::INPUT_MOUSE) {
         args.physical_key = MOUSE(key);
-        break;
     }
+
     args.modifiers = 0;
 
-    // add to triggered keys if keydown event and launch the event
+    // add to triggered keys if key down event and launch the event
     if (action == GLFW_PRESS) {
         m_triggered_keys.insert(args.physical_key);
         m_tick_handler_triggered_keys.insert(args.physical_key);
@@ -224,8 +256,7 @@ void xd::window::on_joystick_changed(int id, int event) {
     }
 }
 
-void xd::window::update()
-{
+void xd::window::update() {
     // this is used to keep track which triggered keys list triggered() uses
     m_in_update = true;
 
@@ -263,10 +294,7 @@ void xd::window::update()
     m_in_update = false;
 }
 
-void xd::window::update_joysticks()
-{
-    if (!m_joystick_enabled) return;
-
+void xd::window::update_joysticks() {
     if (!m_joysticks_to_add.empty()) {
         for (int id : m_joysticks_to_add) {
             add_joystick(id);
@@ -280,6 +308,8 @@ void xd::window::update_joysticks()
         }
         m_joysticks_to_remove.clear();
     }
+
+    if (!m_joystick_enabled) return;
 
     for (auto& pair : m_joystick_states) {
         int joystick_id = pair.first;
@@ -369,13 +399,11 @@ void xd::window::process_trigger(int axis, xd::window::joystick_state& state, in
     }
 }
 
-void xd::window::clear()
-{
+void xd::window::clear() {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
-void xd::window::swap()
-{
+void xd::window::swap() {
     glfwSwapBuffers(m_window);
 }
 
@@ -383,48 +411,43 @@ bool xd::window::focused() const {
     return glfwGetWindowAttrib(m_window, GLFW_FOCUSED) == GL_TRUE;
 }
 
-bool xd::window::closed() const
-{
+bool xd::window::closed() const {
     return glfwWindowShouldClose(m_window) != 0;
 }
 
-int xd::window::width() const
-{
+int xd::window::width() const {
     int width;
     glfwGetWindowSize(m_window, &width, nullptr);
     return width;
 }
 
-int xd::window::height() const
-{
+int xd::window::height() const {
     int height;
     glfwGetWindowSize(m_window, nullptr, &height);
     return height;
 }
 
-int xd::window::framebuffer_width() const
-{
+int xd::window::framebuffer_width() const {
     int width;
     glfwGetFramebufferSize(m_window, &width, nullptr);
     return width;
 }
 
-int xd::window::framebuffer_height() const
-{
+int xd::window::framebuffer_height() const {
     int height;
     glfwGetFramebufferSize(m_window, nullptr, &height);
     return height;
 }
 
-void xd::window::set_size(int width, int height)
-{
+void xd::window::set_window_size(int width, int height) {
     auto fullscreen = is_fullscreen();
-    auto missing_size = width == -1 || height == -1;
-    if (missing_size && fullscreen) {
-        auto size = get_size();
+    auto size_not_specified = width == -1 || height == -1;
+
+    if (size_not_specified && fullscreen) {
+        auto size = current_resolution();
         width = static_cast<int>(size.x);
         height = static_cast<int>(size.y);
-    } else if (missing_size) {
+    } else if (size_not_specified) {
         width = m_windowed_size.x;
         height = m_windowed_size.y;
     }
@@ -434,14 +457,12 @@ void xd::window::set_size(int width, int height)
     glfwSetWindowSize(m_window, width, height);
 }
 
-xd::vec2 xd::window::get_size() const
-{
+xd::vec2 xd::window::current_resolution() const {
     auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     return mode ? xd::vec2{mode->width, mode->height} : xd::vec2{0.0f, 0.0f};
 }
 
-std::vector<xd::vec2> xd::window::get_sizes() const
-{
+std::vector<xd::vec2> xd::window::monitor_resolutions() const {
     std::vector<xd::vec2> sizes;
     std::unordered_set<xd::vec2> size_map;
 
@@ -471,7 +492,7 @@ void xd::window::set_fullscreen(bool fullscreen) {
     if (fullscreen) {
         glfwGetWindowPos(m_window, &m_windowed_pos.x, &m_windowed_pos.y);
         glfwGetWindowSize(m_window, &m_windowed_size.x, &m_windowed_size.y);
-        auto res = get_size();
+        auto res = current_resolution();
         glfwSetWindowMonitor(m_window, glfwGetPrimaryMonitor(), 0, 0,
             static_cast<int>(res.x), static_cast<int>(res.y), GLFW_DONT_CARE);
     } else {
@@ -504,8 +525,7 @@ void xd::window::set_icons(std::vector<std::shared_ptr<xd::image>> icon_images) 
     glfwSetWindowIcon(m_window, glfw_images.size(), glfw_images.data());
 }
 
-void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key)
-{
+void xd::window::bind_key(const xd::key& physical_key, const std::string& virtual_key) {
     // find if the physical key is bound
     xd::window::key_table_t::iterator i = m_key_to_virtual.find(physical_key);
     if (i == m_key_to_virtual.end()) {
@@ -515,8 +535,7 @@ void xd::window::bind_key(const xd::key& physical_key, const std::string& virtua
     }
 }
 
-void xd::window::unbind_key(const xd::key& physical_key)
-{
+void xd::window::unbind_key(const xd::key& physical_key) {
     // find if the physical key is bound
     xd::window::key_table_t::iterator i = m_key_to_virtual.find(physical_key);
     if (i != m_key_to_virtual.end()) {
@@ -527,8 +546,7 @@ void xd::window::unbind_key(const xd::key& physical_key)
     }
 }
 
-void xd::window::unbind_key(const std::string& virtual_key)
-{
+void xd::window::unbind_key(const std::string& virtual_key) {
     // find if the virtual key is bound
     xd::window::virtual_table_t::iterator i = m_virtual_to_key.find(virtual_key);
     if (i != m_virtual_to_key.end()) {
@@ -541,27 +559,22 @@ void xd::window::unbind_key(const std::string& virtual_key)
     }
 }
 
-
-std::string xd::window::key_name(const key& physical_key)
-{
+std::string xd::window::key_name(const key& physical_key) {
     const char* name = glfwGetKeyName(physical_key.code, 0);
     return name ? name : "";
 }
 
-bool xd::window::pressed(const xd::key& key, int joystick_id) const
-{
+bool xd::window::pressed(const xd::key& key, int joystick_id) const {
     switch (key.type) {
     case xd::input_type::INPUT_KEYBOARD:
         return glfwGetKey(m_window, key.code) == GLFW_PRESS;
     case xd::input_type::INPUT_MOUSE:
         return  glfwGetMouseButton(m_window, key.code) == GLFW_PRESS;
     case xd::input_type::INPUT_GAMEPAD:
-        if (joystick_id == -1 && first_joystick_id() != -1) {
-            for (auto& [id, state] : m_joystick_states) {
-                if (state.buttons[key.code] == GLFW_PRESS)
-                    return true;
-            }
+        if (joystick_id == -1) {
+            joystick_id = m_active_joystick_id;
         }
+
         return joystick_present(joystick_id) &&
             m_joystick_states.at(joystick_id).buttons[key.code] == GLFW_PRESS;
     default:
@@ -569,8 +582,7 @@ bool xd::window::pressed(const xd::key& key, int joystick_id) const
     }
 }
 
-bool xd::window::pressed(const std::string& key, int joystick_id) const
-{
+bool xd::window::pressed(const std::string& key, int joystick_id) const {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
     if (i != m_virtual_to_key.end()) {
@@ -582,26 +594,25 @@ bool xd::window::pressed(const std::string& key, int joystick_id) const
     return false;
 }
 
-bool xd::window::triggered(const xd::key& key, int joystick_id) const
-{
+bool xd::window::triggered(const xd::key& key, int joystick_id) const {
     auto& key_set = m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
     if (key_set.empty()) return false;
-    auto key_copy = key;
+
+    xd::key key_copy = key;
     if (key_copy.type == input_type::INPUT_GAMEPAD) {
-        if (joystick_id == -1 && first_joystick_id() != -1) {
-            for (auto& candidate : key_set) {
-                if (candidate.type == key.type && candidate.code == key.code)
-                    key_copy.device_id = candidate.device_id;
-            }
-        } else {
-            key_copy.device_id = joystick_id;
+        if (joystick_id == -1) {
+            joystick_id = m_active_joystick_id;
         }
+
+        if (joystick_id == -1) return false;
+
+        key_copy.device_id = joystick_id;
     }
+
     return key_set.find(key_copy) != key_set.end();
 }
 
-bool xd::window::triggered(const std::string& key, int joystick_id) const
-{
+bool xd::window::triggered(const std::string& key, int joystick_id) const {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
     if (i != m_virtual_to_key.end()) {
@@ -614,30 +625,28 @@ bool xd::window::triggered(const std::string& key, int joystick_id) const
     return false;
 }
 
-bool xd::window::triggered_once(const xd::key& key, int joystick_id)
-{
+bool xd::window::triggered_once(const xd::key& key, int joystick_id) {
     auto& key_set = m_in_update ? m_tick_handler_triggered_keys : m_triggered_keys;
     if (key_set.empty()) return false;
-    auto key_copy = key;
+
+    xd::key key_copy = key;
     if (key_copy.type == input_type::INPUT_GAMEPAD) {
-        if (joystick_id == -1 && first_joystick_id() != -1) {
-            for (auto& candidate : key_set) {
-                if (candidate.type == key.type && candidate.code == key.code)
-                    key_copy.device_id = candidate.device_id;
-            }
-        } else {
-            key_copy.device_id = joystick_id;
+        if (joystick_id == -1) {
+            joystick_id = m_active_joystick_id;
         }
+
+        if (joystick_id == -1) return false;
+
+        key_copy.device_id = joystick_id;
     }
-    if (triggered(key, joystick_id)) {
-        key_set.erase(key_copy);
-        return true;
-    }
-    return false;
+
+    if (!triggered(key, joystick_id)) return false;
+
+    key_set.erase(key_copy);
+    return true;
 }
 
-bool xd::window::triggered_once(const std::string& key, int joystick_id)
-{
+bool xd::window::triggered_once(const std::string& key, int joystick_id) {
     auto i = m_virtual_to_key.find(key);
     if (i != m_virtual_to_key.end()) {
         for (auto j = i->second.begin(); j != i->second.end(); ++j) {
@@ -659,22 +668,18 @@ std::string xd::window::end_character_input() {
     return input_copy;
 }
 
-float xd::window::axis_value(const xd::key& key, int joystick_id)
-{
+float xd::window::axis_value(const xd::key& key, int joystick_id) {
     if (key.type != input_type::INPUT_GAMEPAD) return 0.0f;
-    if (joystick_id == -1 && first_joystick_id() != -1) {
-        for (auto& [id, state] : m_joystick_states) {
-            if (state.axes[key.code] != 0.0f)
-                joystick_id = id;
-        }
+    if (joystick_id == -1) {
+        joystick_id = m_active_joystick_id;
     }
+
     if (!joystick_present(joystick_id)) return 0.0f;
 
     return m_joystick_states[joystick_id].axes[key.code];
 }
 
-float xd::window::axis_value(const std::string& key, int joystick_id)
-{
+float xd::window::axis_value(const std::string& key, int joystick_id) {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
     if (i != m_virtual_to_key.end()) {
@@ -686,32 +691,33 @@ float xd::window::axis_value(const std::string& key, int joystick_id)
     return 0.0f;
 }
 
-int xd::window::first_joystick_id() const
-{
-    if (!m_joystick_states.empty()) {
-        // We iterate over GLFW_JOYSTICK_X instead of states to make sure we pick smallest ID
-        for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
-            if (joystick_present(joystick))
-                return joystick;
-        }
-    }
-    return -1;
+bool xd::window::is_preferred_joystick(int id) const {
+    const auto& preferred_guid = m_preferred_joystick_guid;
+    if (preferred_guid.empty() || !joystick_present(id)) return false;
+
+    auto i = m_joystick_guid_for_id.find(id);
+    return i != m_joystick_guid_for_id.end()
+        && m_joystick_guid_for_id.at(id) == preferred_guid;
 }
 
-std::optional<std::string> xd::window::first_joystick_name() const
-{
-    auto id = first_joystick_id();
+std::string xd::window::joystick_name(int id) const {
+    if (id == -1 && m_active_joystick_id != -1) {
+        id = m_active_joystick_id;
+    } else if (id == -1) {
+        return "";
+    }
+
     const char* name = nullptr;
     if (joystick_is_gamepad(id)) {
         name = glfwGetGamepadName(id);
     } else {
         name = glfwGetJoystickName(id);
     }
-    return name ? std::optional<std::string>{name} : std::nullopt;
+
+    return name ? name : "";
 }
 
-std::unordered_map<int, std::string> xd::window::joystick_names() const
-{
+std::unordered_map<int, std::string> xd::window::joystick_names() const {
     std::unordered_map<int, std::string> names;
 
     for (auto& [id, state] : m_joystick_states) {
@@ -729,8 +735,7 @@ std::unordered_map<int, std::string> xd::window::joystick_names() const
     return names;
 }
 
-void xd::window::reset_joystick_states()
-{
+void xd::window::reset_joystick_states() {
     for (int joystick = GLFW_JOYSTICK_1; joystick < GLFW_JOYSTICK_LAST + 1; ++joystick) {
         if (glfwJoystickPresent(joystick)) {
             add_joystick(joystick);
@@ -739,4 +744,3 @@ void xd::window::reset_joystick_states()
         }
     }
 }
-

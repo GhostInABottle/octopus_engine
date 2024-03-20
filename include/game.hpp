@@ -90,11 +90,11 @@ public:
 #endif
     }
     // Manually set window resolution
-    void set_size(int width, int height);
+    void set_window_size(int width, int height);
     // Returns the current resolution
-    xd::vec2 get_monitor_size() const;
+    xd::vec2 get_current_resolution() const;
     // Returns list of supported resolutions
-    std::vector<xd::vec2> get_sizes() const;
+    std::vector<xd::vec2> get_monitor_resolutions() const;
     // Is game in fullscreen mode?
     bool is_fullscreen() const {
         return window ? window->is_fullscreen() : false;
@@ -120,10 +120,10 @@ public:
     }
     // Is key currently pressed
     bool pressed(const xd::key& key) const {
-        return window->pressed(key, get_gamepad_id());
+        return window->pressed(key);
     }
     bool pressed(const std::string& key) const {
-        return window->pressed(key, get_gamepad_id());
+        return window->pressed(key);
     }
     // Was any key triggered since last update?
     bool triggered() const {
@@ -131,17 +131,17 @@ public:
     }
     // Was key triggered since last update?
     bool triggered(const xd::key& key) const {
-        return window->triggered(key, get_gamepad_id());
+        return window->triggered(key);
     }
     bool triggered(const std::string& key) const {
-        return window->triggered(key, get_gamepad_id());
+        return window->triggered(key);
     }
     // Was key triggered? (Un-trigger it if it was)
     bool triggered_once(const xd::key& key) {
-        return window->triggered_once(key, get_gamepad_id());
+        return window->triggered_once(key);
     }
     bool triggered_once(const std::string& key) {
-        return window->triggered_once(key, get_gamepad_id());
+        return window->triggered_once(key);
     }
     // Get physical names of triggered keys
     std::vector<std::string> triggered_keys() const;
@@ -240,14 +240,14 @@ public:
     std::string get_scripts_directory() const;
     // Check if gamepad config is enabled and at least one gamepad exists
     bool gamepad_enabled() const;
-    // Get current gamepad ID
-    int get_gamepad_id() const;
     // Get connected gamepad IDs and their display names
     std::unordered_map<int, std::string> gamepad_names() const {
         return window->joystick_names();
     }
     // Get current gamepad's name
-    std::optional<std::string> get_gamepad_name() const;
+    std::string get_gamepad_name(int id) const;
+    // Get current gamepad's guid
+    std::string get_gamepad_guid(int id) const;
     // Get string to be added to map object scripts
     std::string get_object_script_preamble() const;
     // Get arguments used to launch the game

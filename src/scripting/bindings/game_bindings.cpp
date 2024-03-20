@@ -60,12 +60,13 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["last_input_type"] = sol::property(&Game::get_last_input_type);
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
     game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
-    game_type["gamepad_name"] = sol::property(&Game::get_gamepad_name);
+    game_type["gamepad_name"] = sol::property([](Game* game) { return game->get_gamepad_name(-1); });
+    game_type["gamepad_guid"] = sol::property([](Game* game) { return game->get_gamepad_guid(-1); });
     game_type["character_input"] = sol::property(&Game::character_input);
 
-    game_type["monitor_resolution"] = sol::property(&Game::get_monitor_size);
+    game_type["monitor_resolution"] = sol::property(&Game::get_current_resolution);
     game_type["monitor_resolutions"] = sol::property([&](Game& game) {
-        return sol::as_table(game.get_sizes());
+        return sol::as_table(game.get_monitor_resolutions());
     });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
 
@@ -75,7 +76,7 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["audio_player"] = sol::property(&Game::get_audio_player);
     game_type["environment"] = sol::property(&Game::get_environment);
 
-    game_type["set_size"] = &Game::set_size;
+    game_type["set_size"] = &Game::set_window_size;
 
     game_type["exit"] = &Game::exit;
     game_type["pause"] = &Game::pause;
@@ -98,6 +99,8 @@ void bind_game_types(sol::state& lua, Game& game) {
     game_type["begin_character_input"] = &Game::begin_character_input;
     game_type["end_character_input"] = &Game::end_character_input;
     game_type["get_key_name"] = &Game::get_key_name;
+    game_type["get_gamepad_name"] = &Game::get_gamepad_name;
+    game_type["get_gamepad_guid"] = &Game::get_gamepad_guid;
 
     game_type["run_script"] = &Game::run_script;
     game_type["run_script_file"] = &Game::run_script_file;

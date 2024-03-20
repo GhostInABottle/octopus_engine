@@ -45,9 +45,6 @@ struct Game::Impl {
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
             game_width(Configurations::get<int>("graphics.game-width", "debug.width")),
             game_height(Configurations::get<int>("graphics.game-height", "debug.height")),
-            gamepad_id(Configurations::get<int>("controls.gamepad-number")),
-            preferred_gamepad_id(Configurations::get<int>("controls.gamepad-number")),
-            gamepad_disconnected(false),
             pause_button(Configurations::get<std::string>("controls.pause-button")),
             scripts_folder(Configurations::get<std::string>("game.scripts-folder")),
             reset_scripting(false),
@@ -114,12 +111,14 @@ struct Game::Impl {
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
         }
-        if (game.is_fullscreen() && (config_changed("graphics.screen-width") || config_changed("graphics.screen-height"))) {
-            game.set_size(Configurations::get<int>("graphics.screen-width"),
+        if (game.is_fullscreen() && (config_changed("graphics.screen-width")
+                || config_changed("graphics.screen-height"))) {
+            game.set_window_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
         }
-        if (!game.is_fullscreen() && (config_changed("graphics.window-width") || config_changed("graphics.window-height"))) {
-            game.set_size(Configurations::get<int>("graphics.window-width"),
+        if (!game.is_fullscreen() && (config_changed("graphics.window-width")
+                || config_changed("graphics.window-height"))) {
+            game.set_window_size(Configurations::get<int>("graphics.window-width"),
                 Configurations::get<int>("graphics.window-height"));
         }
         if (config_changed("graphics.fullscreen")) {
@@ -152,10 +151,9 @@ struct Game::Impl {
         if (config_changed("controls.gamepad-enabled") && window) {
             window->set_joystick_enabled(Configurations::get<bool>("controls.gamepad-enabled"));
         }
-        if (config_changed("controls.gamepad-number") && window) {
-            gamepad_id = -1;
-            preferred_gamepad_id = Configurations::get<int>("controls.gamepad-number");
-            get_gamepad_id(*window);
+        if (config_changed("controls.preferred-gamepad-guid") && window) {
+            auto preferred = Configurations::get<std::string>("controls.preferred-gamepad-guid");
+            window->set_preferred_joystick_guid(preferred);
         }
         if (config_changed("debug.show-fps")) {
             show_fps = Configurations::get<bool>("debug.show-fps");
@@ -173,34 +171,6 @@ struct Game::Impl {
         if (!user_data_folder->load_keymap_file(*key_binder)) {
             key_binder->bind_defaults();
         }
-    }
-    // Get preferred gamepad ID (or first one)
-    int get_gamepad_id(xd::window& window) {
-        auto cached = gamepad_id != -1 && window.joystick_present(gamepad_id);
-        if (cached) return gamepad_id;
-
-        // Handle disconnect
-        if (gamepad_id != -1 && !gamepad_disconnected) {
-            auto config = Configurations::get<std::string>("controls.pause-on-gamepad-disconnect");
-            LOGGER_I << "Gamepad " << gamepad_id << " disconnected. Pause settings: " << config;
-            gamepad_disconnected = config == "always" || (config == "auto"
-                && window.last_input_type() == xd::input_type::INPUT_GAMEPAD);
-        }
-
-        auto preferred_gamepad_exists = gamepad_id != preferred_gamepad_id
-            && preferred_gamepad_id != -1
-            && window.joystick_present(preferred_gamepad_id);
-        if (preferred_gamepad_exists) {
-            gamepad_id = preferred_gamepad_id;
-            LOGGER_I << "Setting gamepad ID to preferred ID: " << gamepad_id;
-        } else {
-            gamepad_id = window.first_joystick_id();
-            if (gamepad_id != -1) {
-                LOGGER_I << "Setting gamepad ID to first available ID: " << gamepad_id;
-            }
-        }
-
-        return gamepad_id;
     }
 
     void reset_scripting_interface(Game& game) {
@@ -256,6 +226,7 @@ struct Game::Impl {
         if (fullscreen_change_ticks != -1) {
             end_fullscreen_change(game);
         }
+
         fullscreen_change_ticks = game.window_ticks();
         was_fullscreen = game.is_fullscreen();
         game.set_fullscreen(Configurations::get<bool>("graphics.fullscreen"));
@@ -271,10 +242,10 @@ struct Game::Impl {
 
         auto is_fullscreen = game.is_fullscreen();
         if (is_fullscreen && !was_fullscreen) {
-            game.set_size(Configurations::get<int>("graphics.screen-width"),
+            game.set_window_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
         } else if (!is_fullscreen && was_fullscreen) {
-            game.set_size(Configurations::get<int>("graphics.window-width"),
+            game.set_window_size(Configurations::get<int>("graphics.window-width"),
                 Configurations::get<int>("graphics.window-height"));
         }
     }
@@ -355,12 +326,6 @@ struct Game::Impl {
     int game_width;
     // Game height
     int game_height;
-    // Active gamepad id
-    int gamepad_id;
-    // Configured gamepad ID
-    int preferred_gamepad_id;
-    // Was gamepad disconnected
-    bool gamepad_disconnected;
     // Unapplied config changes
     std::unordered_set<std::string> config_changes;
     // Keymap file reader and binder
@@ -407,6 +372,7 @@ Game::Game(const std::vector<std::string>& args,
                 false, // display cursor
                 Configurations::get<bool>("graphics.vsync"),
                 Configurations::get<bool>("controls.gamepad-enabled"),
+                Configurations::get<std::string>("controls.preferred-gamepad-guid"),
                 Configurations::get<bool>("controls.gamepad-detection"),
                 Configurations::get<bool>("controls.axis-as-dpad"),
                 Configurations::get<float>("controls.stick-sensitivity"),
@@ -558,9 +524,20 @@ void Game::frame_update() {
         Configurations::set("graphics.fullscreen", !is_fullscreen());
     }
 
+    // Check if gamepad was disconnected
+    auto gamepad_disconnected = gamepad_enabled()
+        && window->joystick_was_disconnected();
+    if (gamepad_disconnected) {
+        window->reset_joystick_disconnect_state();
+        auto config = Configurations::get<std::string>("controls.pause-on-gamepad-disconnect");
+        LOGGER_I << "Gamepad disconnected. Pause settings: " << config;
+        gamepad_disconnected = config == "always" || (config == "auto"
+            && window->last_input_type() == xd::input_type::INPUT_GAMEPAD);
+    }
+
     // Pause/resume game if pause button is triggered, or pause if gamepad disconnected
     bool triggered_pause = triggered(pimpl->pause_button)
-        || (pimpl->gamepad_disconnected && !paused);
+        || (gamepad_disconnected && !paused);
 
     // Only resume if there is no pause script, otherwise the script should do it
     if (paused && !pimpl->pause_scripting_interface) {
@@ -577,10 +554,6 @@ void Game::frame_update() {
             pause();
             pimpl->focus_pause = true;
         }
-    }
-
-    if (paused && pimpl->gamepad_disconnected) {
-        pimpl->gamepad_disconnected = false;
     }
 
     if (paused) {
@@ -696,23 +669,27 @@ void Game::exit() {
     pimpl->exit_requested = true;
 }
 
-void Game::set_size(int width, int height) {
+void Game::set_window_size(int width, int height) {
     LOGGER_I << "Setting screen size to " << width << ", " << height;
     if (pimpl->editor_mode) {
         editor_size = xd::ivec2(width, height);
         pimpl->game_width = static_cast<int>(map->get_pixel_width() * magnification);
         pimpl->game_height = static_cast<int>(map->get_pixel_height() * magnification);
     } else {
-        window->set_size(width, height);
+        window->set_window_size(width, height);
     }
 }
 
-xd::vec2 Game::get_monitor_size() const {
-    return window ? window->get_size() : xd::vec2{0.0f, 0.0f};
+xd::vec2 Game::get_current_resolution() const {
+    return window
+        ? window->current_resolution()
+        : xd::vec2{0.0f, 0.0f};
 }
 
-std::vector<xd::vec2> Game::get_sizes() const {
-    return window ? window->get_sizes() : std::vector<xd::vec2>{};
+std::vector<xd::vec2> Game::get_monitor_resolutions() const {
+    return window
+        ? window->monitor_resolutions()
+        : std::vector<xd::vec2>{};
 }
 
 void Game::set_fullscreen(bool fullscreen) {
@@ -744,7 +721,10 @@ std::vector<std::string> Game::triggered_keys() const {
     std::vector<std::string> results;
     auto keys = window->triggered_keys();
     for (xd::key key : keys) {
-        if (key.type == xd::input_type::INPUT_GAMEPAD && key.device_id != get_gamepad_id()) continue;
+        auto different_joystick = key.type == xd::input_type::INPUT_GAMEPAD
+            && key.device_id != window->active_joystick_id();
+        if (different_joystick) continue;
+
         key.device_id = -1;
         results.push_back(pimpl->key_binder->get_key_identifier(key));
     }
@@ -910,32 +890,19 @@ void Game::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
 }
 
 bool Game::gamepad_enabled() const {
-    int gamepad_id = get_gamepad_id();
-    return Configurations::get<bool>("controls.gamepad-enabled") && window->joystick_present(gamepad_id);
+    return Configurations::get<bool>("controls.gamepad-enabled");
 }
 
-int Game::get_gamepad_id() const {
-    if (!window) return -1;
-    return pimpl->get_gamepad_id(*window);
+std::string Game::get_gamepad_name(int id) const {
+    if (!window) return "";
+
+    return window->joystick_name(id);
 }
 
-std::optional<std::string> Game::get_gamepad_name() const {
-    std::optional<std::string> current_name = std::nullopt;
-    if (!window || !gamepad_enabled()) return current_name;
+std::string Game::get_gamepad_guid(int id) const {
+    if (!window) return "";
 
-    auto current_id = get_gamepad_id();
-    if (current_id == -1) {
-        current_name = window->first_joystick_name();
-    }  else {
-        auto names = window->joystick_names();
-        for (auto& [id, name] : names) {
-            if (current_id == id) {
-                current_name = name;
-                break;
-            }
-        }
-    }
-    return current_name;
+    return window->joystick_guid(id);
 }
 
 std::string Game::get_object_script_preamble() const {

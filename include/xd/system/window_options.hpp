@@ -1,6 +1,8 @@
 #ifndef H_XD_SYSTEM_OPTIONS
 #define H_XD_SYSTEM_OPTIONS
 
+#include <string>
+
 namespace xd
 {
     struct window_options
@@ -25,10 +27,13 @@ namespace xd
             , minor_version(0)
         {}
 
-        window_options(bool fullscreen, int game_width, int game_height, float max_windowed_size_percentage,
-            bool allow_resize, bool display_cursor, bool vsync,
-            bool enable_joystick, bool gamepad_detection, bool axis_as_dpad, float stick_sensitivity,
-            float trigger_sensitivity, int depth_bits, int stencil_bits, int antialiasing_level,
+        window_options(bool fullscreen, int game_width, int game_height,
+            float max_windowed_size_percentage, bool allow_resize,
+            bool display_cursor, bool vsync,
+            bool enable_joystick, std::string joystick_guid,
+            bool gamepad_detection, bool axis_as_dpad,
+            float stick_sensitivity, float trigger_sensitivity,
+            int depth_bits, int stencil_bits, int antialiasing_level,
             int major_version, int minor_version) noexcept
             : fullscreen(fullscreen)
             , game_width(game_width)
@@ -38,6 +43,7 @@ namespace xd
             , display_cursor(display_cursor)
             , vsync(vsync)
             , enable_joystick(enable_joystick)
+            , preferred_joystick_guid(joystick_guid)
             , gamepad_detection(gamepad_detection)
             , axis_as_dpad(axis_as_dpad)
             , stick_sensitivity(stick_sensitivity)
@@ -57,6 +63,7 @@ namespace xd
         bool display_cursor;
         bool vsync;
         bool enable_joystick;
+        std::string preferred_joystick_guid;
         bool gamepad_detection;
         bool axis_as_dpad;
         float stick_sensitivity;
