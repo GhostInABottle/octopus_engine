@@ -1,11 +1,11 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/map.hpp"
-#include "../../../include/map_object.hpp"
 #include "../../../include/layers/image_layer.hpp"
 #include "../../../include/layers/object_layer.hpp"
+#include "../../../include/map.hpp"
+#include "../../../include/map_object.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/file.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <string>
 
 void bind_map_types(sol::state& lua) {

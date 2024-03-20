@@ -1,7 +1,7 @@
 #ifndef H_XD_EXCEPTION
 #define H_XD_EXCEPTION
 
-#include <stdexcept>
+#include <exception>
 #include <string>
 
 namespace xd

@@ -1,6 +1,5 @@
 #include "../../include/scripting/lua_object.hpp"
-#include "../../include/xd/lua.hpp"
-#include "../../include/log.hpp"
+#include "../../include/xd/vendor/sol/sol.hpp"
 #include <unordered_map>
 
 struct Lua_Object::Impl {

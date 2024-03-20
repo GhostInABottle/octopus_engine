@@ -1,10 +1,10 @@
 #ifndef HPP_TEXT_PARSER
 #define HPP_TEXT_PARSER
 
-#include <string>
-#include <vector>
-#include <unordered_set>
 #include <stdexcept>
+#include <string>
+#include <unordered_set>
+#include <vector>
 
 enum class Token_Type {
     TEXT,

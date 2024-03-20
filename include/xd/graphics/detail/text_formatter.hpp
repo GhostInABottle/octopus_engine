@@ -1,7 +1,7 @@
 #ifndef H_XD_GRAPHICS_DETAIL_TEXT_FORMATTER
 #define H_XD_GRAPHICS_DETAIL_TEXT_FORMATTER
 
-#include "../font.hpp"
+#include "../font_style.hpp"
 #include <variant>
 #include <list>
 

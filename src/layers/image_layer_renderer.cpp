@@ -1,12 +1,12 @@
-#include "../../include/layers/image_layer_renderer.hpp"
-#include "../../include/layers/image_layer.hpp"
 #include "../../include/camera.hpp"
 #include "../../include/game.hpp"
-#include "../../include/sprite_data.hpp"
+#include "../../include/layers/image_layer.hpp"
+#include "../../include/layers/image_layer_renderer.hpp"
+#include "../../include/sprite.hpp"
 
 void Image_Layer_Renderer::render(Map& map) {
-    if (!layer.visible)
-        return;
+    if (!layer.visible) return;
+
     batch.clear();
     auto& image_layer = static_cast<const Image_Layer&>(layer);
     xd::vec2 pos;

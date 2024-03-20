@@ -1,15 +1,17 @@
-#include "../../include/scripting/scripting_interface.hpp"
-#include "../../include/scripting/script_bindings.hpp"
-#include "../../include/game.hpp"
 #include "../../include/camera.hpp"
-#include "../../include/map.hpp"
-#include "../../include/map_object.hpp"
 #include "../../include/commands/command.hpp"
 #include "../../include/configurations.hpp"
+#include "../../include/direction.hpp"
+#include "../../include/game.hpp"
 #include "../../include/log.hpp"
+#include "../../include/map.hpp"
+#include "../../include/map_object.hpp"
+#include "../../include/scripting/script_bindings.hpp"
+#include "../../include/scripting/scripting_interface.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/utility/string.hpp"
-#include "../../include/xd/lua.hpp"
+#include "../../include/xd/lua/virtual_machine.hpp"
+#include "../../include/xd/vendor/sol/sol.hpp"
 
 namespace detail {
     static int require_lua_file(lua_State* state) {

@@ -1,20 +1,14 @@
 #ifndef H_XD_GRAPHICS_FONT
 #define H_XD_GRAPHICS_FONT
 
+#include "../glm.hpp"
+#include "../vendor/utf8.h"
 #include "detail/font.hpp"
 #include "font_style.hpp"
-#include "../vendor/glew/glew.h"
-#include "../glm.hpp"
-#include "types.hpp"
-#include "vertex_batch.hpp"
-#include "sprite_batch.hpp"
 #include "shader_program.hpp"
-#include "transform_geometry.hpp"
-#include "../vendor/utf8.h"
-#include "../asset_serializer.hpp"
+#include <iosfwd>
 #include <memory>
 #include <unordered_map>
-#include <iosfwd>
 
 namespace xd
 {

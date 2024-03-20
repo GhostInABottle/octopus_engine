@@ -1,19 +1,19 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
+#include "../../../include/commands/command_result.hpp"
+#include "../../../include/commands/move_object_to_command.hpp"
+#include "../../../include/commands/show_pose_command.hpp"
+#include "../../../include/commands/show_text_command.hpp"
+#include "../../../include/commands/wait_command.hpp"
 #include "../../../include/game.hpp"
+#include "../../../include/log.hpp"
 #include "../../../include/map.hpp"
 #include "../../../include/map_object.hpp"
-#include "../../../include/log.hpp"
-#include "../../../include/commands/command_result.hpp"
-#include "../../../include/commands/show_text_command.hpp"
-#include "../../../include/commands/show_pose_command.hpp"
-#include "../../../include/commands/wait_command.hpp"
-#include "../../../include/commands/move_object_to_command.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/direction.hpp"
-#include "../../../include/xd/lua.hpp"
-#include <string>
-#include <optional>
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <memory>
+#include <optional>
+#include <string>
 
 void bind_utility_types(sol::state& lua, Game& game) {
     // Waiting for duration / function result

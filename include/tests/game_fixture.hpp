@@ -1,8 +1,8 @@
 #ifndef HPP_GAME_FIXTURE
 #define HPP_GAME_FIXTURE
 
-#include "../../include/environments/default_environment.hpp"
 #include "../../include/game.hpp"
+#include "../environments/environment.hpp"
 #include <memory>
 
 struct Game_Fixture

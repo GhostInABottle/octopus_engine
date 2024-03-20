@@ -2,7 +2,6 @@
 #define HPP_SHOW_POSE_COMMAND
 
 #include <string>
-#include <functional>
 #include "../direction.hpp"
 #include "../commands/command.hpp"
 

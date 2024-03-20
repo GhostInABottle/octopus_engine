@@ -1,8 +1,8 @@
 #ifndef H_XD_GRAPHICS_SHADER_PROGRAM
 #define H_XD_GRAPHICS_SHADER_PROGRAM
 
-#include "../vendor/glew/glew.h"
 #include "../glm.hpp"
+#include "../vendor/glew/glew.h"
 #include <string>
 #include <unordered_map>
 

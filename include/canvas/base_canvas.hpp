@@ -1,16 +1,14 @@
 #ifndef HPP_BASE_CANVAS
 #define HPP_BASE_CANVAS
 
+#include "../interfaces/color_holder.hpp"
+#include "../interfaces/opacity_holder.hpp"
+#include "../scripting/lua_object.hpp"
+#include "../xd/graphics/texture.hpp"
+#include "../xd/graphics/types.hpp"
+#include <memory>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <memory>
-#include <optional>
-#include "../xd/graphics/types.hpp"
-#include "../xd/graphics/texture.hpp"
-#include "../scripting/lua_object.hpp"
-#include "../interfaces/opacity_holder.hpp"
-#include "../interfaces/color_holder.hpp"
 
 class Game;
 class Camera;

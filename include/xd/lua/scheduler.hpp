@@ -1,13 +1,13 @@
 #ifndef H_XD_LUA_SCHEDULER
 #define H_XD_LUA_SCHEDULER
 
-#include "scheduler_task.hpp"
 #include "../vendor/sol/sol.hpp"
+#include "scheduler_task.hpp"
 #include <list>
-#include <stack>
-#include <type_traits>
-#include <string>
 #include <memory>
+#include <stack>
+#include <string>
+#include <type_traits>
 #include <utility>
 
 namespace xd

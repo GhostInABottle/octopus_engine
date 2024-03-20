@@ -1,9 +1,9 @@
 #ifndef HPP_LAYER_RENDERER
 #define HPP_LAYER_RENDERER
 
+#include "../map.hpp"
 #include "../xd/entity.hpp"
 #include "../xd/graphics/sprite_batch.hpp"
-#include "../map.hpp"
 
 struct Layer;
 class Camera;
@@ -14,6 +14,7 @@ public:
     virtual void render(Map& map) = 0;
     xd::sprite_batch& get_batch() noexcept { return batch; }
     void redraw() noexcept { needs_redraw = true; }
+    virtual ~Layer_Renderer() {}
 protected:
     xd::sprite_batch batch;
     const Layer& layer;

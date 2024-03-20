@@ -2,16 +2,16 @@
 #define H_XD_ENTITY
 
 #include "detail/entity.hpp"
-
+#include "detail/identity.hpp"
 #include "event_bus.hpp"
-#include <any>
-#include <unordered_map>
-#include <functional>
 #include <algorithm>
-#include <memory>
+#include <any>
+#include <functional>
 #include <list>
 #include <map>
+#include <memory>
 #include <type_traits>
+#include <unordered_map>
 
 namespace xd
 {

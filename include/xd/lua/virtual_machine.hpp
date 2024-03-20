@@ -2,7 +2,6 @@
 #define H_XD_LUA_VIRTUAL_MACHINE
 
 #include "../vendor/sol/sol.hpp"
-#include <string>
 
 namespace xd
 {

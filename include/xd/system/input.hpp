@@ -1,9 +1,9 @@
 #ifndef H_XD_SYSTEM_INPUT
 #define H_XD_SYSTEM_INPUT
 
-#include <functional>
 #include <optional>
 #include <string>
+#include <type_traits>
 
 namespace xd
 {

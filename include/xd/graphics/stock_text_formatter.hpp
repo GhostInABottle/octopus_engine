@@ -2,10 +2,9 @@
 #define H_XD_GRAPHICS_STOCK_TEXT_FORMATTER
 
 #include "../glm.hpp"
-#include <string>
-#include <ctime>
-#include <unordered_map>
 #include "text_formatter.hpp"
+#include <string>
+#include <unordered_map>
 
 namespace xd
 {

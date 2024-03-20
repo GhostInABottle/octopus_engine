@@ -1,10 +1,10 @@
+#include "../../include/exceptions.hpp"
 #include "../../include/layers/layer.hpp"
 #include "../../include/layers/layer_renderer.hpp"
 #include "../../include/layers/layer_updater.hpp"
 #include "../../include/utility/math.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/xml.hpp"
-#include "../../include/exceptions.hpp"
 
 Layer::Layer() : id(-1), width(0), height(0), opacity(1.0f), visible(true) {}
 

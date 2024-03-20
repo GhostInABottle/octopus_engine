@@ -1,9 +1,8 @@
-#include "../../../include/xd/audio/music.hpp"
-#include "../../../include/xd/audio/exceptions.hpp"
-#include "../../../include/xd/audio/sound.hpp"
 #include "../../../include/xd/audio/audio.hpp"
-#include <memory>
+#include "../../../include/xd/audio/music.hpp"
+#include "../../../include/xd/audio/sound.hpp"
 #include <istream>
+#include <memory>
 
 xd::music::music(audio& audio, const std::string& filename,
         std::unique_ptr<std::istream> stream)

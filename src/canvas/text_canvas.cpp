@@ -1,10 +1,18 @@
-#include "../../include/canvas/text_canvas.hpp"
-#include "../../include/game.hpp"
 #include "../../include/camera.hpp"
+#include "../../include/canvas/base_canvas.hpp"
+#include "../../include/canvas/text_canvas.hpp"
 #include "../../include/decorators/typewriter_decorator.hpp"
+#include "../../include/game.hpp"
+#include "../../include/text_parser.hpp"
+#include "../../include/xd/glm.hpp"
 #include "../../include/xd/graphics/font.hpp"
+#include "../../include/xd/graphics/font_style.hpp"
+#include "../../include/xd/graphics/sprite_batch.hpp"
+#include <iosfwd>
+#include <memory>
+#include <optional>
 #include <sstream>
-#include <stdexcept>
+#include <string>
 
 Text_Canvas::Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative,
     std::optional<Typewriter_Options> typewriter_options, bool is_child)

@@ -1,6 +1,4 @@
 #include "../../include/canvas/base_image_canvas.hpp"
-#include "../../include/utility/color.hpp"
-#include "../../include/configurations.hpp"
 
 Base_Image_Canvas::Base_Image_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position, const std::string& filename)
     : Base_Canvas(game, type, position),

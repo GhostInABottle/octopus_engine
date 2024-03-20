@@ -1,11 +1,12 @@
-#include <boost/test/unit_test.hpp>
-#include "../../include/xd/asset_manager.hpp"
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/sprite_data.hpp"
-#include "../../include/map.hpp"
 #include "../../include/game.hpp"
+#include "../../include/map.hpp"
+#include "../../include/sprite_data.hpp"
+#include "../../include/tests/game_fixture.hpp"
+#include "../../include/vendor/rapidxml.hpp"
+#include "../../include/xd/asset_manager.hpp"
+#include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE(sprite_data_tests)
+BOOST_FIXTURE_TEST_SUITE(sprite_data_tests, Game_Fixture)
 
 BOOST_AUTO_TEST_CASE(sprite_data_load_file) {
     xd::asset_manager manager;

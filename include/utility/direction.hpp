@@ -1,9 +1,9 @@
 #ifndef HPP_UTILITY_DIRECTION
 #define HPP_UTILITY_DIRECTION
 
-#include <iostream>
 #include "../log.hpp"
 #include "../direction.hpp"
+#include "../xd/glm.hpp"
 #include "string.hpp"
 
 // Combine two directions

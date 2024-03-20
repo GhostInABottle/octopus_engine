@@ -13,10 +13,8 @@
 #include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
 #include <algorithm>
-#include <iostream>
 #include <optional>
 #include <unordered_map>
-#include <vector>
 #include <cstdlib>
 
 namespace detail {

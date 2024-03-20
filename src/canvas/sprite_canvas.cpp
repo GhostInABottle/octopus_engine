@@ -1,8 +1,8 @@
-#include "../../include/canvas/sprite_canvas.hpp"
-#include "../../include/sprite_data.hpp"
-#include "../../include/game.hpp"
 #include "../../include/audio_player.hpp"
 #include "../../include/camera.hpp"
+#include "../../include/canvas/sprite_canvas.hpp"
+#include "../../include/game.hpp"
+#include "../../include/sprite_data.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
 
 Sprite_Canvas::Sprite_Canvas(Game& game, const std::string& sprite, xd::vec2 position, const std::string& pose_name)

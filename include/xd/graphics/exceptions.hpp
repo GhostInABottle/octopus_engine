@@ -3,7 +3,6 @@
 
 #include "../exception.hpp"
 #include <string>
-#include <sstream>
 
 namespace xd
 {
@@ -58,7 +57,7 @@ namespace xd
     struct text_formatter_exception : exception
     {
         text_formatter_exception(const std::string& message)
-            : exception("text formatter error: "+message)
+            : exception("text formatter error: " + message)
         {
         }
     };
@@ -66,7 +65,7 @@ namespace xd
     struct text_formatter_parse_exception : text_formatter_exception
     {
         text_formatter_parse_exception(const std::string& input, const std::string& message)
-            : text_formatter_exception("failed to parse \""+input+"\": "+message)
+            : text_formatter_exception("failed to parse \"" + input + "\": " + message)
         {
         }
     };
@@ -74,7 +73,7 @@ namespace xd
     struct text_decorator_exception : text_formatter_exception
     {
         text_decorator_exception(const std::string& message)
-            : text_formatter_exception("decoration failed: "+message)
+            : text_formatter_exception("decoration failed: " + message)
         {
         }
     };
@@ -98,7 +97,7 @@ namespace xd
     struct font_style_undefined : exception
     {
         font_style_undefined(const std::string& style)
-            : exception("font style "+style+" is undefined")
+            : exception("font style " + style + " is undefined")
         {
         }
     };

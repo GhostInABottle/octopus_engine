@@ -1,6 +1,6 @@
+#include "../../include/audio_player.hpp"
 #include "../../include/decorators/typewriter_decorator.hpp"
 #include "../../include/game.hpp"
-#include "../../include/audio_player.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/xd/graphics/text_formatter.hpp"
 #include <cstdlib>

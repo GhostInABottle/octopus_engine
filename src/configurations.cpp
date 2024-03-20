@@ -1,10 +1,7 @@
 #include "../include/configurations.hpp"
-#include "../include/log.hpp"
 #include "../include/utility/string.hpp"
 #include <boost/lexical_cast.hpp>
 #include <unordered_set>
-#include <typeinfo>
-#include <iostream>
 
 void Configurations::load_defaults() {
     defaults["config.version"] = 0;

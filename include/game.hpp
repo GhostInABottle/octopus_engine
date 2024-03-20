@@ -1,18 +1,19 @@
 #ifndef HPP_GAME
 #define HPP_GAME
 
-#include <vector>
-#include <memory>
-#include <string>
-#include <optional>
+#include "direction.hpp"
+#include "xd/audio/channel_group_type.hpp"
+#include "xd/glm.hpp"
+#include "xd/graphics/font_style.hpp"
 #include "xd/graphics/framebuffer.hpp"
 #include "xd/graphics/simple_text_renderer.hpp"
-#include "xd/graphics/types.hpp"
-#include "xd/graphics/font_style.hpp"
-#include "xd/system.hpp"
-#include "xd/audio/channel_group_type.hpp"
+#include "xd/system/input.hpp"
+#include "xd/system/window.hpp"
 #include "xd/vendor/sol/forward.hpp"
-#include "direction.hpp"
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 class Camera;
 class Map;

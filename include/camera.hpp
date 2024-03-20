@@ -2,7 +2,7 @@
 #define HPP_CAMERA
 
 #include <memory>
-#include "xd/system.hpp"
+#include "xd/graphics/transform_geometry.hpp"
 #include "xd/graphics/types.hpp"
 #include "xd/entity.hpp"
 

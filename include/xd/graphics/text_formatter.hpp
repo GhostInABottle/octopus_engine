@@ -2,21 +2,19 @@
 #define H_XD_GRAPHICS_TEXT_FORMATTER
 
 #include "detail/text_formatter.hpp"
-
 #include "../glm.hpp"
 #include "../vendor/utf8.h"
 #include "exceptions.hpp"
 #include "shader_program.hpp"
 #include "sprite_batch.hpp"
 #include <boost/lexical_cast.hpp>
-#include <list>
-#include <vector>
-#include <string>
 #include <functional>
-#include <unordered_map>
+#include <list>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <variant>
-#include <iosfwd>
+#include <vector>
 
 namespace xd {
     class texture;

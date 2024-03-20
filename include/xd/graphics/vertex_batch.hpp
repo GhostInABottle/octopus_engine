@@ -1,7 +1,7 @@
 #ifndef H_XD_GRAPHICS_VERTEX_BATCH
 #define H_XD_GRAPHICS_VERTEX_BATCH
 
-#include "vertex_traits.hpp"
+#include "../vendor/glew/glew.h"
 
 namespace xd
 {

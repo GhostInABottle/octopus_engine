@@ -1,11 +1,11 @@
 #ifndef HPP_SCRIPTING_INTERFACE
 #define HPP_SCRIPTING_INTERFACE
 
-#include <vector>
+#include "../xd/lua/scheduler.hpp"
 #include <memory>
 #include <string>
 #include <utility>
-#include "../xd/lua.hpp"
+#include <vector>
 
 class Game;
 class Command;

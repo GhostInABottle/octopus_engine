@@ -1,12 +1,15 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/utility/file.hpp"
+#include "../../../include/filesystem/path_info.hpp"
+#include "../../../include/filesystem/readable_filesystem.hpp"
+#include "../../../include/filesystem/user_data_folder.hpp"
+#include "../../../include/filesystem/writable_filesystem.hpp"
 #include "../../../include/game.hpp"
-#include "../../../include/key_binder.hpp"
 #include "../../../include/save_file.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <ctime>
-#include <optional>
 #include <memory>
+#include <optional>
+#include <tuple>
 
 void bind_file_types(sol::state& lua, Game& game) {
     // Calendar time

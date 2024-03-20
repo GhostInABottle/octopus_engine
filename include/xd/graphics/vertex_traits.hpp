@@ -1,11 +1,10 @@
 #ifndef H_XD_GRAPHICS_TRAITS
 #define H_XD_GRAPHICS_TRAITS
 
-#include "detail/vertex_traits.hpp"
-
 #include "../vendor/glew/glew.h"
-#include <unordered_map>
+#include "detail/vertex_traits.hpp"
 #include <type_traits>
+#include <unordered_map>
 
 namespace xd
 {

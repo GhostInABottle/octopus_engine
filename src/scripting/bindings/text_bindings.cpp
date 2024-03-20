@@ -1,12 +1,12 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/map_object.hpp"
-#include "../../../include/text_parser.hpp"
 #include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_text_command.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/game.hpp"
+#include "../../../include/map_object.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
+#include "../../../include/text_parser.hpp"
 #include "../../../include/xd/glm.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <string>
 #include <utility>
 

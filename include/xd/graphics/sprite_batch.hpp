@@ -3,7 +3,6 @@
 
 #include "detail/sprite_batch.hpp"
 #include "vertex_batch.hpp"
-#include "transform_geometry.hpp"
 #include "types.hpp"
 #include "../glm.hpp"
 #include "shader_uniforms.hpp"

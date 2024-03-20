@@ -1,14 +1,14 @@
 #ifndef HPP_PATHFINDER
 #define HPP_PATHFINDER
 
-#include <cmath>
-#include <memory>
-#include <algorithm>
-#include <unordered_map>
-#include <deque>
-#include <vector>
-#include "direction.hpp"
 #include "collision_check_types.hpp"
+#include "direction.hpp"
+#include "xd/glm.hpp"
+#include <algorithm>
+#include <cmath>
+#include <deque>
+#include <unordered_map>
+#include <vector>
 
 // Hash specialization for ivec2
 namespace std {

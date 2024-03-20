@@ -2,7 +2,6 @@
 #define H_XD_GRAPHICS_FRAMEBUFFER
 
 #include "../vendor/glew/glew.h"
-#include "../asset_serializer.hpp"
 #include <tuple>
 #include <string>
 

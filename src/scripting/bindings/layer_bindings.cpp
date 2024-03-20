@@ -1,19 +1,19 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/map.hpp"
-#include "../../../include/map_object.hpp"
-#include "../../../include/layers/image_layer.hpp"
-#include "../../../include/layers/object_layer.hpp"
 #include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_pose_command.hpp"
 #include "../../../include/commands/update_color_command.hpp"
-#include "../../../include/commands/update_opacity_command.hpp"
 #include "../../../include/commands/update_layer_velocity_command.hpp"
+#include "../../../include/commands/update_opacity_command.hpp"
+#include "../../../include/game.hpp"
+#include "../../../include/layers/image_layer.hpp"
+#include "../../../include/layers/object_layer.hpp"
+#include "../../../include/map.hpp"
+#include "../../../include/map_object.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/xd/graphics/types.hpp"
-#include "../../../include/xd/lua.hpp"
-#include <string>
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <optional>
+#include <string>
 
 void bind_layer_types(sol::state& lua, Game& game) {
     // Map layer

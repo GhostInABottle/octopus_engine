@@ -1,12 +1,13 @@
 #ifndef HPP_SPRITE
 #define HPP_SPRITE
 
-#include <memory>
 #include "direction.hpp"
-#include "xd/system.hpp"
 #include "xd/entity.hpp"
-#include "xd/graphics/types.hpp"
 #include "xd/graphics/sprite_batch.hpp"
+#include "xd/graphics/types.hpp"
+#include <memory>
+#include <optional>
+#include <string>
 
 class Game;
 struct Frame;

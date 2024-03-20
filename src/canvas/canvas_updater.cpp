@@ -1,7 +1,6 @@
-#include "../../include/canvas/canvas_updater.hpp"
 #include "../../include/canvas/base_canvas.hpp"
+#include "../../include/canvas/canvas_updater.hpp"
 #include "../../include/map.hpp"
-#include "../../include/log.hpp"
 
 void Canvas_Updater::update(Map& map) {
     auto& canvases = map.get_canvases();

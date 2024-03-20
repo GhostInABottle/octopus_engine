@@ -18,8 +18,6 @@
 #include "../include/utility/xml.hpp"
 #include "../include/exceptions.hpp"
 #include "../include/vendor/rapidxml_print.hpp"
-#include "../include/xd/system.hpp"
-#include "../include/xd/audio.hpp"
 #include "../include/configurations.hpp"
 #include "../include/log.hpp"
 #include <vector>

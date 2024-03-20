@@ -258,7 +258,6 @@ HEADERS  += main_window.hpp \
     ../include/xd/event_bus.hpp \
     ../include/xd/exception.hpp \
     ../include/xd/glm.hpp \
-    ../include/xd/graphics.hpp \
     ../include/xd/graphics/detail/font.hpp \
     ../include/xd/graphics/detail/image.hpp \
     ../include/xd/graphics/detail/sprite_batch.hpp \
@@ -283,12 +282,10 @@ HEADERS  += main_window.hpp \
     ../include/xd/graphics/utility.hpp \
     ../include/xd/graphics/vertex_batch.hpp \
     ../include/xd/graphics/vertex_traits.hpp \
-    ../include/xd/lua.hpp \
     ../include/xd/lua/exceptions.hpp \
     ../include/xd/lua/scheduler.hpp \
     ../include/xd/lua/scheduler_task.hpp \
     ../include/xd/lua/virtual_machine.hpp \
-    ../include/xd/system.hpp \
     ../include/xd/system/exceptions.hpp \
     ../include/xd/system/input.hpp \
     ../include/xd/system/window.hpp \

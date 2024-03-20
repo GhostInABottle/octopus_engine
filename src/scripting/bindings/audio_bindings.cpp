@@ -1,16 +1,16 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/map.hpp"
 #include "../../../include/audio_player.hpp"
-#include "../../../include/utility/file.hpp"
 #include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/fade_music_command.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/game.hpp"
+#include "../../../include/map.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
+#include "../../../include/utility/file.hpp"
 #include "../../../include/xd/audio.hpp"
-#include <string>
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace detail {
     static std::unique_ptr<xd::sound> make_sound(Game& game, const std::string& filename, std::optional<bool> pausable) {

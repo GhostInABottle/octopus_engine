@@ -1,6 +1,7 @@
-#include "../../../include/xd/graphics/text_renderer.hpp"
-#include "../../../include/xd/graphics/text_formatter.hpp"
 #include "../../../include/xd/graphics/font.hpp"
+#include "../../../include/xd/graphics/shaders.hpp"
+#include "../../../include/xd/graphics/text_formatter.hpp"
+#include "../../../include/xd/graphics/text_renderer.hpp"
 #include <memory>
 
 

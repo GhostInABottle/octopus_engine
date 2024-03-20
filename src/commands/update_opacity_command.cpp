@@ -1,6 +1,6 @@
 #include "../../include/commands/update_opacity_command.hpp"
-#include "../../include/interfaces/opacity_holder.hpp"
 #include "../../include/game.hpp"
+#include "../../include/interfaces/opacity_holder.hpp"
 #include "../../include/utility/math.hpp"
 
 Update_Opacity_Command::Update_Opacity_Command(Game& game, Opacity_Holder& holder, float opacity, long duration)

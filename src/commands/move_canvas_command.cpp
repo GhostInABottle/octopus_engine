@@ -1,6 +1,6 @@
+#include "../../include/canvas/base_canvas.hpp"
 #include "../../include/commands/move_canvas_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/canvas/base_canvas.hpp"
 #include "../../include/utility/math.hpp"
 
 Move_Canvas_Command::Move_Canvas_Command(Game& game, Base_Canvas& canvas, xd::vec2 pos, long duration)

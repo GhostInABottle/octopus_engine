@@ -1,9 +1,9 @@
 #ifndef HPP_SPRITE_CANVAS
 #define HPP_SPRITE_CANVAS
 
-#include "base_image_canvas.hpp"
 #include "../interfaces/sprite_holder.hpp"
 #include "../sprite.hpp"
+#include "base_image_canvas.hpp"
 
 // A canvas for displaying a sprite
 class Sprite_Canvas : public Base_Image_Canvas, public Sprite_Holder {

@@ -1,14 +1,14 @@
 #ifndef HPP_READABLE_FILESYSTEM
 #define HPP_READABLE_FILESYSTEM
 
-#include <string>
-#include <vector>
-#include <tuple>
-#include <iosfwd>
-#include <ios>
-#include <ctime>
-#include <memory>
 #include "path_info.hpp"
+#include <ctime>
+#include <ios>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <vector>
 
 // Utilities for examining a filesystem and reading files
 class Readable_Filesystem {

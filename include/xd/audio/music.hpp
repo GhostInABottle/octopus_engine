@@ -6,7 +6,6 @@
 namespace xd
 {
     class audio;
-    class sound;
 
     class music : public sound
     {

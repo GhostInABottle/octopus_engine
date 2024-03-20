@@ -1,17 +1,16 @@
 #include "../include/camera.hpp"
+#include "../include/configurations.hpp"
+#include "../include/custom_shaders.hpp"
 #include "../include/game.hpp"
+#include "../include/log.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
 #include "../include/sprite.hpp"
-#include "../include/utility/file.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
-#include "../include/configurations.hpp"
-#include "../include/log.hpp"
-#include "../include/custom_shaders.hpp"
-#include "../include/xd/graphics/vertex_batch.hpp"
-#include "../include/xd/graphics/shader_program.hpp"
 #include "../include/xd/graphics/shaders.hpp"
+#include "../include/xd/graphics/vertex_batch.hpp"
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else

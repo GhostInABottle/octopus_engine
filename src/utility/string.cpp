@@ -1,8 +1,8 @@
-#include "../../include/utility/string.hpp"
 #include "../../include/log.hpp"
+#include "../../include/utility/string.hpp"
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <sstream>
-#include <algorithm>
 
 void string_utilities::trim(std::string& s) {
     boost::trim(s);

@@ -581,15 +581,6 @@
     <ClInclude Include="..\..\include\xd\glm.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xd\graphics.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\lua.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\system.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xd\audio\audio.hpp">
       <Filter>Header Files\xd\audio</Filter>
     </ClInclude>

@@ -1,11 +1,9 @@
 #ifndef HPP_SHOW_TEXT_COMMAND
 #define HPP_SHOW_TEXT_COMMAND
 
-#include <vector>
-#include <memory>
-#include "../xd/graphics/types.hpp"
 #include "../commands/command.hpp"
 #include "text_options.hpp"
+#include <memory>
 
 class Game;
 

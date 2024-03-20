@@ -6,6 +6,7 @@
 
 // Basic file/dir info
 struct Path_Info {
+    Path_Info() : is_regular(false), is_directory(false), timestamp(0), calendar_time() {}
     std::string name;
     bool is_regular;
     bool is_directory;

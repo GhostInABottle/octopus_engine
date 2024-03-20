@@ -1,9 +1,9 @@
 #ifndef HPP_MOVE_OBJECT_COMMAND
 #define HPP_MOVE_OBJECT_COMMAND
 
-#include <string>
-#include "../direction.hpp"
 #include "../commands/command.hpp"
+#include "../direction.hpp"
+#include <string>
 
 class Game;
 class Map_Object;

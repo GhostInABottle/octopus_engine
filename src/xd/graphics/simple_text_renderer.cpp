@@ -1,6 +1,7 @@
+#include "../../../include/xd/graphics/font.hpp"
+#include "../../../include/xd/graphics/shaders.hpp"
 #include "../../../include/xd/graphics/simple_text_renderer.hpp"
 #include "../../../include/xd/graphics/text_formatter.hpp"
-#include "../../../include/xd/graphics/font.hpp"
 
 xd::simple_text_renderer::simple_text_renderer()
     : m_shader(std::make_unique<xd::text_shader>())

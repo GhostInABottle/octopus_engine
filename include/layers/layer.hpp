@@ -1,13 +1,13 @@
 #ifndef HPP_LAYER
 #define HPP_LAYER
 
-#include<memory>
-#include <string>
-#include "../tmx_properties.hpp"
 #include "../interfaces/editable.hpp"
 #include "../interfaces/opacity_holder.hpp"
-#include "../xd/graphics/types.hpp"
+#include "../tmx_properties.hpp"
 #include "../vendor/rapidxml.hpp"
+#include "../xd/glm.hpp"
+#include <memory>
+#include <string>
 
 class Layer_Renderer;
 class Layer_Updater;

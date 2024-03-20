@@ -1,7 +1,6 @@
 #include "../include/key_binder.hpp"
 #include "../include/game.hpp"
 #include "../include/utility/string.hpp"
-#include "../include/utility/file.hpp"
 #include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include <string>

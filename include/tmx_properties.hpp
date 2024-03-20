@@ -2,10 +2,10 @@
 #define HPP_TMX_PROPERTIES
 
 #include "vendor/rapidxml.hpp"
-#include <vector>
+#include <algorithm>
 #include <string>
 #include <unordered_map>
-#include <algorithm>
+#include <vector>
 
 class Tmx_Properties {
 public:

@@ -1,9 +1,9 @@
 #ifndef HPP_LUA_OBJECT
 #define HPP_LUA_OBJECT
 
-#include <string>
-#include <memory>
 #include "../xd/vendor/sol/forward.hpp"
+#include <memory>
+#include <string>
 
 class Lua_Object {
 public:

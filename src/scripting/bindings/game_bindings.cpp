@@ -1,18 +1,18 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/audio_player.hpp"
 #include "../../../include/clock.hpp"
 #include "../../../include/configurations.hpp"
 #include "../../../include/environments/environment.hpp"
 #include "../../../include/game.hpp"
 #include "../../../include/save_file.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/file.hpp"
-#include "../../../include/xd/lua.hpp"
-#include <string>
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <memory>
-#include <tuple>
 #include <optional>
 #include <stdexcept>
+#include <string>
+#include <tuple>
 
 void bind_game_types(sol::state& lua, Game& game) {
     // Input type

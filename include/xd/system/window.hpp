@@ -1,19 +1,18 @@
 #ifndef H_XD_SYSTEM_WINDOW
 #define H_XD_SYSTEM_WINDOW
 
-#include "window_options.hpp"
-#include "input.hpp"
-#include "../graphics/transform_geometry.hpp"
-#include "..//graphics/types.hpp"
-#include "..//graphics/image.hpp"
 #include "../event_bus.hpp"
+#include "../glm.hpp"
+#include "../graphics/image.hpp"
+#include "input.hpp"
+#include "window_options.hpp"
 #include <cstdint>
+#include <functional>
+#include <optional>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <functional>
-#include <string>
 #include <vector>
-#include <optional>
 
 struct GLFWwindow;
 

@@ -1,11 +1,11 @@
 #ifndef HPP_OBJECT_LAYER
 #define HPP_OBJECT_LAYER
 
+#include "../interfaces/color_holder.hpp"
+#include "../xd/glm.hpp"
+#include "layer.hpp"
 #include <memory>
 #include <vector>
-#include "../xd/graphics/types.hpp"
-#include "../interfaces/color_holder.hpp"
-#include "layer.hpp"
 
 class Game;
 class Camera;

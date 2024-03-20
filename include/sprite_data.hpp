@@ -1,15 +1,15 @@
 #ifndef HPP_SPRITE_DATA
 #define HPP_SPRITE_DATA
 
+#include "direction.hpp"
+#include "vendor/rapidxml.hpp"
+#include "xd/audio/channel_group_type.hpp"
+#include "xd/graphics/texture.hpp"
+#include "xd/graphics/types.hpp"
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
-#include "xd/graphics/types.hpp"
-#include "xd/graphics/texture.hpp"
-#include "xd/audio/channel_group_type.hpp"
-#include "vendor/rapidxml.hpp"
-#include "direction.hpp"
 
 namespace xd {
     class asset_manager;

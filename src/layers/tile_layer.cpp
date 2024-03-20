@@ -1,11 +1,11 @@
+#include "../../include/exceptions.hpp"
 #include "../../include/layers/tile_layer.hpp"
 #include "../../include/layers/tile_layer_renderer.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/xml.hpp"
 #include "../../include/vendor/base64.hpp"
-#include "../../include/exceptions.hpp"
-#include <zlib.h>
 #include <cmath>
+#include <zlib.h>
 
 void Tile_Layer::resize(xd::ivec2 new_size) {
     std::vector<unsigned int> new_tiles;

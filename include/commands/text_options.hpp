@@ -1,11 +1,11 @@
 #ifndef HPP_TEXT_OPTIONS
 #define HPP_TEXT_OPTIONS
 
-#include <string>
-#include <vector>
-#include "../xd/graphics/types.hpp"
 #include "../configurations.hpp"
 #include "../utility/color.hpp"
+#include "../xd/glm.hpp"
+#include <string>
+#include <vector>
 
 class Map_Object;
 

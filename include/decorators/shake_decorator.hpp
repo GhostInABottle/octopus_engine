@@ -1,10 +1,10 @@
 #ifndef HPP_SHAKE_DECORATOR
 #define HPP_SHAKE_DECORATOR
 
+#include "../xd/glm.hpp"
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "../xd/glm.hpp"
 
 class Game;
 namespace xd {

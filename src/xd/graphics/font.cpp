@@ -1,7 +1,9 @@
-#include "../../../include/xd/graphics/font.hpp"
-#include "../../../include/xd/graphics/exceptions.hpp"
-#include "../../../include/xd/vendor/utf8.h"
 #include "../../../include/log.hpp"
+#include "../../../include/xd/graphics/exceptions.hpp"
+#include "../../../include/xd/graphics/font.hpp"
+#include "../../../include/xd/graphics/vertex_batch.hpp"
+#include "../../../include/xd/graphics/vertex_traits.hpp"
+#include "../../../include/xd/vendor/utf8.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SIZES_H
@@ -16,6 +18,9 @@
 
 namespace xd { namespace detail { namespace font {
 
+
+    static bool ft_lib_freed = false;
+
     class ft_lib {
     public:
         ft_lib() : m_library(nullptr) {
@@ -25,13 +30,15 @@ namespace xd { namespace detail { namespace font {
         }
         ~ft_lib() {
             FT_Done_FreeType(m_library);
+            ft_lib_freed = true;
+
         }
         operator FT_Library() { return m_library; }
     private:
         FT_Library m_library;
     };
 
-    static ft_lib ft_library;
+    static thread_local ft_lib ft_library;
 
     struct vertex
     {
@@ -87,10 +94,6 @@ namespace xd { namespace detail { namespace font {
     }
     void file_close(FT_Stream) {}
 
-    // FT Face ops need to be thread-safe
-    // see https://freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_library
-    static std::mutex face_mutex;
-
     struct face
     {
         face(const std::string& filename, std::unique_ptr<std::istream> stream)
@@ -117,8 +120,6 @@ namespace xd { namespace detail { namespace font {
             args.flags = FT_OPEN_STREAM;
             args.stream = stream_rec.get();
 
-            std::lock_guard<std::mutex> lock{ face_mutex };
-
             // load the font
             auto error = FT_Open_Face(ft_library, &args, 0, &handle);
             if (error) throw font_load_failed(filename);
@@ -128,15 +129,17 @@ namespace xd { namespace detail { namespace font {
             hb_buffer_set_content_type(hb_buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
         }
         ~face() {
-            std::lock_guard<std::mutex> lock{ face_mutex };
             hb_buffer_destroy(hb_buffer);
             hb_font_destroy(hb_font);
             // free font sizes
             for (auto& i : sizes) {
                 FT_Done_Size(i.second);
             }
-            // free the font handle
-            FT_Done_Face(handle);
+
+            // free the face handle
+            if (!ft_lib_freed) {
+                FT_Done_Face(handle);
+            }
         }
         FT_Face handle;
         hb_font_t* hb_font;

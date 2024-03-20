@@ -1,7 +1,7 @@
-#include "../../include/filesystem/disk_filesystem.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/log.hpp"
 #include "../../include/exceptions.hpp"
+#include "../../include/filesystem/disk_filesystem.hpp"
+#include "../../include/log.hpp"
+#include "../../include/utility/string.hpp"
 #ifdef _WIN32
 #include "../../include/vendor/utf8conv.h"
 #endif

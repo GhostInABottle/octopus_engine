@@ -7,6 +7,7 @@
 #include "../../include/utility/xml.hpp"
 #include "../../include/exceptions.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 rapidxml::xml_node<>* Object_Layer::save(rapidxml::xml_document<>& doc) {
     auto node = Layer::save(doc, "objectgroup");

@@ -2,6 +2,7 @@
 #define HPP_IMAGE_CANVAS
 
 #include "base_image_canvas.hpp"
+#include <memory>
 
 // A canvas based on an image file
 class Image_Canvas : public Base_Image_Canvas {

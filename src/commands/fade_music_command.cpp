@@ -1,6 +1,6 @@
+#include "../../include/audio_player.hpp"
 #include "../../include/commands/fade_music_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/audio_player.hpp"
 #include "../../include/utility/math.hpp"
 #include "../../include/xd/audio.hpp"
 

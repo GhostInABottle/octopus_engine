@@ -1,8 +1,7 @@
 #ifndef HPP_MOVE_CANVAS_COMMAND
 #define HPP_MOVE_CANVAS_COMMAND
 
-#include<optional>
-#include "../xd/graphics/types.hpp"
+#include "../xd/glm.hpp"
 #include "timed_command.hpp"
 
 class Game;

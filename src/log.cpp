@@ -1,6 +1,6 @@
-#include "../include/log.hpp"
 #include "../include/configurations.hpp"
 #include "../include/environments/environment.hpp"
+#include "../include/log.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
 #include <iostream>

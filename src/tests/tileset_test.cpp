@@ -1,8 +1,9 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/vendor/rapidxml.hpp"
 #include "../../include/tileset.hpp"
+#include "../../include/tests/game_fixture.hpp"
 
-BOOST_AUTO_TEST_SUITE(tileset_tests)
+BOOST_FIXTURE_TEST_SUITE(tileset_tests, Game_Fixture)
 
 BOOST_AUTO_TEST_CASE(tileset_load) {
     char text[] =

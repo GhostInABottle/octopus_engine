@@ -1,6 +1,6 @@
 #include "../../include/commands/update_layer_velocity_command.hpp"
-#include "../../include/layers/image_layer.hpp"
 #include "../../include/game.hpp"
+#include "../../include/layers/image_layer.hpp"
 #include "../../include/utility/math.hpp"
 
 Update_Layer_Velocity_Command::Update_Layer_Velocity_Command(Game& game, Image_Layer& layer, xd::vec2 velocity, long duration)

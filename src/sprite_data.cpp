@@ -1,10 +1,9 @@
-#include "../include/sprite_data.hpp"
 #include "../include/exceptions.hpp"
+#include "../include/sprite_data.hpp"
 #include "../include/utility/color.hpp"
+#include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
-#include "../include/utility/direction.hpp"
-#include "../include/xd/system.hpp"
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/audio.hpp"
 #include <iostream>

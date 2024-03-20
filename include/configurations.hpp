@@ -4,7 +4,6 @@
 #include "log.hpp"
 #include <functional>
 #include <iosfwd>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <tuple>

@@ -6,11 +6,8 @@
 #include "../../../include/xd/vendor/utf8.h"
 #include <string>
 #include <algorithm>
-#include <stdexcept>
-#include <vector>
 #include <utility>
 #include <list>
-#include <cctype>
 
 namespace xd { namespace detail { namespace text_formatter {
 

@@ -1,8 +1,6 @@
 #ifndef H_XD_DETAIL_ENTITY
 #define H_XD_DETAIL_ENTITY
 
-#include "identity.hpp"
-
 namespace xd {
     template <typename T> class entity;
 }

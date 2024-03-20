@@ -1,13 +1,13 @@
 #ifndef HPP_TILESET
 #define HPP_TILESET
 
-#include <vector>
-#include <string>
-#include <memory>
+#include "tmx_properties.hpp"
+#include "vendor/rapidxml.hpp"
 #include "xd/graphics/texture.hpp"
 #include "xd/graphics/types.hpp"
-#include "vendor/rapidxml.hpp"
-#include "tmx_properties.hpp"
+#include <memory>
+#include <string>
+#include <vector>
 
 struct Tileset : public Tmx_Object {
     struct Tile {

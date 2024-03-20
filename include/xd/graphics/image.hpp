@@ -4,9 +4,8 @@
 #include "detail/image.hpp"
 
 #include "../glm.hpp"
-#include <string>
-#include <memory>
 #include <iosfwd>
+#include <string>
 
 namespace xd
 {

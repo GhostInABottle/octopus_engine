@@ -2,7 +2,7 @@
 #define H_XD_TEXT_RENDERER
 
 #include "../glm.hpp"
-#include "shaders.hpp"
+#include "shader_program.hpp"
 #include <string>
 #include <memory>
 

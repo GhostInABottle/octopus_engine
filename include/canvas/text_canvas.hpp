@@ -1,10 +1,9 @@
 #ifndef HPP_TEXT_CANVAS
 #define HPP_TEXT_CANVAS
 
-#include <optional>
-#include "base_canvas.hpp"
 #include "../xd/graphics/font_style.hpp"
-#include "../text_parser.hpp"
+#include "base_canvas.hpp"
+#include <optional>
 
 namespace xd {
     class simple_text_renderer;

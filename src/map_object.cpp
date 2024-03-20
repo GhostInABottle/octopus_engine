@@ -1,16 +1,16 @@
-#include "../include/map_object.hpp"
-#include "../include/game.hpp"
 #include "../include/audio_player.hpp"
+#include "../include/configurations.hpp"
+#include "../include/exceptions.hpp"
+#include "../include/game.hpp"
 #include "../include/map.hpp"
+#include "../include/map_object.hpp"
 #include "../include/sprite.hpp"
 #include "../include/sprite_data.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
-#include "../include/utility/xml.hpp"
 #include "../include/utility/string.hpp"
-#include "../include/exceptions.hpp"
-#include "../include/configurations.hpp"
+#include "../include/utility/xml.hpp"
 #include <utility>
 
 Map_Object::Map_Object(Game& game, const std::string& name,

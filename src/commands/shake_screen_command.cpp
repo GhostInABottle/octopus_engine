@@ -1,6 +1,6 @@
+#include "../../include/camera.hpp"
 #include "../../include/commands/shake_screen_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/camera.hpp"
 
 Shake_Screen_Command::Shake_Screen_Command(Game& game, xd::vec2 strength, xd::vec2 speed, long duration) : Timed_Command(game, duration) {
     game.get_camera()->start_shaking(strength, speed);

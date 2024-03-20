@@ -1,11 +1,10 @@
 #include "../include/text_parser.hpp"
 
+#include "../include/utility/string.hpp"
+#include "../include/xd/vendor/utf8.h"
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
-#include "../include/log.hpp"
-#include "../include/utility/string.hpp"
-#include "../include/xd/vendor/utf8.h"
 
 std::string Token::to_string() const {
     if (type == Token_Type::CLOSING_TAG && self_closing) return "";

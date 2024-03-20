@@ -1,19 +1,19 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
+#include "../../../include/commands/command_result.hpp"
+#include "../../../include/commands/move_object_command.hpp"
+#include "../../../include/commands/move_object_to_command.hpp"
+#include "../../../include/commands/show_pose_command.hpp"
+#include "../../../include/commands/update_color_command.hpp"
+#include "../../../include/commands/update_opacity_command.hpp"
 #include "../../../include/game.hpp"
 #include "../../../include/map.hpp"
 #include "../../../include/map_object.hpp"
-#include "../../../include/commands/command_result.hpp"
-#include "../../../include/commands/show_pose_command.hpp"
-#include "../../../include/commands/move_object_command.hpp"
-#include "../../../include/commands/move_object_to_command.hpp"
-#include "../../../include/commands/update_opacity_command.hpp"
-#include "../../../include/commands/update_color_command.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/xd/graphics/types.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
+#include <optional>
 #include <sstream>
 #include <string>
-#include <optional>
 
 void bind_map_object_types(sol::state& lua, Game& game) {
     // Object draw order

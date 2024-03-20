@@ -350,7 +350,6 @@
     <ClInclude Include="..\include\xd\event_bus.hpp" />
     <ClInclude Include="..\include\xd\exception.hpp" />
     <ClInclude Include="..\include\xd\glm.hpp" />
-    <ClInclude Include="..\include\xd\graphics.hpp" />
     <ClInclude Include="..\include\xd\graphics\detail\font.hpp" />
     <ClInclude Include="..\include\xd\graphics\detail\image.hpp" />
     <ClInclude Include="..\include\xd\graphics\detail\sprite_batch.hpp" />
@@ -376,12 +375,10 @@
     <ClInclude Include="..\include\xd\graphics\utility.hpp" />
     <ClInclude Include="..\include\xd\graphics\vertex_batch.hpp" />
     <ClInclude Include="..\include\xd\graphics\vertex_traits.hpp" />
-    <ClInclude Include="..\include\xd\lua.hpp" />
     <ClInclude Include="..\include\xd\lua\exceptions.hpp" />
     <ClInclude Include="..\include\xd\lua\scheduler.hpp" />
     <ClInclude Include="..\include\xd\lua\scheduler_task.hpp" />
     <ClInclude Include="..\include\xd\lua\virtual_machine.hpp" />
-    <ClInclude Include="..\include\xd\system.hpp" />
     <ClInclude Include="..\include\xd\system\exceptions.hpp" />
     <ClInclude Include="..\include\xd\system\input.hpp" />
     <ClInclude Include="..\include\xd\system\window.hpp" />

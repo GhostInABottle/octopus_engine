@@ -1,20 +1,20 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/canvas/text_canvas.hpp"
 #include "../../../include/canvas/image_canvas.hpp"
 #include "../../../include/canvas/sprite_canvas.hpp"
+#include "../../../include/canvas/text_canvas.hpp"
+#include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/move_canvas_command.hpp"
 #include "../../../include/commands/show_pose_command.hpp"
 #include "../../../include/commands/update_color_command.hpp"
 #include "../../../include/commands/update_image_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
-#include "../../../include/commands/command_result.hpp"
-#include "../../../include/xd/lua.hpp"
-#include "../../../include/utility/color.hpp"
 #include "../../../include/game.hpp"
-#include <string>
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
+#include "../../../include/utility/color.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace detail {
     template <typename T, typename CT>

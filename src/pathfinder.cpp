@@ -1,8 +1,8 @@
-#include "../include/pathfinder.hpp"
-#include "../include/utility/direction.hpp"
+#include "../include/configurations.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
-#include "../include/configurations.hpp"
+#include "../include/pathfinder.hpp"
+#include "../include/utility/direction.hpp"
 
 namespace detail {
     static bool debug_mode = false;

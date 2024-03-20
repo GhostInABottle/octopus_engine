@@ -1,9 +1,9 @@
 #ifndef HPP_UPDATE_IMAGE_COMMAND
 #define HPP_UPDATE_IMAGE_COMMAND
 
-#include<optional>
-#include "../xd/graphics/types.hpp"
+#include "../xd/glm.hpp"
 #include "timed_command.hpp"
+#include<optional>
 
 class Game;
 class Base_Image_Canvas;

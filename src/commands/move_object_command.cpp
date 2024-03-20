@@ -1,7 +1,7 @@
 #include "../../include/commands/move_object_command.hpp"
-#include "../../include/map_object.hpp"
 #include "../../include/game.hpp"
 #include "../../include/map.hpp"
+#include "../../include/map_object.hpp"
 #include "../../include/utility/direction.hpp"
 
 

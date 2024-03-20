@@ -1,15 +1,15 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
-#include "../../../include/game.hpp"
 #include "../../../include/camera.hpp"
-#include "../../../include/map_object.hpp"
 #include "../../../include/commands/command_result.hpp"
+#include "../../../include/commands/move_camera_command.hpp"
+#include "../../../include/commands/shake_screen_command.hpp"
 #include "../../../include/commands/tint_command.hpp"
 #include "../../../include/commands/zoom_command.hpp"
-#include "../../../include/commands/shake_screen_command.hpp"
-#include "../../../include/commands/move_camera_command.hpp"
+#include "../../../include/game.hpp"
+#include "../../../include/map_object.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/color.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <string>
 
 void bind_camera_types(sol::state& lua, Game& game) {

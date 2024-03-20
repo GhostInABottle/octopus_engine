@@ -1,11 +1,9 @@
-#include "../include/player_controller.hpp"
+#include "../include/configurations.hpp"
+#include "../include/game.hpp"
 #include "../include/map.hpp"
 #include "../include/map_object.hpp"
-#include "../include/game.hpp"
-#include "../include/sprite.hpp"
-#include "../include/sprite_data.hpp"
+#include "../include/player_controller.hpp"
 #include "../include/utility/direction.hpp"
-#include "../include/configurations.hpp"
 
 namespace {
     static inline Direction check_edge_movement(const Map_Object& object, const Map_Object* other,

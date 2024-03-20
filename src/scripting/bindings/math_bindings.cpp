@@ -1,8 +1,8 @@
-#include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/configurations.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/utility/color.hpp"
 #include "../../../include/xd/graphics/types.hpp"
-#include "../../../include/xd/lua.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 #include <sstream>
 #include <string>
 

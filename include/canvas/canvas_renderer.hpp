@@ -1,11 +1,10 @@
 #ifndef HPP_CANVAS_RENDERER
 #define HPP_CANVAS_RENDERER
 
+#include "../map.hpp"
 #include "../xd/entity.hpp"
-#include "../xd/graphics/framebuffer.hpp"
 #include "../xd/graphics/sprite_batch.hpp"
 #include "../xd/graphics/types.hpp"
-#include "../map.hpp"
 
 class Game;
 class Camera;

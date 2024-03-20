@@ -1,23 +1,22 @@
 #ifndef HPP_MAP_OBJECT
 #define HPP_MAP_OBJECT
 
-#include <string>
-#include <memory>
-#include <optional>
-#include <algorithm>
-#include <vector>
-#include "xd/system.hpp"
-#include "xd/entity.hpp"
-#include "xd/graphics/types.hpp"
-#include "vendor/rapidxml.hpp"
-#include "tmx_properties.hpp"
-#include "direction.hpp"
-#include "collision_record.hpp"
 #include "collision_check_types.hpp"
-#include "interfaces/sprite_holder.hpp"
+#include "collision_record.hpp"
+#include "direction.hpp"
+#include "interfaces/color_holder.hpp"
 #include "interfaces/editable.hpp"
 #include "interfaces/opacity_holder.hpp"
-#include "interfaces/color_holder.hpp"
+#include "interfaces/sprite_holder.hpp"
+#include "tmx_properties.hpp"
+#include "vendor/rapidxml.hpp"
+#include "xd/entity.hpp"
+#include "xd/graphics/types.hpp"
+#include <algorithm>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 class Game;
 struct Object_Layer;

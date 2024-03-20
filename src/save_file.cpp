@@ -1,13 +1,13 @@
-#include "../include/save_file.hpp"
 #include "../include/configurations.hpp"
-#include "../include/xd/lua.hpp"
-#include <iostream>
-#include <cstdio>
-#include <cstdint>
-#include <string>
-#include <stdexcept>
+#include "../include/save_file.hpp"
+#include "../include/xd/vendor/sol/sol.hpp"
 #include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <iostream>
 #include <limits>
+#include <stdexcept>
+#include <string>
 
 namespace detail {
 

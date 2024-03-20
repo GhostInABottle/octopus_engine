@@ -1,6 +1,6 @@
-#include "../../../include/scripting/script_bindings.hpp"
-#include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/environments/environment.hpp"
+#include "../../../include/scripting/script_bindings.hpp"
+#include "../../../include/xd/vendor/sol/sol.hpp"
 
 void bind_environment_types(sol::state& lua) {
     // Open page modes

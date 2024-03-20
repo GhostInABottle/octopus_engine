@@ -1,24 +1,22 @@
 #ifndef HPP_MAP
 #define HPP_MAP
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <optional>
-#include "xd/system.hpp"
-#include "xd/entity.hpp"
-#include "xd/graphics/sprite_batch.hpp"
-#include "vendor/rapidxml.hpp"
-#include "xd/vendor/sol/forward.hpp"
-#include "tmx_properties.hpp"
-#include "direction.hpp"
-#include "tileset.hpp"
-#include "collision_record.hpp"
 #include "collision_check_types.hpp"
+#include "collision_record.hpp"
+#include "direction.hpp"
 #include "interfaces/editable.hpp"
 #include "layers/layer_types.hpp"
 #include "scripting/lua_object.hpp"
+#include "tileset.hpp"
+#include "tmx_properties.hpp"
+#include "vendor/rapidxml.hpp"
+#include "xd/entity.hpp"
+#include "xd/vendor/sol/forward.hpp"
+#include <memory>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace xd {
     class sound;

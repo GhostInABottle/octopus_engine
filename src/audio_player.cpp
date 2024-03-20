@@ -1,10 +1,10 @@
 #include "../include/audio_player.hpp"
-#include "../include/game.hpp"
-#include "../include/map.hpp"
-#include "../include/log.hpp"
 #include "../include/configurations.hpp"
-#include "../include/utility/string.hpp"
+#include "../include/game.hpp"
+#include "../include/log.hpp"
+#include "../include/map.hpp"
 #include "../include/utility/file.hpp"
+#include "../include/utility/string.hpp"
 #include "../include/xd/audio.hpp"
 #include <stdexcept>
 

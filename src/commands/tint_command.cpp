@@ -1,6 +1,6 @@
+#include "../../include/camera.hpp"
 #include "../../include/commands/tint_command.hpp"
 #include "../../include/game.hpp"
-#include "../../include/camera.hpp"
 #include "../../include/utility/math.hpp"
 
 Tint_Command::Tint_Command(Tint_Target target, Game& game, xd::vec4 color, long duration) :

@@ -2,7 +2,6 @@
 #define H_XD_GRAPHICS_UTILITY
 
 #include "../graphics/vertex_batch.hpp"
-#include <type_traits>
 #include <utility>
 
 

@@ -1,7 +1,7 @@
 #ifndef HPP_TINT_COMMAND
 #define HPP_TINT_COMMAND
 
-#include "../xd/graphics/types.hpp"
+#include "../xd/glm.hpp"
 #include "timed_command.hpp"
 
 class Game;
