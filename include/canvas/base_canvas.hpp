@@ -6,6 +6,7 @@
 #include "../scripting/lua_object.hpp"
 #include "../xd/graphics/texture.hpp"
 #include "../xd/graphics/types.hpp"
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
