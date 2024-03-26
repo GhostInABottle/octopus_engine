@@ -103,14 +103,16 @@ struct Move_Object_To_Command::Impl {
                 blocked = true;
                 }
 
-            if ((complete = check_completion(stopped))) {
+            complete = check_completion(stopped);
+            if (complete) {
                 object.set_state(old_state);
             }
 
             return;
         }
 
-        if (!(complete = check_completion(stopped))) {
+        complete = check_completion(stopped);
+        if (!complete) {
             // Try to manually move to the destination
             const auto pos = object.get_real_position();
             const auto tile_width = static_cast<float>(map.get_tile_width());
@@ -124,7 +126,8 @@ struct Move_Object_To_Command::Impl {
             }
         }
 
-        if ((complete = check_completion(stopped))) {
+        complete = check_completion(stopped);
+        if (complete) {
             object.set_state(old_state);
         }
     }

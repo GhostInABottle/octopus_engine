@@ -82,7 +82,7 @@ void Text_Canvas::link_font(const std::string& font_type, const std::string& fon
     font->link_font(font_type, game.create_font(font_file));
 }
 
-void Text_Canvas::render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) {
+void Text_Canvas::render(Camera& camera, xd::sprite_batch&, Base_Canvas* parent) {
     style->color().a = get_opacity();
     auto& lines = get_lines();
     xd::vec2 pos = get_position();

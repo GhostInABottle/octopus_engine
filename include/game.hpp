@@ -45,8 +45,8 @@ public:
         bool editor_mode = false);
     ~Game();
 
-    // Get the active channel group for sound effects
-    channel_group_type get_sound_group_type() const;
+    // Initialization
+    void init();
     // Main game loop
     void run();
     // Logic update
@@ -191,6 +191,8 @@ public:
     void set_script_scheduler_paused(bool paused);
     // Get the cached audio subsystem
     Audio_Player& get_audio_player();
+    // Get the active channel group for sound effects
+    channel_group_type get_sound_group_type() const;
     // Load map file and set as current map at the end of the frame
     void set_next_map(const std::string& filename,
         Direction dir = Direction::NONE,

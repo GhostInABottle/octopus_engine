@@ -84,10 +84,12 @@ Key_Binder::Key_Binder(Game& game)
     keys_for_name["TAB"] = { xd::KEY_TAB };
     // Assumes ASCII layout
     for (int i = xd::KEY_A.code; i <= xd::KEY_Z.code; ++i) {
-        keys_for_name[std::string(1, i)] = { xd::KEY(i) };
+        std::string name(1, static_cast<std::string::value_type>(i));
+        keys_for_name[name] = { xd::KEY(i) };
     }
     for (int i = xd::KEY_0.code; i <= xd::KEY_9.code; ++i) {
-        keys_for_name[std::string(1, i)] = { xd::KEY(i) };
+        std::string name(1, static_cast<std::string::value_type>(i));
+        keys_for_name[name] = { xd::KEY(i) };
     }
     keys_for_name["GAMEPAD-A"] = { xd::GAMEPAD_BUTTON_A };
     keys_for_name["GAMEPAD-B"] = { xd::GAMEPAD_BUTTON_B };

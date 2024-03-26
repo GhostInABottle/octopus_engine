@@ -127,10 +127,10 @@ void bind_audio_types(sol::state& lua, Game& game) {
             return audio_player.play_music(*game.get_map(), filename, looping, volume);
         },
         [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& music) {
-            return audio_player.play_music(*game.get_map(), music);
+            return audio_player.play_music(music);
         },
         [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& music, bool looping) {
-            return audio_player.play_music(*game.get_map(), music, looping);
+            return audio_player.play_music(music, looping);
         }
     );
 
@@ -148,10 +148,10 @@ void bind_audio_types(sol::state& lua, Game& game) {
             return audio_player.play_ambient(*game.get_map(), filename, looping, volume);
         },
         [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& ambient) {
-            return audio_player.play_ambient(*game.get_map(), ambient);
+            return audio_player.play_ambient(ambient);
         },
         [&game](Audio_Player& audio_player, const std::shared_ptr<xd::music>& ambient, bool looping) {
-            return audio_player.play_ambient(*game.get_map(), ambient, looping);
+            return audio_player.play_ambient(ambient, looping);
         }
     );
 

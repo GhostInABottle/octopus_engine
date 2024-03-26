@@ -14,7 +14,7 @@
 #include <string>
 #include <tuple>
 
-void bind_game_types(sol::state& lua, Game& game) {
+void bind_game_types(sol::state& lua) {
     // Input type
     lua.new_enum<xd::input_type>("Input_Type",
         {
@@ -171,7 +171,7 @@ void bind_game_types(sol::state& lua, Game& game) {
         return game.text_width(text);
     };
 
-    game_type["load_lua_file"] = [&lua](Game& game, const std::string& filename) {
+    game_type["load_lua_file"] = [&lua](Game&, const std::string& filename) {
         auto filesystem = file_utilities::game_data_filesystem();
         if (!filesystem->exists(filename)) {
             throw std::runtime_error{ "File was not found while trying to load Lua file: " + filename };
@@ -188,7 +188,7 @@ void bind_game_types(sol::state& lua, Game& game) {
         return f;
     };
 
-    game_type["open_url"] = [](Game& game, const std::string& url) {
+    game_type["open_url"] = [](Game&, const std::string& url) {
         return file_utilities::open_url(url);
     };
 }

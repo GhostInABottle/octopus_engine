@@ -86,7 +86,7 @@ std::tuple<unsigned long long, std::tm> PhysFS_Filesystem::last_write_time(const
     return result;
 }
 
-bool PhysFS_Filesystem::is_absolute_path(const std::string& path) {
+bool PhysFS_Filesystem::is_absolute_path(const std::string&) {
     return false;
 }
 

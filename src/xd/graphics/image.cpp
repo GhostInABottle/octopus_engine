@@ -32,7 +32,6 @@ namespace xd { namespace detail { namespace image {
     static int stream_eof(void* user) {
         auto stream = static_cast<std::istream*>(user);
         return stream->eof() ? 1 : 0;
-        return feof((FILE*)user);
     }
 
     static stbi_io_callbacks stream_callbacks{

@@ -389,7 +389,13 @@ Game::Game(const std::vector<std::string>& args,
         current_scripting_interface(nullptr),
         style(xd::vec4(1.0f, 1.0f, 1.0f, 1.0f), Configurations::get<int>("font.size")),
         editor_ticks(0),
-        editor_size(1, 1) {
+        editor_size(1, 1) {}
+
+Game::~Game() {
+    Configurations::remove_observer("Game");
+}
+
+void Game::init() {
     // Set executable icons
     pimpl->set_icons(*window);
 
@@ -436,13 +442,15 @@ Game::Game(const std::vector<std::string>& args,
         font->link_font("italic", create_font(italic_font_file));
     }
 
-    if (editor_mode)
+    if (pimpl->editor_mode)
         return;
 
     window->set_gamma(Configurations::get<float>("graphics.gamma"));
 
-    auto startup_map = args.size() > 1 && string_utilities::ends_with(args[1], ".tmx")
-        ? args[1]
+    auto map_arg = command_line_args.size() > 1
+        && string_utilities::ends_with(command_line_args[1], ".tmx");
+    auto startup_map = map_arg
+        ? command_line_args[1]
         : Configurations::get<std::string>("startup.map");
     map = Map::load(*this, startup_map);
 
@@ -489,19 +497,11 @@ Game::Game(const std::vector<std::string>& args,
     // Log errors
     window->register_error_handler([](int code, const char* description) {
         LOGGER_E << "GLFW error (" << code << "): " << description;
-    });
+        });
     // Setup shader, if any
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));
     camera->update();
-}
-
-Game::~Game() {
-    Configurations::remove_observer("Game");
-}
-
-channel_group_type Game::get_sound_group_type() const {
-    return pimpl->audio_player.get_sound_group_type(!paused);
 }
 
 void Game::run() {
@@ -790,6 +790,10 @@ void Game::set_script_scheduler_paused(bool paused) {
 
 Audio_Player& Game::get_audio_player() {
     return pimpl->audio_player;
+}
+
+channel_group_type Game::get_sound_group_type() const {
+    return pimpl->audio_player.get_sound_group_type(!paused);
 }
 
 void Game::set_next_map(const std::string& filename, Direction dir, std::optional<xd::vec2> pos, std::optional<std::string> music) {

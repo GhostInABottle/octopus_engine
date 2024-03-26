@@ -18,7 +18,7 @@
 
 namespace detail {
     template <typename T, typename CT>
-    static void bind_get_child(sol::state& lua, sol::usertype<T> canvas_type, const char* method) {
+    static void bind_get_child(sol::usertype<T> canvas_type, const char* method) {
         canvas_type[method] = sol::overload(
             [](Base_Canvas* cvs, std::size_t index) {
                 return dynamic_cast<CT*>(cvs->get_child_by_index(index));
@@ -30,7 +30,7 @@ namespace detail {
     }
 
     template <typename T>
-    static void bind_base_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
+    static void bind_base_canvas(Game& game, sol::usertype<T> canvas_type) {
         canvas_type["data"] = sol::property(&T::get_lua_data);
         canvas_type["id"] = sol::property(&T::get_id);
         canvas_type["name"] = sol::property(&T::get_name, &T::set_name);
@@ -49,9 +49,9 @@ namespace detail {
 
         canvas_type["remove_child"] = &T::remove_child;
 
-        bind_get_child<T, Text_Canvas>(lua, canvas_type, "get_text_child");
-        bind_get_child<T, Image_Canvas>(lua, canvas_type, "get_image_child");
-        bind_get_child<T, Sprite_Canvas>(lua, canvas_type, "get_sprite_child");
+        bind_get_child<T, Text_Canvas>(canvas_type, "get_text_child");
+        bind_get_child<T, Image_Canvas>(canvas_type, "get_image_child");
+        bind_get_child<T, Sprite_Canvas>(canvas_type, "get_sprite_child");
 
         canvas_type["add_child_image"] = sol::overload(
             // with position
@@ -139,7 +139,7 @@ namespace detail {
     }
 
     template <typename T>
-    static void bind_base_image_canvas(sol::state& lua, Game& game, sol::usertype<T> canvas_type) {
+    static void bind_base_image_canvas(Game& game, sol::usertype<T> canvas_type) {
         canvas_type["origin"] = sol::property(&T::get_origin, &T::set_origin);
         canvas_type["magnification"] = sol::property(&T::get_magnification, &T::set_magnification);
         canvas_type["angle"] = sol::property(&T::get_angle, &T::set_angle);
@@ -238,8 +238,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         sol::base_classes, sol::bases<Base_Canvas>()
     );
 
-    detail::bind_base_canvas(lua, game, image_canvas_type);
-    detail::bind_base_image_canvas(lua, game, image_canvas_type);
+    detail::bind_base_canvas(game, image_canvas_type);
+    detail::bind_base_image_canvas(game, image_canvas_type);
     image_canvas_type["set_image"] = [](Image_Canvas& canvas, const std::string& filename, std::optional<xd::vec4> ck) {
         canvas.set_image(filename, ck.value_or(xd::vec4{ 0 }));
     };
@@ -275,8 +275,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         sol::base_classes, sol::bases<Base_Canvas>()
     );
 
-    detail::bind_base_canvas(lua, game, sprite_canvas_type);
-    detail::bind_base_image_canvas(lua, game, sprite_canvas_type);
+    detail::bind_base_canvas(game, sprite_canvas_type);
+    detail::bind_base_image_canvas(game, sprite_canvas_type);
     sprite_canvas_type["pose_name"] = sol::property(&Sprite_Canvas::get_pose_name);
     sprite_canvas_type["pose_state"] = sol::property(&Sprite_Canvas::get_pose_state);
     sprite_canvas_type["pose_direction"] = sol::property(&Sprite_Canvas::get_pose_direction);
@@ -319,7 +319,7 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         sol::base_classes, sol::bases<Base_Canvas>()
     );
 
-    detail::bind_base_canvas(lua, game, text_canvas_type);
+    detail::bind_base_canvas(game, text_canvas_type);
     text_canvas_type["text"] = sol::property(&Text_Canvas::get_text, &Text_Canvas::set_text);
     text_canvas_type["font_size"] = sol::property(&Text_Canvas::get_font_size, &Text_Canvas::set_font_size);
     text_canvas_type["color"] = sol::property(&Text_Canvas::get_color, &Text_Canvas::set_color);

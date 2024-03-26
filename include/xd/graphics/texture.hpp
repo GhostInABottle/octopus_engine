@@ -59,7 +59,7 @@ namespace xd
     {
         typedef std::string key_type;
         key_type operator()(const std::string& filename,
-            std::istream& stream, xd::vec4 = xd::vec4(0),
+            std::istream&, xd::vec4 = xd::vec4(0),
             GLint = GL_CLAMP_TO_EDGE, GLint = GL_CLAMP_TO_EDGE,
             GLint = GL_NEAREST, GLint = GL_NEAREST) const
         {

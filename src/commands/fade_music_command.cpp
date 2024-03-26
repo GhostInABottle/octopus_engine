@@ -8,7 +8,6 @@ Fade_Music_Command::Fade_Music_Command(Game& game, std::shared_ptr<xd::music> pl
         Timed_Command(game, duration),
         new_volume(volume),
         complete(false) {
-    auto& audio_player = game.get_audio_player();
     music = playing_music;
     old_volume = playing_music->get_volume();
 }

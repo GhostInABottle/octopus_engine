@@ -66,7 +66,7 @@ namespace xd
 
             // support for functors
             template <typename F>
-            void yield(F f, bool (F::* callback)() const)
+            void yield(F f, bool (F::*)() const)
             {
                 yield(std::make_shared<callback_task>(f));
             }

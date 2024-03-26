@@ -2,7 +2,7 @@
 #include "../../include/utility/string.hpp"
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <sstream>
+#include <cctype>
 
 void string_utilities::trim(std::string& s) {
     boost::trim(s);
@@ -16,7 +16,7 @@ std::string string_utilities::trim(const std::string& s) {
 
 void string_utilities::capitalize(std::string& original) {
     std::transform(original.begin(), original.end(), original.begin(),
-        [](unsigned char c) { return std::toupper(c); }
+        [](char c) { return static_cast<char>(std::toupper(c)); }
     );
 }
 

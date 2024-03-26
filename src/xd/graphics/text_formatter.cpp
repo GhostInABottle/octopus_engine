@@ -185,7 +185,7 @@ namespace xd { namespace detail { namespace text_formatter {
             m_prev_close_decorator = false;
         }
 
-        void operator()(const token_variable& tok)
+        void operator()(const token_variable&)
         {
             // do nothing; variables are already expanded
         }
@@ -239,7 +239,7 @@ namespace xd { namespace detail { namespace text_formatter {
             m_level--;
         }
 
-        void operator()(const token_close_decorator& tok)
+        void operator()(const token_close_decorator&)
         {
             // tokens are iterated in reverse order, hence we increment
             m_prev_close_decorator = true;

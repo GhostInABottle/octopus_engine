@@ -19,7 +19,7 @@ namespace xd::detail {
         return file_size;
     }
 
-    FMOD_RESULT F_CALLBACK file_open(const char* name, unsigned int* file_size, void** handle, void* user_data) {
+    static FMOD_RESULT F_CALLBACK file_open(const char* name, unsigned int* file_size, void** handle, void* user_data) {
         if (!name || name[0] == '\0') return FMOD_ERR_FILE_NOTFOUND;
 
         auto istream = static_cast<std::istream*>(user_data);
@@ -30,11 +30,11 @@ namespace xd::detail {
         return FMOD_OK;
     }
 
-    FMOD_RESULT F_CALLBACK file_close(void* handle, void* user_data) {
+    static FMOD_RESULT F_CALLBACK file_close([[maybe_unused]] void* handle, [[maybe_unused]] void* user_data) {
         return FMOD_OK;
     }
 
-    FMOD_RESULT F_CALLBACK file_read(void* handle, void* buffer, unsigned int size_bytes,
+    static FMOD_RESULT F_CALLBACK file_read([[maybe_unused]] void* handle, void* buffer, unsigned int size_bytes,
             unsigned int* bytes_read, void* user_data) {
         auto istream = static_cast<std::istream*>(user_data);
         istream->read(static_cast<char*>(buffer), size_bytes);
@@ -47,7 +47,7 @@ namespace xd::detail {
         return *istream ? FMOD_OK : FMOD_ERR_FILE_BAD;
     }
 
-    FMOD_RESULT F_CALLBACK file_seek(void* handle, unsigned int pos, void* user_data) {
+    static FMOD_RESULT F_CALLBACK file_seek([[maybe_unused]] void* handle, unsigned int pos, void* user_data) {
         auto istream = static_cast<std::istream*>(user_data);
 
         // Clear error flags

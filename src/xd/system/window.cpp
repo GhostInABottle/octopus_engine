@@ -318,8 +318,8 @@ void xd::window::update_joysticks() {
         auto& buttons = joystick_state.buttons;
         auto& axes = joystick_state.axes;
 
-        int button_count;
-        int axes_count;
+        int button_count = 0;
+        int axes_count = 0;
 
         int gamepad_success = GLFW_FALSE;
         if (m_gamepad_detection && glfwJoystickIsGamepad(joystick_id)) {
@@ -682,12 +682,11 @@ float xd::window::axis_value(const xd::key& key, int joystick_id) {
 float xd::window::axis_value(const std::string& key, int joystick_id) {
     // find if this virtual key is bound
     xd::window::virtual_table_t::const_iterator i = m_virtual_to_key.find(key);
-    if (i != m_virtual_to_key.end()) {
-        // iterate through each physical key and return first matching one
-        for (xd::window::key_set_t::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
-            return axis_value(*j, joystick_id);
-        }
+    if (i != m_virtual_to_key.end() && !i->second.empty()) {
+        // Return value for first matching physical key
+        return axis_value(*i->second.begin(), joystick_id);
     }
+
     return 0.0f;
 }
 

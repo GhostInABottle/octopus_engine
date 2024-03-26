@@ -105,10 +105,10 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         }
 
         // Bounding circle
-        if (auto node = pose_node->first_node("Bounding-Circle")) {
-            auto x = std::stof(node->first_attribute("X")->value());
-            auto y = std::stof(node->first_attribute("Y")->value());
-            auto radius = std::stof(node->first_attribute("Radius")->value());
+        if (auto circle_node = pose_node->first_node("Bounding-Circle")) {
+            auto x = std::stof(circle_node->first_attribute("X")->value());
+            auto y = std::stof(circle_node->first_attribute("Y")->value());
+            auto radius = std::stof(circle_node->first_attribute("Radius")->value());
             pose.bounding_circle = xd::circle{x, y, radius};
             pose.bounding_box = static_cast<xd::rect>(pose.bounding_circle.value());
         }
@@ -155,11 +155,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             }
 
             // Source rectangle
-            if (auto node = frame_node->first_node("Rectangle")) {
-                frame.rectangle.x = std::stof(node->first_attribute("X")->value());
-                frame.rectangle.y  = std::stof(node->first_attribute("Y")->value());
-                frame.rectangle.w  = std::stof(node->first_attribute("Width")->value());
-                frame.rectangle.h  = std::stof(node->first_attribute("Height")->value());
+            if (auto rect_node = frame_node->first_node("Rectangle")) {
+                frame.rectangle.x = std::stof(rect_node->first_attribute("X")->value());
+                frame.rectangle.y  = std::stof(rect_node->first_attribute("Y")->value());
+                frame.rectangle.w  = std::stof(rect_node->first_attribute("Width")->value());
+                frame.rectangle.h  = std::stof(rect_node->first_attribute("Height")->value());
             }
 
             // Frame properties
@@ -200,12 +200,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
                         fs->open_binary_ifstream(sound_filename), channel_group);
                 }
 
-                if (auto node = frame_node->first_node("Sound")) {
+                if (auto sound_node = frame_node->first_node("Sound")) {
                     if (frame.sound_file) {
                         throw xml_exception("Both frame sound attribute and node are defined for " + frame.sound_file->get_filename());
                     }
 
-                    if (auto sound_file_attr = node->first_attribute("Filename")) {
+                    if (auto sound_file_attr = sound_node->first_attribute("Filename")) {
                         auto sound_filename = std::string{ sound_file_attr->value() };
                         frame.sound_file = std::make_shared<xd::sound>(*audio, sound_filename,
                             fs->open_binary_ifstream(sound_filename), channel_group);
@@ -213,12 +213,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
                         throw xml_exception("Frame has a sound node but the filename is missing");
                     }
 
-                    if (auto pitch_attr = node->first_attribute("Pitch")) {
+                    if (auto pitch_attr = sound_node->first_attribute("Pitch")) {
                         auto pitch = std::stof(pitch_attr->value());
                         frame.sound_file->set_pitch(pitch);
                     }
 
-                    if (auto volume_attr = node->first_attribute("Volume")) {
+                    if (auto volume_attr = sound_node->first_attribute("Volume")) {
                         auto volume = std::stof(volume_attr->value());
                         frame.sound_file->set_volume(volume);
                         frame.sound_volume = volume;

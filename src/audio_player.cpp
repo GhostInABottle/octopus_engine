@@ -100,10 +100,10 @@ std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Ma
 
     new_music->set_volume(volume.value_or(1.0f));
 
-    return play_music_or_ambient(is_music, current_map, new_music, looping);
+    return play_music_or_ambient(is_music, new_music, looping);
 }
 
-std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Map& current_map, const std::shared_ptr<xd::music>& new_music, bool looping) {
+std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, const std::shared_ptr<xd::music>& new_music, bool looping) {
     if (!audio) return nullptr;
 
     auto& music_ptr = is_music ? music : ambient;

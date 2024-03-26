@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 
         Log::set_environment(environment);
 
-        // Initialize the filesystems
+        // Initialize the filesystems (passing executable name as PhysFS needs it)
         file_utilities::default_config_filesystem(argv[0]);
         file_utilities::game_data_filesystem(argv[0]);
         file_utilities::user_data_filesystem(argv[0]);
@@ -98,8 +98,11 @@ int main(int argc, char* argv[]) {
             Configurations::override_value(key, value);
         }
 
-        LOGGER_I << "Initializing the god object";
+        LOGGER_I << "Creating the window";
         Game game(args, audio, *environment);
+
+        LOGGER_I << "Initializing...";
+        game.init();
 
         LOGGER_I << "We have a liftoff!";
         game.run();

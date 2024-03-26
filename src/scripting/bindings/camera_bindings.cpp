@@ -45,28 +45,28 @@ void bind_camera_types(sol::state& lua, Game& game) {
         }
     );
     camera_type["tint_screen"] = sol::overload(
-        [&](Camera& camera, xd::vec4 color, long duration) {
+        [&](Camera&, xd::vec4 color, long duration) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Tint_Command>(Tint_Target::SCREEN, game, color, duration);
         },
-        [&](Camera& camera, const std::string& hex_color, long duration) {
+        [&](Camera&, const std::string& hex_color, long duration) {
             auto si = game.get_current_scripting_interface();
             auto color = hex_to_color(hex_color);
             return si->register_command<Tint_Command>(Tint_Target::SCREEN, game, color, duration);
         }
     );
     camera_type["tint_map"] = sol::overload(
-        [&](Camera& camera, xd::vec4 color, long duration) {
+        [&](Camera&, xd::vec4 color, long duration) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Tint_Command>(Tint_Target::MAP, game, color, duration);
         },
-        [&](Camera& camera, const std::string& hex_color, long duration) {
+        [&](Camera&, const std::string& hex_color, long duration) {
             auto si = game.get_current_scripting_interface();
             auto color = hex_to_color(hex_color);
             return si->register_command<Tint_Command>(Tint_Target::MAP, game, color, duration);
         }
     );
-    camera_type["zoom"] = [&](Camera& camera, float scale, long duration) {
+    camera_type["zoom"] = [&](Camera&, float scale, long duration) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Zoom_Command>(game, scale, duration);
     };
@@ -87,12 +87,12 @@ void bind_camera_types(sol::state& lua, Game& game) {
     );
     camera_type["cease_shaking"] = &Camera::cease_shaking;
     camera_type["shake_screen"] = sol::overload(
-        [&](Camera* camera, xd::vec2 strength, xd::vec2 speed, long duration) {
+        [&](Camera*, xd::vec2 strength, xd::vec2 speed, long duration) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Shake_Screen_Command>(game,
                 strength, speed, duration);
         },
-        [&](Camera* camera, float strength, float speed, long duration) {
+        [&](Camera*, float strength, float speed, long duration) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Shake_Screen_Command>(game,
                 xd::vec2{strength, 0}, xd::vec2{speed, 0}, duration);

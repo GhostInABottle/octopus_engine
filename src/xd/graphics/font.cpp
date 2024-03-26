@@ -16,29 +16,22 @@
 #include <istream>
 #include <mutex>
 
-namespace xd { namespace detail { namespace font {
-
-
-    static bool ft_lib_freed = false;
-
+namespace xd::detail::font {
     class ft_lib {
     public:
         ft_lib() : m_library(nullptr) {
             int error = FT_Init_FreeType(&m_library);
-            if (error)
-                throw freetype_init_failed();
+            if (error) throw freetype_init_failed();
         }
-        ~ft_lib() {
+        ~ft_lib()
+        {
             FT_Done_FreeType(m_library);
-            ft_lib_freed = true;
-
         }
         operator FT_Library() { return m_library; }
     private:
+
         FT_Library m_library;
     };
-
-    static thread_local ft_lib ft_library;
 
     struct vertex
     {
@@ -50,7 +43,7 @@ namespace xd { namespace detail { namespace font {
     {
         vertex_traits()
         {
-            // bind vertex attribs
+            // bind vertex attributes
             bind_vertex_attribute(VERTEX_POSITION, &vertex::pos);
             bind_vertex_attribute(VERTEX_TEXTURE, &vertex::tex);
         }
@@ -76,7 +69,7 @@ namespace xd { namespace detail { namespace font {
         glm::vec2 advance, offset;
     };
 
-    unsigned long file_read(FT_Stream rec, unsigned long offset, unsigned char* buffer, unsigned long count) {
+    static unsigned long file_read(FT_Stream rec, unsigned long offset, unsigned char* buffer, unsigned long count) {
         auto* istream = static_cast<std::istream*>(rec->descriptor.pointer);
         istream->clear();
 
@@ -92,13 +85,13 @@ namespace xd { namespace detail { namespace font {
         istream->seekg(offset, std::ios::beg);
         return *istream ? 0 : 1;
     }
-    void file_close(FT_Stream) {}
+    static void file_close(FT_Stream) {}
 
     struct face
     {
         face(const std::string& filename, std::unique_ptr<std::istream> stream)
-                : stream_rec{ std::make_unique<FT_StreamRec>() },
-                istream{ std::move(stream) } {
+                : stream_rec{ std::make_unique<FT_StreamRec>() }
+                , istream{ std::move(stream) } {
             if (!istream || !*istream) throw font_load_failed(filename);
 
             // calculate file size
@@ -121,7 +114,7 @@ namespace xd { namespace detail { namespace font {
             args.stream = stream_rec.get();
 
             // load the font
-            auto error = FT_Open_Face(ft_library, &args, 0, &handle);
+            auto error = FT_Open_Face(library, &args, 0, &handle);
             if (error) throw font_load_failed(filename);
 
             hb_font = hb_ft_font_create(handle, 0);
@@ -131,16 +124,12 @@ namespace xd { namespace detail { namespace font {
         ~face() {
             hb_buffer_destroy(hb_buffer);
             hb_font_destroy(hb_font);
-            // free font sizes
             for (auto& i : sizes) {
                 FT_Done_Size(i.second);
             }
-
-            // free the face handle
-            if (!ft_lib_freed) {
-                FT_Done_Face(handle);
-            }
+            FT_Done_Face(handle);
         }
+        static ft_lib library;
         FT_Face handle;
         hb_font_t* hb_font;
         hb_buffer_t* hb_buffer;
@@ -149,7 +138,9 @@ namespace xd { namespace detail { namespace font {
         std::unique_ptr<std::istream> istream;
     };
 
-} } }
+    ft_lib face::library;
+
+}
 
 using namespace xd::detail::font;
 
@@ -159,9 +150,7 @@ xd::font::font(const std::string& font_filename, std::unique_ptr<std::istream> s
         , m_position_uniform("vPosition")
         , m_color_uniform("vColor")
         , m_texture_uniform("colorMap")
-        , m_face(std::make_unique<face>(font_filename,
-            std::move(stream))) {
-}
+        , m_face(std::make_unique<face>(font_filename, std::move(stream))) {}
 
 xd::font::~font()
 {

@@ -269,7 +269,9 @@ struct Sprite::Impl {
         } else {
             // Map of pose IDs to their tag match count
             std::unordered_map<int, unsigned int> matches;
-            int matches_needed = (pose_name.empty() ? 0 : 1) + (state_name.empty() ? 0 : 1) + (dir == Direction::NONE ? 0 : 1);
+            unsigned int matches_needed = (pose_name.empty() ? 0 : 1)
+                + (state_name.empty() ? 0 : 1)
+                + (dir == Direction::NONE ? 0 : 1);
             int default_pose = -1;
             bool is_default = data->default_pose != "" && current_pose_name == data->default_pose;
             // Loop over poses incrementing poses that match

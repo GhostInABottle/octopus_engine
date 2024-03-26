@@ -422,7 +422,8 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     else
         throw tmx_exception("Missing Y coordinate for object with ID " + std::to_string(object_ptr->id));
 
-    float obj_width, obj_height = 0.0f;
+    float obj_width = 0.0f;
+    float obj_height = 0.0f;
 
     if (auto width_node = node.first_attribute("width")) {
         obj_width = std::stof(width_node->value());

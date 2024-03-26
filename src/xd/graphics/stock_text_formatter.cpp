@@ -65,13 +65,13 @@ void xd::stock_text_formatter::type_decorator(text_decorator& decorator, const f
     decorator.push_text(text);
 }
 
-void xd::stock_text_formatter::bold_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)
+void xd::stock_text_formatter::bold_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args&)
 {
     decorator.push_type("bold");
     decorator.push_text(text);
 }
 
-void xd::stock_text_formatter::italic_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)
+void xd::stock_text_formatter::italic_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args&)
 {
     decorator.push_type("italic");
     decorator.push_text(text);
@@ -161,7 +161,7 @@ void xd::stock_text_formatter::spacing_decorator(text_decorator& decorator, cons
     decorator.push_text(text);
 }
 
-void xd::stock_text_formatter::rainbow_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args& args)
+void xd::stock_text_formatter::rainbow_decorator(text_decorator& decorator, const formatted_text& text, const text_decorator_args&)
 {
     static std::vector<glm::vec4> rainbow_colors;
     if (rainbow_colors.size() == 0) {

@@ -104,13 +104,13 @@ namespace glm
 	template<typename T>
 	GLM_FUNC_QUALIFIER mat<4, 4, T, defaultp> ortho(T left, T right, T bottom, T top, T zNear, T zFar)
 	{
-		if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_LH_ZO)
+		if constexpr(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_LH_ZO)
 			return orthoLH_ZO(left, right, bottom, top, zNear, zFar);
-		else if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_LH_NO)
+		else if constexpr (GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_LH_NO)
 			return orthoLH_NO(left, right, bottom, top, zNear, zFar);
-		else if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_ZO)
+		else if constexpr (GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_ZO)
 			return orthoRH_ZO(left, right, bottom, top, zNear, zFar);
-		else if(GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_NO)
+		else if constexpr (GLM_CONFIG_CLIP_CONTROL == GLM_CLIP_CONTROL_RH_NO)
 			return orthoRH_NO(left, right, bottom, top, zNear, zFar);
 	}
 

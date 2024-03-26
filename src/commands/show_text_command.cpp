@@ -66,7 +66,6 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         // Load choice sound effects
         auto& audio_player = game.get_audio_player();
-        auto group_type = game.get_sound_group_type();
         select_sound = audio_player.load_global_config_sound("audio.choice-select-sfx", 3, false);
         confirm_sound = audio_player.load_global_config_sound("audio.choice-confirm-sfx", 3, false);
         cancel_sound = audio_player.load_global_config_sound("audio.choice-cancel-sfx", 3, false);

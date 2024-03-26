@@ -153,7 +153,7 @@ void file_utilities::set_default_config_filesystem(Readable_Filesystem* fs) {
     detail::default_config_filesystem = fs;
 }
 
-Writable_Filesystem* file_utilities::user_data_filesystem(std::string_view arg) {
+Writable_Filesystem* file_utilities::user_data_filesystem([[maybe_unused]] std::string_view arg) {
     if (detail::user_data_filesystem) return detail::user_data_filesystem;
 
     auto disk_fs = disk_filesystem();

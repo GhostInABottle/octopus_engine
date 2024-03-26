@@ -144,7 +144,7 @@ void Scripting_Interface::setup_scripts() {
 
     bind_environment_types(lua);
 
-    bind_game_types(lua, *game);
+    bind_game_types(lua);
 
     bind_layer_types(lua, *game);
 

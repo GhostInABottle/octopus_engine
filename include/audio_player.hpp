@@ -58,9 +58,8 @@ public:
             bool looping = true, std::optional<float> volume = std::nullopt) {
         return play_music_or_ambient(true, current_map, filename, looping, volume);
     }
-    std::shared_ptr<xd::music> play_music(Map& current_map,
-            const std::shared_ptr<xd::music>& new_music, bool looping = true) {
-        return play_music_or_ambient(true, current_map, new_music, looping);
+    std::shared_ptr<xd::music> play_music(const std::shared_ptr<xd::music>& new_music, bool looping = true) {
+        return play_music_or_ambient(true, new_music, looping);
     }
     // Play and set the currently playing ambient sound for the map
     std::shared_ptr<xd::music> play_ambient(Map& current_map, std::optional<float> volume = std::nullopt) {
@@ -70,9 +69,8 @@ public:
             bool looping = true, std::optional<float> volume = std::nullopt) {
         return play_music_or_ambient(false, current_map, filename, looping, volume);
     }
-    std::shared_ptr<xd::music> play_ambient(Map& current_map,
-            const std::shared_ptr<xd::music>& new_ambient, bool looping = true) {
-        return play_music_or_ambient(false, current_map, new_ambient, looping);
+    std::shared_ptr<xd::music> play_ambient(const std::shared_ptr<xd::music>& new_ambient, bool looping = true) {
+        return play_music_or_ambient(false, new_ambient, looping);
     }
     // Play a sound effect
     std::shared_ptr<xd::sound> play_sound(Game& game, const std::string& filename,
@@ -112,8 +110,7 @@ private:
     std::shared_ptr<xd::music> play_music_or_ambient(bool is_music, Map& current_map, std::optional<float> volume);
     std::shared_ptr<xd::music> play_music_or_ambient(bool is_music, Map& current_map, const std::string& filename,
         bool looping, std::optional<float> volume);
-    std::shared_ptr<xd::music> play_music_or_ambient(bool is_music, Map& current_map,
-        const std::shared_ptr<xd::music>& new_music, bool looping);
+    std::shared_ptr<xd::music> play_music_or_ambient(bool is_music, const std::shared_ptr<xd::music>& new_music, bool looping);
     std::shared_ptr<xd::music> music;
     std::shared_ptr<xd::music> ambient;
     std::shared_ptr<xd::audio> audio;
