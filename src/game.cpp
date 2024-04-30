@@ -497,7 +497,7 @@ void Game::init() {
     // Log errors
     window->register_error_handler([](int code, const char* description) {
         LOGGER_E << "GLFW error (" << code << "): " << description;
-        });
+    });
     // Setup shader, if any
     camera->set_shader(Configurations::get<std::string>("graphics.vertex-shader"),
         Configurations::get<std::string>("graphics.fragment-shader"));

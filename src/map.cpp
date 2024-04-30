@@ -331,7 +331,8 @@ void Map::delete_object(Map_Object* object) {
 }
 
 void Map::erase_object_references(Map_Object* object) {
-    if (auto player{game.get_player()}) {
+    auto player = game.get_player();
+    if (player) {
         if (object == player->get_triggered_object()) {
             player->set_triggered_object(nullptr);
         }
@@ -345,9 +346,11 @@ void Map::erase_object_references(Map_Object* object) {
             player->set_outlining_object(nullptr);
         }
     }
+
     auto name = object->get_name();
     string_utilities::capitalize(name);
     object_name_to_id.erase(name);
+
     objects.erase(object->get_id());
 }
 
@@ -443,16 +446,13 @@ void Map::add_layer(std::shared_ptr<Layer> layer) {
 void Map::delete_layer(std::string name) {
     string_utilities::capitalize(name);
     // Delete any matching object layer and its object
-    for (auto layer = object_layers.begin(); layer != object_layers.end();)
-    {
+    for (auto layer = object_layers.begin(); layer != object_layers.end();) {
         auto layer_name{(*layer)->name};
         string_utilities::capitalize(layer_name);
-        if (layer_name != name)
-        {
+        if (layer_name != name) {
             layer++;
         } else if (object_layers.size() > 1) {
-            for (auto& obj : (*layer)->objects)
-            {
+            for (auto& obj : (*layer)->objects) {
                 erase_object_references(obj);
             }
             layer = object_layers.erase(layer);
@@ -540,16 +540,19 @@ Base_Canvas* Map::get_canvas(int id) const {
 }
 
 void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
-    if (map_size == xd::ivec2(width, height) &&
-            tile_size == xd::ivec2(tile_width, tile_height))
-        return;
+    auto same_size = map_size == xd::ivec2(width, height)
+        && tile_size == xd::ivec2(tile_width, tile_height);
+    if (same_size) return;
+
     this->width = map_size.x;
     this->height = map_size.y;
     this->tile_width = tile_size.x;
     this->tile_height = tile_size.y;
+
     for (auto& layer : layers) {
         layer->resize(map_size);
     }
+
     needs_redraw = true;
 }
 

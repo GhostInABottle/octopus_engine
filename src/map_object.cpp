@@ -103,15 +103,18 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         }
 
         // Check if we can move in either direction
-        Collision_Record one_dir_collision{ collision };
-        one_dir_collision = map->passable(*this, move_dir & (Direction::UP | Direction::DOWN), check_type);
+        auto check_dir = move_dir & (Direction::UP | Direction::DOWN);
+        auto one_dir_collision = map->passable(*this, check_dir, check_type);
         if (one_dir_collision.passable()) {
             change.x = 0.0f;
             change.y = change.y >= 0 ? pixels : -pixels;
-        } else if (one_dir_collision = map->passable(*this, move_dir & (Direction::LEFT | Direction::RIGHT), check_type);
-                one_dir_collision.passable()) {
-            change.y = 0.0f;
-            change.x = change.x >= 0 ? pixels : -pixels;
+        } else {
+            check_dir = move_dir & (Direction::LEFT | Direction::RIGHT);
+            one_dir_collision = map->passable(*this, check_dir, check_type);
+            if (one_dir_collision.passable()) {
+                change.y = 0.0f;
+                change.x = change.x >= 0 ? pixels : -pixels;
+            }
         }
 
         if (!one_dir_collision.passable()) {
@@ -223,7 +226,7 @@ void Map_Object::set_size(xd::vec2 new_size) {
     }
 
     if (!check_close(size.x, size.y)) {
-        throw std::runtime_error("Invalid non-unfirom size for circle object " + name);
+        throw std::runtime_error("Invalid non-uniform size for circle object " + name);
     }
     bounding_circle = xd::circle{ size.x / 2, size.y / 2, size.x / 2 };
     bounding_box = static_cast<xd::rect>(bounding_circle.value());
@@ -313,8 +316,9 @@ float Map_Object::get_speed() const {
 void Map_Object::set_speed(float new_speed) {
     auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     speed = new_speed * 60.0f / logic_fps;
-    if (sprite)
-        sprite->set_speed(new_speed);
+    if (!sprite) return;
+
+    sprite->set_speed(new_speed);
 }
 
 void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state, Direction new_direction) {

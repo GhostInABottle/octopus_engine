@@ -91,8 +91,7 @@ struct Sprite::Impl {
         last_sound_frame(-1),
         speed(1.0f),
         sfx_volume(1.0f),
-        sound_attenuation_factor(Configurations::get<float>("audio.sound-attenuation-factor"))
-    {
+        sound_attenuation_factor(Configurations::get<float>("audio.sound-attenuation-factor")) {
         set_default_pose();
     }
 
@@ -186,10 +185,10 @@ struct Sprite::Impl {
             alpha = std::min(std::max(alpha, 0.0f), 1.0f);
             current_frame->magnification = lerp(prev_frame.magnification,
                 next_frame.magnification, alpha);
-            current_frame->angle= static_cast<int>(
+            current_frame->angle = static_cast<int>(
                 lerp(static_cast<float>(prev_frame.angle),
-                static_cast<float>(next_frame.angle), alpha));
-            current_frame->opacity=
+                    static_cast<float>(next_frame.angle), alpha));
+            current_frame->opacity =
                 lerp(prev_frame.opacity, next_frame.opacity, alpha);
         }
     }
@@ -317,7 +316,7 @@ struct Sprite::Impl {
     }
 
     // A pose is better than current best if there's no best yet or if it matches more tags
-    int compare_matches(int candidate_index, int best_index, 
+    int compare_matches(int candidate_index, int best_index,
             std::unordered_map<int, unsigned int>& matches) {
         auto candidate = matches[candidate_index];
         auto best = best_index > -1 ? matches[best_index] : 0;
@@ -340,7 +339,7 @@ struct Sprite::Impl {
     }
 
     void update_sound_attenuation(Map_Object& object) {
-        auto player_position{game.get_player()->get_centered_position()};
+        auto player_position{ game.get_player()->get_centered_position() };
         auto distance = xd::length(object.get_centered_position() - player_position);
 
         // Sound is 1 within [factor] pixels, then falls off based on distance
@@ -365,16 +364,16 @@ Sprite::~Sprite() {}
 void Sprite::render(Map_Object& object) {
     if (!object.is_visible()) return;
 
-    auto layer =  object.get_layer();
+    auto layer = object.get_layer();
     auto& batch = layer->renderer->get_batch();
     auto color = object.uses_layer_color()
         ? object.get_color() * layer->tint_color
         : object.get_color();
 
     pimpl->render(batch, object.get_position(),
-           layer->opacity * object.get_opacity(),
-           object.get_magnification(),
-           color);
+        layer->opacity * object.get_opacity(),
+        object.get_magnification(),
+        color);
 }
 
 void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const xd::vec2 pos) {
@@ -457,11 +456,11 @@ xd::vec2 Sprite::get_size() const {
 }
 
 Frame& Sprite::get_frame() {
-     return pimpl->pose->frames[pimpl->frame_index];
+    return pimpl->pose->frames[pimpl->frame_index];
 }
 
 const Frame& Sprite::get_frame() const {
-     return pimpl->pose->frames[pimpl->frame_index];
+    return pimpl->pose->frames[pimpl->frame_index];
 }
 
 int Sprite::get_frame_index() const {
