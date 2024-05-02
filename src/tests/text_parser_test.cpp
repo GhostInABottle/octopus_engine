@@ -264,25 +264,25 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_escaped_tags) {
 
 BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_empty_text) {
     auto lines = Text_Parser::split_to_lines("");
-    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines.size(), 1u);
     BOOST_CHECK_EQUAL(lines[0], "");
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line) {
     auto lines = Text_Parser::split_to_lines("hello");
-    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines.size(), 1u);
     BOOST_CHECK_EQUAL(lines[0], "hello");
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line_non_permissive) {
     auto lines = Text_Parser::split_to_lines("h{b}ello", false);
-    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines.size(), 1u);
     BOOST_CHECK_EQUAL(lines[0], "h{b}ello");
 }
 
 BOOST_AUTO_TEST_CASE(text_parser_split_to_lines_handles_single_line_permissive) {
     auto lines = Text_Parser::split_to_lines("h{b}ello", false);
-    BOOST_CHECK_EQUAL(lines.size(), 1);
+    BOOST_CHECK_EQUAL(lines.size(), 1u);
     BOOST_CHECK_EQUAL(lines[0], "h{b}ello");
 }
 

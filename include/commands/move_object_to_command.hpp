@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "../commands/command.hpp"
-#include "../collision_check_types.hpp"
+#include "../map/collision_check_types.hpp"
 
 class Map_Object;
 class Map;

@@ -2,9 +2,9 @@
 #include "../../include/interfaces/sprite_holder.hpp"
 #include "../../include/sprite.hpp"
 #include "../../include/sprite_data.hpp"
-#include "../../include/map.hpp"
-#include "../../include/map_object.hpp"
-#include "../../include/layers/image_layer.hpp"
+#include "../../include/map/map.hpp"
+#include "../../include/map/map_object.hpp"
+#include "../../include/map/layers/image_layer.hpp"
 #include "../../include/canvas/sprite_canvas.hpp"
 #include <exception>
 

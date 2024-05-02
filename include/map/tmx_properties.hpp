@@ -1,7 +1,7 @@
 #ifndef HPP_TMX_PROPERTIES
 #define HPP_TMX_PROPERTIES
 
-#include "vendor/rapidxml.hpp"
+#include "../vendor/rapidxml.hpp"
 #include <algorithm>
 #include <string>
 #include <unordered_map>

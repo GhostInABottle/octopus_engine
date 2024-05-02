@@ -1,6 +1,6 @@
-#include "../include/tmx_properties.hpp"
-#include "../include/utility/xml.hpp"
-#include "../include/utility/string.hpp"
+#include "../../include/map/tmx_properties.hpp"
+#include "../../include/utility/xml.hpp"
+#include "../../include/utility/string.hpp"
 
 void Tmx_Properties::read(rapidxml::xml_node<>& parent_node) {
     auto props_node = parent_node.first_node("properties");

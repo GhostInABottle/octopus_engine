@@ -5,7 +5,7 @@
 #include "../../../include/commands/tint_command.hpp"
 #include "../../../include/commands/zoom_command.hpp"
 #include "../../../include/game.hpp"
-#include "../../../include/map_object.hpp"
+#include "../../../include/map/map_object.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/color.hpp"

@@ -109,26 +109,26 @@
     <Filter Include="Source Files\interfaces">
       <UniqueIdentifier>{7776f9ce-6303-4c11-b8ac-fb8ad5e68336}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\layers">
-      <UniqueIdentifier>{bd57e6ec-fc17-477b-b3ca-d61541a02a9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\layers">
-      <UniqueIdentifier>{19b71310-b315-4309-999b-242d3c9fda77}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\environments">
       <UniqueIdentifier>{bf4921f0-09a9-425f-8985-01c74c20f82a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\environments">
       <UniqueIdentifier>{825b82f9-21c1-48cf-9b80-8506a6fc5c55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\map">
+      <UniqueIdentifier>{b3b4fcba-d56b-4098-8a4b-c15912ee7d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\map\layers">
+      <UniqueIdentifier>{bd57e6ec-fc17-477b-b3ca-d61541a02a9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\map">
+      <UniqueIdentifier>{f3bd8f85-19c8-45de-8d9c-c1bd12a0efad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\map\layers">
+      <UniqueIdentifier>{19b71310-b315-4309-999b-242d3c9fda77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\tileset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,9 +136,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\sprite_data.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\map_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\sprite.cpp">
@@ -278,9 +275,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\xd\system\window.cpp">
       <Filter>Source Files\xd\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tmx_properties.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\commands\text_options.cpp">
       <Filter>Source Files\commands</Filter>
@@ -432,35 +426,47 @@
     <ClCompile Include="..\..\src\commands\update_layer_velocity_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\image_layer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\map.cpp">
+      <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\image_layer_renderer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\map_object.cpp">
+      <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\image_layer_updater.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\tileset.cpp">
+      <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\layer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\tmx_properties.cpp">
+      <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\layer_renderer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\image_layer.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\object_layer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\image_layer_renderer.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\object_layer_renderer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\image_layer_updater.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\object_layer_updater.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\layer.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\tile_layer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\layer_renderer.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\layers\tile_layer_renderer.cpp">
-      <Filter>Source Files\layers</Filter>
+    <ClCompile Include="..\..\src\map\layers\object_layer.cpp">
+      <Filter>Source Files\map\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\map\layers\object_layer_renderer.cpp">
+      <Filter>Source Files\map\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\map\layers\object_layer_updater.cpp">
+      <Filter>Source Files\map\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\map\layers\tile_layer.cpp">
+      <Filter>Source Files\map\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\map\layers\tile_layer_renderer.cpp">
+      <Filter>Source Files\map\layers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\environments\default_environment.cpp">
       <Filter>Source Files\environments</Filter>
@@ -473,12 +479,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\tileset.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\map.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -486,9 +486,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\sprite_data.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\map_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\sprite.hpp">
@@ -504,12 +501,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\pathfinder.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\collision_record.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\collision_check_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\custom_shaders.hpp">
@@ -698,9 +689,6 @@
     <ClInclude Include="..\..\include\xd\system\window_options.hpp">
       <Filter>Header Files\xd\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\tmx_properties.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\commands\text_options.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
@@ -863,41 +851,59 @@
     <ClInclude Include="..\..\include\commands\update_layer_velocity_command.hpp">
       <Filter>Header Files\commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\image_layer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\collision_record.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\image_layer_renderer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\collision_check_types.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\image_layer_updater.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\map.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\layer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\map_object.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\layer_renderer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\tileset.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\layer_types.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\tmx_properties.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\layer_updater.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\image_layer.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\object_layer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\image_layer_renderer.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\object_layer_renderer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\image_layer_updater.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\object_layer_updater.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\layer.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\tile_layer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\layer_renderer.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\layers\tile_layer_renderer.hpp">
-      <Filter>Header Files\layers</Filter>
+    <ClInclude Include="..\..\include\map\layers\layer_types.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\layer_updater.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\object_layer.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\object_layer_renderer.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\object_layer_updater.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\tile_layer.hpp">
+      <Filter>Header Files\map\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\layers\tile_layer_renderer.hpp">
+      <Filter>Header Files\map\layers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\environments\default_environment.hpp">
       <Filter>Header Files\environments</Filter>

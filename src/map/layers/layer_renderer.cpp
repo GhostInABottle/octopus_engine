@@ -1,7 +1,7 @@
-#include "../../include/custom_shaders.hpp"
-#include "../../include/layers/layer.hpp"
-#include "../../include/layers/layer_renderer.hpp"
-#include "../../include/utility/file.hpp"
+#include "../../../include/custom_shaders.hpp"
+#include "../../../include/map/layers/layer.hpp"
+#include "../../../include/map/layers/layer_renderer.hpp"
+#include "../../../include/utility/file.hpp"
 #include <memory>
 
 Layer_Renderer::Layer_Renderer(const Layer& layer, const Camera& camera) :

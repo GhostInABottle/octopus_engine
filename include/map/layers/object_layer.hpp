@@ -1,8 +1,8 @@
 #ifndef HPP_OBJECT_LAYER
 #define HPP_OBJECT_LAYER
 
-#include "../interfaces/color_holder.hpp"
-#include "../xd/glm.hpp"
+#include "../../interfaces/color_holder.hpp"
+#include "../../xd/glm.hpp"
 #include "layer.hpp"
 #include <memory>
 #include <vector>

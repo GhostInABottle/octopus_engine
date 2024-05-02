@@ -1,7 +1,7 @@
 #ifndef HPP_TILE_LAYER_RENDERER
 #define HPP_TILE_LAYER_RENDERER
 
-#include "../xd/graphics/sprite_batch.hpp"
+#include "../../xd/graphics/sprite_batch.hpp"
 #include "layer_renderer.hpp"
 
 class Tile_Layer_Renderer : public Layer_Renderer {

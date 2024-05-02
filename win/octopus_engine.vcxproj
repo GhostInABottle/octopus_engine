@@ -188,16 +188,20 @@
     <ClCompile Include="..\src\interfaces\editable.cpp" />
     <ClCompile Include="..\src\interfaces\sprite_holder.cpp" />
     <ClCompile Include="..\src\key_binder.cpp" />
-    <ClCompile Include="..\src\layers\image_layer.cpp" />
-    <ClCompile Include="..\src\layers\image_layer_renderer.cpp" />
-    <ClCompile Include="..\src\layers\image_layer_updater.cpp" />
-    <ClCompile Include="..\src\layers\layer.cpp" />
-    <ClCompile Include="..\src\layers\layer_renderer.cpp" />
-    <ClCompile Include="..\src\layers\object_layer.cpp" />
-    <ClCompile Include="..\src\layers\object_layer_renderer.cpp" />
-    <ClCompile Include="..\src\layers\object_layer_updater.cpp" />
-    <ClCompile Include="..\src\layers\tile_layer.cpp" />
-    <ClCompile Include="..\src\layers\tile_layer_renderer.cpp" />
+    <ClCompile Include="..\src\map\map.cpp" />
+    <ClCompile Include="..\src\map\map_object.cpp" />
+    <ClCompile Include="..\src\map\tileset.cpp" />
+    <ClCompile Include="..\src\map\tmx_properties.cpp" />
+    <ClCompile Include="..\src\map\layers\image_layer.cpp" />
+    <ClCompile Include="..\src\map\layers\image_layer_renderer.cpp" />
+    <ClCompile Include="..\src\map\layers\image_layer_updater.cpp" />
+    <ClCompile Include="..\src\map\layers\layer.cpp" />
+    <ClCompile Include="..\src\map\layers\layer_renderer.cpp" />
+    <ClCompile Include="..\src\map\layers\object_layer.cpp" />
+    <ClCompile Include="..\src\map\layers\object_layer_renderer.cpp" />
+    <ClCompile Include="..\src\map\layers\object_layer_updater.cpp" />
+    <ClCompile Include="..\src\map\layers\tile_layer.cpp" />
+    <ClCompile Include="..\src\map\layers\tile_layer_renderer.cpp" />
     <ClCompile Include="..\src\scripting\bindings\audio_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\camera_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\canvas_bindings.cpp" />
@@ -210,7 +214,6 @@
     <ClCompile Include="..\src\scripting\bindings\math_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\text_bindings.cpp" />
     <ClCompile Include="..\src\scripting\bindings\utility_bindings.cpp" />
-    <ClCompile Include="..\src\tmx_properties.cpp" />
     <ClCompile Include="..\src\utility\color.cpp" />
     <ClCompile Include="..\src\utility\file.cpp" />
     <ClCompile Include="..\src\filesystem\boost_filesystem.cpp" />
@@ -264,8 +267,6 @@
     <ClCompile Include="..\src\game.cpp" />
     <ClCompile Include="..\src\log.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\map.cpp" />
-    <ClCompile Include="..\src\map_object.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
     <ClCompile Include="..\src\player_controller.cpp" />
     <ClCompile Include="..\src\save_file.cpp" />
@@ -275,7 +276,6 @@
     <ClCompile Include="..\src\sprite.cpp" />
     <ClCompile Include="..\src\sprite_data.cpp" />
     <ClCompile Include="..\src\text_parser.cpp" />
-    <ClCompile Include="..\src\tileset.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\audio_player.hpp" />
@@ -302,18 +302,24 @@
     <ClInclude Include="..\include\interfaces\opacity_holder.hpp" />
     <ClInclude Include="..\include\interfaces\sprite_holder.hpp" />
     <ClInclude Include="..\include\key_binder.hpp" />
-    <ClInclude Include="..\include\layers\image_layer.hpp" />
-    <ClInclude Include="..\include\layers\image_layer_renderer.hpp" />
-    <ClInclude Include="..\include\layers\image_layer_updater.hpp" />
-    <ClInclude Include="..\include\layers\layer.hpp" />
-    <ClInclude Include="..\include\layers\layer_renderer.hpp" />
-    <ClInclude Include="..\include\layers\layer_types.hpp" />
-    <ClInclude Include="..\include\layers\layer_updater.hpp" />
-    <ClInclude Include="..\include\layers\object_layer.hpp" />
-    <ClInclude Include="..\include\layers\object_layer_renderer.hpp" />
-    <ClInclude Include="..\include\layers\object_layer_updater.hpp" />
-    <ClInclude Include="..\include\layers\tile_layer.hpp" />
-    <ClInclude Include="..\include\layers\tile_layer_renderer.hpp" />
+    <ClInclude Include="..\include\map\collision_check_types.hpp" />
+    <ClInclude Include="..\include\map\collision_record.hpp" />
+    <ClInclude Include="..\include\map\map.hpp" />
+    <ClInclude Include="..\include\map\map_object.hpp" />
+    <ClInclude Include="..\include\map\tileset.hpp" />
+    <ClInclude Include="..\include\map\tmx_properties.hpp" />
+    <ClInclude Include="..\include\map\layers\image_layer.hpp" />
+    <ClInclude Include="..\include\map\layers\image_layer_renderer.hpp" />
+    <ClInclude Include="..\include\map\layers\image_layer_updater.hpp" />
+    <ClInclude Include="..\include\map\layers\layer.hpp" />
+    <ClInclude Include="..\include\map\layers\layer_renderer.hpp" />
+    <ClInclude Include="..\include\map\layers\layer_types.hpp" />
+    <ClInclude Include="..\include\map\layers\layer_updater.hpp" />
+    <ClInclude Include="..\include\map\layers\object_layer.hpp" />
+    <ClInclude Include="..\include\map\layers\object_layer_renderer.hpp" />
+    <ClInclude Include="..\include\map\layers\object_layer_updater.hpp" />
+    <ClInclude Include="..\include\map\layers\tile_layer.hpp" />
+    <ClInclude Include="..\include\map\layers\tile_layer_renderer.hpp" />
     <ClInclude Include="..\include\log_levels.hpp" />
     <ClInclude Include="..\include\scripting\script_bindings.hpp" />
     <ClInclude Include="..\include\utility\color.hpp" />
@@ -392,8 +398,6 @@
     <ClInclude Include="..\include\canvas\canvas_renderer.hpp" />
     <ClInclude Include="..\include\canvas\canvas_updater.hpp" />
     <ClInclude Include="..\include\clock.hpp" />
-    <ClInclude Include="..\include\collision_check_types.hpp" />
-    <ClInclude Include="..\include\collision_record.hpp" />
     <ClInclude Include="..\include\commands\show_text_command.hpp" />
     <ClInclude Include="..\include\commands\update_image_command.hpp" />
     <ClInclude Include="..\include\commands\update_opacity_command.hpp" />
@@ -405,14 +409,11 @@
     <ClInclude Include="..\include\commands\show_pose_command.hpp" />
     <ClInclude Include="..\include\commands\wait_command.hpp" />
     <ClInclude Include="..\include\commands\zoom_command.hpp" />
-    <ClInclude Include="..\include\tmx_properties.hpp" />
     <ClInclude Include="..\include\configurations.hpp" />
     <ClInclude Include="..\include\direction.hpp" />
     <ClInclude Include="..\include\exceptions.hpp" />
     <ClInclude Include="..\include\game.hpp" />
     <ClInclude Include="..\include\log.hpp" />
-    <ClInclude Include="..\include\map.hpp" />
-    <ClInclude Include="..\include\map_object.hpp" />
     <ClInclude Include="..\include\pathfinder.hpp" />
     <ClInclude Include="..\include\player_controller.hpp" />
     <ClInclude Include="..\include\vendor\rapidxml.hpp" />
@@ -424,7 +425,6 @@
     <ClInclude Include="..\include\sprite.hpp" />
     <ClInclude Include="..\include\sprite_data.hpp" />
     <ClInclude Include="..\include\text_parser.hpp" />
-    <ClInclude Include="..\include\tileset.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

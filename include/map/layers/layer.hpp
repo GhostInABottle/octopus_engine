@@ -1,11 +1,11 @@
 #ifndef HPP_LAYER
 #define HPP_LAYER
 
-#include "../interfaces/editable.hpp"
-#include "../interfaces/opacity_holder.hpp"
-#include "../tmx_properties.hpp"
-#include "../vendor/rapidxml.hpp"
-#include "../xd/glm.hpp"
+#include "../../interfaces/editable.hpp"
+#include "../../interfaces/opacity_holder.hpp"
+#include "../../map/tmx_properties.hpp"
+#include "../../vendor/rapidxml.hpp"
+#include "../../xd/glm.hpp"
 #include <memory>
 #include <string>
 

@@ -1,7 +1,7 @@
-#include "../../include/game.hpp"
-#include "../../include/layers/image_layer.hpp"
-#include "../../include/layers/image_layer_updater.hpp"
-#include "../../include/map.hpp"
+#include "../../../include/game.hpp"
+#include "../../../include/map/layers/image_layer.hpp"
+#include "../../../include/map/layers/image_layer_updater.hpp"
+#include "../../../include/map/map.hpp"
 
 void Image_Layer_Updater::update(Map& map) {
     if (!layer.visible) return;

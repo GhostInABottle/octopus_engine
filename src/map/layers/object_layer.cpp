@@ -1,11 +1,11 @@
-#include "../../include/layers/object_layer.hpp"
-#include "../../include/layers/object_layer_renderer.hpp"
-#include "../../include/layers/object_layer_updater.hpp"
-#include "../../include/map_object.hpp"
-#include "../../include/map.hpp"
-#include "../../include/utility/color.hpp"
-#include "../../include/utility/xml.hpp"
-#include "../../include/exceptions.hpp"
+#include "../../../include/map/layers/object_layer.hpp"
+#include "../../../include/map/layers/object_layer_renderer.hpp"
+#include "../../../include/map/layers/object_layer_updater.hpp"
+#include "../../../include/map/map_object.hpp"
+#include "../../../include/map/map.hpp"
+#include "../../../include/utility/color.hpp"
+#include "../../../include/utility/xml.hpp"
+#include "../../../include/exceptions.hpp"
 #include <algorithm>
 #include <stdexcept>
 

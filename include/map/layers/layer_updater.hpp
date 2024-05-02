@@ -1,8 +1,8 @@
 #ifndef HPP_LAYER_UPDATER
 #define HPP_LAYER_UPDATER
 
-#include "../map.hpp"
-#include "../xd/entity.hpp"
+#include "../../map/map.hpp"
+#include "../../xd/entity.hpp"
 
 class Layer_Updater : public xd::logic_component<Map> {
 public:

@@ -1,7 +1,7 @@
 #include "../../include/camera.hpp"
 #include "../../include/commands/move_camera_command.hpp"
 #include "../../include/configurations.hpp"
-#include "../../include/map_object.hpp"
+#include "../../include/map/map_object.hpp"
 #include "../../include/utility/direction.hpp"
 #include "../../include/utility/math.hpp"
 

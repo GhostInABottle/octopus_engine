@@ -1,6 +1,6 @@
 #include "../include/configurations.hpp"
-#include "../include/map.hpp"
-#include "../include/map_object.hpp"
+#include "../include/map/map.hpp"
+#include "../include/map/map_object.hpp"
 #include "../include/pathfinder.hpp"
 #include "../include/utility/direction.hpp"
 

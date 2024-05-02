@@ -1,7 +1,7 @@
 #ifndef HPP_PATHFINDER
 #define HPP_PATHFINDER
 
-#include "collision_check_types.hpp"
+#include "map/collision_check_types.hpp"
 #include "direction.hpp"
 #include "xd/glm.hpp"
 #include <algorithm>

@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/vendor/rapidxml.hpp"
-#include "../../include/tileset.hpp"
+#include "../../include/map/tileset.hpp"
 #include "../../include/tests/game_fixture.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(tileset_tests, Game_Fixture)
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(tileset_load) {
     BOOST_CHECK_EQUAL(tileset->tile_height, 8);
     BOOST_CHECK_EQUAL(tileset->properties["prop1"], "1");
     BOOST_CHECK_EQUAL(tileset->image_source, "../data/test_tileset.gif");
-    BOOST_CHECK_EQUAL(tileset->tiles.size(), 2);
+    BOOST_CHECK_EQUAL(tileset->tiles.size(), 2u);
     BOOST_CHECK_EQUAL(tileset->tiles[0].properties["x"], "y");
     BOOST_CHECK_EQUAL(tileset->tiles[1].id, 272);
     BOOST_CHECK_EQUAL(tileset->tiles[1].properties["test"], "va");

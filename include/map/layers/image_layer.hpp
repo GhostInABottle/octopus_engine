@@ -1,11 +1,11 @@
 #ifndef HPP_IMAGE_LAYER
 #define HPP_IMAGE_LAYER
 
-#include "../interfaces/color_holder.hpp"
-#include "../interfaces/sprite_holder.hpp"
-#include "../sprite.hpp"
-#include "../xd/glm.hpp"
-#include "../xd/graphics/texture.hpp"
+#include "../../interfaces/color_holder.hpp"
+#include "../../interfaces/sprite_holder.hpp"
+#include "../../sprite.hpp"
+#include "../../xd/glm.hpp"
+#include "../../xd/graphics/texture.hpp"
 #include "layer.hpp"
 #include <memory>
 #include <string>

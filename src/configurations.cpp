@@ -103,8 +103,6 @@ void Configurations::load_defaults() {
     defaults["debug.seed-lua-rng"] = true;
     defaults["debug.save-signature"] = 0x7BEDEADu;
     defaults["debug.update-config-files"] = true;
-    defaults["debug.collision-check-delay"] = 50;
-    defaults["debug.edge-tolerance-pixels"] = 8;
     // Deprecated configurations, use graphics.[config_name] instead
     defaults["debug.width"] = 320;
     defaults["debug.height"] = 240;
@@ -112,6 +110,9 @@ void Configurations::load_defaults() {
     defaults["debug.logic-fps"] = 60;
     defaults["debug.canvas-fps"] = 40;
     defaults["debug.use-fbo"] = true;
+
+    defaults["player.collision-check-delay"] = 50;
+    defaults["player.edge-tolerance-pixels"] = 8;
 
     defaults["startup.map"] = std::string{};
     defaults["startup.player-sprite"] = std::string{};

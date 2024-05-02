@@ -1,14 +1,14 @@
-#include <boost/test/unit_test.hpp>
-#include "../../include/xd/audio/music.hpp"
-#include "../../include/xd/asset_manager.hpp"
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/map.hpp"
-#include "../../include/layers/tile_layer.hpp"
-#include "../../include/layers/image_layer.hpp"
-#include "../../include/layers/object_layer.hpp"
-#include "../../include/map_object.hpp"
-#include "../../include/tests/game_fixture.hpp"
 #include "../..//include/utility/direction.hpp"
+#include "../../include/map/layers/image_layer.hpp"
+#include "../../include/map/layers/object_layer.hpp"
+#include "../../include/map/layers/tile_layer.hpp"
+#include "../../include/map/map.hpp"
+#include "../../include/map/map_object.hpp"
+#include "../../include/tests/game_fixture.hpp"
+#include "../../include/vendor/rapidxml.hpp"
+#include "../../include/xd/asset_manager.hpp"
+#include "../../include/xd/audio/music.hpp"
+#include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)
 
@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
     BOOST_CHECK_EQUAL(layer->visible, true);
     BOOST_CHECK_EQUAL(layer->properties["@Description"], "ground layer");
     auto tile_layer = static_cast<Tile_Layer*>(layer.get());
-    BOOST_CHECK_EQUAL(tile_layer->tiles[0], 37);
-    BOOST_CHECK_EQUAL(tile_layer->tiles[10], 132);
+    BOOST_CHECK_EQUAL(tile_layer->tiles[0], 37u);
+    BOOST_CHECK_EQUAL(tile_layer->tiles[10], 132u);
 }
 
 BOOST_AUTO_TEST_CASE(image_layer_load) {

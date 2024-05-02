@@ -4,7 +4,7 @@
 #include "../../include/canvas/canvas_renderer.hpp"
 #include "../../include/configurations.hpp"
 #include "../../include/game.hpp"
-#include "../../include/map.hpp"
+#include "../../include/map/map.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/utility/math.hpp"
 

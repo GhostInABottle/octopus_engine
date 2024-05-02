@@ -56,18 +56,18 @@ SOURCES += main.cpp\
     ../src/interfaces/editable.cpp \
     ../src/interfaces/sprite_holder.cpp \
     ../src/game.cpp \
-    ../src/layers/image_layer.cpp \
-    ../src/layers/image_layer_renderer.cpp \
-    ../src/layers/image_layer_updater.cpp \
+    ../src/map/layers/image_layer.cpp \
+    ../src/map/layers/image_layer_renderer.cpp \
+    ../src/map/layers/image_layer_updater.cpp \
     ../src/key_binder.cpp \
-    ../src/layers/layer.cpp \
-    ../src/layers/layer_renderer.cpp \
+    ../src/map/layers/layer.cpp \
+    ../src/map/layers/layer_renderer.cpp \
     ../src/log.cpp \
-    ../src/map.cpp \
-    ../src/map_object.cpp \
-    ../src/layers/object_layer.cpp \
-    ../src/layers/object_layer_renderer.cpp \
-    ../src/layers/object_layer_updater.cpp \
+    ../src/map/map.cpp \
+    ../src/map/map_object.cpp \
+    ../src/map/layers/object_layer.cpp \
+    ../src/map/layers/object_layer_renderer.cpp \
+    ../src/map/layers/object_layer_updater.cpp \
     ../src/pathfinder.cpp \
     ../src/player_controller.cpp \
     ../src/save_file.cpp \
@@ -92,10 +92,10 @@ SOURCES += main.cpp\
     ../src/sprite.cpp \
     ../src/sprite_data.cpp \
     ../src/text_parser.cpp \
-    ../src/layers/tile_layer.cpp \
-    ../src/layers/tile_layer_renderer.cpp \
-    ../src/tileset.cpp \
-    ../src/tmx_properties.cpp \
+    ../src/map/layers/tile_layer.cpp \
+    ../src/map/layers/tile_layer_renderer.cpp \
+    ../src/map/tileset.cpp \
+    ../src/map/tmx_properties.cpp \
     ../src/utility/math.cpp \
     ../src/utility/file.cpp \
     ../src/utility/string.cpp \
@@ -161,8 +161,8 @@ HEADERS  += main_window.hpp \
     ../include/canvas/text_canvas.hpp \
     ../include/audio_player.hpp \
     ../include/clock.hpp \
-    ../include/collision_check_types.hpp \
-    ../include/collision_record.hpp \
+    ../include/map/collision_check_types.hpp \
+    ../include/map/collision_record.hpp \
     ../include/commands/command.hpp \
     ../include/commands/command_result.hpp \
     ../include/commands/timed_command.hpp \
@@ -190,20 +190,20 @@ HEADERS  += main_window.hpp \
     ../include/interfaces/editable.hpp \
     ../include/interfaces/opacity_holder.hpp \
     ../include/interfaces/sprite_holder.hpp \
-    ../include/layers/image_layer.hpp \
-    ../include/layers/image_layer_renderer.hpp \
-    ../include/layers/image_layer_updater.hpp \
+    ../include/map/layers/image_layer.hpp \
+    ../include/map/layers/image_layer_renderer.hpp \
+    ../include/map/layers/image_layer_updater.hpp \
     ../include/key_binder.hpp \
-    ../include/layers/layer.hpp \
-    ../include/layers/layer_renderer.hpp \
-    ../include/layers/layer_types.hpp \
-    ../include/layers/layer_updater.hpp \
+    ../include/map/layers/layer.hpp \
+    ../include/map/layers/layer_renderer.hpp \
+    ../include/map/layers/layer_types.hpp \
+    ../include/map/layers/layer_updater.hpp \
     ../include/log.hpp \
-    ../include/map.hpp \
-    ../include/map_object.hpp \
-    ../include/layers/object_layer.hpp \
-    ../include/layers/object_layer_renderer.hpp \
-    ../include/layers/object_layer_updater.hpp \
+    ../include/map/map.hpp \
+    ../include/map/map_object.hpp \
+    ../include/map/layers/object_layer.hpp \
+    ../include/map/layers/object_layer_renderer.hpp \
+    ../include/map/layers/object_layer_updater.hpp \
     ../include/pathfinder.hpp \
     ../include/player_controller.hpp \
     ../include/vendor/rapidxml.hpp \
@@ -221,10 +221,10 @@ HEADERS  += main_window.hpp \
     ../include/sprite_data.hpp \
     ../include/tests/game_fixture.hpp \
     ../include/text_parser.hpp \
-    ../include/layers/tile_layer.hpp \
-    ../include/layers/tile_layer_renderer.hpp \
-    ../include/tileset.hpp \
-    ../include/tmx_properties.hpp \
+    ../include/map/layers/tile_layer.hpp \
+    ../include/map/layers/tile_layer_renderer.hpp \
+    ../include/map/tileset.hpp \
+    ../include/map/tmx_properties.hpp \
     ../include/utility/color.hpp \
     ../include/utility/direction.hpp \
     ../include/utility/file.hpp \

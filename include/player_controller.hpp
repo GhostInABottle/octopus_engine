@@ -2,7 +2,7 @@
 #define HPP_PLAYER_CONTROLLER
 
 #include <string>
-#include "map_object.hpp"
+#include "map/map_object.hpp"
 
 class Game;
 

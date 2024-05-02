@@ -12,7 +12,8 @@ file(GLOB EXTRA_SOURCES LIST_DIRECTORIES false
     src/decorators/*.cpp
     src/filesystem/*.cpp
     src/interfaces/*.cpp
-    src/layers/*.cpp
+    src/map/*.cpp
+    src/map/layers/*.cpp
     src/environments/*.cpp
     src/scripting/*.cpp
     src/scripting/bindings/*.cpp

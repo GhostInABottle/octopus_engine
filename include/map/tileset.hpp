@@ -1,10 +1,10 @@
 #ifndef HPP_TILESET
 #define HPP_TILESET
 
+#include "../vendor/rapidxml.hpp"
+#include "../xd/graphics/texture.hpp"
+#include "../xd/graphics/types.hpp"
 #include "tmx_properties.hpp"
-#include "vendor/rapidxml.hpp"
-#include "xd/graphics/texture.hpp"
-#include "xd/graphics/types.hpp"
 #include <memory>
 #include <string>
 #include <vector>

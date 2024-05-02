@@ -2,7 +2,7 @@
 #include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/fade_music_command.hpp"
 #include "../../../include/game.hpp"
-#include "../../../include/map.hpp"
+#include "../../../include/map/map.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/file.hpp"

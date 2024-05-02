@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include "../../include/vendor/rapidxml.hpp"
-#include "../../include/map.hpp"
-#include "../../include/layers/tile_layer.hpp"
+#include "../../include/map/map.hpp"
+#include "../../include/map/layers/tile_layer.hpp"
 #include "../../include/tests/game_fixture.hpp"
 
 namespace detail {
@@ -18,7 +18,7 @@ namespace detail {
         Tile_Layer* layer = static_cast<Tile_Layer*>(map.get_layer_by_index(1));
         BOOST_CHECK_EQUAL(layer->name, "ground");
         BOOST_CHECK_EQUAL(layer->properties["@Description"], "ground layer");
-        BOOST_CHECK_EQUAL(layer->tiles[10], 132);
+        BOOST_CHECK_EQUAL(layer->tiles[10], 132u);
     }
 }
 

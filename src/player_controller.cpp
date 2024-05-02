@@ -1,7 +1,7 @@
 #include "../include/configurations.hpp"
 #include "../include/game.hpp"
-#include "../include/map.hpp"
-#include "../include/map_object.hpp"
+#include "../include/map/map.hpp"
+#include "../include/map/map_object.hpp"
 #include "../include/player_controller.hpp"
 #include "../include/utility/direction.hpp"
 
@@ -50,8 +50,8 @@ Player_Controller::Player_Controller(Game& game)
     last_collision_check(game.ticks()),
     last_action_press(-1),
     last_action_direction(Direction::NONE),
-    collision_check_delay(Configurations::get<int>("debug.collision-check-delay")),
-    edge_tolerance_pixels(Configurations::get<int>("debug.edge-tolerance-pixels")) {}
+    collision_check_delay(Configurations::get<int>("player.collision-check-delay")),
+    edge_tolerance_pixels(Configurations::get<int>("player.edge-tolerance-pixels")) {}
 
 void Player_Controller::update(Map_Object& object) {
     Direction direction = Direction::NONE;

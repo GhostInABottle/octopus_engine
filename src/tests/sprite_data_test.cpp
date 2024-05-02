@@ -1,5 +1,5 @@
 #include "../../include/game.hpp"
-#include "../../include/map.hpp"
+#include "../../include/map/map.hpp"
 #include "../../include/sprite_data.hpp"
 #include "../../include/tests/game_fixture.hpp"
 #include "../../include/vendor/rapidxml.hpp"
