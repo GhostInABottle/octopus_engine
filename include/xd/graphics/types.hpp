@@ -100,7 +100,21 @@ namespace xd
         }
 
         constexpr vec2 center() const {
-            return vec2{ x + w / 2, y + h / 2 };
+            return vec2{ x + w * 0.5f, y + h * 0.5f };
+        }
+
+        constexpr rect extend(float delta) const {
+            if (w < 0.0f || h < 0.0f) return *this;
+
+            return rect{ x - delta, y - delta,
+                w + delta * 2, h + delta * 2 };
+        }
+
+        constexpr rect extend(vec2 delta) const {
+            if (w < 0.0f || h < 0.0f) return *this;
+
+            return rect{ x - delta.x, y - delta.y,
+                w + delta.x * 2, h + delta.y * 2 };
         }
 
         float x, y, w, h;
@@ -193,6 +207,10 @@ namespace xd
         constexpr void move(vec2 displacement) {
             x += displacement.x;
             y += displacement.y;
+        }
+
+        constexpr circle extend(float delta) const {
+            return radius < 0.0f ? *this : circle { x, y, radius + delta };
         }
 
         explicit constexpr operator rect() const {

@@ -58,12 +58,12 @@ void bind_map_types(sol::state& lua) {
     map_type["run_script_file"] = &Map::run_script_file;
     map_type["run_function"] = &Map::run_function;
     map_type["passable"] = [&](Map& map, const Map_Object& object, int dir) {
-        auto c = map.passable(object, static_cast<Direction>(dir));
+        auto c = map.passable({ object, static_cast<Direction>(dir) });
         return c.passable();
     };
     map_type["colliding_object"] = [&](Map& map, const Map_Object& object) -> Map_Object* {
-        auto c = map.passable(object, object.get_direction(),
-            Collision_Check_Type::OBJECT);
+        auto c = map.passable({ object, object.get_direction(),
+            Collision_Check_Type::OBJECT });
         if (c.type == Collision_Type::OBJECT)
             return c.other_object;
         else

@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\src\scripting\bindings\environment_bindings.cpp">
       <Filter>Source Files\scripting\bindings</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\map\collision_check_options.cpp">
+      <Filter>Source Files\map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\game.hpp">
@@ -916,6 +919,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\log_levels.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\map\collision_check_options.hpp">
+      <Filter>Header Files\map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

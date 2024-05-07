@@ -188,6 +188,7 @@
     <ClCompile Include="..\src\interfaces\editable.cpp" />
     <ClCompile Include="..\src\interfaces\sprite_holder.cpp" />
     <ClCompile Include="..\src\key_binder.cpp" />
+    <ClCompile Include="..\src\map\collision_check_options.cpp" />
     <ClCompile Include="..\src\map\map.cpp" />
     <ClCompile Include="..\src\map\map_object.cpp" />
     <ClCompile Include="..\src\map\tileset.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="..\include\interfaces\opacity_holder.hpp" />
     <ClInclude Include="..\include\interfaces\sprite_holder.hpp" />
     <ClInclude Include="..\include\key_binder.hpp" />
+    <ClInclude Include="..\include\map\collision_check_options.hpp" />
     <ClInclude Include="..\include\map\collision_check_types.hpp" />
     <ClInclude Include="..\include\map\collision_record.hpp" />
     <ClInclude Include="..\include\map\map.hpp" />

@@ -2,6 +2,7 @@
 #include "../../include/configurations.hpp"
 #include "../../include/exceptions.hpp"
 #include "../../include/game.hpp"
+#include "../../include/map/collision_check_options.hpp"
 #include "../../include/map/map.hpp"
 #include "../../include/map/map_object.hpp"
 #include "../../include/sprite.hpp"
@@ -14,39 +15,41 @@
 #include <utility>
 
 Map_Object::Map_Object(Game& game, const std::string& name,
-        std::string sprite_file, xd::vec2 pos, Direction dir) :
-        game(game),
-        layer(nullptr),
-        id(-1),
-        name(name),
-        position(pos),
-        color(1.0f),
-        magnification(1.0f),
-        outline_conditions(get_default_outline_conditions()),
-        outlined_object_id(-1),
-        outlining_object(nullptr),
-        gid(0),
-        opacity(1.0f),
-        visible(true),
-        disabled(false),
-        stopped(false),
-        frozen(false),
-        passthrough(false),
-        passthrough_type(Passthrough_Type::BOTH),
-        override_tile_collision(false),
-        strict_multidirectional_movement(false),
-        use_layer_color(true),
-        direction(dir),
-        state("FACE"),
-        face_state("FACE"),
-        walk_state("WALK"),
-        script_context(Script_Context::MAP),
-        collision_object(nullptr),
-        collision_area(nullptr),
-        triggered_object(nullptr),
-        draw_order(Draw_Order::NORMAL),
-        speed(1.0f),
-        sound_attenuation_enabled(false) {
+        std::string sprite_file, xd::vec2 pos, Direction dir)
+        : game(game)
+        , layer(nullptr)
+        , id(-1)
+        , name(name)
+        , position(pos)
+        , color(1.0f)
+        , magnification(1.0f)
+        , outline_conditions(get_default_outline_conditions())
+        , outlined_object_id(-1)
+        , outlining_object(nullptr)
+        , gid(0)
+        , opacity(1.0f)
+        , visible(true)
+        , disabled(false)
+        , stopped(false)
+        , frozen(false)
+        , passthrough(false)
+        , passthrough_type(Passthrough_Type::BOTH)
+        , override_tile_collision(false)
+        , strict_multidirectional_movement(false)
+        , use_layer_color(true)
+        , direction(dir)
+        , state("FACE")
+        , face_state("FACE")
+        , walk_state("WALK")
+        , script_context(Script_Context::MAP)
+        , collision_object(nullptr)
+        , collision_area(nullptr)
+        , triggered_object(nullptr)
+        , proximate_object(nullptr)
+        , proximity_pixels(-1)
+        , draw_order(Draw_Order::NORMAL)
+        , speed(1.0f)
+        , sound_attenuation_enabled(false) {
     if (!sprite_file.empty()) {
         set_sprite(game, sprite_file);
     }
@@ -84,11 +87,8 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
 
     // Check if passable ahead
     auto map = game.get_map();
-    auto collision = map->passable(
-        *this,
-        movement ? move_dir : direction,
-        check_type
-    );
+    auto check_dir = movement ? move_dir : direction;
+    auto collision = map->passable({ *this, check_dir, check_type });
 
     // Move object
     if (collision.passable()) {
@@ -103,14 +103,14 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         }
 
         // Check if we can move in either direction
-        auto check_dir = move_dir & (Direction::UP | Direction::DOWN);
-        auto one_dir_collision = map->passable(*this, check_dir, check_type);
+        check_dir = move_dir & (Direction::UP | Direction::DOWN);
+        auto one_dir_collision = map->passable({ *this, check_dir, check_type });
         if (one_dir_collision.passable()) {
             change.x = 0.0f;
             change.y = change.y >= 0 ? pixels : -pixels;
         } else {
             check_dir = move_dir & (Direction::LEFT | Direction::RIGHT);
-            one_dir_collision = map->passable(*this, check_dir, check_type);
+            one_dir_collision = map->passable({ *this, check_dir, check_type });
             if (one_dir_collision.passable()) {
                 change.y = 0.0f;
                 change.x = change.x >= 0 ? pixels : -pixels;
@@ -247,10 +247,12 @@ bool Map_Object::is_outlined() const {
 
     auto result = true;
 
+    auto player = game.get_player();
     if ((outline_conditions & Outline_Condition::TOUCHED) != Outline_Condition::NONE) {
-        auto player = game.get_player();
         result = player && (player->get_collision_object() == this ||
             player->get_collision_area() == this);
+    } else if ((outline_conditions & Outline_Condition::PROXIMATE) != Outline_Condition::NONE) {
+        result = player && player->get_proximate_object() == this;
     }
 
     if ((outline_conditions & Outline_Condition::SOLID) != Outline_Condition::NONE) {
@@ -261,13 +263,14 @@ bool Map_Object::is_outlined() const {
         result = result && !trigger_script.empty();
     }
 
+
     result = result || (outlining_object && outlining_object->is_outlined());
 
     return result;
 }
 
 Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const {
-    return Outline_Condition::TOUCHED | Outline_Condition::SOLID | Outline_Condition::SCRIPT;
+    return Outline_Condition::SOLID | Outline_Condition::SCRIPT | Outline_Condition::PROXIMATE;
 }
 
 void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
@@ -510,6 +513,11 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     if (properties.contains("override-tile-collision"))
         object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
 
+
+    if (properties.contains("proximity-distance")) {
+        object_ptr->set_proximity_distance(string_utilities::string_to_bool(properties["proximity-distance"]));
+    }
+
     if (properties.contains("use-layer-color"))
         object_ptr->set_use_layer_color(string_utilities::string_to_bool(properties["use-layer-color"]));
 
@@ -534,6 +542,8 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
                         conditions = conditions | Outline_Condition::SOLID;
                     } else if (trimmed == "SCRIPT") {
                         conditions = conditions | Outline_Condition::SCRIPT;
+                    } else if (trimmed == "PROXIMATE") {
+                        conditions = conditions | Outline_Condition::PROXIMATE;
                     } else {
                         throw tmx_exception("Unknown object outlined value: " + outlined);
                     }

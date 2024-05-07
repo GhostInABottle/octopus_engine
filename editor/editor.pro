@@ -65,6 +65,7 @@ SOURCES += main.cpp\
     ../src/log.cpp \
     ../src/map/map.cpp \
     ../src/map/map_object.cpp \
+    ../src/map/collision_check_options.cpp \
     ../src/map/layers/object_layer.cpp \
     ../src/map/layers/object_layer_renderer.cpp \
     ../src/map/layers/object_layer_updater.cpp \
@@ -161,6 +162,7 @@ HEADERS  += main_window.hpp \
     ../include/canvas/text_canvas.hpp \
     ../include/audio_player.hpp \
     ../include/clock.hpp \
+    ../include/map/collision_check_options.hpp \
     ../include/map/collision_check_types.hpp \
     ../include/map/collision_record.hpp \
     ../include/commands/command.hpp \

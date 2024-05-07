@@ -97,8 +97,9 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
         return;
     }
     auto dir = facing_direction(parent.pos, pos, true);
-    auto obj_pos = parent.pos;
-    auto collision = map.passable(object, dir, obj_pos, static_cast<float>(tile_width), check_type);
+
+    auto speed = static_cast<float>(tile_width);
+    auto collision = map.passable({ object, dir, check_type, parent.pos, speed });
     if (collision.passable()) {
         int g = parent.g + 1;
         int h = distance(tile_pos, goal_node.tile_pos());

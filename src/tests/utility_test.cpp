@@ -21,6 +21,21 @@ namespace detail {
         { "ca50f0", xd::vec4(0.79215686f, 0.31372549f, 0.94117647f, 1.0f) },
         { "f0ca50f0", xd::vec4(0.79215686f, 0.31372549f, 0.94117647f, 0.94117647f) },
     };
+
+    static void check_rect(const xd::rect& actual, const xd::rect& expected) {
+        float epsilon = 0.01f;
+        BOOST_CHECK_CLOSE(actual.x, expected.x, epsilon);
+        BOOST_CHECK_CLOSE(actual.y, expected.y, epsilon);
+        BOOST_CHECK_CLOSE(actual.w, expected.w, epsilon);
+        BOOST_CHECK_CLOSE(actual.h, expected.h, epsilon);
+    }
+
+    static void check_circle(const xd::circle& actual, const xd::circle& expected) {
+        float epsilon = 0.01f;
+        BOOST_CHECK_CLOSE(actual.x, expected.x, epsilon);
+        BOOST_CHECK_CLOSE(actual.y, expected.y, epsilon);
+        BOOST_CHECK_CLOSE(actual.radius, expected.radius, epsilon);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(color_utility_hex_to_color) {
@@ -183,6 +198,24 @@ BOOST_AUTO_TEST_CASE(xd_types_rect_contains) {
     BOOST_TEST(!r.contains(7, 7)); // outside right/below
 }
 
+BOOST_AUTO_TEST_CASE(xd_types_rect_extend) {
+    xd::rect r1{ 1, 2, 5, 4 };
+    detail::check_rect(r1.extend(5), xd::rect{ -4, -3, 15, 14 });
+    detail::check_rect(r1.extend(0), xd::rect{ 1, 2, 5, 4 });
+
+
+    xd::rect r2{ 1, 2, -1, 4 };
+    detail::check_rect(r2.extend(5), xd::rect{ 1, 2, -1, 4 });
+
+    xd::rect r3{ 1, 2, 5, -1 };
+    detail::check_rect(r3.extend(5), xd::rect{ 1, 2, 5, -1 });
+
+    xd::rect r4{ 1, 2, -1, -1 };
+    detail::check_rect(r4.extend(5), xd::rect{ 1, 2, -1, -1 });
+
+    xd::rect r5{ 1, 2, 0, 0 };
+    detail::check_rect(r5.extend(5), xd::rect{ -4, -3, 10, 10 });
+}
 
 BOOST_AUTO_TEST_CASE(xd_types_circle_intersects_circle) {
     xd::circle c{ 4, 4, 2 };
@@ -276,6 +309,18 @@ BOOST_AUTO_TEST_CASE(xd_types_circle_contains) {
     BOOST_TEST(!c.contains(2, 5)); // outside left/below
     BOOST_TEST(!c.contains(6, 3)); // outside right/above
     BOOST_TEST(!c.contains(6, 6)); // outside right/below
+}
+
+BOOST_AUTO_TEST_CASE(xd_types_circle_extend) {
+    xd::circle c1{ 4, 4, 2 };
+    detail::check_circle(c1.extend(5), xd::circle{ 4, 4, 7 });
+    detail::check_circle(c1.extend(0), xd::circle{ 4, 4, 2 });
+
+    xd::circle c2{ 4, 4, -1 };
+    detail::check_circle(c2.extend(5), xd::circle{4, 4, -1});
+
+    xd::circle c3{ 4, 4, 0 };
+    detail::check_circle(c3.extend(5), xd::circle{ 4, 4, 5 });
 }
 
 BOOST_AUTO_TEST_SUITE_END()

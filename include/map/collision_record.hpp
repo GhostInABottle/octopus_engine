@@ -22,13 +22,19 @@ struct Collision_Record {
     Map_Object* other_object;
     // The first collision area
     Map_Object* other_area;
+    // The closest object that can be triggered, if any
+    Map_Object* proximate_object;
 
     // Does collision type allow passing through?
     bool passable() const noexcept {
         return type == Collision_Type::NONE || type == Collision_Type::AREA;
     }
     Collision_Record(Collision_Type type = Collision_Type::NONE) noexcept
-        : type(type), this_object(nullptr), other_object(nullptr), other_area(nullptr) {}
+        : type(type)
+        , this_object(nullptr)
+        , other_object(nullptr)
+        , other_area(nullptr)
+        , proximate_object(nullptr) {}
 };
 
 #endif

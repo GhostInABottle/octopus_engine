@@ -88,8 +88,10 @@ Outline_Condition = {
     solid = 2,
     -- Outline if object has a script
     script = 4,
+    -- Outline if object is close enough (but not necessarily touched)
+    proximate = 8,
     -- Never outline
-    never = 8
+    never = 16
 }
 
 ---@enum Engine_Open_Page_Mode
@@ -729,7 +731,7 @@ function Engine_Rect:intersects(other) end
 function Engine_Rect:touches(other) end
 
 -- Check if a point falls within this rectangle (including the sides)
----@overload fun(x : number, y : number) : boolean
+---@overload fun(self : Engine_Rect, x : number, y : number) : boolean
 ---@param point Engine_Vec2
 ---@return boolean
 function Engine_Rect:contains(point) end
@@ -738,6 +740,12 @@ function Engine_Rect:contains(point) end
 ---@param displacement Engine_Vec2
 ---@return boolean
 function Engine_Rect:move(displacement) end
+
+-- Enlarge the rectangle
+---@overload fun(self : Engine_Rect, delta : number) : Engine_Rect
+---@param delta Engine_Vec2
+---@return Engine_Rect
+function Engine_Rect:extend(delta) end
 
 -- Circle
 
@@ -769,7 +777,7 @@ function Engine_Circle:intersects(other) end
 function Engine_Circle:touches(other) end
 
 -- Check if a point falls within this circle (including along the perimeters)
----@overload fun(x : number, y : number) : boolean
+---@overload fun(self : Engine_Circle, x : number, y : number) : boolean
 ---@param point Engine_Vec2
 ---@return boolean
 function Engine_Circle:contains(point) end
@@ -778,6 +786,11 @@ function Engine_Circle:contains(point) end
 ---@param displacement Engine_Vec2
 ---@return boolean
 function Engine_Circle:move(displacement) end
+
+-- Enlarge the rectangle by the specified displacement
+---@param delta number
+---@return Engine_Circle
+function Engine_Circle:extend(delta) end
 
 -- Create a rectangle that covers the area of this circle
 ---@return Engine_Rect
@@ -1101,6 +1114,8 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field collision_object? Engine_Map_Object
 ---@field triggered_object? Engine_Map_Object
 ---@field collision_area? Engine_Map_Object
+---@field proximate_object? Engine_Map_Object
+---@field proximity_distance integer # defaults to -1
 ---@field magnification Engine_Vec2
 ---@field sprite_magnification Engine_Vec2
 ---@field color Engine_Color
@@ -1158,7 +1173,7 @@ function Engine_Map_Object:update_opacity(new_opacity, duration) end
 ---@return Engine_Command_Result
 function Engine_Map_Object:update_color(color, duration) end
 
----@overload fun(position : Engine_Vec2, keep_trying? : boolean) : Engine_Command_Result
+---@overload fun(self : Engine_Map_Object, position : Engine_Vec2, keep_trying? : boolean) : Engine_Command_Result
 ---@param x number
 ---@param y number
 ---@param keep_trying? boolean

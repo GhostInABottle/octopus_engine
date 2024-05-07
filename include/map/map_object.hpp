@@ -28,7 +28,14 @@ public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
     enum class Script_Context { MAP, GLOBAL };
     enum class Passthrough_Type { INITIATOR = 1, RECEIVER = 2, BOTH = 3 };
-    enum class Outline_Condition { NONE = 0, TOUCHED = 1, SOLID = 2, SCRIPT = 4, NEVER = 8 };
+    enum class Outline_Condition {
+        NONE = 0,
+        TOUCHED = 1,
+        SOLID = 2,
+        SCRIPT = 4,
+        PROXIMATE = 8,
+        NEVER = 16
+    };
     // Map object onstructor/destructor
     Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
@@ -247,6 +254,18 @@ public:
     void set_triggered_object(Map_Object* obj) {
         triggered_object = obj;
     }
+    Map_Object* get_proximate_object() {
+        return proximate_object;
+    }
+    void set_proximate_object(Map_Object* object) {
+        proximate_object = object;
+    }
+    int proximity_distance() const {
+        return proximity_pixels;
+    }
+    void set_proximity_distance(int pixels) {
+        proximity_pixels = pixels;
+    }
     void add_linked_object(Map_Object* obj) {
         if (obj == this) return;
         linked_objects.push_back(obj);
@@ -335,8 +354,7 @@ public:
             return position + bounding_circle->center();
         }
 
-        return xd::vec2{position.x + bounding_box.x + bounding_box.w * 0.5f,
-            position.y + bounding_box.y + bounding_box.h * 0.5f};
+        return position + bounding_box.center();
     }
     // Get sprite angle
     int get_angle() const;
@@ -451,6 +469,11 @@ private:
     Map_Object* collision_area;
     // Last object activated by player
     Map_Object* triggered_object;
+    // Closest object to the player that can be triggered
+    Map_Object* proximate_object;
+    // Distance for getting triggered when close enough to the player
+    // (defaults to player.proximity-distance config)
+    int proximity_pixels;
     // Objects that move whenever this object moves
     std::vector<Map_Object*> linked_objects;
     // How object is drawn relative to other objects in layer

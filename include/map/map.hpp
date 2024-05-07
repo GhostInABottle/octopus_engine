@@ -7,7 +7,7 @@
 #include "../vendor/rapidxml.hpp"
 #include "../xd/entity.hpp"
 #include "../xd/vendor/sol/forward.hpp"
-#include "collision_check_types.hpp"
+#include "collision_check_options.hpp"
 #include "collision_record.hpp"
 #include "layers/layer_types.hpp"
 #include "tileset.hpp"
@@ -72,11 +72,7 @@ public:
     // Pause or resume the Lua scheduler
     void set_script_scheduler_paused(bool paused);
     // Check if object can move in given direction
-    Collision_Record passable(const Map_Object& object, Direction direction,
-        Collision_Check_Type check_type = Collision_Check_Type::BOTH) const;
-    Collision_Record passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed,
-        Collision_Check_Type check_type = Collision_Check_Type::BOTH) const;
+    Collision_Record passable(Collision_Check_Options options) const;
     // Check if a particular tile is passable
     bool tile_passable(int x, int y) const noexcept;
     // Get number of objects

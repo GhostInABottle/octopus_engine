@@ -22,6 +22,7 @@
 #include "../../include/xd/vendor/sol/sol.hpp"
 #include <algorithm>
 #include <fstream>
+#include <limits>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -38,7 +39,8 @@ namespace {
         return name;
     }
 
-    static bool circle_intersects(const Map_Object& obj1, const Map_Object& obj2, const xd::vec2& obj1_pos) {
+    static inline bool circle_intersects(const Map_Object& obj1, const Map_Object& obj2,
+            const xd::vec2& obj1_pos, float proximity_distance = 0.0f) {
         auto obj1_circle = obj1.get_bounding_circle();
         auto obj2_circle = obj2.get_positioned_bounding_circle();
         if (!obj1_circle && !obj2_circle) {
@@ -46,6 +48,7 @@ namespace {
         }
 
         if (obj1_circle) {
+            obj1_circle->extend(proximity_distance);
             obj1_circle->move(obj1_pos);
         }
 
@@ -60,7 +63,30 @@ namespace {
 
         xd::rect obj1_box{ obj1.get_bounding_box() };
         obj1_box.move(obj1_pos);
-        return obj2_circle->intersects(obj1_box);
+        return obj2_circle->intersects(obj1_box.extend(proximity_distance));
+    }
+
+    static inline bool check_intersection(const Map_Object& obj1, const Map_Object& obj2,
+            const xd::rect& obj1_box, const xd::vec2& obj1_pos, float proximity_distance = 0.0f) {
+        auto obj2_box = obj2.get_positioned_bounding_box();
+        auto intersects = obj1_box.intersects(obj2_box);
+
+        auto check_circle_intersection = intersects
+            && (obj1.get_bounding_circle() || obj2.get_bounding_circle());
+        if (check_circle_intersection) {
+            intersects = circle_intersects(obj1, obj2, obj1_pos, proximity_distance);
+        }
+
+        return intersects;
+    }
+
+    static inline std::tuple<int, float> distance_and_dot(const xd::rect& obj1_box, const xd::rect& obj2_box, Direction dir) {
+        auto obj1_center = obj1_box.center();
+        auto obj2_center = obj2_box.center();
+        auto obj1_dir_vector = direction_to_vector(dir);
+        auto facing_dir_vector = direction_to_vector(facing_direction(obj1_center, obj2_center, true));
+        return { static_cast<int>(glm::distance(obj1_center, obj2_center)),
+            glm::dot(obj1_dir_vector, facing_dir_vector) };
     }
 }
 
@@ -133,15 +159,10 @@ void Map::set_script_scheduler_paused(bool paused) {
         scheduler.resume();
 }
 
-Collision_Record Map::passable(const Map_Object& object, Direction direction, Collision_Check_Type check_type) const {
-    return passable(object, direction, object.get_position(),
-        object.get_fps_independent_speed(), check_type);
-}
-
-Collision_Record Map::passable(const Map_Object& object, Direction direction,
-        xd::vec2 position, float speed, Collision_Check_Type check_type) const {
+Collision_Record Map::passable(Collision_Check_Options options) const {
     Collision_Record result;
 
+    auto& object = options.object;
     if (object.initiates_passthrough())
         return result;
 
@@ -149,39 +170,64 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
     if (bounding_box.w <= 0.0f || bounding_box.h <= 0.0f)
         return result;
 
-    auto change = direction_to_vector(direction) * speed;
-    auto new_pos = position + change;
+    auto change = direction_to_vector(options.direction) * options.speed;
+    auto new_pos = options.position + change;
     xd::rect this_box{ bounding_box.position() + new_pos, bounding_box.size() };
 
-    bool check_tile_collision = check_type & Collision_Check_Type::TILE;
+    bool check_tile_collision = options.check_type & Collision_Check_Type::TILE;
+    int minimum_distance = std::numeric_limits<int>::max();
 
     // Check object collisions
-    if (check_type & Collision_Check_Type::OBJECT) {
+    if (options.check_type & Collision_Check_Type::OBJECT) {
         for (auto& object_pair : objects) {
+            auto other_id = object_pair.first;
             auto other_object = object_pair.second.get();
+
+            // Skip invisible objects and self-intersection
+            if (!other_object->is_visible() || other_id == object.get_id()) continue;
 
             // Skip objects with no bounding box
             const auto& box = other_object->get_bounding_box();
             if (box.w <= 0.0f || box.h <= 0.0f) continue;
 
-            auto intersects = this_box.intersects(other_object->get_positioned_bounding_box());
-
-            if (intersects && (object.get_bounding_circle() || other_object->get_bounding_circle())) {
-                intersects = circle_intersects(object, *other_object, new_pos);
-            }
+            auto other_box = other_object->get_positioned_bounding_box();
+            auto intersects = check_intersection(object, *other_object, this_box, new_pos);
 
             // Special case for skipping tile collision detection
-            const auto visible = other_object->is_visible();
             const auto passthrough = other_object->receives_passthrough();
-            if (other_object->overrides_tile_collision() && visible && passthrough && intersects)
+            if (other_object->overrides_tile_collision() && passthrough && intersects)
                 check_tile_collision = false;
 
             // Areas are passthrough objects with a script
-            auto other_id = object_pair.first;
-            const auto is_area = passthrough && other_object->has_any_script();
-            // Skip non-intersecting, self, invisible, or passthrough objects (except areas)
-            bool skip = !intersects || other_id == object.get_id()
-                || !visible || (!is_area && passthrough);
+            const auto has_script = other_object->has_any_script();
+            const auto is_area = passthrough && has_script;
+
+            // Check proximate objects
+            bool check_nearby = !intersects
+                && !passthrough
+                && has_script
+                && !result.other_object
+                && other_object->proximity_distance() != 0;
+            if (check_nearby) {
+                auto int_proximity_distance = other_object->proximity_distance();
+                auto proximity_distance = static_cast<float>(int_proximity_distance == -1
+                    ? options.proximity_distance
+                    : int_proximity_distance);
+                const auto nearby_box = this_box.extend(proximity_distance);
+                auto nearby_intersects = check_intersection(object, *other_object,
+                    nearby_box, new_pos, proximity_distance);
+
+                auto [distance, dot] = nearby_intersects
+                    ? distance_and_dot(nearby_box, other_box, options.direction)
+                    : std::make_tuple(-1, 0.0f);
+                if (nearby_intersects && distance < minimum_distance && dot > 0) {
+                    result.proximate_object = other_object;
+                    minimum_distance = distance;
+                }
+            }
+
+            // Skip non-intersecting or passthrough objects (except areas)
+            bool skip = !intersects || (!is_area && passthrough);
             if (skip) continue;
 
             if (is_area) {
@@ -194,8 +240,9 @@ Collision_Record Map::passable(const Map_Object& object, Direction direction,
 
             result.type = Collision_Type::OBJECT;
             // Prefer objects with scripts
-            if (!result.other_object || other_object->has_any_script()) {
+            if (!result.other_object || has_script) {
                 result.other_object = other_object;
+                result.proximate_object = other_object;
             }
             check_tile_collision = false;
         }
@@ -341,6 +388,9 @@ void Map::erase_object_references(Map_Object* object) {
         }
         if (object == player->get_collision_area()) {
             player->set_collision_area(nullptr);
+        }
+        if (object == player->get_proximate_object()) {
+            player->set_proximate_object(nullptr);
         }
         if (object == player->get_outlining_object()) {
             player->set_outlining_object(nullptr);

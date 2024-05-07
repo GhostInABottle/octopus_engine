@@ -151,6 +151,10 @@ void bind_math_types(sol::state& lua) {
         sol::resolve<bool(float, float) const>(&xd::rect::contains)
     );
     rect_type["move"] = &xd::rect::move;
+    rect_type["extend"] = sol::overload(
+        sol::resolve<xd::rect(xd::vec2) const>(&xd::rect::extend),
+        sol::resolve<xd::rect(float) const>(&xd::rect::extend)
+    );
     rect_type[sol::meta_function::to_string] = [](const xd::rect& val) {
         std::stringstream ss;
         ss.setf(std::ios::fixed, std::ios::floatfield);
@@ -181,6 +185,7 @@ void bind_math_types(sol::state& lua) {
         sol::resolve<bool(float, float) const>(&xd::circle::contains)
     );
     circle_type["move"] = &xd::circle::move;
+    circle_type["extend"] = &xd::circle::extend;
     circle_type["to_rect"] = [](const xd::circle& c) { return static_cast<xd::rect>(c); };
     circle_type[sol::meta_function::to_string] = [](const xd::circle& val) {
         std::stringstream ss;
