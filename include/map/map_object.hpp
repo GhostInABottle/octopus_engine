@@ -324,13 +324,17 @@ public:
     float get_fps_independent_speed() const {
         return speed;
     }
-    // Get bounding box
     const xd::rect& get_bounding_box() const {
         return bounding_box;
     }
-    // Get bounding circle
+    const void set_bounding_box(xd::rect box) {
+        bounding_box = box;
+    }
     std::optional<xd::circle> get_bounding_circle() const {
         return bounding_circle;
+    }
+    const void set_bounding_circle(std::optional<xd::circle> circle) {
+        bounding_circle = circle;
     }
     // Get position with bounding box
     xd::vec2 get_real_position() const {

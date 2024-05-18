@@ -401,7 +401,13 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
         node->append_attribute(xml_attribute(doc, "gid", std::to_string(get_gid())));
     if (!is_visible())
         node->append_attribute(xml_attribute(doc, "visible", "0"));
+
+    if (bounding_circle.has_value()) {
+        node->append_node(xml_node(doc, "ellipse"));
+    }
+
     properties.save(doc, *node);
+
     return node;
 }
 

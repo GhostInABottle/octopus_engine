@@ -664,11 +664,15 @@ function Engine_Vec4:length() end
 ---@return Engine_Vec3
 function Engine_Vec4:normal() end
 
----@class (exact) Engine_Color
+---@class (exact) Engine_Color : Engine_Vec4
 ---@field r number
 ---@field g number
 ---@field b number
 ---@field a number
+---@operator add(Engine_Color) : Engine_Color
+---@operator sub(Engine_Color) : Engine_Color
+---@operator mul(number) : Engine_Color
+---@operator div(number) : Engine_Color
 local Engine_Color = {}
 
 ---@return string
