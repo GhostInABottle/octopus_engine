@@ -1308,17 +1308,17 @@ function current_map:delete_object(object) end
 
 ---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
----@return Engine_Layer
+---@return Engine_Layer?
 function current_map:get_layer(name) end
 
 ---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
----@return Engine_Object_Layer
+---@return Engine_Object_Layer?
 function current_map:get_object_layer(name) end
 
 ---@overload fun(self : Engine_Map, id : integer) : Engine_Layer
 ---@param name string
----@return Engine_Image_Layer
+---@return Engine_Image_Layer?
 function current_map:get_image_layer(name) end
 
 ---@param object Engine_Map_Object

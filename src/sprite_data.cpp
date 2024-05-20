@@ -7,6 +7,7 @@
 #include "../include/xd/asset_manager.hpp"
 #include "../include/xd/audio.hpp"
 #include <iostream>
+#include <optional>
 
 namespace detail {
     static std::shared_ptr<xd::texture> load_sprite_texture(xd::asset_manager& manager, std::string filename, xd::vec4 transparent_color) {
@@ -68,9 +69,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
     bool pose_images_loaded = true;
     bool frame_images_loaded = true;
 
-    auto trans_color_attr = node.first_attribute("Transparent-Color");
-    if (trans_color_attr)
-        sprite_ptr->transparent_color = hex_to_color(trans_color_attr->value());
+    std::optional<xd::vec4> transparent_color;
+    if (auto attr = node.first_attribute("Transparent-Color")) {
+        transparent_color = hex_to_color(attr->value());
+        sprite_ptr->transparent_color = transparent_color.value();
+    }
 
     if (auto attr = node.first_attribute("Image")) {
         std::string image_file = attr->value();
@@ -130,10 +133,10 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
 
         // Pose image and transparent color
         if (auto attr = pose_node->first_attribute("Transparent-Color")) {
-            pose.transparent_color = hex_to_color(attr->value());
-            trans_color_attr = attr;
-        } else if (trans_color_attr)
-            pose.transparent_color = sprite_ptr->transparent_color;
+            transparent_color = hex_to_color(attr->value());
+            pose.transparent_color = transparent_color.value();
+        } else if (transparent_color)
+            pose.transparent_color = transparent_color.value();
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
@@ -178,10 +181,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
                 frame.tween_frame = string_utilities::string_to_bool(attr->value());
 
             // Frame image and transparent color
-            if (auto attr = frame_node->first_attribute("Transparent-Color"))
-                frame.transparent_color = hex_to_color(attr->value());
-            else if (trans_color_attr)
-                frame.transparent_color = sprite_ptr->transparent_color;
+            if (auto attr = frame_node->first_attribute("Transparent-Color")) {
+                transparent_color = hex_to_color(attr->value());
+                frame.transparent_color = transparent_color.value();
+            } else if (transparent_color)
+                frame.transparent_color = transparent_color.value();
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
