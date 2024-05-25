@@ -104,10 +104,12 @@ void Player_Controller::update(Map_Object& object) {
     // Check if stuck inside another object
     if (moved && collision.type == Collision_Type::OBJECT) {
         auto passable = false;
-        for (int i = 1; i <= 8; i *= 2) {
-            auto dir = static_cast<Direction>(i);
+        // All valid directions starting with non-diagonal ones
+        const static int dirs[] = { 1, 2, 4, 8, 3, 6, 9, 12 };
+        for (int i = 0; i < 8; ++i) {
+            auto dir = static_cast<Direction>(dirs[i]);
             // Only try directions other than the blocked one
-            if ((dir & direction) != Direction::NONE) continue;
+            if (dir == direction) continue;
 
             auto other_collision = map->passable({ object, dir });
             if (other_collision.passable()) {
