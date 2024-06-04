@@ -136,12 +136,14 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
 
 Camera::Camera(Game& game)
         : game(game),
-        position(xd::vec2(0.0f, 0.0f)),
+        position(0.0f, 0.0f),
         screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
         brightness(Configurations::get<float>("graphics.brightness")),
         contrast(Configurations::get<float>("graphics.contrast")),
         saturation(Configurations::get<float>("graphics.saturation")),
         object(nullptr),
+        object_center_offset(Configurations::get<float>("player.camera-center-offset-x"),
+            Configurations::get<float>("player.camera-center-offset-y")),
         shaker(nullptr),
         pimpl(std::make_unique<Impl>())
 {
@@ -251,7 +253,7 @@ xd::vec2 Camera::get_centered_position(const Map_Object& target) const {
     auto sprite = target.get_sprite();
     auto sprite_size = sprite ? sprite->get_size() : xd::vec2{0.0f, 0.0f};
     auto object_pos = target.get_position() + sprite_size / 2.0f;
-    return get_centered_position(object_pos);
+    return get_centered_position(object_pos + object_center_offset);
 }
 
 xd::rect Camera::get_position_bounds() const {

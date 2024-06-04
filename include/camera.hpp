@@ -1,10 +1,10 @@
 #ifndef HPP_CAMERA
 #define HPP_CAMERA
 
-#include <memory>
+#include "xd/entity.hpp"
 #include "xd/graphics/transform_geometry.hpp"
 #include "xd/graphics/types.hpp"
-#include "xd/entity.hpp"
+#include <memory>
 
 class Game;
 class Map_Object;
@@ -109,6 +109,12 @@ public:
     void set_object(Map_Object* obj) {
         object = obj;
     }
+    xd::vec2 get_object_center_offset() const {
+        return object_center_offset;
+    }
+    void set_object_center_offset(xd::vec2 offset) {
+        object_center_offset = offset;
+    }
     // Is the camera shaking?
     bool is_shaking() const {
         return shaker != nullptr;
@@ -136,6 +142,8 @@ private:
     float saturation;
     // Tracked map object
     Map_Object* object;
+    // Offset added when centering camera on objects
+    xd::vec2 object_center_offset;
     // Screen shaker component
     std::shared_ptr<Screen_Shaker> shaker;
     // Implementation details

@@ -114,6 +114,8 @@ void Configurations::load_defaults() {
     defaults["player.collision-check-delay"] = 50;
     defaults["player.edge-tolerance-pixels"] = 8;
     defaults["player.proximity-distance"] = 8;
+    defaults["player.camera-center-offset-x"] = 0.0f;
+    defaults["player.camera-center-offset-y"] = 0.0f;
 
     defaults["startup.map"] = std::string{};
     defaults["startup.player-sprite"] = std::string{};

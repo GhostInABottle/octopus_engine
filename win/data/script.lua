@@ -184,6 +184,10 @@ elseif c.selected == 4 then
     object_layer.tint_color = old_color
 elseif c.selected == 5 then
     -- Camera
+    text(o, "Changing centered camera offset"):wait()
+    camera.object_center_offset = Vec2(50, -50)
+    wait(1000)
+    camera.object_center_offset = Vec2(0, 0)
     text(o, "Starting horitontal screen shake"):wait()
     camera:start_shaking(3, 14)
     wait(250)

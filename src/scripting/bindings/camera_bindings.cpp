@@ -20,6 +20,8 @@ void bind_camera_types(sol::state& lua, Game& game) {
     camera_type["position"] = sol::property(&Camera::get_position, &Camera::set_position);
     camera_type["position_bounds"] = sol::readonly_property(&Camera::get_position_bounds);
     camera_type["tracked_object"] = sol::property(&Camera::get_object, &Camera::set_object);
+    camera_type["object_center_offset"] = sol::property(&Camera::get_object_center_offset,
+        &Camera::set_object_center_offset);
     camera_type["is_shaking"] = sol::property(&Camera::is_shaking);
     camera_type["get_centered_position"] = sol::overload(
         sol::resolve<xd::vec2(xd::vec2) const>(&Camera::get_centered_position),
@@ -38,7 +40,7 @@ void bind_camera_types(sol::state& lua, Game& game) {
             auto si = game.get_current_scripting_interface();
             return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);
         },
-            [&](Camera& camera, Map_Object& object, float speed) {
+        [&](Camera& camera, Map_Object& object, float speed) {
             auto pos = camera.get_centered_position(object);
             auto si = game.get_current_scripting_interface();
             return si->register_command<Move_Camera_Command>(camera, pos.x, pos.y, speed);

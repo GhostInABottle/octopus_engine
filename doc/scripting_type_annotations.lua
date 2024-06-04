@@ -1355,6 +1355,7 @@ function current_map:run_script_file(filename) end
 ---@field screen_tint Engine_Color # Drawn above everything
 ---@field map_tint Engine_Color # Drawn above map/objects but under text/canvases
 ---@field tracked_object Engine_Map_Object
+---@field object_center_offset Engine_Vec2
 ---@field is_shaking boolean
 camera = {}
 
