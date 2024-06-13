@@ -10,6 +10,7 @@
 #include "../include/utility/file.hpp"
 #include "../include/utility/math.hpp"
 #include "../include/xd/graphics/shaders.hpp"
+#include "../include/xd/graphics/transform_geometry.hpp"
 #include "../include/xd/graphics/vertex_batch.hpp"
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
@@ -85,8 +86,8 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
         float brightness, float contrast, float saturation) {
     if (!postprocessing_enabled) return;
 
-    int w = game.framebuffer_width();
-    int h = game.framebuffer_height();
+    const int w = game.framebuffer_width();
+    const int h = game.framebuffer_height();
     // Width and height can be 0 in some debugging scenarios
     if (w == 0 || h == 0) return;
 
@@ -97,6 +98,7 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     full_screen_texture->copy_read_buffer(0, 0, w, h);
     full_screen_batch.clear();
     full_screen_batch.add(full_screen_texture, 0, 0);
+
     geometry.projection().push(
     xd::ortho<float>(
             0, static_cast<float>(w), // left, right
@@ -105,13 +107,19 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
         )
     );
     geometry.model_view().push(xd::mat4());
+
     auto same_viewport = viewport == xd::rect{0, 0, w, h};
-    if (!same_viewport)
+    if (!same_viewport) {
         glViewport(0, 0, w, h);
+    }
+
     full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(),
         brightness, contrast, saturation});
-    if (!same_viewport)
+
+    if (!same_viewport) {
         update_viewport(viewport);
+    }
+
     geometry.model_view().pop();
     geometry.projection().pop();
 }
@@ -122,12 +130,14 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
     // Setup uniforms
     mvp = xd::translate(mvp, xd::vec3{rect.x, rect.y, 0.0f});
     shader.setup(mvp, color);
+
     // Set quad vertex positions
     Camera::Impl::quad_vertex quad[4];
     quad[0].pos = xd::vec2(0.0f, rect.h);
     quad[1].pos = xd::vec2(rect.w, rect.h);
     quad[2].pos = xd::vec2(rect.w, 0.0f);
     quad[3].pos = xd::vec2(0.0f, 0.0f);
+
     // Load and render batch
     xd::vertex_batch<Camera::Impl::quad_vertex_traits> batch(draw_mode);
     batch.load(&quad[0], 4);
@@ -170,10 +180,10 @@ void Camera::set_size(int width, int height, bool force) {
 void Camera::calculate_viewport(int width, int height) {
     // Calculate viewport rectangle
     auto scale_mode = Configurations::get<std::string>("graphics.scale-mode");
-    auto screen_width = static_cast<float>(width);
-    auto screen_height = static_cast<float>(height);
-    auto game_width = static_cast<float>(game.game_width(false));
-    auto game_height = static_cast<float>(game.game_height(false));
+    const auto screen_width = static_cast<float>(width);
+    const auto screen_height = static_cast<float>(height);
+    const auto game_width = static_cast<float>(game.game_width(false));
+    const auto game_height = static_cast<float>(game.game_height(false));
 
     if (scale_mode == "default") {
         // The environment can override "default" at startup if it needs to
@@ -185,35 +195,37 @@ void Camera::calculate_viewport(int width, int height) {
         viewport.y = 0.0f;
         viewport.w = screen_width;
         viewport.h = screen_height;
-    } else {
-        if (scale_mode == "none") {
-            viewport.w = std::min(screen_width, game_width);
-            viewport.h = std::min(screen_height, game_height);
-        } else if (scale_mode == "aspect" ||
-                screen_width < game_width || screen_height < game_height) {
-            float target_ratio = game_width / game_height;
-
-            viewport.w = screen_width;
-            viewport.h = viewport.w / target_ratio;
-
-            if (viewport.h > screen_height) {
-                viewport.h = screen_height;
-                viewport.w = viewport.h * target_ratio;
-            }
-        } else {
-            int scale_x = static_cast<int>(screen_width / game_width);
-            int scale_y = static_cast<int>(screen_height / game_height);
-            if (scale_x > scale_y) {
-                viewport.w = game_width * scale_y;
-                viewport.h = game_height * scale_y;
-            } else {
-                viewport.w = game_width * scale_x;
-                viewport.h = game_height * scale_x;
-            }
-        }
-        viewport.x = screen_width / 2 - viewport.w / 2;
-        viewport.y = screen_height / 2 - viewport.h / 2;
+        return;
     }
+
+    if (scale_mode == "none") {
+        viewport.w = std::min(screen_width, game_width);
+        viewport.h = std::min(screen_height, game_height);
+    } else if (scale_mode == "aspect" ||
+            screen_width < game_width || screen_height < game_height) {
+        float target_ratio = game_width / game_height;
+
+        viewport.w = screen_width;
+        viewport.h = viewport.w / target_ratio;
+
+        if (viewport.h > screen_height) {
+            viewport.h = screen_height;
+            viewport.w = viewport.h * target_ratio;
+        }
+    } else {
+        int scale_x = static_cast<int>(screen_width / game_width);
+        int scale_y = static_cast<int>(screen_height / game_height);
+        if (scale_x > scale_y) {
+            viewport.w = game_width * scale_y;
+            viewport.h = game_height * scale_y;
+        } else {
+            viewport.w = game_width * scale_x;
+            viewport.h = game_height * scale_x;
+        }
+    }
+
+    viewport.x = screen_width / 2 - viewport.w / 2;
+    viewport.y = screen_height / 2 - viewport.h / 2;
 }
 
 void Camera::update_viewport(xd::vec2 shake_offset) const {
@@ -231,7 +243,7 @@ void Camera::setup_opengl() const {
 }
 
 void Camera::set_clear_color() const {
-    auto& color = pimpl->clear_color;
+    const auto& color = pimpl->clear_color;
     glClearColor(color.r, color.g, color.b, color.a);
 }
 
@@ -244,26 +256,28 @@ void Camera::center_at(const Map_Object& target) {
 }
 
 xd::vec2 Camera::get_centered_position(xd::vec2 pos) const {
-    float game_width = static_cast<float>(game.game_width());
-    float game_height = static_cast<float>(game.game_height());
+    const float game_width = static_cast<float>(game.game_width());
+    const float game_height = static_cast<float>(game.game_height());
     return get_bounded_position(pos - xd::vec2{game_width / 2.0f, game_height / 2.0f});
 }
 
 xd::vec2 Camera::get_centered_position(const Map_Object& target) const {
-    auto sprite = target.get_sprite();
-    auto sprite_size = sprite ? sprite->get_size() : xd::vec2{0.0f, 0.0f};
-    auto object_pos = target.get_position() + sprite_size / 2.0f;
+    const auto sprite = target.get_sprite();
+    const auto sprite_size = sprite ? sprite->get_size() : xd::vec2{0.0f, 0.0f};
+    const auto object_pos = target.get_position() + sprite_size / 2.0f;
     return get_centered_position(object_pos + object_center_offset);
 }
 
 xd::rect Camera::get_position_bounds() const {
-    auto map = game.get_map();
-    float map_width = static_cast<float>(map->get_pixel_width());
-    float map_height = static_cast<float>(map->get_pixel_height());
-    float game_width = static_cast<float>(game.game_width());
-    float game_height = static_cast<float>(game.game_height());
-    return xd::rect{0.0f, 0.0f,
-        map_width - game_width, map_height - game_height };
+    const auto map = game.get_map();
+    const float map_width = static_cast<float>(map->get_pixel_width());
+    const float map_height = static_cast<float>(map->get_pixel_height());
+    const float game_width = static_cast<float>(game.game_width());
+    const float game_height = static_cast<float>(game.game_height());
+    const float width_diff = map_width - game_width;
+    const float height_diff = map_height - game_height;
+
+    return xd::rect{0.0f, 0.0f, width_diff, height_diff};
 }
 
 xd::vec2 Camera::get_bounded_position(xd::vec2 pos) const {
@@ -287,11 +301,11 @@ void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
     }
 
 
-    float game_width = static_cast<float>(game.game_width());
-    float game_height = static_cast<float>(game.game_height());
-    int y = static_cast<int>(game_height - (rect.y + rect.h));
-    xd::vec2 scale{custom_viewport.w / game_width,
-                   custom_viewport.h / game_height};
+    const float game_width = static_cast<float>(game.game_width());
+    const float game_height = static_cast<float>(game.game_height());
+    const int y = static_cast<int>(game_height - (rect.y + rect.h));
+    const xd::vec2 scale{custom_viewport.w / game_width,
+                         custom_viewport.h / game_height};
 
     glEnable(GL_SCISSOR_TEST);
     glScissor(static_cast<int>(custom_viewport.x + rect.x * scale.x),
@@ -313,6 +327,11 @@ void Camera::render_shader() {
 }
 
 void Camera::start_shaking(xd::vec2 strength, xd::vec2 speed) {
+    if (shaker) {
+        shaker->change_settings(strength, speed);
+        return;
+    }
+
     shaker = std::make_shared<Screen_Shaker>(strength, speed);
     add_component(shaker);
 }
@@ -330,26 +349,26 @@ xd::vec2 Camera::shake_offset() const {
 void Camera::draw_map_tint() const {
     if (check_close(map_tint.a, 0.0f)) return;
 
-    auto width = static_cast<float>(game.game_width());
-    auto height = static_cast<float>(game.game_height());
+    const auto width = static_cast<float>(game.game_width());
+    const auto height = static_cast<float>(game.game_height());
 
     auto cam_pos = get_pixel_position();
-    xd::rect rect{cam_pos.x, cam_pos.y, width, height};
+    const xd::rect rect{cam_pos.x, cam_pos.y, width, height};
     draw_rect(rect, map_tint);
 }
 
 void Camera_Renderer::render(Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    auto width = static_cast<float>(game.game_width());
-    auto height = static_cast<float>(game.game_height());
+    const auto width = static_cast<float>(game.game_width());
+    const auto height = static_cast<float>(game.game_height());
 
     auto& geometry = camera.get_geometry();
     // left, right, bottom, top, near, far
     geometry.projection().load(xd::ortho<float>(0, width, height, 0, -1, 1));
 
     geometry.model_view().identity();
-    auto cam_pos = camera.get_pixel_position();
+    const auto cam_pos = camera.get_pixel_position();
     geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
 
     if (camera.is_shaking()) {
@@ -358,9 +377,9 @@ void Camera_Renderer::render(Camera& camera) {
 
     game.get_map()->render();
 
-    auto tint_color = camera.get_screen_tint();
+    const auto tint_color = camera.get_screen_tint();
     if (!check_close(tint_color.a, 0.0f)) {
-        xd::rect rect{cam_pos.x, cam_pos.y, width, height};
+        const xd::rect rect{cam_pos.x, cam_pos.y, width, height};
         camera.draw_rect(rect, tint_color);
     }
 
@@ -368,21 +387,26 @@ void Camera_Renderer::render(Camera& camera) {
 }
 
 void Object_Tracker::update(Camera& camera) {
-    auto obj = camera.get_object();
-    if (!obj)
-        return;
+    const auto obj = camera.get_object();
+    if (!obj) return;
+
     camera.center_at(*obj);
 }
 
 Screen_Shaker::Screen_Shaker(xd::vec2 strength, xd::vec2 speed)
-        : strength(strength)
-        , speed(speed * (60.0f / Configurations::get<int>("graphics.logic-fps", "debug.logic-fps")))
-        , last_direction(1.0f, 1.0f)
+        : last_direction(1.0f, 1.0f)
         , offset(0.0f, 0.0f) {
+    change_settings(strength, speed);
     // Randomize the starting direction
-    auto max = static_cast<double>(RAND_MAX);
+    const auto max = static_cast<double>(RAND_MAX);
     if (std::rand() / max < 0.5) last_direction.x = -1.0f;
     if (std::rand() / max < 0.5) last_direction.y = -1.0f;
+}
+
+void Screen_Shaker::change_settings(xd::vec2 new_strength, xd::vec2 new_speed) {
+    strength = new_strength;
+    const auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
+    speed = new_speed * (60.0f / logic_fps);
 }
 
 void Screen_Shaker::update(Camera&) {

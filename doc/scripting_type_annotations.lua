@@ -1306,17 +1306,17 @@ function current_map:add_new_object(name, sprite, position, direction, layer) en
 ---@param object Engine_Map_Object
 function current_map:delete_object(object) end
 
----@overload fun(self : Engine_Map, id : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Layer?
 ---@param name string
 ---@return Engine_Layer?
 function current_map:get_layer(name) end
 
----@overload fun(self : Engine_Map, id : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Object_Layer?
 ---@param name string
 ---@return Engine_Object_Layer?
 function current_map:get_object_layer(name) end
 
----@overload fun(self : Engine_Map, id : integer) : Engine_Layer
+---@overload fun(self : Engine_Map, id : integer) : Engine_Image_Layer?
 ---@param name string
 ---@return Engine_Image_Layer?
 function current_map:get_image_layer(name) end

@@ -168,6 +168,7 @@ public:
 class Screen_Shaker : public xd::logic_component<Camera> {
 public:
     Screen_Shaker(xd::vec2 strength, xd::vec2 speed);
+    void change_settings(xd::vec2 new_strength, xd::vec2 new_speed);
     xd::vec2 shake_offset() { return offset; }
     void update(Camera& camera);
 private:
