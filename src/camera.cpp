@@ -328,6 +328,7 @@ void Camera::render_shader() {
 
 void Camera::start_shaking(xd::vec2 strength, xd::vec2 speed) {
     if (shaker) {
+        shaker->update(*this);
         shaker->change_settings(strength, speed);
         return;
     }
@@ -407,14 +408,23 @@ void Screen_Shaker::change_settings(xd::vec2 new_strength, xd::vec2 new_speed) {
     strength = new_strength;
     const auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     speed = new_speed * (60.0f / logic_fps);
+    LOGGER_I << "Setting strength to " << strength.x << ", speed to " << speed.x << " - old offset("
+        << offset.x << ", " << offset.y << ")";
+    offset.x = std::max(-strength.x * 2, std::min(strength.x * 2, offset.x));
+    offset.y = std::max(-strength.y * 2, std::min(strength.y * 2, offset.y));
+    LOGGER_I << "New offset (" << offset.x << ", " << offset.y << ")";
 }
 
 void Screen_Shaker::update(Camera&) {
     offset += (strength * speed * last_direction) / 10.0f;
+    LOGGER_I << "Offset += (" << strength.x << " * " << speed.x << " * (" << last_direction.x
+        << ", " << last_direction.y << ")) / 10 = (" << offset.x << ", " << offset.y << ")";
     if (offset.x > strength.x * 2 || offset.x < -strength.x * 2) {
+        LOGGER_I << "Offset X > or < " << strength.x * 2 << ", switching direction";
         last_direction.x *= -1.0f;
     }
     if (offset.y > strength.y * 2 || offset.y < -strength.y * 2) {
+        LOGGER_I << "Offset Y > or < " << strength.y * 2 << ", switching direction";
         last_direction.y *= -1.0f;
     }
 }
