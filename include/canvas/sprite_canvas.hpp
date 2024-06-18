@@ -17,6 +17,14 @@ public:
     // Get the sprite, if any
     Sprite* get_sprite() override { return sprite.get(); }
     const Sprite* get_sprite() const override { return sprite.get(); }
+    // Reset sprite when changing visibility
+    void set_visible(bool new_visible) override {
+        if (new_visible && !is_visible()) {
+            sprite->reset();
+        }
+
+        Base_Canvas::set_visible(new_visible);
+    }
     // Get pose name
     std::string get_pose_name();
     // Get pose state

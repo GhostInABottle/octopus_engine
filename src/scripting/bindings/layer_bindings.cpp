@@ -18,9 +18,9 @@
 void bind_layer_types(sol::state& lua, Game& game) {
     // Map layer
     auto layer_type = lua.new_usertype<Layer>("Layer");
-    layer_type["name"] = sol::readonly(&Layer::name);
-    layer_type["visible"] = &Layer::visible;
-    layer_type["opacity"] = &Layer::opacity;
+    layer_type["name"] = sol::readonly_property(&Layer::get_name);
+    layer_type["visible"] = sol::property(&Layer::is_visible, &Layer::set_visible);
+    layer_type["opacity"] = sol::property(&Layer::get_opacity, &Layer::set_opacity);
     layer_type["get_property"] = &Layer::get_property;
     layer_type["set_property"] = &Layer::set_property;
     layer_type["update_opacity"] = [&](Layer* layer, float opacity, long duration) {
@@ -31,9 +31,9 @@ void bind_layer_types(sol::state& lua, Game& game) {
 
     // Image layer
     auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer");
-    image_layer_type["name"] = sol::readonly(&Image_Layer::name);
-    image_layer_type["visible"] = &Image_Layer::visible;
-    image_layer_type["opacity"] = &Image_Layer::opacity;
+    image_layer_type["name"] = sol::readonly_property(&Image_Layer::get_name);
+    image_layer_type["visible"] = sol::property(&Image_Layer::is_visible, &Image_Layer::set_visible);
+    image_layer_type["opacity"] = sol::property(&Image_Layer::get_opacity, &Image_Layer::set_opacity);
     image_layer_type["color"] = sol::property(&Image_Layer::get_color, &Image_Layer::set_color);
     image_layer_type["velocity"] = sol::property(&Image_Layer::get_velocity, &Image_Layer::set_velocity);
     image_layer_type["sprite"] = sol::property(
@@ -65,19 +65,19 @@ void bind_layer_types(sol::state& lua, Game& game) {
     image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game.get_current_scripting_interface();
         auto holder_type = Show_Pose_Command::Holder_Type::LAYER;
-        Show_Pose_Command::Holder_Info holder_info{ holder_type, layer->id };
+        Show_Pose_Command::Holder_Info holder_info{ holder_type, layer->get_id() };
         return si->register_command<Show_Pose_Command>(*game.get_map(),
             holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
     };
 
     // Object layer
     auto object_layer_type = lua.new_usertype<Object_Layer>("Layer");
-    object_layer_type["name"] = sol::readonly(&Object_Layer::name);
-    object_layer_type["visible"] = &Object_Layer::visible;
-    object_layer_type["opacity"] = &Object_Layer::opacity;
+    object_layer_type["name"] = sol::readonly_property(&Object_Layer::get_name);
+    object_layer_type["visible"] = sol::property(&Object_Layer::is_visible, &Object_Layer::set_visible);
+    object_layer_type["opacity"] = sol::property(&Object_Layer::get_opacity, &Object_Layer::set_opacity);
     object_layer_type["tint_color"] = sol::property(&Object_Layer::get_color, &Object_Layer::set_color);
     object_layer_type["objects"] = sol::property([&](Object_Layer* layer) {
-        return sol::as_table(layer->objects);
+        return sol::as_table(layer->get_objects());
     });
     object_layer_type["get_property"] = &Object_Layer::get_property;
     object_layer_type["set_property"] = &Object_Layer::set_property;

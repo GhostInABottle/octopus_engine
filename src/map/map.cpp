@@ -261,6 +261,8 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
     const int min_y = static_cast<int>(tile_pos.y);
     const int max_x = static_cast<int>((this_box.x + this_box.w - 1) / tile_width);
     const int max_y = static_cast<int>((this_box.y + this_box.h - 1) / tile_height);
+    const auto& tiles = collision_layer->get_tiles();
+
     for (int y = min_y; y <= max_y; ++y) {
         for (int x = min_x; x <= max_x; ++x) {
             // Maximum map bounds check (taking collision box into account)
@@ -270,7 +272,7 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
             }
             // Check if tile is blocking
             if (collision_layer && collision_tileset) {
-                const int tile = collision_layer->tiles[x + y * width] -
+                const int tile = tiles[x + y * width] -
                     collision_tileset->first_id;
                 if (tile >= 2) {
                     result.type = Collision_Type::TILE;
@@ -288,7 +290,8 @@ bool Map::tile_passable(int x, int y) const noexcept {
         return false;
     if (!collision_layer || !collision_tileset) return true;
     const int tile_index = x + y * width;
-    return collision_layer->tiles[tile_index] - collision_tileset->first_id <= 1;
+    const auto& tiles = collision_layer->get_tiles();
+    return tiles[tile_index] - collision_tileset->first_id <= 1;
 }
 
 int Map::object_count() const noexcept {
@@ -334,7 +337,8 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
     objects[id] = object;
     object->set_name(name);
 
-    layer->objects.push_back(object.get());
+    auto& layer_objects = layer->get_objects();
+    layer_objects.push_back(object.get());
 
     return object.get();
 }
@@ -369,7 +373,7 @@ void Map::delete_object(int id) {
 void Map::delete_object(Map_Object* object) {
     if (!object) return;
 
-    auto& layer_objects = object->get_layer()->objects;
+    auto& layer_objects = object->get_layer()->get_objects();
     layer_objects.erase(
         std::remove(layer_objects.begin(), layer_objects.end(), object),
         layer_objects.end()
@@ -377,7 +381,7 @@ void Map::delete_object(Map_Object* object) {
     erase_object_references(object);
 }
 
-void Map::erase_object_references(Map_Object* object) {
+void Map::erase_object_references(const Map_Object* object) {
     auto player = game.get_player();
     if (player) {
         if (object == player->get_triggered_object()) {
@@ -428,7 +432,7 @@ Layer* Map::get_layer_by_name(std::string name) const {
     string_utilities::capitalize(name);
     auto layer = std::find_if(layers.begin(), layers.end(),
         [&name](std::shared_ptr<Layer> layer) {
-            auto layer_name{layer->name};
+            auto layer_name{layer->get_name()};
             string_utilities::capitalize(layer_name);
             return layer_name == name;
     });
@@ -479,10 +483,12 @@ void Map::add_layer(Layer_Type layer_type) {
     }
     std::unordered_set<std::string> names;
     for (auto& layer : layers) {
-        names.insert(layer->name);
+        names.insert(layer->get_name());
     }
-    new_layer->name = generate_unique_name(names);
+    new_layer->set_name(generate_unique_name(names));
+
     add_layer(new_layer);
+
     if (layer_type == Layer_Type::OBJECT) {
         object_layers.push_back(static_cast<Object_Layer*>(new_layer.get()));
     }
@@ -490,19 +496,20 @@ void Map::add_layer(Layer_Type layer_type) {
 
 void Map::add_layer(std::shared_ptr<Layer> layer) {
     layers.push_back(layer);
-    layers_by_id[layer->id] = layer.get();
+    layers_by_id[layer->get_id()] = layer.get();
 }
 
 void Map::delete_layer(std::string name) {
     string_utilities::capitalize(name);
     // Delete any matching object layer and its object
     for (auto layer = object_layers.begin(); layer != object_layers.end();) {
-        auto layer_name{(*layer)->name};
+        auto layer_name{(*layer)->get_name()};
         string_utilities::capitalize(layer_name);
         if (layer_name != name) {
             layer++;
         } else if (object_layers.size() > 1) {
-            for (auto& obj : (*layer)->objects) {
+            const auto& layer_objects = (*layer)->get_objects();
+            for (auto& obj : layer_objects) {
                 erase_object_references(obj);
             }
             layer = object_layers.erase(layer);
@@ -512,7 +519,7 @@ void Map::delete_layer(std::string name) {
     }
     // Clear the collision object if necessary
     if (collision_layer) {
-        auto collision_layer_name{collision_layer->name};
+        auto collision_layer_name{collision_layer->get_name()};
         string_utilities::capitalize(collision_layer_name);
         if (collision_layer_name == name) {
             collision_layer = nullptr;
@@ -522,11 +529,11 @@ void Map::delete_layer(std::string name) {
     auto& layer_lookup = layers_by_id;
     auto erase_start = std::remove_if(layers.begin(), layers.end(),
         [&name, &layer_lookup](std::shared_ptr<Layer> layer) {
-            auto layer_name{layer->name};
+            auto layer_name{layer->get_name()};
             string_utilities::capitalize(layer_name);
             if (layer_name != name) return false;
 
-            layer_lookup.erase(layer->id);
+            layer_lookup.erase(layer->get_id());
             return true;
         }
     );
@@ -711,7 +718,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     if (map_ptr->properties.contains("ambient-volume")) {
         map_ptr->background_ambient_volume = std::stof(map_ptr->properties["ambient-volume"]);
     }
-    
+
     if (map_ptr->properties.contains("music-script")) {
         if (!map_ptr->background_music_filename.empty())
             throw tmx_exception("Tried to set a map music script, but music was already specified as: " + map_ptr->background_music_filename);
@@ -766,8 +773,8 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         std::string node_name(layer_node->name());
         if (node_name == "layer") {
             layer = std::shared_ptr<Layer>(Tile_Layer::load(*layer_node, *game.get_camera()));
-            if (layer->name == "collision") {
-                layer->visible = false;
+            if (layer->get_name() == "collision") {
+                layer->set_visible(false);
                 map_ptr->collision_layer = static_cast<Tile_Layer*>(layer.get());
             }
         } else if (node_name == "imagelayer") {
@@ -802,9 +809,11 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
 
 void Map_Renderer::render(Map& map) {
     for (auto& layer : map.layers) {
-        if (auto renderer = layer->renderer.get()) {
-            if (map.needs_redraw)
+        if (auto renderer = layer->get_renderer()) {
+            if (map.needs_redraw) {
                 renderer->redraw();
+            }
+
             renderer->render(map);
         }
     }
@@ -818,7 +827,7 @@ void Map_Updater::update(Map& map) {
     map.scripting_interface->update();
 
     for (auto& layer : map.layers) {
-        if (auto updater = layer->updater.get()) {
+        if (auto updater = layer->get_updater()) {
             updater->update(map);
         }
     }

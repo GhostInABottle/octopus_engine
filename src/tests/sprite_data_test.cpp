@@ -1,14 +1,16 @@
 #include "../../include/game.hpp"
 #include "../../include/map/map.hpp"
 #include "../../include/sprite_data.hpp"
-#include "../../include/tests/game_fixture.hpp"
+
+#include "../../include/filesystem/user_data_folder.hpp"
 #include "../../include/vendor/rapidxml.hpp"
 #include "../../include/xd/asset_manager.hpp"
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(sprite_data_tests, Game_Fixture)
+BOOST_AUTO_TEST_SUITE(sprite_data_tests)
 
 BOOST_AUTO_TEST_CASE(sprite_data_load_file) {
+    User_Data_Folder::parse_default_config();
     xd::asset_manager manager;
     auto sprite_data = Sprite_Data::load("sprite.spr", manager, nullptr, channel_group_type::sound);
     Pose& main_pose = sprite_data->poses[0];
@@ -44,6 +46,8 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     doc->parse<0>(text);
     auto node = doc->first_node("Sprite");
     BOOST_CHECK(node);
+
+    User_Data_Folder::parse_default_config();
     xd::asset_manager manager;
     auto sprite_data = Sprite_Data::load(*node, manager, nullptr, channel_group_type::sound);
 

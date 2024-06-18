@@ -5,7 +5,7 @@
 #include "../../xd/entity.hpp"
 #include "../../xd/graphics/sprite_batch.hpp"
 
-struct Layer;
+class Layer;
 class Camera;
 
 class Layer_Renderer : public xd::render_component<Map> {

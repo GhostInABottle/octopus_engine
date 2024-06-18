@@ -177,9 +177,9 @@ public:
     bool is_visible() const {
         return visible;
     }
-    void set_visible(bool new_visible) {
-        if (visible == new_visible)
-            return;
+    virtual void set_visible(bool new_visible) {
+        if (visible == new_visible) return;
+
         visible = new_visible;
         redraw_needed = true;
     }

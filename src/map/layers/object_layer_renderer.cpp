@@ -17,7 +17,7 @@ Object_Layer_Renderer::Object_Layer_Renderer(const Layer& layer, const Camera& c
 }
 
 void Object_Layer_Renderer::render(Map& map) {
-    if (!layer.visible)
+    if (!layer.is_visible())
         return;
 
     batch.clear();
@@ -26,7 +26,8 @@ void Object_Layer_Renderer::render(Map& map) {
     auto& object_layer =
         const_cast<Object_Layer&>(static_cast<const Object_Layer&>(layer));
 
-    std::sort(object_layer.objects.begin(), object_layer.objects.end(),
+    auto& objects = object_layer.get_objects();
+    std::sort(objects.begin(), objects.end(),
         [](Map_Object* a, Map_Object* b) {
             float a_order, b_order;
             bool same_order = a->get_draw_order() == b->get_draw_order();
@@ -51,7 +52,7 @@ void Object_Layer_Renderer::render(Map& map) {
     bool draw_outlines = map.get_draw_outlines();
     xd::shader_uniforms uniforms{camera.get_mvp(), map.get_game().ticks()};
 
-    for (auto& object : object_layer.objects) {
+    for (auto& object : objects) {
         if (draw_outlines && object->is_outlined()) {
             auto color = object->get_outline_color();
             batch.set_outline_color(color.value_or(default_outline_color));

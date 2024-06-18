@@ -242,24 +242,33 @@ void Map_Object::set_outlined(std::optional<bool> new_outlined) {
     }
 }
 
+void Map_Object::set_visible(bool new_visible) {
+    if (!visible && new_visible && sprite) {
+        sprite->reset();
+    }
+
+    visible = new_visible;
+}
+
 bool Map_Object::is_outlined() const {
-    if ((outline_conditions & Outline_Condition::NEVER) != Outline_Condition::NONE) return false;
+    auto none = Outline_Condition::NONE;
+    if ((outline_conditions & Outline_Condition::NEVER) != none) return false;
 
     auto result = true;
 
     auto player = game.get_player();
-    if ((outline_conditions & Outline_Condition::TOUCHED) != Outline_Condition::NONE) {
+    if ((outline_conditions & Outline_Condition::TOUCHED) != none) {
         result = player && (player->get_collision_object() == this ||
             player->get_collision_area() == this);
-    } else if ((outline_conditions & Outline_Condition::PROXIMATE) != Outline_Condition::NONE) {
+    } else if ((outline_conditions & Outline_Condition::PROXIMATE) != none) {
         result = player && player->get_proximate_object() == this;
     }
 
-    if ((outline_conditions & Outline_Condition::SOLID) != Outline_Condition::NONE) {
+    if ((outline_conditions & Outline_Condition::SOLID) != none) {
         result = result && !passthrough;
     }
 
-    if ((outline_conditions & Outline_Condition::SCRIPT) != Outline_Condition::NONE) {
+    if ((outline_conditions & Outline_Condition::SCRIPT) != none) {
         result = result && !trigger_script.empty();
     }
 

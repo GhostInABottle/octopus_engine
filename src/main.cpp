@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
         } else {
             LOGGER_I << "Started in " << environment->get_name() << " environment";
         }
- 
+
         // Initialize the audio system
         LOGGER_I << "Initializing the audio system";
         auto audio = std::make_shared<xd::audio>();

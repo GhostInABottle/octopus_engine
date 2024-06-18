@@ -6,7 +6,7 @@
 #include "../../../include/utility/string.hpp"
 #include "../../../include/utility/xml.hpp"
 
-Layer::Layer() : id(-1), width(0), height(0), opacity(1.0f), visible(true) {}
+Layer::Layer() : width(0), height(0), id(-1), opacity(1.0f), visible(true) {}
 
 void Layer::resize(xd::ivec2 new_size) {
     this->width = new_size.x;

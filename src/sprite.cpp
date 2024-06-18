@@ -98,18 +98,19 @@ struct Sprite::Impl {
     void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
             xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
             std::optional<float> angle = std::nullopt, std::optional<xd::vec2> origin = std::nullopt,
-        bool repeat = false, xd::vec2 repeat_pos = xd::vec2()) {
+        bool repeat = false, xd::vec2 repeat_pos = xd::vec2()) const {
         auto& frame = pose->frames[frame_index];
         auto& image = frame.image ? frame.image :
             (pose->image ? pose->image : data->image);
-        if (!image)
-            return;
+        if (!image) return;
+
         xd::rect src = frame.rectangle;
         if (repeat) {
             // Sprite's src rectangle position is ignored
             src.x = -repeat_pos.x;
             src.y = -repeat_pos.y;
         }
+
         color.a *= opacity * frame.opacity;
         batch.add(image, src,
             pos.x, pos.y,
@@ -365,18 +366,18 @@ void Sprite::render(Map_Object& object) {
     if (!object.is_visible()) return;
 
     auto layer = object.get_layer();
-    auto& batch = layer->renderer->get_batch();
+    auto& batch = layer->get_renderer()->get_batch();
     auto color = object.uses_layer_color()
-        ? object.get_color() * layer->tint_color
+        ? object.get_color() * layer->get_color()
         : object.get_color();
 
     pimpl->render(batch, object.get_position(),
-        layer->opacity * object.get_opacity(),
+        layer->get_opacity() * object.get_opacity(),
         object.get_magnification(),
         color);
 }
 
-void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const xd::vec2 pos) {
+void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const xd::vec2 pos) const {
     if (!canvas.is_visible()) return;
 
     pimpl->render(batch,
@@ -388,24 +389,27 @@ void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const 
         canvas.get_origin());
 }
 
-void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos) {
-    if (!image_layer.visible) return;
+void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos) const {
+    if (!image_layer.is_visible()) return;
 
     pimpl->render(batch,
         pos,
-        image_layer.opacity,
+        image_layer.get_opacity(),
         xd::vec2(1.0f),             // magnification
         image_layer.get_color(),    // color
         std::nullopt,               // angle
         std::nullopt,               // origin
-        image_layer.repeat,
-        image_layer.position);
+        image_layer.is_repeating(),
+        image_layer.get_position());
 }
 
 void Sprite::update(Map_Object& object) {
+    if (!object.is_visible()) return;
+
     if (object.is_sound_attenuation_enabled()) {
         pimpl->update_sound_attenuation(object);
     }
+
     pimpl->update();
 }
 

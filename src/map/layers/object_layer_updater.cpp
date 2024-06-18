@@ -3,10 +3,11 @@
 #include "../../../include/map/map_object.hpp"
 
 void Object_Layer_Updater::update(Map&) {
-    if (!layer.visible)
-        return;
+    if (!layer.is_visible()) return;
+
     auto& object_layer = static_cast<Object_Layer&>(layer);
-    for (auto& object : object_layer.objects) {
+    auto& objects = object_layer.get_objects();
+    for (auto& object : objects) {
         object->update();
     }
 }

@@ -4,7 +4,7 @@
 #include "timed_command.hpp"
 #include "../xd/glm.hpp"
 
-struct Image_Layer;
+class Image_Layer;
 
 // Update the velocity of an image layer
 class Update_Layer_Velocity_Command : public Timed_Command {

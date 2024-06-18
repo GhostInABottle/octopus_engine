@@ -19,7 +19,7 @@
 #include <vector>
 
 class Game;
-struct Object_Layer;
+class Object_Layer;
 class Sprite;
 
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder,
@@ -113,9 +113,7 @@ public:
     bool is_visible() const {
         return visible;
     }
-    void set_visible(bool new_visible) {
-        visible = new_visible;
-    }
+    void set_visible(bool new_visible);
     bool is_disabled() const {
         return disabled;
     }
@@ -149,12 +147,14 @@ public:
         passthrough_type = type;
     }
     bool initiates_passthrough() const {
+        auto initiator = static_cast<int>(Passthrough_Type::INITIATOR);
         return passthrough
-            && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::INITIATOR)) != 0;
+            && (static_cast<int>(passthrough_type) & initiator) != 0;
     }
     bool receives_passthrough() const {
+        auto receiver = static_cast<int>(Passthrough_Type::RECEIVER);
         return passthrough
-            && (static_cast<int>(passthrough_type) & static_cast<int>(Passthrough_Type::RECEIVER)) != 0;
+            && (static_cast<int>(passthrough_type) & receiver) != 0;
     }
     bool overrides_tile_collision() const {
         return override_tile_collision;
@@ -440,12 +440,12 @@ private:
     // Can object pass through obstaces?
     bool passthrough;
     // How does passthrough work? INITIATOR can pass through others,
-    // RECEIVER can be passed through. Defaults to BOTH 
+    // RECEIVER can be passed through. Defaults to BOTH
     Passthrough_Type passthrough_type;
     // Does this object override tile collision?
     bool override_tile_collision;
     // When moving in multiple directions and hitting an obstacle, movement is corrected
-    // to a single direction along the obstacle by default, unless this flag is set 
+    // to a single direction along the obstacle by default, unless this flag is set
     bool strict_multidirectional_movement;
     // Does the object use the layer tint color? Defaults to true
     bool use_layer_color;

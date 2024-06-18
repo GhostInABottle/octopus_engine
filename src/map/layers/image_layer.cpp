@@ -18,8 +18,8 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
         const std::string& pose_name) {
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->exists(filename)) {
-        throw std::runtime_error("Tried to set sprite for layer " + name +
-                    " to nonexistent file " + filename);
+        throw std::runtime_error("Tried to set sprite for layer "
+            + get_name() + " to nonexistent file " + filename);
     }
 
     auto& asset_manager = game.get_asset_manager();
@@ -34,14 +34,14 @@ void Image_Layer::set_sprite(Game& game, const std::string& filename,
 void Image_Layer::set_image(const std::string& filename) {
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->exists(filename)) {
-        throw std::runtime_error("Tried to set image for layer " + name +
-            " to nonexistent file " + filename);
+        throw std::runtime_error("Tried to set image for layer "
+            + get_name() + " to nonexistent file " + filename);
     }
 
     auto stream = fs->open_binary_ifstream(image_source);
     if (!stream || !*stream) {
         throw file_loading_exception("Failed to load image " + filename
-            + " for layer " + name);
+            + " for layer " + get_name());
     }
 
     image_source = filename;

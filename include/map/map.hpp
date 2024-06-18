@@ -24,10 +24,10 @@ namespace xd {
 class Game;
 class Map_Object;
 class Base_Canvas;
-struct Object_Layer;
-struct Tile_Layer;
-struct Image_Layer;
-struct Layer;
+class Object_Layer;
+class Tile_Layer;
+class Image_Layer;
+class Layer;
 class Scripting_Interface;
 class Map_Renderer;
 class Map_Updater;
@@ -295,7 +295,7 @@ private:
     // Used to uniquely identify typewriter text effects
     int last_typewriter_slot;
     // Remove object from ID and name hash tables
-    void erase_object_references(Map_Object* object);
+    void erase_object_references(const Map_Object* object);
     void run_script_impl(const std::string& script_or_filename, bool is_filename);
 };
 

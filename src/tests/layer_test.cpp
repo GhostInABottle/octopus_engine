@@ -27,15 +27,16 @@ BOOST_AUTO_TEST_CASE(tile_layer_load) {
     auto node = doc->first_node("layer");
     BOOST_CHECK(node);
     auto layer = Tile_Layer::load(*node, *game->get_camera());
-    BOOST_CHECK_EQUAL(layer->name, "ground");
-    BOOST_CHECK_EQUAL(layer->width, 40);
-    BOOST_CHECK_EQUAL(layer->height, 40);
-    BOOST_CHECK_EQUAL(layer->opacity, 1.0f);
-    BOOST_CHECK_EQUAL(layer->visible, true);
+    BOOST_CHECK_EQUAL(layer->get_name(), "ground");
+    BOOST_CHECK_EQUAL(layer->get_width(), 40);
+    BOOST_CHECK_EQUAL(layer->get_height(), 40);
+    BOOST_CHECK_EQUAL(layer->get_opacity(), 1.0f);
+    BOOST_CHECK_EQUAL(layer->is_visible(), true);
     BOOST_CHECK_EQUAL(layer->properties["@Description"], "ground layer");
     auto tile_layer = static_cast<Tile_Layer*>(layer.get());
-    BOOST_CHECK_EQUAL(tile_layer->tiles[0], 37u);
-    BOOST_CHECK_EQUAL(tile_layer->tiles[10], 132u);
+    auto& tiles = tile_layer->get_tiles();
+    BOOST_CHECK_EQUAL(tiles[0], 37u);
+    BOOST_CHECK_EQUAL(tiles[10], 132u);
 }
 
 BOOST_AUTO_TEST_CASE(image_layer_load) {
@@ -52,14 +53,14 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
     BOOST_CHECK(node);
     xd::asset_manager manager;
     auto layer = Image_Layer::load(*node, *game, *game->get_camera());
-    BOOST_CHECK_EQUAL(layer->name, "some image");
-    BOOST_CHECK_CLOSE(layer->opacity, 0.55f, 0.001f);
-    BOOST_CHECK_EQUAL(layer->visible, false);
+    BOOST_CHECK_EQUAL(layer->get_name(), "some image");
+    BOOST_CHECK_CLOSE(layer->get_opacity(), 0.55f, 0.001f);
+    BOOST_CHECK_EQUAL(layer->is_visible(), false);
     BOOST_CHECK_EQUAL(layer->properties["test"], "1");
    auto image_layer = static_cast<Image_Layer*>(layer.get());
-    BOOST_CHECK_EQUAL(image_layer->image_source, "../data/test_tileset.gif");
-    BOOST_CHECK_CLOSE(image_layer->image_trans_color.g, 0.372549f, 0.1f);
-    BOOST_CHECK(image_layer->image_texture.get());
+    BOOST_CHECK_EQUAL(image_layer->get_image_filename(), "../data/test_tileset.gif");
+    BOOST_CHECK_CLOSE(image_layer->get_transparent_color().g, 0.372549f, 0.1f);
+    BOOST_CHECK(image_layer->get_texture());
 }
 
 BOOST_AUTO_TEST_CASE(object_layer_load) {
@@ -87,15 +88,16 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     auto node = doc->first_node("objectgroup");
     Map map(*game);
     auto layer = Object_Layer::load(*node, *game, *game->get_camera(), map);
-    BOOST_CHECK_EQUAL(layer->name, "obj layer");
-    BOOST_CHECK_EQUAL(layer->width, 40);
-    BOOST_CHECK_EQUAL(layer->height, 40);
-    BOOST_CHECK_CLOSE(layer->opacity, 1.0f, 0.001f);
-    BOOST_CHECK_EQUAL(layer->visible, true);
+    BOOST_CHECK_EQUAL(layer->get_name(), "obj layer");
+    BOOST_CHECK_EQUAL(layer->get_width(), 40);
+    BOOST_CHECK_EQUAL(layer->get_height(), 40);
+    BOOST_CHECK_CLOSE(layer->get_opacity(), 1.0f, 0.001f);
+    BOOST_CHECK_EQUAL(layer->is_visible(), true);
     BOOST_CHECK_EQUAL(layer->properties["jimbo"], "yeah right");
     auto object_layer = static_cast<Object_Layer*>(layer.get());
-    auto& obj1 = *(object_layer->objects[0]);
-    auto& obj2 = *(object_layer->objects[1]);
+    auto& objects = object_layer->get_objects();
+    auto& obj1 = *objects[0];
+    auto& obj2 = *objects[1];
     BOOST_CHECK_EQUAL(obj1.get_id(), 5);
     BOOST_CHECK_EQUAL(obj1.get_name(), "COOL");
     BOOST_CHECK_EQUAL(obj1.get_type(), "dragon");

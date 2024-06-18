@@ -248,7 +248,7 @@ bool Key_Binder::process_keymap_file(std::istream& stream) {
             }
         }
     }
- 
+
     changed_since_save = true;
     return true;
 }

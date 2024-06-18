@@ -33,6 +33,8 @@ namespace xd::detail::font {
         FT_Library m_library;
     };
 
+    static std::shared_ptr<ft_lib> library = std::make_shared<ft_lib>();
+
     struct vertex
     {
         glm::vec2 pos;
@@ -90,7 +92,8 @@ namespace xd::detail::font {
     struct face
     {
         face(const std::string& filename, std::unique_ptr<std::istream> stream)
-                : stream_rec{ std::make_unique<FT_StreamRec>() }
+                : library_ptr(library)
+                , stream_rec{ std::make_unique<FT_StreamRec>() }
                 , istream{ std::move(stream) } {
             if (!istream || !*istream) throw font_load_failed(filename);
 
@@ -114,22 +117,19 @@ namespace xd::detail::font {
             args.stream = stream_rec.get();
 
             // load the font
-            auto error = FT_Open_Face(library, &args, 0, &handle);
+            auto error = FT_Open_Face(*library_ptr, &args, 0, &handle);
             if (error) throw font_load_failed(filename);
 
-            hb_font = hb_ft_font_create(handle, 0);
+            hb_font = hb_ft_font_create_referenced(handle);
             hb_buffer = hb_buffer_create();
             hb_buffer_set_content_type(hb_buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
         }
         ~face() {
             hb_buffer_destroy(hb_buffer);
             hb_font_destroy(hb_font);
-            for (auto& i : sizes) {
-                FT_Done_Size(i.second);
-            }
             FT_Done_Face(handle);
         }
-        static ft_lib library;
+        std::shared_ptr<ft_lib> library_ptr;
         FT_Face handle;
         hb_font_t* hb_font;
         hb_buffer_t* hb_buffer;
@@ -137,8 +137,6 @@ namespace xd::detail::font {
         std::unique_ptr<FT_StreamRec> stream_rec;
         std::unique_ptr<std::istream> istream;
     };
-
-    ft_lib face::library;
 
 }
 

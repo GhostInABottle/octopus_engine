@@ -16,9 +16,10 @@ namespace detail {
         BOOST_CHECK_EQUAL(tileset.first_id, 1);
         BOOST_CHECK_EQUAL(tileset.name, "test sheet");
         Tile_Layer* layer = static_cast<Tile_Layer*>(map.get_layer_by_index(1));
-        BOOST_CHECK_EQUAL(layer->name, "ground");
+        BOOST_CHECK_EQUAL(layer->get_name(), "ground");
         BOOST_CHECK_EQUAL(layer->properties["@Description"], "ground layer");
-        BOOST_CHECK_EQUAL(layer->tiles[10], 132u);
+        auto& tiles = layer->get_tiles();
+        BOOST_CHECK_EQUAL(tiles[10], 132u);
     }
 }
 
