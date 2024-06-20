@@ -12,7 +12,6 @@
 #include "../../include/utility/math.hpp"
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/xml.hpp"
-#include <utility>
 
 Map_Object::Map_Object(Game& game, const std::string& name,
         std::string sprite_file, xd::vec2 pos, Direction dir)
@@ -320,17 +319,38 @@ void Map_Object::set_angle(int angle) {
     sprite->get_frame().angle = angle;
 }
 
-float Map_Object::get_speed() const {
+float Map_Object::get_movement_speed() const {
     auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     return speed * logic_fps / 60.0f;
 }
 
-void Map_Object::set_speed(float new_speed) {
+void Map_Object::set_movement_speed(float new_speed) {
     auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     speed = new_speed * 60.0f / logic_fps;
+}
+
+float Map_Object::get_animation_speed() const {
+    return sprite ? sprite->get_speed() : get_movement_speed();
+}
+
+void Map_Object::set_animation_speed(float new_speed) {
     if (!sprite) return;
 
     sprite->set_speed(new_speed);
+}
+
+void Map_Object::set_speed(float new_speed) {
+    set_movement_speed(new_speed);
+    if (!sprite) return;
+
+    // Automatically set the animation speed based on movement speed
+    if (new_speed > 1.0f) {
+        // 2 movement speed -> 1.5 animation speed, 5 -> 3, 10 -> 5.5
+        set_animation_speed(1.0f + (new_speed - 1.0f) * 0.5f);
+    } else {
+        // 0 movement speed -> 0.5 animation speed, 0.5 -> 0.666, 1 -> 1
+        set_animation_speed(1.0f / (2.0f - new_speed));
+    }
 }
 
 void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state, Direction new_direction) {
@@ -466,22 +486,40 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     auto& properties = object_ptr->properties;
     properties.read(node);
 
-    if (properties.contains("sprite"))
+    // Load sprite first since other properties (like speed) depend on it
+    if (properties.contains("sprite")) {
         object_ptr->set_sprite(game, properties["sprite"]);
-    if (properties.contains("direction"))
+    }
+
+    if (properties.contains("direction")) {
         object_ptr->set_direction(string_to_direction(properties["direction"]));
-    if (properties.contains("pose"))
+    }
+    if (properties.contains("pose")) {
         object_ptr->pose_name = properties["pose"];
-    if (properties.contains("state"))
+    }
+    if (properties.contains("state")) {
         object_ptr->state = properties["state"];
-    if (properties.contains("speed"))
-        object_ptr->set_speed(std::stof(properties["speed"]));
-    if (properties.contains("opacity"))
-        object_ptr->set_opacity(std::stof(properties["opacity"]));
-    if (properties.contains("face-state"))
+    }
+    if (properties.contains("face-state")) {
         object_ptr->set_face_state(properties["face-state"]);
-    if (properties.contains("walk-state"))
+    }
+    if (properties.contains("walk-state")) {
         object_ptr->set_walk_state(properties["walk-state"]);
+    }
+
+    if (properties.contains("speed")) {
+        object_ptr->set_speed(std::stof(properties["speed"]));
+    }
+    if (properties.contains("movement-speed")) {
+        object_ptr->set_movement_speed(std::stof(properties["movement-speed"]));
+    }
+    if (properties.contains("animation-speed")) {
+        object_ptr->set_animation_speed(std::stof(properties["animation-speed"]));
+    }
+
+    if (properties.contains("opacity")) {
+        object_ptr->set_opacity(std::stof(properties["opacity"]));
+    }
 
     if (properties.contains("script-context")) {
         auto context_string{properties["script-context"]};
@@ -547,24 +585,24 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
             auto parts = string_utilities::split(outlined, ",");
             if (parts.empty()) {
                 throw tmx_exception("Unknown object outlined value: " + outlined);
-            } else {
-                auto conditions = Outline_Condition::NONE;
-                for (const auto& part : parts) {
-                    auto trimmed = string_utilities::trim(part);
-                    if (trimmed == "TOUCHED") {
-                        conditions = conditions | Outline_Condition::TOUCHED;
-                    } else if (trimmed == "SOLID") {
-                        conditions = conditions | Outline_Condition::SOLID;
-                    } else if (trimmed == "SCRIPT") {
-                        conditions = conditions | Outline_Condition::SCRIPT;
-                    } else if (trimmed == "PROXIMATE") {
-                        conditions = conditions | Outline_Condition::PROXIMATE;
-                    } else {
-                        throw tmx_exception("Unknown object outlined value: " + outlined);
-                    }
-                }
-                object_ptr->set_outline_conditions(conditions);
             }
+
+            auto conditions = Outline_Condition::NONE;
+            for (const auto& part : parts) {
+                auto trimmed = string_utilities::trim(part);
+                if (trimmed == "TOUCHED") {
+                    conditions = conditions | Outline_Condition::TOUCHED;
+                } else if (trimmed == "SOLID") {
+                    conditions = conditions | Outline_Condition::SOLID;
+                } else if (trimmed == "SCRIPT") {
+                    conditions = conditions | Outline_Condition::SCRIPT;
+                } else if (trimmed == "PROXIMATE") {
+                    conditions = conditions | Outline_Condition::PROXIMATE;
+                } else {
+                    throw tmx_exception("Unknown object outlined value: " + outlined);
+                }
+            }
+            object_ptr->set_outline_conditions(conditions);
         }
     }
 

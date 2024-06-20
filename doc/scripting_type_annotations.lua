@@ -8,8 +8,6 @@
 ---@alias Engine_Direction 0|1|2|3|4|6|8|9|12|16|32
 
 ---@type Engine_Direction
-NONE = 0
----@type Engine_Direction
 UP = 1
 ---@type Engine_Direction
 RIGHT = 2
@@ -1113,7 +1111,9 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field stopped boolean # stops and prevents movement
 ---@field passthrough boolean
 ---@field passthrough_type Engine_Passthrough_Type
----@field speed number
+---@field movement_speed number
+---@field animation_speed number
+---@field speed number # automatically sets animation speed
 ---@field fps_independent_speed number # readonly
 ---@field collision_object? Engine_Map_Object
 ---@field triggered_object? Engine_Map_Object

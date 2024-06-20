@@ -134,6 +134,8 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["bounding_box"] = sol::property(&Map_Object::get_bounding_box, &Map_Object::set_bounding_box);
     object_type["bounding_circle"] = sol::property(&Map_Object::get_bounding_circle, &Map_Object::set_bounding_circle);
     object_type["speed"] = sol::property(&Map_Object::get_speed, &Map_Object::set_speed);
+    object_type["movement_speed"] = sol::property(&Map_Object::get_movement_speed, &Map_Object::set_movement_speed);
+    object_type["animation_speed"] = sol::property(&Map_Object::get_animation_speed, &Map_Object::set_animation_speed);
     object_type["fps_independent_speed"] = sol::property(&Map_Object::get_fps_independent_speed);
     object_type["angle"] = sol::property(&Map_Object::get_angle, &Map_Object::set_angle);
     object_type["direction"] = sol::property(

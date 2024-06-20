@@ -319,8 +319,12 @@ public:
         return sprite.get();
     }
     void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
-    float get_speed() const;
-    void set_speed(float speed);
+    float get_movement_speed() const;
+    void set_movement_speed(float new_speed);
+    float get_animation_speed() const;
+    void set_animation_speed(float new_speed);
+    float get_speed() const { return get_movement_speed(); }
+    void set_speed(float new_speed);
     float get_fps_independent_speed() const {
         return speed;
     }
@@ -484,7 +488,7 @@ private:
     Draw_Order draw_order;
     // Optional sprite representing the object
     std::shared_ptr<Sprite> sprite;
-    // Object speed
+    // Object movement_speed
     float speed;
     // Whether the object's sprite sfx volume goes down based on distance to player
     bool sound_attenuation_enabled;

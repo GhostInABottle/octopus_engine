@@ -12,7 +12,6 @@
 #include "../include/utility/string.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
-#include <algorithm>
 #include <optional>
 #include <unordered_map>
 #include <cstdlib>
@@ -64,10 +63,8 @@ struct Sprite::Impl {
     long pause_start;
     // Last frame where sound was played
     int last_sound_frame;
-    // Animation speed modifier (based on object speed)
+    // Animation speed modifier
     float speed;
-    // Maximum possible speed modifier
-    const static float max_speed;
     // Volume of the sprite's sound effects
     float sfx_volume;
     // How fast sound volume falls off
@@ -224,7 +221,7 @@ struct Sprite::Impl {
         if (frame.max_duration && frame_time < frame.max_duration) {
             frame_time += std::rand() % (frame.max_duration.value() - frame_time + 1);
         }
-        return static_cast<int>(frame_time * speed);
+        return static_cast<int>(frame_time / speed);
     }
 
     std::string get_filename() const {
@@ -353,7 +350,6 @@ struct Sprite::Impl {
 };
 
 const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
-const float Sprite::Impl::max_speed = 10.0f;
 
 Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
         : pimpl(std::make_unique<Impl>(game, std::move(data))) {
@@ -508,16 +504,7 @@ float Sprite::get_speed() const {
 }
 
 void Sprite::set_speed(float speed) {
-    auto max_speed = pimpl->max_speed;
-    // Scale sprite speed in the opposite direction of object speed,
-    // between 0.5 for max speed (10) and 2 for min speed (0)
-    // but also make sure object speed 1 maps to sprite speed 1
-    // s-speed = s-min + (s-max - s-min) * (o-speed - o-min) / (o-max - o-min)
-    speed = std::max(0.0f, std::min(max_speed, speed));
-    if (speed <= 1)
-        pimpl->speed = 2.0f - speed;
-    else
-        pimpl->speed = 1.0f - 0.5f * (speed - 1.0f) / (max_speed - 1.0f);
+    pimpl->speed = speed;
 }
 
 bool Sprite::is_eight_directional() const {
