@@ -10,8 +10,22 @@ class Map_Object;
 
 class Move_Object_Command : public Command {
 public:
-    Move_Object_Command(Game& game, Map_Object& object, Direction dir, float pixels,
-        bool skip_blocking, bool change_facing);
+    struct Options {
+        Map_Object& object;
+        Direction direction;
+        float pixels;
+        bool skip_blocking;
+        bool change_facing;
+        bool animated;
+        Options(Map_Object& obj, Direction dir, float pixels)
+            : object(obj)
+            , direction(dir)
+            , pixels(pixels)
+            , skip_blocking(true)
+            , change_facing(true)
+            , animated(true) {}
+    };
+    Move_Object_Command(Game& game, Options options);
     void execute() override;
     bool is_complete() const override;
 private:
@@ -21,6 +35,7 @@ private:
     float pixels;
     bool skip_blocking;
     bool change_facing;
+    bool animated;
     std::string old_state;
     bool complete;
 };

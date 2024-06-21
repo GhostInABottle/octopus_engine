@@ -43,7 +43,7 @@ public:
     // Move in a direction and return collision object
     Collision_Record move(Direction move_dir, float pixels,
         Collision_Check_Type check_type = Collision_Check_Type::BOTH,
-        bool change_facing = true);
+        bool change_facing = true, bool animated = true);
     // Getters and setters
     Object_Layer* get_layer() {
         return layer;
@@ -205,7 +205,7 @@ public:
     void set_walk_state(const std::string& name) {
         walk_state = name;
     }
-    void set_state_and_direction(const std::string& new_state, Direction dir);
+    void set_state_and_direction(const std::string& new_state, Direction dir, bool animated);
     Script_Context get_script_context() const {
         return script_context;
     }

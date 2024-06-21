@@ -13,7 +13,42 @@
 #include "../../../include/xd/vendor/sol/sol.hpp"
 #include <optional>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+
+namespace detail {
+    static Move_Object_Command::Options move_options_from_table(Map_Object* object, const sol::table& table) {
+        float distance = 0.0f;
+        if (table["distance"].valid()) {
+            distance = table["distance"];
+        } else {
+            throw std::invalid_argument("Missing distance for move command");
+        }
+
+        auto dir = Direction::NONE;
+        if (table["direction"].valid()) {
+            dir = table["direction"];
+        } else {
+            throw std::invalid_argument("Missing direction for move command");
+        }
+
+        Move_Object_Command::Options options{ *object, dir, distance };
+
+        if (table["skip_blocking"].valid()) {
+            options.skip_blocking = table["skip_blocking"];
+        }
+
+        if (table["change_facing"].valid()) {
+            options.change_facing = table["change_facing"];
+        }
+
+        if (table["animated"].valid()) {
+            options.animated = table["animated"];
+        }
+
+        return options;
+    }
+}
 
 void bind_map_object_types(sol::state& lua, Game& game) {
     // Object draw order
@@ -175,12 +210,18 @@ void bind_map_object_types(sol::state& lua, Game& game) {
                 Collision_Check_Type::BOTH, keep_trying);
         }
     );
-    object_type["move"] = [&](Map_Object* obj, int dir, float pixels, std::optional<bool> skip, std::optional<bool> change_facing) {
-        auto si = game.get_current_scripting_interface();
-        return si->register_command<Move_Object_Command>(
-            game, *obj, static_cast<Direction>(dir), pixels,
-            skip.value_or(true), change_facing.value_or(true));
-    };
+    object_type["move"] = sol::overload(
+        [&](Map_Object* obj, int dir, float pixels) {
+            auto si = game.get_current_scripting_interface();
+            Move_Object_Command::Options options{ *obj, static_cast<Direction>(dir), pixels };
+            return si->register_command<Move_Object_Command>(game, options);
+        },
+        [&](Map_Object* obj, const sol::table& table) {
+            auto si = game.get_current_scripting_interface();
+            return si->register_command<Move_Object_Command>(game,
+                detail::move_options_from_table(obj, table));
+        }
+    );
     object_type["update_opacity"] = [&](Map_Object* obj, float opacity, long duration) {
         auto si = game.get_current_scripting_interface();
         return si->register_command<Update_Opacity_Command>(

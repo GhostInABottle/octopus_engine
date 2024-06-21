@@ -7,6 +7,7 @@
 #include "../../include/map/map_object.hpp"
 #include "../../include/sprite.hpp"
 #include "../../include/sprite_data.hpp"
+#include "../../include/utility/color.hpp"
 #include "../../include/utility/direction.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/utility/math.hpp"
@@ -58,7 +59,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
 Map_Object::~Map_Object() {}
 
 Collision_Record Map_Object::move(Direction move_dir, float pixels,
-        Collision_Check_Type check_type, bool change_facing) {
+        Collision_Check_Type check_type, bool change_facing, bool animated) {
     // Map relative directions
     if (direction_contains(move_dir, Direction::FORWARD)) {
         move_dir = direction;
@@ -97,7 +98,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         auto try_multi_dir = multiple_directions && !strict_multidirectional_movement;
         if (!try_multi_dir) {
             // Can't move due to collision
-            set_state_and_direction(face_state, new_dir);
+            set_state_and_direction(face_state, new_dir, animated);
             return collision;
         }
 
@@ -118,7 +119,7 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
 
         if (!one_dir_collision.passable()) {
             // Can't move in either direction
-            set_state_and_direction(face_state, new_dir);
+            set_state_and_direction(face_state, new_dir, animated);
             return collision;
         }
 
@@ -151,12 +152,12 @@ Collision_Record Map_Object::move(Direction move_dir, float pixels,
         } else if (change.x > 0) {
             direction = Direction::RIGHT;
         } else {
-            set_state_and_direction(face_state, move_dir);
+            set_state_and_direction(face_state, move_dir, animated);
             return collision;
         }
     }
 
-    set_state_and_direction(walk_state, direction);
+    set_state_and_direction(walk_state, direction, animated);
 
     map->set_objects_moved(true);
     for (auto obj : linked_objects) {
@@ -398,7 +399,8 @@ void Map_Object::face(Direction dir) {
     set_pose("", "", static_cast<Direction>(dir));
 }
 
-void Map_Object::set_state_and_direction(const std::string& new_state, Direction dir) {
+void Map_Object::set_state_and_direction(const std::string& new_state, Direction dir, bool animated) {
+    if (!animated) return;
     set_pose("", frozen ? "" : new_state,
         is_relative_direction(dir) ? Direction::NONE : dir);
 }
@@ -517,6 +519,9 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_animation_speed(std::stof(properties["animation-speed"]));
     }
 
+    if (properties.contains("color")) {
+        object_ptr->set_color(hex_to_color(properties["color"]));
+    }
     if (properties.contains("opacity")) {
         object_ptr->set_opacity(std::stof(properties["opacity"]));
     }

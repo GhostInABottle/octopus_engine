@@ -1160,12 +1160,18 @@ function Engine_Map_Object:reset() end
 ---@param direction Engine_Direction
 function Engine_Map_Object:face(direction) end
 
+---@class (exact) Engine_Move_Object_Options
+---@field distance number
+---@field direction Engine_Direction
+---@field skip_blocking? boolean # defaults to true
+---@field change_facing? boolean # defaults to true
+---@field animated? boolean # defaults to true
+
+---@overload fun(self : Engine_Map_Object, options : Engine_Move_Object_Options) : Engine_Command_Result
 ---@param direction Engine_Direction
 ---@param pixels number
----@param skip? boolean
----@param change_facing? boolean
 ---@return Engine_Command_Result
-function Engine_Map_Object:move(direction, pixels, skip, change_facing) end
+function Engine_Map_Object:move(direction, pixels) end
 
 ---@param new_opacity number
 ---@param duration integer
