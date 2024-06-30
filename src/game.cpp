@@ -244,6 +244,8 @@ struct Game::Impl {
         if (is_fullscreen && !was_fullscreen) {
             game.set_window_size(Configurations::get<int>("graphics.screen-width"),
                 Configurations::get<int>("graphics.screen-height"));
+            // In case we started in windowed mode and the vsync config didn't stick
+            game.set_vsync(Configurations::get<bool>("graphics.vsync"));
         } else if (!is_fullscreen && was_fullscreen) {
             game.set_window_size(Configurations::get<int>("graphics.window-width"),
                 Configurations::get<int>("graphics.window-height"));

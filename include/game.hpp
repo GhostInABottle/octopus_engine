@@ -101,6 +101,11 @@ public:
     }
     // Toggle fullscreen mode
     void set_fullscreen(bool fullscreen);
+    // Set the swap interval
+    void set_vsync(bool vsync) const {
+        if (!window) return;
+        window->set_vsync(vsync);
+    }
     // Game dimensions
     int game_width(bool magnified = true) const;
     int game_height(bool magnified = true) const;
