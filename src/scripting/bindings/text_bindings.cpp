@@ -1,6 +1,7 @@
 #include "../../../include/commands/command_result.hpp"
 #include "../../../include/commands/show_text_command.hpp"
 #include "../../../include/game.hpp"
+#include "../../../include/log.hpp"
 #include "../../../include/map/map_object.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
@@ -9,16 +10,29 @@
 #include "../../../include/xd/vendor/sol/sol.hpp"
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace detail {
+    template <typename T>
+    static T get_value(const sol::table& table, const std::string& key) {
+        sol::object object = table[key];
+
+        if (!object.is<T>()) {
+            LOGGER_E << "Invalid Text Option: " << key;
+        }
+
+        return object.as<T>();
+    }
+
     static Text_Options options_from_table(const sol::table& table) {
         Text_Options options;
+
         if (table["text"].valid()) {
-            options.set_text(table["text"]);
+            options.set_text(get_value<std::string>(table, "text"));
         }
 
         if (table["choices"].valid()) {
-            sol::table choices_table = table["choices"];
+            auto choices_table = get_value<sol::table>(table, "choices");
             std::vector<std::string> choices;
             for (auto& kv : choices_table) {
                 choices.push_back(kv.second.as<std::string>());
@@ -27,83 +41,83 @@ namespace detail {
         }
 
         if (table["object"].valid()) {
-            options.set_object(table["object"]);
+            options.set_object(get_value<Map_Object*>(table, "object"));
         }
 
         if (table["position"].valid()) {
-            options.set_position(table["position"]);
+            options.set_position(get_value<xd::vec2>(table, "position"));
         }
 
         if (table["position_type"].valid()) {
-            options.set_position_type(table["position_type"]);
+            options.set_position_type(get_value<Text_Position_Type>(table, "position_type"));
         }
 
         if (table["duration"].valid()) {
-            options.set_duration(table["duration"]);
+            options.set_duration(get_value<long>(table, "duration"));
         }
 
         if (table["centered"].valid()) {
-            options.set_centered(table["centered"]);
+            options.set_centered(get_value<bool>(table, "centered"));
         }
 
         if (table["show_dashes"].valid()) {
-            options.set_show_dashes(table["show_dashes"]);
+            options.set_show_dashes(get_value<bool>(table, "show_dashes"));
         }
 
         if (table["cancelable"].valid()) {
-            options.set_cancelable(table["cancelable"]);
+            options.set_cancelable(get_value<bool>(table, "cancelable"));
         }
 
         if (table["choice_indent"].valid()) {
-            options.set_choice_indent(table["choice_indent"]);
+            options.set_choice_indent(get_value<unsigned int>(table, "choice_indent"));
         }
 
         if (table["canvas_priority"].valid()) {
-            options.set_canvas_priority(table["canvas_priority"]);
+            options.set_canvas_priority(get_value<int>(table, "canvas_priority"));
         }
 
         if (table["fade_in_duration"].valid()) {
-            options.set_fade_in_duration(table["fade_in_duration"]);
+            options.set_fade_in_duration(get_value<int>(table, "fade_in_duration"));
         }
 
         if (table["fade_out_duration"].valid()) {
-            options.set_fade_out_duration(table["fade_out_duration"]);
+            options.set_fade_out_duration(get_value<int>(table, "fade_out_duration"));
         }
 
         if (table["background_visible"].valid()) {
-            options.set_background_visible(table["background_visible"]);
+            options.set_background_visible(get_value<bool>(table, "background_visible"));
         }
 
         if (table["background_color"].valid()) {
-            options.set_background_color(table["background_color"]);
+            options.set_background_color(get_value<xd::vec4>(table, "background_color"));
         }
 
         if (table["typewriter_on"].valid()) {
-            options.set_typewriter_on(table["typewriter_on"]);
+            options.set_typewriter_on(get_value<bool>(table, "typewriter_on"));
         }
 
         if (table["typewriter_delay"].valid()) {
-            options.set_typewriter_delay(table["typewriter_delay"]);
+            options.set_typewriter_delay(get_value<int>(table, "typewriter_delay"));
         }
 
         if (table["typewriter_sound"].valid()) {
-            options.set_typewriter_sound(table["typewriter_sound"]);
+            options.set_typewriter_sound(get_value<std::string>(table, "typewriter_sound"));
         }
 
         if (table["typewriter_sound_volume"].valid()) {
-            options.set_typewriter_sound_volume(table["typewriter_sound_volume"]);
+            options.set_typewriter_sound_volume(get_value<float>(table, "typewriter_sound_volume"));
         }
 
         if (table["typewriter_sound_pitch"].valid()) {
-            options.set_typewriter_sound_pitch(table["typewriter_sound_pitch"]);
+            options.set_typewriter_sound_pitch(get_value<float>(table, "typewriter_sound_pitch"));
         }
 
         if (table["typewriter_sound_max_pitch"].valid()) {
-            options.set_typewriter_sound_max_pitch(table["typewriter_sound_max_pitch"]);
+            options.set_typewriter_sound_max_pitch(get_value<float>(table, "typewriter_sound_max_pitch"));
         }
 
         if (table["typewriter_skippable"].valid()) {
-            options.set_typewriter_skippable(table["typewriter_skippable"]);
+            options.set_typewriter_skippable(get_value<bool>(table, "typewriter_skippable"));
         }
 
         return options;

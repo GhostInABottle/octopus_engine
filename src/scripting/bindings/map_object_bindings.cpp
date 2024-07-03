@@ -5,6 +5,7 @@
 #include "../../../include/commands/update_color_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
 #include "../../../include/game.hpp"
+#include "../../../include/log.hpp"
 #include "../../../include/map/map.hpp"
 #include "../../../include/map/map_object.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
@@ -17,17 +18,28 @@
 #include <string>
 
 namespace detail {
+    template <typename T>
+    static T get_value(const sol::table& table, const std::string& key, Map_Object* map_obj) {
+        sol::object object = table[key];
+
+        if (!object.is<T>()) {
+            LOGGER_E << "Invalid " << map_obj->get_name() << " move command option: " << key;
+        }
+
+        return object.as<T>();
+    }
+
     static Move_Object_Command::Options move_options_from_table(Map_Object* object, const sol::table& table) {
         float distance = 0.0f;
         if (table["distance"].valid()) {
-            distance = table["distance"];
+            distance = get_value<float>(table, "distance", object);
         } else {
             throw std::invalid_argument("Missing distance for move command");
         }
 
         auto dir = Direction::NONE;
         if (table["direction"].valid()) {
-            dir = table["direction"];
+            dir = get_value<Direction>(table, "direction", object);
         } else {
             throw std::invalid_argument("Missing direction for move command");
         }
@@ -35,15 +47,15 @@ namespace detail {
         Move_Object_Command::Options options{ *object, dir, distance };
 
         if (table["skip_blocking"].valid()) {
-            options.skip_blocking = table["skip_blocking"];
+            options.skip_blocking = get_value<bool>(table, "skip_blocking", object);
         }
 
         if (table["change_facing"].valid()) {
-            options.change_facing = table["change_facing"];
+            options.change_facing = get_value<bool>(table, "change_facing", object);
         }
 
         if (table["animated"].valid()) {
-            options.animated = table["animated"];
+            options.animated = get_value<bool>(table, "animated", object);
         }
 
         return options;
