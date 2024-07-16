@@ -38,7 +38,7 @@ public:
         if (has_value(name)) {
             return std::get<T>(values[name]);
         } else if (has_default(name)) {
-            return std::get<T>(defaults[name]);
+            return std::get<T>(defaults[name].value);
         }
 
         throw config_exception(name + " is an invalid config value");
@@ -82,6 +82,11 @@ public:
             return;
         }
 
+        if (has_default(name) && !defaults[name].modifiable) {
+            LOGGER_W << "Tried to modify non-modifiable config: " << name;
+            return;
+        }
+
         values[name] = value;
 
         for (auto& pair : observers) {
@@ -102,6 +107,11 @@ public:
     // Directly set a value without notifying observers or logging
     template<typename T>
     static void override_value(const std::string& name, T value) {
+        if (has_default(name) && !defaults[name].modifiable) {
+            LOGGER_W << "Tried to modify non-modifiable config: " << name;
+            return;
+        }
+
         values[name] = value;
 
         if (!exists(name)) {
@@ -111,10 +121,18 @@ public:
         changed_since_save = true;
     }
 private:
+    struct Default {
+        value_type value;
+        // If false, value can't be set except when loading the default config file
+        bool modifiable;
+        Default(value_type value = false, bool modifiable = true)
+            : value(value), modifiable(modifiable) {}
+    };
     inline static bool changed_since_save = false;
     // Variable map to store the options
     inline static value_map values;
-    inline static value_map defaults;
+    // Default values and their properties
+    inline static std::unordered_map<std::string, Default> defaults;
     // Order of the parsed config file
     typedef std::tuple<std::string, std::vector<std::string>> section_ordered_values;
     typedef std::vector<section_ordered_values> section_order_list;
