@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 
         Log::set_environment(environment);
 
-        // Initialize the filesystems (passing executable name as PhysFS needs it)
+        // Initialize the filesystems (executable name is needed by PhysFS)
         file_utilities::default_config_filesystem(argv[0]);
         file_utilities::game_data_filesystem(argv[0]);
         file_utilities::user_data_filesystem(argv[0]);

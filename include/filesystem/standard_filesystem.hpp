@@ -11,11 +11,13 @@ class Standard_Filesystem : public Disk_Filesystem {
     virtual bool is_regular_file(const std::string& path) override;
     virtual bool is_directory(const std::string& path) override;
     virtual std::tuple<unsigned long long, std::tm> last_write_time(const std::string& path) override;
+    virtual std::uintmax_t file_size(const std::string& path) override;
     virtual std::vector<std::string> directory_content_names_unchecked(const std::string& path) override;
     virtual std::vector<Path_Info> directory_content_details_unchecked(const std::string& path) override;
     virtual bool is_absolute_path(const std::string& path) override;
-    virtual std::string get_filename_component(const std::string& path) override;
-    virtual std::string get_stem_component(const std::string& path) override;
+    virtual std::string filename_component(const std::string& path) override;
+    virtual std::string stem_component(const std::string& path) override;
+    virtual std::string extension(const std::string& path) override;
     virtual bool copy(const std::string& source, const std::string& destination) override;
     virtual bool remove(const std::string& path) override;
     virtual bool rename(const std::string& old_path, const std::string& new_path) override;

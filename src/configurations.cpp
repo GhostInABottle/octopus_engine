@@ -98,6 +98,8 @@ void Configurations::load_defaults() {
     defaults.emplace("logging.filename", Configurations::Default{ std::string{"game.log"} });
     defaults.emplace("logging.level", Configurations::Default{ std::string{"debug"} });
     defaults.emplace("logging.mode", Configurations::Default{ std::string{"truncate"} });
+    defaults.emplace("logging.file-count", Configurations::Default{ -1 });
+    defaults.emplace("logging.max-file-size-kb", Configurations::Default{ -1 });
 
     defaults.emplace("debug.show-fps", Configurations::Default{ true });
     defaults.emplace("debug.show-time", Configurations::Default{ false });

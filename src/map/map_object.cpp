@@ -176,10 +176,11 @@ std::string Map_Object::prepare_script(const std::string& script) const {
     if (script.empty()) return script;
 
     auto preamble = game.get_object_script_preamble();
-    auto extension = script.substr(script.find_last_of(".") + 1);
-    if (extension != "lua") return preamble + script;
-
     auto fs = file_utilities::game_data_filesystem();
+    if (fs->extension(script) != ".lua") {
+        return preamble + script;
+    }
+
     auto script_filename = game.get_scripts_directory() + script;
     return preamble + fs->read_file(script_filename);
 }

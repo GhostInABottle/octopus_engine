@@ -133,7 +133,12 @@ elseif c.selected == 3 then
         print(i, ': ', v.name)
     end
     text(o, "Moving object"):wait()
-    o:move(UP, 32, true, false):wait()
+    local move_options = {
+        direction = UP,
+        distance = 32,
+        change_facing = false,
+    }
+    o:move(move_options):wait()
     o:move(LEFT, 32):wait()
     o:move(UP, 32):wait()
     o:move(RIGHT, 64):wait()
@@ -346,6 +351,19 @@ elseif c.selected == 8 then
     fc:wait()
     local filesystem = fc.selected == 1 and game.game_data_filesystem
         or game.user_data_filesystem
+    local function print_size(size)
+        local descriptor
+        if size < 1024 then
+            descriptor = ' B'
+        elseif size < (1024 * 1024) then
+            descriptor = 'KB'
+            size = math.floor(size / 1024 + 0.5)
+        else
+            descriptor = 'MB'
+            size = math.floor(size / (1024 * 1024) + 0.5)
+       end
+       return string.format('%3d %s', size, descriptor)
+    end
     local function test_list(method, processor)
         print('Files in current folder (' .. method .. '):')
         local files = filesystem[method](filesystem, '.')
@@ -355,7 +373,8 @@ elseif c.selected == 8 then
         end
         table.sort(processed_files, function(a, b) return a.timestamp < b.timestamp end)
         for _, f in ipairs(processed_files) do
-            print('\t- ' .. f.timestamp .. '\t' .. f.date_time .. ' ' .. f.is_dst .. '\t' .. f.name .. ' (' .. f.type .. ')')
+            print('\t- ' .. f.timestamp .. '\t' .. f.date_time .. ' ' .. f.is_dst
+                .. '\t' .. print_size(f.size) .. '\t' .. f.name .. ' (' .. f.type .. ')')
         end
     end
     local function process_tm(tm)
@@ -373,7 +392,8 @@ elseif c.selected == 8 then
             type = file_type,
             timestamp = ms,
             date_time = date_str,
-            is_dst = dst
+            is_dst = dst,
+            size = filesystem:file_size(file_name),
         }
     end
     function detailed_processor(file_info)
@@ -386,7 +406,8 @@ elseif c.selected == 8 then
             type = file_type,
             timestamp = ms,
             date_time = date_str,
-            is_dst = dst
+            is_dst = dst,
+            size = filesystem:file_size(file_info.name),
         }  
     end
     test_list('list_directory', basic_processor)

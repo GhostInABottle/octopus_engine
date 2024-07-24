@@ -322,7 +322,7 @@ std::string User_Data_Folder::get_keymap_filename() const {
     std::string filename = Configurations::get<std::string>("controls.mapping-file");
     if (filesystem.is_absolute_path(filename) || version_path.empty()) return filename;
 
-    return version_path + filesystem.get_filename_component(filename);
+    return version_path + filesystem.filename_component(filename);
 }
 
 bool User_Data_Folder::load_keymap_file(Key_Binder& key_binder) {

@@ -68,12 +68,12 @@ struct Game::Impl {
         }
 
         // Script preamble
-        auto preamble = string_utilities::trim(Configurations::get<std::string>("game.object-script-preamble"));
+        auto preamble = Configurations::get<std::string>("game.object-script-preamble");
+        string_utilities::trim(preamble);
         if (preamble.empty()) return;
 
-        auto extension = preamble.substr(preamble.find_last_of(".") + 1);
-        if (extension == "lua") {
-            auto fs = file_utilities::game_data_filesystem();
+        auto fs = file_utilities::game_data_filesystem();
+        if (fs->extension(preamble) == ".lua") {
             preamble = fs->read_file(scripts_folder + preamble);
         }
 

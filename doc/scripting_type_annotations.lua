@@ -190,15 +190,23 @@ function Engine_Readable_Filesystem:is_absolute(path) end
 
 ---@param path string
 ---@return string
-function Engine_Readable_Filesystem:get_basename(path) end
+function Engine_Readable_Filesystem:basename(path) end
 
 ---@param path string
 ---@return string
-function Engine_Readable_Filesystem:get_stem(path) end
+function Engine_Readable_Filesystem:stem(path) end
+
+---@param path string
+---@return string
+function Engine_Readable_Filesystem:extension(path) end
 
 ---@param path string
 ---@return integer ms_timestamp, Engine_Calendar_Time calendar_time
 function Engine_Readable_Filesystem:last_write_time(path) end
+
+---@param path string
+---@return integer
+function Engine_Readable_Filesystem:file_size(path) end
 
 ---@param path string
 ---@return string[]

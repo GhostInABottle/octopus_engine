@@ -42,9 +42,11 @@ void bind_file_types(sol::state& lua, Game& game) {
     readable_fs_type["list_directory"] = &Readable_Filesystem::directory_content_names;
     readable_fs_type["list_detailed_directory"] = &Readable_Filesystem::directory_content_details;
     readable_fs_type["is_absolute"] = &Readable_Filesystem::is_absolute_path;
-    readable_fs_type["get_basename"] = &Readable_Filesystem::get_filename_component;
-    readable_fs_type["get_stem"] = &Readable_Filesystem::get_stem_component;
+    readable_fs_type["basename"] = &Readable_Filesystem::filename_component;
+    readable_fs_type["stem"] = &Readable_Filesystem::stem_component;
+    readable_fs_type["extension"] = &Readable_Filesystem::extension;
     readable_fs_type["last_write_time"] = &Readable_Filesystem::last_write_time;
+    readable_fs_type["file_size"] = &Readable_Filesystem::file_size;
 
     // Writable filesystem
     auto writable_fs_type = lua.new_usertype<Writable_Filesystem>("Writable_Filesystem");
@@ -54,9 +56,11 @@ void bind_file_types(sol::state& lua, Game& game) {
     writable_fs_type["list_directory"] = &Writable_Filesystem::directory_content_names;
     writable_fs_type["list_detailed_directory"] = &Writable_Filesystem::directory_content_details;
     writable_fs_type["is_absolute"] = &Writable_Filesystem::is_absolute_path;
-    writable_fs_type["get_basename"] = &Writable_Filesystem::get_filename_component;
-    writable_fs_type["get_stem"] = &Writable_Filesystem::get_stem_component;
+    writable_fs_type["basename"] = &Writable_Filesystem::filename_component;
+    writable_fs_type["stem"] = &Writable_Filesystem::stem_component;
+    writable_fs_type["extension"] = &Writable_Filesystem::extension;
     writable_fs_type["last_write_time"] = &Writable_Filesystem::last_write_time;
+    writable_fs_type["file_size"] = &Writable_Filesystem::file_size;
     writable_fs_type["copy"] = &Writable_Filesystem::copy;
     writable_fs_type["remove"] = &Writable_Filesystem::remove;
     writable_fs_type["rename"] = &Writable_Filesystem::rename;

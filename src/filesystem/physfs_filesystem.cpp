@@ -86,11 +86,19 @@ std::tuple<unsigned long long, std::tm> PhysFS_Filesystem::last_write_time(const
     return result;
 }
 
+std::uintmax_t PhysFS_Filesystem::file_size(const std::string& path) {
+    auto fs_path = detail::clean_relative_path(path);
+    if (!PhysFS::exists(fs_path) || !is_regular_file(path)) return 0;
+
+    auto size = PhysFS::getStat(fs_path).filesize;
+    return size >= 0 ? static_cast<std::uintmax_t>(size) : 0;
+}
+
 bool PhysFS_Filesystem::is_absolute_path(const std::string&) {
     return false;
 }
 
-std::string PhysFS_Filesystem::get_filename_component(const std::string& path) {
+std::string PhysFS_Filesystem::filename_component(const std::string& path) {
     std::string copy{path};
     string_utilities::normalize_slashes(copy);
     auto last_slash = copy.find_last_of('/');
@@ -99,12 +107,20 @@ std::string PhysFS_Filesystem::get_filename_component(const std::string& path) {
     return copy.substr(last_slash + 1);
 }
 
-std::string PhysFS_Filesystem::get_stem_component(const std::string& path) {
-    auto filename_component = get_filename_component(path);
-    auto last_dot = filename_component.find_last_of('.');
-    if (last_dot == std::string::npos) return filename_component;
+std::string PhysFS_Filesystem::stem_component(const std::string& path) {
+    auto filename = filename_component(path);
+    auto last_dot = filename.find_last_of('.');
+    if (last_dot == std::string::npos) return filename;
 
-    return filename_component.substr(0, last_dot);
+    return filename.substr(0, last_dot);
+}
+
+std::string PhysFS_Filesystem::extension(const std::string& path) {
+    auto filename = filename_component(path);
+    auto last_dot = filename.find_last_of('.');
+    if (last_dot == std::string::npos) return "";
+
+    return filename.substr(last_dot);
 }
 
 std::vector<std::string> PhysFS_Filesystem::directory_content_names(const std::string& path) {

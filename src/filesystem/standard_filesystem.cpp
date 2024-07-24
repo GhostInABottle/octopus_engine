@@ -31,7 +31,7 @@ bool Standard_Filesystem::is_directory(const std::string& path) {
 
 std::tuple<unsigned long long, std::tm> Standard_Filesystem::last_write_time(const std::string& path) {
     try {
-        auto file_time = fs::last_write_time(path);
+        auto file_time = fs::last_write_time(fs::u8path(path));
         auto duration = file_time - fs::file_time_type::clock::now()
             + std::chrono::system_clock::now();
         auto time_point = std::chrono::time_point_cast<std::chrono::system_clock::duration>(duration);
@@ -47,6 +47,19 @@ std::tuple<unsigned long long, std::tm> Standard_Filesystem::last_write_time(con
     }
 
     return std::make_tuple(0ULL, std::tm{});
+}
+
+std::uintmax_t Standard_Filesystem::file_size(const std::string& path) {
+    try {
+        auto fs_path = fs::u8path(path);
+        if (!fs::exists(fs_path) || !fs::is_regular_file(fs_path)) return 0;
+
+        return fs::file_size(fs_path);
+    } catch (fs::filesystem_error& e) {
+        LOGGER_E << "Error getting the file size of: " << path << ", returning 0 - " << e.what();
+    }
+
+    return 0;
 }
 
 std::vector<std::string> Standard_Filesystem::directory_content_names_unchecked(const std::string& path) {
@@ -87,12 +100,16 @@ bool Standard_Filesystem::is_absolute_path(const std::string& path) {
     return fs::path{ fs::u8path(path) }.is_absolute();
 }
 
-std::string Standard_Filesystem::get_filename_component(const std::string& path) {
+std::string Standard_Filesystem::filename_component(const std::string& path) {
     return fs::path{ fs::u8path(path) }.filename().string();
 }
 
-std::string Standard_Filesystem::get_stem_component(const std::string& path) {
+std::string Standard_Filesystem::stem_component(const std::string& path) {
     return fs::path{ fs::u8path(path) }.stem().string();
+}
+
+std::string Standard_Filesystem::extension(const std::string& path) {
+    return fs::path{ fs::u8path(path) }.extension().string();
 }
 
 bool Standard_Filesystem::copy(const std::string& source, const std::string& destination) {
