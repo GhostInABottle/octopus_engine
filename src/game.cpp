@@ -550,7 +550,7 @@ void Game::frame_update() {
             pimpl->focus_pause = false;
         }
     } else if (!paused && pausing_enabled) {
-        if (triggered_pause)
+        if (triggered_once(pimpl->pause_button))
             pause();
         else if (pimpl->pause_unfocused && !window->focused()) {
             pause();

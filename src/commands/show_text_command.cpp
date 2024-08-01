@@ -284,21 +284,31 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         // Wait for text to be shown or hidden
-        if (!canvas_updater->is_complete()) {
-            if (stopped) {
-                canvas_updater->stop();
-            }
+        auto has_duration = options.duration > -1;
+        auto updating_canvas = !canvas_updater->is_complete();
+        if (updating_canvas) {
+            if (stopped) canvas_updater->stop();
             canvas_updater->execute();
-            if (!force_stopped) return;
+
+            auto mostly_visible = !text_complete && !has_duration
+                && canvas->get_opacity() >= 0.7f;
+            if (!force_stopped && !mostly_visible) {
+                // Allow updating selected choice while the canvas is being shown
+                if (!paused && !text_complete && !options.choices.empty()) {
+                    update_choice();
+                }
+                return;
+            }
         }
 
         // Mark the command as complete when text is done / stopped
         if (text_complete || stopped) {
+            if (stopped) canvas_updater->stop();
             if (canvas->is_visible()) {
                 canvas->set_visible(false);
             }
 
-            if (options.duration == -1) {
+            if (!has_duration) {
                 game.get_player()->set_disabled(was_disabled);
             }
 
@@ -307,7 +317,6 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         static std::string action_button = Configurations::get<std::string>("controls.action-button");
-        auto has_duration = options.duration > -1;
 
         // Wait for the typewriter effect to finish
         if (options.typewriter_on && !canvas->typewriter_done()) {
@@ -317,11 +326,12 @@ struct Show_Text_Command::Impl : Timed_Command {
             }
             return;
         } else if (options.typewriter_on && has_duration && !typewriter_done) {
+            // If there was a duration, start waiting for it after the typewriter effect is done
             typewriter_done = true;
             start_time = ticks;
         }
 
-        if (options.duration > -1) {
+        if (has_duration) {
             text_complete = is_done(ticks);
         } else if (!paused) {
             // Check if the action button is pressed

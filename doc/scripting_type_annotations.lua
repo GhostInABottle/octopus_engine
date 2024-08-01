@@ -55,17 +55,17 @@ Passthrough_Type = {
 ---@enum Engine_Text_Position_Type
 Text_Position_Type = {
     none = 0,
-    -- Interpret position literally, X refers to left of text
+    --- Interpret position literally, X refers to left of text
     exact_x = 1,
-    -- The text is centered around the X coordinate
+    --- The text is centered around the X coordinate
     centered_x = 2,
-    -- Interpret position literally, Y refers to the top of text
+    --- Interpret position literally, Y refers to the top of text
     exact_y = 4,
-    -- Text sits above the Y coordinate instead of under it
+    --- Text sits above the Y coordinate instead of under it
     bottom_y = 8,
-    -- The supplied coordinates are relative to the camera instead of the map
+    --- The supplied coordinates are relative to the camera instead of the map
     camera_relative = 16,
-    -- The text should always be visible, makes map coordinates camera relative
+    --- The text should always be visible, makes map coordinates camera relative
     always_visible = 32
 }
 
@@ -78,29 +78,29 @@ Token_Type = {
 
 ---@enum Engine_Outline_Condition
 Outline_Condition = {
-    -- Always outlined
+    --- Always outlined
     none = 0,
-    -- Outline if touched by player
+    --- Outline if touched by player
     touched = 1,
-    -- Outline if object is not passthrough
+    --- Outline if object is not passthrough
     solid = 2,
-    -- Outline if object has a script
+    --- Outline if object has a script
     script = 4,
-    -- Outline if object is close enough (but not necessarily touched)
+    --- Outline if object is close enough (but not necessarily touched)
     proximate = 8,
-    -- Never outline
+    --- Never outline
     never = 16
 }
 
 ---@enum Engine_Open_Page_Mode
 Open_Page_Mode = {
-    -- The environment's preferred mode
+    --- The environment's preferred mode
     any = 0,
-    -- Launch the default browser
+    --- Launch the default browser
     external = 1,
-    -- Open through the environment's app/client
+    --- Open through the environment's app/client
     internal = 2,
-    -- Open as an overlay on top of the game
+    --- Open as an overlay on top of the game
     overlay = 3,
 }
 
@@ -471,7 +471,6 @@ function lutf8.reverse(s) end
 ---@nodiscard
 function lutf8.sub(s, i, j) end
 
----#DES 'string.upper'
 ---@param s string
 ---@return string
 ---@nodiscard
@@ -517,24 +516,22 @@ function lutf8.remove(s, start, stop) end
 ---@return integer width
 function lutf8.width(s, ambi_is_double, default_width) end
 
--- This is the reverse operation of lutf8.width
 ---@param s string
 ---@param location integer
 ---@param ambi_is_double? boolean
 ---@param default_width? integer
+---@return integer index, integer offset, integer length
 function lutf8.width_index(s, location, ambi_is_double, default_width) end
 
--- Convert to title case
 ---@param s string
 ---@return string new_string
 function lutf8.title(s) end
 
--- Convert to folded case for comparison
 ---@param s string
 ---@return string new_string
 function lutf8.fold(s) end
 
--- Compare a and b without case, -1 means a < b, 0 means a == b and 1 means a > b.
+--- Compare a and b without case, -1 means a < b, 0 means a == b and 1 means a > b.
 ---@param a string
 ---@param b string
 ---@return integer
@@ -579,7 +576,7 @@ function direction.facing_direction(pos1, pos2, diagonal) end
 ---@return boolean
 function direction.is_diagonal(direction) end
 
--- Prefers directions in this order: UP, DOWN, LEFT, RIGHT
+--- Prefers directions in this order: UP, DOWN, LEFT, RIGHT
 ---@param direction Engine_Direction
 ---@return Engine_Direction
 function direction.to_four_directions(direction) end
@@ -644,6 +641,7 @@ function Engine_Vec3:length() end
 function Engine_Vec3:normal() end
 
 -- Vec4 / Color
+
 ---@class (exact) Engine_Vec4
 ---@field x number
 ---@field y number
@@ -730,28 +728,28 @@ local Engine_Rect = {}
 ---@return Engine_Rect
 function Rect(x, y, w, h) end
 
--- Check if this rectangle partially overlaps with another (excluding the sides)
+--- Check if this rectangle partially overlaps with another (excluding the sides)
 ---@param other Engine_Rect
 ---@return boolean
 function Engine_Rect:intersects(other) end
 
--- Check if the sides of this rectangle and the other one touch
+--- Check if the sides of this rectangle and the other one touch
 ---@param other Engine_Rect
 ---@return boolean
 function Engine_Rect:touches(other) end
 
--- Check if a point falls within this rectangle (including the sides)
+--- Check if a point falls within this rectangle (including the sides)
 ---@overload fun(self : Engine_Rect, x : number, y : number) : boolean
 ---@param point Engine_Vec2
 ---@return boolean
 function Engine_Rect:contains(point) end
 
--- Change the position of this rectangle
+--- Change the position of this rectangle
 ---@param displacement Engine_Vec2
 ---@return boolean
 function Engine_Rect:move(displacement) end
 
--- Enlarge the rectangle
+--- Enlarge the rectangle
 ---@overload fun(self : Engine_Rect, delta : number) : Engine_Rect
 ---@param delta Engine_Vec2
 ---@return Engine_Rect
@@ -775,34 +773,34 @@ local Engine_Circle = {}
 ---@return Engine_Circle
 function Circle(x, y, radius) end
 
--- Check if this circle partially overlaps with another circle
--- or rectangle (excluding when the perimeters/sides touch)
+--- Check if this circle partially overlaps with another circle
+--- or rectangle (excluding when the perimeters/sides touch)
 ---@param other Engine_Circle|Engine_Rect
 ---@return boolean
 function Engine_Circle:intersects(other) end
 
--- Check if the perimeters of this circle and the other one touch
+--- Check if the perimeters of this circle and the other one touch
 ---@param other Engine_Circle
 ---@return boolean
 function Engine_Circle:touches(other) end
 
--- Check if a point falls within this circle (including along the perimeters)
+--- Check if a point falls within this circle (including along the perimeters)
 ---@overload fun(self : Engine_Circle, x : number, y : number) : boolean
 ---@param point Engine_Vec2
 ---@return boolean
 function Engine_Circle:contains(point) end
 
--- Change the position of this circle
+--- Change the position of this circle
 ---@param displacement Engine_Vec2
 ---@return boolean
 function Engine_Circle:move(displacement) end
 
--- Enlarge the rectangle by the specified displacement
+--- Enlarge the rectangle by the specified displacement
 ---@param delta number
 ---@return Engine_Circle
 function Engine_Circle:extend(delta) end
 
--- Create a rectangle that covers the area of this circle
+--- Create a rectangle that covers the area of this circle
 ---@return Engine_Rect
 function Engine_Circle:to_rect() end
 
@@ -820,10 +818,10 @@ function Engine_Command_Result:pause() end
 
 function Engine_Command_Result:resume() end
 
--- Completes command to desired state
+--- Completes command to desired state
 function Engine_Command_Result:stop() end
 
--- Stops the command immediately
+--- Stops the command immediately
 function Engine_Command_Result:force_stop() end
 
 ---@param ticks? integer
