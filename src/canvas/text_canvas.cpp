@@ -17,6 +17,7 @@
 Text_Canvas::Text_Canvas(Game& game, xd::vec2 position, const std::string& text, bool camera_relative,
     std::optional<Typewriter_Options> typewriter_options, bool is_child)
         : Base_Canvas(game, Base_Canvas::Type::TEXT, position),
+        centered(false),
         permissive_tag_parsing(false),
         typewriter_options(typewriter_options),
         typewriter_line(0) {
@@ -60,6 +61,9 @@ void Text_Canvas::set_text(const std::string& new_text) {
 
     text = new_text;
     text_lines = Text_Parser::split_to_lines(new_text, permissive_tag_parsing);
+    if (centered) {
+        line_widths = calculate_line_widths(game, text_lines, style.get());
+    }
     redraw();
 }
 
@@ -99,6 +103,11 @@ void Text_Canvas::render(Camera& camera, xd::sprite_batch&, Base_Canvas* parent)
         if (!is_camera_relative()) {
             draw_x -= camera_pos.x;
             draw_y -= camera_pos.y;
+        }
+
+        if (centered) {
+            auto width = line_widths.at(i);
+            draw_x -= width / 2;
         }
 
         render_text(line, draw_x, draw_y, i);
@@ -148,4 +157,15 @@ void Text_Canvas::render_text(const std::string& text_to_render, float x, float 
 
     game.render_text(*font, *style, x, y, apply_typewriter ? text : text_to_render);
     return;
+}
+
+std::vector<float> Text_Canvas::calculate_line_widths(Game& game,
+        const std::vector<std::string>& lines, xd::font_style* style) {
+    std::vector<float> widths;
+
+    for (auto& line : lines) {
+        widths.push_back(game.text_width(line, nullptr, style));
+    }
+
+    return widths;
 }

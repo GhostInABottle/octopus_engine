@@ -6,16 +6,6 @@
 #include "../xd/glm.hpp"
 #include "string.hpp"
 
-// Combine two directions
-constexpr Direction operator|(Direction a, Direction b) noexcept {
-    return static_cast<Direction>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-// Check if a direction is set
-constexpr Direction operator&(Direction a, Direction b) noexcept {
-    return static_cast<Direction>(static_cast<int>(a) & static_cast<int>(b));
-}
-
 // Check if a direction contains a component
 constexpr bool direction_contains(Direction dir, Direction component) {
     return (dir & component) != Direction::NONE;

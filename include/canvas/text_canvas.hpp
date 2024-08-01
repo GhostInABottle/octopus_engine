@@ -4,6 +4,7 @@
 #include "../xd/graphics/font_style.hpp"
 #include "base_canvas.hpp"
 #include <optional>
+#include <type_traits>
 
 namespace xd {
     class simple_text_renderer;
@@ -44,6 +45,24 @@ public:
     }
     // Calculate the pixel width of some text
     float get_text_width(const std::string& text);
+    // Treat text position as the center of the text
+    bool get_centered() const {
+        return centered;
+    }
+    void set_centered(bool new_centered) {
+        if(centered == new_centered) return;
+
+        centered = new_centered;
+        line_widths = calculate_line_widths(game, text_lines, style.get());
+        redraw();
+    }
+    void set_centered(bool new_centered, std::vector<float>&& widths) {
+        if (centered == new_centered) return;
+
+        centered = new_centered;
+        line_widths = std::move(widths);
+        redraw();
+    }
     // Get the font style
     xd::font_style* get_style() {
         return style.get();
@@ -204,6 +223,10 @@ private:
     std::string text;
     // Text lines
     std::vector<std::string> text_lines;
+    // Is the text drawn centered around the specified position?
+    bool centered;
+    // Widths of lines (only used if centered)
+    std::vector<float> line_widths;
     // Font to use
     std::shared_ptr<xd::font> font;
     // Text style
@@ -216,6 +239,9 @@ private:
     unsigned int typewriter_line;
     // Render text at a position
     void render_text(const std::string& text, float x, float y, unsigned int line_number);
+    // Calculate the widths of each line
+    static std::vector<float> calculate_line_widths(Game& game,
+        const std::vector<std::string>& lines, xd::font_style* style);
 };
 
 #endif

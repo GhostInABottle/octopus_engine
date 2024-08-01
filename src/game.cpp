@@ -532,27 +532,23 @@ void Game::frame_update() {
     if (gamepad_disconnected) {
         window->reset_joystick_disconnect_state();
         auto config = Configurations::get<std::string>("controls.pause-on-gamepad-disconnect");
-        LOGGER_I << "Gamepad disconnected. Pause settings: " << config;
         gamepad_disconnected = config == "always" || (config == "auto"
             && window->last_input_type() == xd::input_type::INPUT_GAMEPAD);
+        LOGGER_I << "Gamepad disconnected. Pause settings: " << config;
     }
-
-    // Pause/resume game if pause button is triggered, or pause if gamepad disconnected
-    bool triggered_pause = triggered(pimpl->pause_button)
-        || (gamepad_disconnected && !paused);
 
     // Only resume if there is no pause script, otherwise the script should do it
     if (paused && !pimpl->pause_scripting_interface) {
-        if (triggered_pause)
+        if (triggered_once(pimpl->pause_button)) {
             resume();
-        else if (pimpl->focus_pause && window->focused()) {
+        } else if (pimpl->focus_pause && window->focused()) {
             resume();
             pimpl->focus_pause = false;
         }
     } else if (!paused && pausing_enabled) {
-        if (triggered_once(pimpl->pause_button))
+        if (triggered_once(pimpl->pause_button) || gamepad_disconnected) {
             pause();
-        else if (pimpl->pause_unfocused && !window->focused()) {
+        }  else if (pimpl->pause_unfocused && !window->focused()) {
             pause();
             pimpl->focus_pause = true;
         }

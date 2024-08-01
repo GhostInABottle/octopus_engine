@@ -329,6 +329,7 @@ void bind_canvas_types(sol::state& lua, Game& game) {
     text_canvas_type["shadow_offset"] = sol::property(&Text_Canvas::get_shadow_offset, &Text_Canvas::set_shadow_offset);
     text_canvas_type["shadow_color"] = sol::property(&Text_Canvas::get_shadow_color, &Text_Canvas::set_shadow_color);
     text_canvas_type["font_type"] = sol::property(&Text_Canvas::get_font_type, &Text_Canvas::set_font_type);
+    text_canvas_type["centered"] = sol::property(&Text_Canvas::get_centered, sol::resolve<void(bool)>(&Text_Canvas::set_centered));
     text_canvas_type["permissive_tag_parsing"] = sol::property(&Text_Canvas::has_permissive_tag_parsing, &Text_Canvas::set_permissive_tag_parsing);
 
     text_canvas_type["reset_outline"] = &Text_Canvas::reset_outline;

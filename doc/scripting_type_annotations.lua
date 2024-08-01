@@ -979,6 +979,7 @@ function Engine_Base_Canvas:get_sprite_child(child_name) end
 ---@field shadow_offset Engine_Vec2
 ---@field shadow_color Engine_Color
 ---@field font_type string
+---@field centered boolean
 ---@field permissive_tag_parsing boolean
 local Engine_Text_Canvas = {}
 

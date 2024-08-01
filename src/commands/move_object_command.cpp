@@ -14,9 +14,9 @@ Move_Object_Command::Move_Object_Command(Game& game, Move_Object_Command::Option
         , animated(options.animated)
         , old_state(options.object.get_state())
         , complete(false) {
-    if (direction == Direction::FORWARD) {
+    if (direction_contains(direction, Direction::FORWARD)) {
         direction = options.object.get_direction();
-    } else if (direction == Direction::BACKWARD) {
+    } else if (direction_contains(direction, Direction::BACKWARD)) {
         direction = opposite_direction(options.object.get_direction());
         change_facing = false;
     }
@@ -30,6 +30,7 @@ void Move_Object_Command::execute() {
         complete = true;
         return;
     }
+
     if (!paused) {
         auto collision = object->move(direction, object->get_fps_independent_speed(),
             Collision_Check_Type::BOTH, change_facing, animated);

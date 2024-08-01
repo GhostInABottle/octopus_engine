@@ -67,48 +67,64 @@ if c.selected == 1 then
     text(o, "{color=blue}Test?\n\n {rainbow}Hello,\nd{color=green}ea{/color}r\n world!{/rainbow}{/color}\nHow{bold} about {/bold}that?"):wait()
     text(Vec2(100, 100), "{typewriter}Slowly showing some text...{/typewriter}", 3000):wait()
     centered_text(100, "Some centered {italic}text goes here, ha ha\nyeah {/italic}that's right!"):wait()
-    wait(500)
-    text(o, 'Manually showing text with a canvas'):wait()
-    local text_canvas = Text_Canvas(40, 40, "{type=bold2}This{/type} is a {bold}Canvas{/bold} {italic}test{/italic},\n will it work?")
-    text_canvas.scissor_box = Rect(30, 20, 140, 60)
-    text_canvas:link_font('bold2', 'data/Roboto-Bold.ttf')
-    text_canvas:show()
-    wait(1500)
-    text(o, 'Changing text properties'):wait()
-    print('Font size ' .. text_canvas.font_size)
-    text_canvas.font_size = 15
-    function color_to_s(color)
-     return '(' .. color.r .. ', ' .. color.g .. ', ' .. color.b .. ', ' .. color.a .. ')'
+    local pos_type = bit.bor(bit.bor(Text_Position_Type.centered_x, Text_Position_Type.exact_y),
+        bit.bor(Text_Position_Type.camera_relative, Text_Position_Type.always_visible))
+    options = {
+        text = "Some centered text around x, ha ha\nyeah that's right!",
+        centered = true,
+        position_type = pos_type,
+        position = Vec2(400, 400),
+    }
+    text(options):wait()
+    local canvas_choice = choices(o, 'Test canvas text?', { 'yes', 'no' }, true)
+    canvas_choice:wait()
+    if canvas_choice.selected == 1 then
+        text(o, 'Manually showing text with a canvas'):wait()
+        local text_canvas = Text_Canvas(40, 40, "{type=bold2}This{/type} is a {bold}Canvas{/bold} {italic}test{/italic},\n will it work?")
+        text_canvas.scissor_box = Rect(30, 20, 140, 60)
+        text_canvas:link_font('bold2', 'data/Roboto-Bold.ttf')
+        text_canvas:show()
+        wait(1500)
+        text(o, 'Changing text properties'):wait()
+        print('Setting centered')
+        text_canvas.centered = true
+        game:wait_for_input()
+        text_canvas.centered = false
+        print('Font size ' .. text_canvas.font_size)
+        text_canvas.font_size = 15
+        function color_to_s(color)
+         return '(' .. color.r .. ', ' .. color.g .. ', ' .. color.b .. ', ' .. color.a .. ')'
+        end
+        print('Text color ' .. color_to_s(text_canvas.color))
+        text_canvas.color = Color('red')
+        print('Line height ' .. text_canvas.line_height)
+        text_canvas.line_height = 20
+        print('Outline width ' .. text_canvas.outline_width)
+        text_canvas.outline_width = 2
+        print('Outline color ' .. color_to_s(text_canvas.outline_color))
+        text_canvas.outline_color = Color('yellow')
+        print('Shadow offset (' .. text_canvas.shadow_offset.x .. ', ' .. text_canvas.shadow_offset.y .. ')')
+        text_canvas.shadow_offset = Vec2(-18, -18)
+        print('Shadow color ' .. color_to_s(text_canvas.shadow_color))
+        text_canvas.shadow_color = Color('blue')
+        game:wait_for_input()
+        print('Type: ' .. text_canvas.font_type)
+        text_canvas.font_type = 'bold'
+        game:wait_for_input()
+        print('Setting font')
+        text_canvas:set_font('data/Roboto-Bold.ttf')
+        print('Setting linked font')
+        text_canvas:link_font('italic', 'data/Roboto-Italic.ttf')
+        text_canvas:link_font('bold', 'data/Roboto-Regular.ttf')
+        text_canvas:link_font('bold2', 'data/Roboto-Italic.ttf')
+        game:wait_for_input()
+        print('Test permissive mode')
+        text_canvas.permissive_tag_parsing = true
+        text_canvas.text = 'Hello {italic}thing'
+        game:wait_for_input()
+        text_canvas:hide()
+        text_canvas = nil
     end
-    print('Text color ' .. color_to_s(text_canvas.color))
-    text_canvas.color = Color('red')
-    print('Line height ' .. text_canvas.line_height)
-    text_canvas.line_height = 20
-    print('Outline width ' .. text_canvas.outline_width)
-    text_canvas.outline_width = 2
-    print('Outline color ' .. color_to_s(text_canvas.outline_color))
-    text_canvas.outline_color = Color('yellow')
-    print('Shadow offset (' .. text_canvas.shadow_offset.x .. ', ' .. text_canvas.shadow_offset.y .. ')')
-    text_canvas.shadow_offset = Vec2(-18, -18)
-    print('Shadow color ' .. color_to_s(text_canvas.shadow_color))
-    text_canvas.shadow_color = Color('blue')
-    wait(2000)
-    print('Type: ' .. text_canvas.font_type)
-    text_canvas.font_type = 'bold'
-    wait(2000)
-    print('Setting font')
-    text_canvas:set_font('data/Roboto-Bold.ttf')
-    print('Setting linked font')
-    text_canvas:link_font('italic', 'data/Roboto-Italic.ttf')
-    text_canvas:link_font('bold', 'data/Roboto-Regular.ttf')
-    text_canvas:link_font('bold2', 'data/Roboto-Italic.ttf')
-    wait(3000)
-    print('Test permissive mode')
-    text_canvas.permissive_tag_parsing = true
-    text_canvas.text = 'Hello {italic}thing'
-    wait(1000)
-    text_canvas:hide()
-    text_canvas = nil
 elseif c.selected == 2 then
     -- Canvas
     text(o, "Showing and updating canvas"):wait()
@@ -144,7 +160,8 @@ elseif c.selected == 3 then
     o:move(RIGHT, 64):wait()
     o:move(DOWN, 100):wait()
     o:face(RIGHT)
-    o:move(BACKWARD, 50):wait()
+    o:move(BACKWARD, 30):wait()
+    o:move(FORWARD, 20):wait()
     text(o, "Showing a pose"):wait()
     o:show_pose("Pose Test"):wait()
     text(o, "Showing an infinite pose until complete"):wait()

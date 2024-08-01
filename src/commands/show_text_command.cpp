@@ -49,9 +49,9 @@ struct Show_Text_Command::Impl : Timed_Command {
     // Is the typewriter effect done?
     int typewriter_done;
 
-    explicit Impl(Game& game, Text_Options options) :
-            Timed_Command(game, options.duration),
-            options(std::move(options)),
+    explicit Impl(Game& game, Text_Options text_options) :
+            Timed_Command(game, text_options.duration),
+            options(std::move(text_options)),
             complete(false),
             text_complete(false),
             was_disabled(false),
@@ -81,19 +81,22 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         // Find text width based on widest line
         auto& font_style = game.get_font_style();
+        std::vector<float> line_widths;
         auto text_width = 0.0f;
         for (auto& line : text_lines) {
             auto width = game.text_width(line, nullptr, &font_style);
-            if (width > text_width)
+            line_widths.push_back(width);
+            if (width > text_width) {
                 text_width = width;
+            }
         }
 
         // Set text position based on size estimation
         float char_height = font_style.line_height();
         float text_height = char_height * (text_lines.size() - 1);
-        auto pos{this->options.position};
+        auto pos{options.position};
 
-        auto pos_type = this->options.position_type;
+        auto pos_type = options.position_type;
         bool camera_relative = (pos_type & Text_Position_Type::CAMERA_RELATIVE) != Text_Position_Type::NONE;
         bool always_visible = (pos_type & Text_Position_Type::ALWAYS_VISIBLE) != Text_Position_Type::NONE;
 
@@ -108,35 +111,43 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         auto game_width = static_cast<float>(game.game_width());
-        auto game_height = static_cast<float>(game.game_height());
-        if (this->options.centered) {
-            pos.x = game_width / 2 - text_width / 2;
-        } else if ((pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE) {
+        auto x_centered = (pos_type & Text_Position_Type::CENTERED_X) != Text_Position_Type::NONE;
+        if (x_centered) {
+            // The text box as a whole is centered around the x coordinate
             pos.x -= text_width / 2;
+        } else if (options.centered) {
+            // Each line is centered around the x coordinate or the center of the screen
+            pos.x = game_width / 2 - text_width / 2;
         }
 
         if (always_visible) {
             // Make sure text fits on the screen
-            if (pos.x + text_width > game_width - screen_margins.x)
+            if (pos.x + text_width > game_width - screen_margins.x) {
                 pos.x = game_width - text_width - screen_margins.x;
-            if (pos.x < screen_margins.x)
+            }
+            if (pos.x < screen_margins.x) {
                 pos.x = screen_margins.x;
-            if (pos.y + text_height > game_height - screen_margins.y)
+            }
+
+            auto game_height = static_cast<float>(game.game_height());
+            if (pos.y + text_height > game_height - screen_margins.y) {
                 pos.y = game_height - text_height - screen_margins.y;
-            if (pos.y < screen_margins.y)
+            }
+            if (pos.y < screen_margins.y) {
                 pos.y = screen_margins.y;
+            }
         }
 
         // Set typewriter options if needed
         std::optional<Text_Canvas::Typewriter_Options> typewriter_options;
-        if (this->options.typewriter_on) {
+        if (options.typewriter_on) {
             typewriter_options = Text_Canvas::Typewriter_Options{};
             typewriter_options->slot = game.get_map()->next_typewriter_slot();
-            typewriter_options->delay = this->options.typewriter_delay;
-            typewriter_options->sound_filename = this->options.typewriter_sound;
-            typewriter_options->sound_volume = this->options.typewriter_sound_volume;
-            typewriter_options->sound_pitch = this->options.typewriter_sound_pitch;
-            typewriter_options->sound_max_pitch = this->options.typewriter_sound_max_pitch;
+            typewriter_options->delay = options.typewriter_delay;
+            typewriter_options->sound_filename = options.typewriter_sound;
+            typewriter_options->sound_volume = options.typewriter_sound_volume;
+            typewriter_options->sound_pitch = options.typewriter_sound_pitch;
+            typewriter_options->sound_max_pitch = options.typewriter_sound_max_pitch;
         }
 
         // Create the text canvas and show it
@@ -144,9 +155,14 @@ struct Show_Text_Command::Impl : Timed_Command {
             camera_relative || always_visible, typewriter_options);
         canvas->set_opacity(0.0f);
 
-        if (this->options.background_visible) {
+        if (options.centered) {
+            canvas->set_x(pos.x + text_width / 2);
+            canvas->set_centered(true, std::move(line_widths));
+        }
+
+        if (options.background_visible) {
             canvas->set_background_visible(true);
-            canvas->set_background_color(this->options.background_color);
+            canvas->set_background_color(options.background_color);
             canvas->set_background_rect(xd::rect{pos.x, pos.y - char_height,
                 text_width, text_height + char_height});
         }
@@ -215,10 +231,11 @@ struct Show_Text_Command::Impl : Timed_Command {
         Direction dir = Direction::NONE;
         Direction pressed_dir = Direction::NONE;
 
-        if (game.pressed("down"))
+        if (game.pressed("down")) {
             pressed_dir = Direction::DOWN;
-        if (game.pressed("up"))
+        } else if (game.pressed("up")) {
             pressed_dir = Direction::UP;
+        }
 
         if (pressed_dir != Direction::NONE) {
             // Track long presses
@@ -241,17 +258,18 @@ struct Show_Text_Command::Impl : Timed_Command {
             press_start = 0;
         }
 
-        if (game.triggered("down"))
+        if (game.triggered("down")) {
             dir = Direction::DOWN;
-        if (game.triggered("up"))
+        } else if (game.triggered("up")) {
             dir = Direction::UP;
+        }
 
         auto choice_count = options.choices.size();
-        if (dir == Direction::DOWN)
+        if ((dir & Direction::DOWN) != Direction::NONE) {
             current_choice = (current_choice + 1) % choice_count;
-
-        if (dir == Direction::UP)
+        } else if ((dir & Direction::UP) != Direction::NONE) {
             current_choice = (current_choice + choice_count - 1) % choice_count;
+        }
 
         // Update the choice colors
         if (old_choice != current_choice) {

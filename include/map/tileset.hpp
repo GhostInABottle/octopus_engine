@@ -13,6 +13,7 @@ struct Tileset : public Tmx_Object {
     struct Tile {
         int id;
         Tmx_Properties properties;
+        Tile() : id(0) {}
     };
     // GID of first tile
     int first_id;
@@ -32,6 +33,8 @@ struct Tileset : public Tmx_Object {
     std::shared_ptr<xd::texture> image_texture;
     // List of tiles properties
     std::vector<Tile> tiles;
+
+    Tileset() : first_id(0), tile_width(1), tile_height(1) {}
 
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     static std::unique_ptr<Tileset> load(const std::string& filename);
