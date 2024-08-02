@@ -225,7 +225,7 @@ struct Show_Text_Command::Impl : Timed_Command {
     }
 
     // Update the active choice based on input
-    void update_choice() {
+    void update_choice(bool check_pressed) {
         unsigned int old_choice = current_choice;
 
         Direction dir = Direction::NONE;
@@ -237,7 +237,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             pressed_dir = Direction::UP;
         }
 
-        if (pressed_dir != Direction::NONE) {
+        if (check_pressed && pressed_dir != Direction::NONE) {
             // Track long presses
             auto ticks = game.is_paused() ? game.window_ticks() : game.ticks();
             if (pressed_dir == pressed_direction) {
@@ -313,7 +313,7 @@ struct Show_Text_Command::Impl : Timed_Command {
             if (!force_stopped && !mostly_visible) {
                 // Allow updating selected choice while the canvas is being shown
                 if (!paused && !text_complete && !options.choices.empty()) {
-                    update_choice();
+                    update_choice(false);
                 }
                 return;
             }
@@ -365,7 +365,7 @@ struct Show_Text_Command::Impl : Timed_Command {
                     text_complete = true;
                     selected_choice = -1;
                 } else {
-                    update_choice();
+                    update_choice(true);
                 }
             }
         }
