@@ -4,6 +4,7 @@
 #ifdef _WIN32
 #include "../../include/vendor/utf8conv.h"
 #endif
+#include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <chrono>
 
@@ -124,6 +125,14 @@ std::string Boost_Filesystem::extension(const std::string& path) {
 
 bool Boost_Filesystem::copy(const std::string& source, const std::string& destination) {
     try {
+#if BOOST_VERSION >= 107400
+        fs::copy(detail::string_to_utf8_path(source),
+            detail::string_to_utf8_path(destination),
+            fs::copy_options::overwrite_existing | fs::copy_options::recursive);
+
+        return true;
+#else
+        // Older Boost FS didn't copy directories and used different options
         auto source_is_dir = is_directory(source);
         auto destination_exists = exists(destination);
         auto destination_path = detail::string_to_utf8_path(destination);
@@ -149,6 +158,7 @@ bool Boost_Filesystem::copy(const std::string& source, const std::string& destin
         }
 
         return true;
+#endif
     } catch (fs::filesystem_error& e) {
         LOGGER_E << "Error copying " << source << " to " << destination << ": " << e.what();
         return false;
@@ -190,4 +200,5 @@ bool Boost_Filesystem::create_directories(const std::string& path) {
         return false;
     }
 }
+
 #endif

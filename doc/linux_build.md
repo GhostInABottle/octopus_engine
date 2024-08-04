@@ -1,10 +1,10 @@
 # Building on Linux
 
-The following are the steps needed to prepare the dependencies and build the engine using Ubuntu (18.04 to be exact)
+The following are the steps needed to prepare the dependencies and build the engine using Ubuntu.
 
-* Install the following packages:
+* Install the following packages or build them if a newer version is needed:
   * build-essential
-  * libglfw3-dev (3.3)
+  * libglfw3-dev (3.4)
   * libboost-dev
     * libboost-filesystem-dev (if GCC version is less tha 8)
   * libfreetype6-dev
