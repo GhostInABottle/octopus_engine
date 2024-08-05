@@ -1,3 +1,4 @@
+#include "../include/configurations.hpp"
 #include "../include/environments/default_environment.hpp"
 #include "../include/game.hpp"
 #include "../include/log.hpp"
@@ -8,6 +9,7 @@
 #include "../include/utility/file.hpp"
 #include "../include/xd/audio/audio.hpp"
 #include <string>
+#include <variant>
 #include <vector>
 #include <memory>
 #ifdef __APPLE__
@@ -94,15 +96,20 @@ int main(int argc, char* argv[]) {
         auto audio = std::make_shared<xd::audio>();
 
         auto preferred_configs = environment->get_preferred_configs();
+        std::string default_scale_mode;
         for (auto& [key, value] : preferred_configs) {
-            Configurations::override_value(key, value);
+            if (key == "graphics.scale-mode") {
+                default_scale_mode = std::get<std::string>(value);
+            } else {
+                Configurations::override_value(key, value);
+            }
         }
 
         LOGGER_I << "Creating the window";
         Game game(args, audio, *environment);
 
         LOGGER_I << "Initializing...";
-        game.init();
+        game.init(default_scale_mode);
 
         LOGGER_I << "We have a liftoff!";
         game.run();

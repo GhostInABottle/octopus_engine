@@ -397,13 +397,13 @@ Game::~Game() {
     Configurations::remove_observer("Game");
 }
 
-void Game::init() {
+void Game::init(const std::string& default_scale_mode) {
     // Set executable icons
     pimpl->set_icons(*window);
 
     // Set members
     clock = std::make_unique<Clock>(*this);
-    camera = std::make_unique<Camera>(*this);
+    camera = std::make_unique<Camera>(*this, default_scale_mode);
     framebuffer = std::make_unique<xd::framebuffer>();
 
     // Listen to config changes

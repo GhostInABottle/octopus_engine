@@ -5,6 +5,7 @@
 #include "xd/graphics/transform_geometry.hpp"
 #include "xd/graphics/types.hpp"
 #include <memory>
+#include <string>
 
 class Game;
 class Map_Object;
@@ -14,7 +15,7 @@ class Camera : public xd::entity<Camera> {
 public:
     Camera(const Camera&) = delete;
     Camera& operator=(const Camera&) = delete;
-    explicit Camera(Game& game);
+    explicit Camera(Game& game, const std::string& default_scale_mode);
     ~Camera();
     // Called when game window size is changed
     void set_size(int width, int height, bool force = false);

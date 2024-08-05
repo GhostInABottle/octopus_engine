@@ -46,7 +46,7 @@ public:
     ~Game();
 
     // Initialization
-    void init();
+    void init(const std::string& default_scale_mode);
     // Main game loop
     void run();
     // Logic update

@@ -22,9 +22,10 @@
 #include <cstdlib>
 
 struct Camera::Impl {
-    explicit Impl()
+    explicit Impl(const std::string& default_scale_mode)
         : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled"))
-        , clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color"))) {}
+        , clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color")))
+        , default_scale_mode(default_scale_mode) {}
     // Update OpenGL viewport
     void update_viewport(xd::rect viewport, xd::vec2 shake_offset = xd::vec2{0.0f}) const {
         glViewport(static_cast<int>(viewport.x + shake_offset.x),
@@ -40,6 +41,8 @@ struct Camera::Impl {
     xd::vec4 clear_color;
     // Last screen size
     xd::ivec2 screen_size;
+    // Default environment scale mode
+    std::string default_scale_mode;
     // Apply a certain shader
     void set_shader(const std::string& vertex, const std::string& fragment);
     // Render a full-screen shader
@@ -144,7 +147,7 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
     batch.render();
 }
 
-Camera::Camera(Game& game)
+Camera::Camera(Game& game, const std::string& default_scale_mode)
         : game(game),
         position(0.0f, 0.0f),
         screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
@@ -155,7 +158,7 @@ Camera::Camera(Game& game)
         object_center_offset(Configurations::get<float>("player.camera-center-offset-x"),
             Configurations::get<float>("player.camera-center-offset-y")),
         shaker(nullptr),
-        pimpl(std::make_unique<Impl>())
+        pimpl(std::make_unique<Impl>(default_scale_mode))
 {
     calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
     // Add components
@@ -186,8 +189,9 @@ void Camera::calculate_viewport(int width, int height) {
     const auto game_height = static_cast<float>(game.game_height(false));
 
     if (scale_mode == "default") {
-        // The environment can override "default" at startup if it needs to
-        scale_mode = "aspect";
+        scale_mode = pimpl->default_scale_mode.empty()
+            ? "aspect"
+            : pimpl->default_scale_mode;
     }
 
     if (scale_mode == "stretch") {
@@ -408,23 +412,18 @@ void Screen_Shaker::change_settings(xd::vec2 new_strength, xd::vec2 new_speed) {
     strength = new_strength;
     const auto logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     speed = new_speed * (60.0f / logic_fps);
-    LOGGER_I << "Setting strength to " << strength.x << ", speed to " << speed.x << " - old offset("
-        << offset.x << ", " << offset.y << ")";
+
+    // Prevents changing direction twice if offset was already over the strength limit
     offset.x = std::max(-strength.x * 2, std::min(strength.x * 2, offset.x));
     offset.y = std::max(-strength.y * 2, std::min(strength.y * 2, offset.y));
-    LOGGER_I << "New offset (" << offset.x << ", " << offset.y << ")";
 }
 
 void Screen_Shaker::update(Camera&) {
     offset += (strength * speed * last_direction) / 10.0f;
-    LOGGER_I << "Offset += (" << strength.x << " * " << speed.x << " * (" << last_direction.x
-        << ", " << last_direction.y << ")) / 10 = (" << offset.x << ", " << offset.y << ")";
     if (offset.x > strength.x * 2 || offset.x < -strength.x * 2) {
-        LOGGER_I << "Offset X > or < " << strength.x * 2 << ", switching direction";
         last_direction.x *= -1.0f;
     }
     if (offset.y > strength.y * 2 || offset.y < -strength.y * 2) {
-        LOGGER_I << "Offset Y > or < " << strength.y * 2 << ", switching direction";
         last_direction.y *= -1.0f;
     }
 }

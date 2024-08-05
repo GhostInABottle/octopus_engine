@@ -113,9 +113,7 @@ const Configurations::value_map Steam_Environment::get_preferred_configs() const
         configs["graphics.fullscreen"] = true;
     }
 
-    auto stretch_scale = is_steam_deck
-        && Configurations::get<std::string>("graphics.scale-mode") == "default";
-    if (stretch_scale) {
+    if (is_steam_deck) {
         configs["graphics.scale-mode"] = std::string{"stretch"};
     }
 
