@@ -62,6 +62,10 @@ xd::window::window(const std::string& title, int width, int height, const window
         throw xd::window_creation_failed();
     }
 
+#ifdef linux
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+#endif
+
     // initialize glfw
     if (glfwInit() == GL_FALSE) {
         throw xd::window_creation_failed();
