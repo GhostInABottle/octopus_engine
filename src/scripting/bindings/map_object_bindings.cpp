@@ -8,6 +8,7 @@
 #include "../../../include/log.hpp"
 #include "../../../include/map/map.hpp"
 #include "../../../include/map/map_object.hpp"
+#include "../../../include/map/layers/object_layer.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/xd/graphics/types.hpp"
@@ -107,6 +108,10 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["size"] = sol::property(&Map_Object::get_size, &Map_Object::set_size);
     object_type["x"] = sol::property(&Map_Object::get_x, &Map_Object::set_x);
     object_type["y"] = sol::property(&Map_Object::get_y, &Map_Object::set_y);
+    object_type["layer"] = sol::property(&Map_Object::get_layer,
+        [&game](Map_Object* obj, Object_Layer* layer) {
+            game.get_map()->move_object_to_layer(obj, layer);
+        });
     object_type["color"] = sol::property(&Map_Object::get_color, &Map_Object::set_color);
     object_type["magnification"] = sol::property(&Map_Object::get_magnification, &Map_Object::set_magnification);
     object_type["opacity"] = sol::property(&Map_Object::get_opacity, &Map_Object::set_opacity);

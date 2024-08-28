@@ -117,9 +117,8 @@ struct Sprite::Impl {
             origin.value_or(pose->origin));
     }
 
-    void update() {
-        if (frame_count == 0 || stop_updating)
-            return;
+    void update(std::optional<xd::vec2> object_pos = std::nullopt) {
+        if (frame_count == 0 || stop_updating) return;
 
         auto current_frame = &pose->frames[frame_index];
 
@@ -128,11 +127,15 @@ struct Sprite::Impl {
         }
 
         auto audio = game.get_audio_player().get_audio();
-        auto sound_file = current_frame->sound_file.get();
+        auto& sound_file = current_frame->sound_file;
         auto play_sfx = audio && sound_file
             && (last_sound_frame != frame_index || sound_file->stopped());
         if (play_sfx) {
-            sound_file->set_volume(current_frame->sound_volume * sfx_volume);
+            if (object_pos) {
+                update_sound_attenuation(*object_pos, true);
+            } else {
+                sound_file->set_volume(current_frame->sound_volume * sfx_volume);
+            }
             sound_file->play();
             last_sound_frame = frame_index;
         }
@@ -318,9 +321,8 @@ struct Sprite::Impl {
             std::unordered_map<int, unsigned int>& matches) {
         auto candidate = matches[candidate_index];
         auto best = best_index > -1 ? matches[best_index] : 0;
-        if (candidate > best) return 1;
-        if (best > candidate) return -1;
-        return 0;
+        return candidate == best ? 0
+            : (candidate > best ? 1 : -1);
     }
 
     void set_default_pose() {
@@ -328,6 +330,7 @@ struct Sprite::Impl {
             pose = &data->poses[0];
             return;
         }
+
         for (auto& p : data->poses) {
             if (p.name == data->default_pose) {
                 pose = &p;
@@ -336,16 +339,21 @@ struct Sprite::Impl {
         }
     }
 
-    void update_sound_attenuation(Map_Object& object) {
-        auto player_position{ game.get_player()->get_centered_position() };
-        auto distance = xd::length(object.get_centered_position() - player_position);
-
-        // Sound is 1 within [factor] pixels, then falls off based on distance
-        sfx_volume = std::min(1.0f, sound_attenuation_factor / (1.0f + distance));
+    void update_sound_attenuation(xd::vec2 object_pos, bool force = false) {
         auto current_frame = &pose->frames[frame_index];
-        if (current_frame->sound_file && current_frame->sound_file->playing()) {
-            current_frame->sound_file->set_volume(sfx_volume);
-        }
+        auto& sound_file = current_frame->sound_file;
+        auto skip = !sound_file || (!force && !sound_file->playing());
+        if (skip) return;
+
+        auto original_volume = current_frame->sound_volume;
+        const auto player = game.get_player();
+        auto distance = xd::length(object_pos - player->get_centered_position());
+
+        // Volume is at original level within [factor] pixels,
+        // then falls off based on distance
+        auto volume = std::min(original_volume,
+            original_volume * sound_attenuation_factor / distance);
+        sound_file->set_volume(volume * sfx_volume);
     }
 };
 
@@ -402,11 +410,14 @@ void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, con
 void Sprite::update(Map_Object& object) {
     if (!object.is_visible()) return;
 
-    if (object.is_sound_attenuation_enabled()) {
-        pimpl->update_sound_attenuation(object);
+    if (!object.is_sound_attenuation_enabled()) {
+        pimpl->update();
+        return;
     }
 
-    pimpl->update();
+    auto pos = object.get_centered_position();
+    pimpl->update_sound_attenuation(pos);
+    pimpl->update(pos);
 }
 
 void Sprite::update() {

@@ -1105,6 +1105,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field positioned_bounding_circle? Engine_Circle
 ---@field x number
 ---@field y number
+---@field layer Engine_Object_Layer
 ---@field size Engine_Vec2
 ---@field sprite string
 ---@field pose string

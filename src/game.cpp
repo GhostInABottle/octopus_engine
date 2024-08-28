@@ -862,6 +862,7 @@ void Game::load_next_map() {
     player->set_proximate_object(nullptr);
     player->set_outlining_object(nullptr);
     player->clear_linked_objects();
+    player->set_layer(nullptr);
 
     // Add the player to the map
     auto start_pos = pimpl->next_position.value_or(map->get_starting_position());

@@ -299,17 +299,6 @@ int Map::object_count() const noexcept {
 }
 
 Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_Layer* layer) {
-    // If layer isn't specified try getting a layer named "objects",
-    // if none is found use the 'middle' object layer
-    if (!layer) {
-        layer = static_cast<Object_Layer*>(get_layer_by_name("objects"));
-        if (!layer) {
-            int index = static_cast<int>(std::floor(object_layers.size() / 2.0));
-            layer = object_layers[index];
-        }
-    }
-    object->set_layer(layer);
-
     // Update ID counter for new objects
     int id = object->get_id();
     if (id == -1) {
@@ -337,8 +326,16 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
     objects[id] = object;
     object->set_name(name);
 
-    auto& layer_objects = layer->get_objects();
-    layer_objects.push_back(object.get());
+    // If layer isn't specified try getting a layer named "objects",
+    // if none is found use the 'middle' object layer
+    if (!layer) {
+        layer = static_cast<Object_Layer*>(get_layer_by_name("objects"));
+        if (!layer) {
+            int index = static_cast<int>(std::floor(object_layers.size() / 2.0));
+            layer = object_layers[index];
+        }
+    }
+    move_object_to_layer(object.get(), layer);
 
     return object.get();
 }
@@ -347,6 +344,23 @@ Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<s
         std::optional<xd::vec2> pos, std::optional<Direction> dir, std::optional<Object_Layer*> layer) {
     return add_object(std::make_shared<Map_Object>(game, name.value_or(""), sprite_file.value_or(""),
         pos.value_or(xd::vec2{}), dir.value_or(Direction::DOWN)), layer.value_or(nullptr));
+}
+
+void Map::move_object_to_layer(Map_Object* object, Object_Layer* layer) {
+    auto old_layer = object->get_layer();
+    if (layer == old_layer) return;
+
+    if (old_layer) {
+        auto& old_layer_objects = old_layer->get_objects();
+        auto removed_start = std::remove(old_layer_objects.begin(),
+            old_layer_objects.end(), object);
+        old_layer_objects.erase(removed_start, old_layer_objects.end());
+    }
+
+    object->set_layer(layer);
+
+    auto& layer_objects = layer->get_objects();
+    layer_objects.push_back(object);
 }
 
 Map_Object* Map::get_object(std::string name) const {

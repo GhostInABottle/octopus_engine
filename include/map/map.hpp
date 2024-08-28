@@ -85,6 +85,8 @@ public:
         std::optional<xd::vec2> pos = std::nullopt,
         std::optional<Direction> dir = std::nullopt,
         std::optional<Object_Layer*> layer = std::nullopt);
+    // Change an object's layer
+    void move_object_to_layer(Map_Object* object, Object_Layer* layer);
     // Get object by name
     Map_Object* get_object(std::string name) const;
     // Get object by ID
