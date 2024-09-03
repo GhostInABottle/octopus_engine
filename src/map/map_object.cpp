@@ -521,7 +521,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     }
 
     if (properties.contains("color")) {
-        object_ptr->set_color(hex_to_color(properties["color"]));
+        object_ptr->set_color(string_to_color(properties["color"]));
     }
     if (properties.contains("opacity")) {
         object_ptr->set_opacity(std::stof(properties["opacity"]));
@@ -614,6 +614,10 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     if (properties.contains("outlined-object")) {
         object_ptr->set_outlined_object_id(std::stoi(properties["outlined-object"]));
+    }
+
+    if (properties.contains("outline-color")) {
+        object_ptr->set_outline_color(string_to_color(properties["outline-color"]));
     }
 
     if (properties.contains("draw-order")) {

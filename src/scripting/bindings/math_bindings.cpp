@@ -95,35 +95,7 @@ void bind_math_types(sol::state& lua) {
         [](xd::vec4 other) { return xd::vec4{ other }; },
         [](float r, float g, float b, float a) { return xd::vec4{ r, g, b, a }; },
         [](float r, float g, float b) { return xd::vec4{ r, g, b, 1.0f }; },
-        [](std::string name) {
-            if (name == "clear") {
-                auto clear = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
-                return xd::vec4{ clear };
-            } else if (name == "none") {
-                return xd::vec4{};
-            } else if (name == "black") {
-                return xd::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
-            } else if (name == "red") {
-                return xd::vec4{ 1.0f, 0.0f, 0.0f, 1.0f };
-            } else if (name == "green") {
-                return xd::vec4{ 0.0f, 1.0f, 0.0f, 1.0f };
-            } else if (name == "blue") {
-                return xd::vec4{ 0.0f, 0.0f, 1.0f, 1.0f };
-            } else if (name == "yellow") {
-                return xd::vec4{ 1.0f, 1.0f, 0.0f, 1.0f };
-            } else if (name == "white") {
-                return xd::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
-            } else if (name == "gray") {
-                return xd::vec4{ 0.5f, 0.5f, 0.5f, 1.0f };
-            } else if (name == "purple") {
-                return xd::vec4{ 1.0f, 0.0f, 1.0f, 1.0f };
-            } else if (name == "cyan") {
-                return xd::vec4{ 0.0f, 1.0f, 1.0f, 1.0f };
-            }
-
-            // Throws if name is not a valid hex
-            return xd::vec4{ hex_to_color(name) };
-        }
+        [](std::string name) { return string_to_color(name); }
     );
 
     // Rectangle

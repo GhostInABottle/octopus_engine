@@ -1,4 +1,5 @@
 #include "../../include/utility/color.hpp"
+#include "../../include/configurations.hpp"
 #include <stdexcept>
 #include <sstream>
 
@@ -21,19 +22,27 @@ unsigned int color_to_int(const xd::vec4& color) {
 }
 
 xd::vec4 hex_to_color(std::string hex) {
-    if (hex.empty())
+    if (hex.empty()) {
         throw std::runtime_error("Empty hex string");
-    if (hex[0] == '#')
+    }
+    if (hex[0] == '#') {
         hex = hex.substr(1);
-    if (hex.size() > 8)
+    }
+    if (hex.size() > 8) {
         throw std::runtime_error(hex + " is too long");
-    std::stringstream ss(hex);
+    }
+
     unsigned int value;
+    std::stringstream ss(hex);
     ss >> std::hex >> value;
-    if (!ss)
+    if (!ss) {
         throw std::runtime_error("Invalid hex string");
-    if (hex.size() == 6)
+    }
+
+    if (hex.size() == 6) {
         value |= 0xff000000;
+    }
+
     return int_to_color(value);
 }
 
@@ -55,4 +64,35 @@ std::string color_to_rgba_string(const xd::vec4& color) {
         << static_cast<int>(color.b * 255) << ','
         << static_cast<int>(color.a * 255);
     return ss.str();
+}
+
+// Convert a named color or hex value into a vec4 color
+xd::vec4 string_to_color(std::string name) {
+    if (name == "clear") {
+        auto clear = hex_to_color(Configurations::get<std::string>("startup.clear-color"));
+        return xd::vec4{ clear };
+    } else if (name == "none") {
+        return xd::vec4{};
+    } else if (name == "black") {
+        return xd::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    } else if (name == "red") {
+        return xd::vec4{ 1.0f, 0.0f, 0.0f, 1.0f };
+    } else if (name == "green") {
+        return xd::vec4{ 0.0f, 1.0f, 0.0f, 1.0f };
+    } else if (name == "blue") {
+        return xd::vec4{ 0.0f, 0.0f, 1.0f, 1.0f };
+    } else if (name == "yellow") {
+        return xd::vec4{ 1.0f, 1.0f, 0.0f, 1.0f };
+    } else if (name == "white") {
+        return xd::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    } else if (name == "gray") {
+        return xd::vec4{ 0.5f, 0.5f, 0.5f, 1.0f };
+    } else if (name == "purple") {
+        return xd::vec4{ 1.0f, 0.0f, 1.0f, 1.0f };
+    } else if (name == "cyan") {
+        return xd::vec4{ 0.0f, 1.0f, 1.0f, 1.0f };
+    }
+
+    // Throws if name is not a valid hex
+    return hex_to_color(name);
 }

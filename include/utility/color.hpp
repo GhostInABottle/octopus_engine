@@ -14,5 +14,7 @@ xd::vec4 hex_to_color(std::string hex);
 std::string color_to_hex(const xd::vec4& color, bool always_include_alpha = false);
 // Convert a vec4 color to an RGBA string
 std::string color_to_rgba_string(const xd::vec4& color);
+// Convert a named color or hex value into a vec4 color
+xd::vec4 string_to_color(std::string name);
 
 #endif

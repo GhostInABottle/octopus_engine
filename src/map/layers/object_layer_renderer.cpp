@@ -12,7 +12,8 @@
 
 Object_Layer_Renderer::Object_Layer_Renderer(const Layer& layer, const Camera& camera)
         : Layer_Renderer(layer, camera) {
-    default_outline_color = hex_to_color(Configurations::get<std::string>("game.object-outline-color"));
+    auto outline_color_config = Configurations::get<std::string>("game.object-outline-color");
+    default_outline_color = string_to_color(outline_color_config);
     batch.set_outline_color(default_outline_color);
 }
 

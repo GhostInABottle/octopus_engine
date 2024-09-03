@@ -29,7 +29,7 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
 
     if (auto color_node = node.first_attribute("tintcolor")) {
         try {
-            layer_ptr->tint_color = hex_to_color(color_node->value());
+            layer_ptr->tint_color = string_to_color(color_node->value());
         } catch (std::runtime_error& error) {
             throw tmx_exception(std::string{"Error setting object tint color to "}
                 + color_node->value() + ": " + error.what());
