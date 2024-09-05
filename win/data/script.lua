@@ -129,13 +129,25 @@ elseif c.selected == 2 then
     -- Canvas
     text(o, "Showing and updating canvas"):wait()
     local canvas = Image_Canvas("data/player.png", 100, 100, "#FF00FF")
+    canvas.origin = Vec2(0.5, 0.5)
     canvas.outline_color = Color('blue')
     canvas.magnification = Vec2(0, 0)
     canvas:show()
-    local cv_c = canvas:update(200, 100, 1, 1, 180, 1, 1500)
+    local cv_c = canvas:update {
+        position = Vec2(200, 100),
+        magnification = Vec2(2, 1),
+        angle = 180,
+        duration = 1500
+    }
     cv_c:wait()
     wait(500)
-    cv_c = canvas:update(100, 100, 1, 1, 0, 0, 1500)
+    cv_c = canvas:update {
+        position = Vec2(100, 100),
+        magnification = Vec2(1, 1),
+        angle = 0,
+        opacity = 0,
+        duration = 1500
+    }
     canvas:update_color(Color('yellow'), 1500)
     cv_c:wait()
 

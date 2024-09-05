@@ -109,6 +109,11 @@ public:
     // Game dimensions
     int game_width(bool magnified = true) const;
     int game_height(bool magnified = true) const;
+    xd::vec2 game_center(bool magnified = true) const {
+        auto w = game_width(magnified);
+        auto h = game_height(magnified);
+        return xd::vec2{ w / 2, h/ 2 };
+    }
     // Get screen magnification
     float get_magnification() const {
         return magnification;

@@ -1017,16 +1017,16 @@ function Text_Canvas(x, y, text) end
 ---@field outline_color? Engine_Color
 local Engine_Base_Image_Canvas = {}
 
----@overload fun(self : Engine_Base_Image_Canvas, pos : Engine_Vec2, mag : Engine_Vec2, angle : integer, opacity : number, duration : integer) : Engine_Command_Result
----@param x number
----@param y number
----@param mag_x number
----@param mag_y number
----@param angle integer
----@param opacity number
----@param duration integer
+---@class (exact) Engine_Canvas_Update_Parameters
+---@field duration integer
+---@field position? Engine_Vec2
+---@field magnification? Engine_Vec2
+---@field angle? integer
+---@field opacity? number
+
+---@param parameters Engine_Canvas_Update_Parameters
 ---@return Engine_Command_Result
-function Engine_Base_Image_Canvas:update(x, y, mag_x, mag_y, angle, opacity, duration) end
+function Engine_Base_Image_Canvas:update(parameters) end
 
 ---@overload fun(self : Engine_Base_Image_Canvas, mag : number, duration : integer) : Engine_Command_Result
 ---@overload fun(self : Engine_Base_Image_Canvas, mag : Engine_Vec2, duration : integer) : Engine_Command_Result
@@ -1592,6 +1592,7 @@ function Engine_Environment:open_url(url, mode) end
 ---@field last_input_type Engine_Input_Type
 ---@field game_width integer # readonly
 ---@field game_height integer # readonly
+---@field game_center Engine_Vec2 # readonly
 ---@field width integer # readonly
 ---@field height integer # readonly
 ---@field framebuffer_width integer # readonly

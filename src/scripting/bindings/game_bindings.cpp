@@ -33,6 +33,7 @@ void bind_game_types(sol::state& lua) {
     game_type["framebuffer_height"] = sol::property(&Game::framebuffer_height);
     game_type["game_width"] = sol::property([](Game& game) { return game.game_width(); });
     game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
+    game_type["game_center"] = sol::property([](Game& game) { return game.game_center(); });
     game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);
 
     game_type["ticks"] = sol::property(&Game::ticks);

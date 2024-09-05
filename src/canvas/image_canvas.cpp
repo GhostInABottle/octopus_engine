@@ -38,7 +38,7 @@ void Image_Canvas::render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* 
     }
 
     auto angle = get_angle().value_or(0.0f);
-    auto origin = get_origin().value_or(xd::vec2{ 0.5f, 0.5f });
+    auto origin = get_origin().value_or(xd::vec2{ 0.0f, 0.0f });
     xd::vec2 mag = get_magnification();
     batch.add(image_texture, pos.x, pos.y, xd::radians(angle),
         mag, get_color(), origin);

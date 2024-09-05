@@ -260,9 +260,7 @@ void Camera::center_at(const Map_Object& target) {
 }
 
 xd::vec2 Camera::get_centered_position(xd::vec2 pos) const {
-    const float game_width = static_cast<float>(game.game_width());
-    const float game_height = static_cast<float>(game.game_height());
-    return get_bounded_position(pos - xd::vec2{game_width / 2.0f, game_height / 2.0f});
+    return get_bounded_position(pos - game.game_center());
 }
 
 xd::vec2 Camera::get_centered_position(const Map_Object& target) const {

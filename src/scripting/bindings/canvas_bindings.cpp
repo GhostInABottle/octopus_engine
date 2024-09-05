@@ -8,6 +8,7 @@
 #include "../../../include/commands/update_image_command.hpp"
 #include "../../../include/commands/update_opacity_command.hpp"
 #include "../../../include/game.hpp"
+#include "../../../include/log.hpp"
 #include "../../../include/scripting/script_bindings.hpp"
 #include "../../../include/scripting/scripting_interface.hpp"
 #include "../../../include/utility/color.hpp"
@@ -139,6 +140,44 @@ namespace detail {
     }
 
     template <typename T>
+    static T get_value(const sol::table& table, const std::string& key) {
+        sol::object object = table[key];
+
+        if (!object.is<T>()) {
+            LOGGER_E << "Invalid image update parameter: " << key;
+        }
+
+        return object.as<T>();
+    }
+
+    static std::pair<int, Update_Image_Command::Parameters> get_update_parameters(const sol::table& table) {
+        Update_Image_Command::Parameters parameters;
+
+        if (!table["duration"].valid()) {
+            LOGGER_E << "Duration is required for the image update command";
+        }
+        int duration = get_value<int>(table, "duration");
+
+        if (table["position"].valid()) {
+            parameters.position = get_value<xd::vec2>(table, "position");
+        }
+
+        if (table["magnification"].valid()) {
+            parameters.magnification = get_value<xd::vec2>(table, "magnification");
+        }
+
+        if (table["angle"].valid()) {
+            parameters.angle = get_value<float>(table, "angle");
+        }
+
+        if (table["opacity"].valid()) {
+            parameters.opacity = get_value<float>(table, "opacity");
+        }
+
+        return std::make_pair(duration, parameters);
+    }
+
+    template <typename T>
     static void bind_base_image_canvas(Game& game, sol::usertype<T> canvas_type) {
         canvas_type["origin"] = sol::property(&T::get_origin, &T::set_origin);
         canvas_type["magnification"] = sol::property(&T::get_magnification, &T::set_magnification);
@@ -148,48 +187,42 @@ namespace detail {
         canvas_type["outline_color"] = sol::property(&T::get_outline_color, &T::set_outline_color);
 
         canvas_type["update"] = sol::overload(
-            [&](T& canvas, float x, float y, float mag_x,
-                float mag_y, float angle, float opacity, long duration) {
+            [&](T& canvas, const sol::table& table) {
                     auto si = game.get_current_scripting_interface();
+                    auto pair = get_update_parameters(table);
                     return si->register_command<Update_Image_Command>(
-                        game, canvas, duration, xd::vec2(x, y),
-                        xd::vec2(mag_x, mag_y), angle, opacity);
-            },
-            [&](T& canvas, xd::vec2 pos, xd::vec2 mag,
-                float angle, float opacity, long duration) {
-                    auto si = game.get_current_scripting_interface();
-                    return si->register_command<Update_Image_Command>(
-                        game, canvas, duration, pos, mag, angle, opacity);
+                        game, canvas, pair.first, pair.second);
             }
         );
         canvas_type["resize"] = sol::overload(
             [&](T& canvas, float mag, long duration) {
                 auto si = game.get_current_scripting_interface();
+                Update_Image_Command::Parameters parameters(canvas);
+                parameters.magnification = xd::vec2(mag, mag);
                 return si->register_command<Update_Image_Command>(
-                    game, canvas, duration,
-                    canvas.get_position(), xd::vec2(mag, mag),
-                    canvas.get_angle(), canvas.get_opacity());
+                    game, canvas, duration, parameters);
             },
             [&](T& canvas, float mag_x, float mag_y, long duration) {
                 auto si = game.get_current_scripting_interface();
+                Update_Image_Command::Parameters parameters(canvas);
+                parameters.magnification = xd::vec2(mag_x, mag_y);
                 return si->register_command<Update_Image_Command>(
-                    game, canvas, duration,
-                    canvas.get_position(), xd::vec2(mag_x, mag_y),
-                    canvas.get_angle(), canvas.get_opacity());
+                    game, canvas, duration, parameters);
             },
             [&](T& canvas, xd::vec2 mag, long duration) {
                 auto si = game.get_current_scripting_interface();
+                Update_Image_Command::Parameters parameters(canvas);
+                parameters.magnification = mag;
                 return si->register_command<Update_Image_Command>(
-                    game, canvas, duration,
-                    canvas.get_position(), mag,
-                    canvas.get_angle(), canvas.get_opacity());
+                    game, canvas, duration, parameters);
             }
         );
         canvas_type["rotate"] = [&](T& canvas, float angle, long duration) {
             auto si = game.get_current_scripting_interface();
+            Update_Image_Command::Parameters parameters(canvas);
+            parameters.angle = angle;
             return si->register_command<Update_Image_Command>(
-                game, canvas, duration, canvas.get_position(),
-                canvas.get_magnification(), angle, canvas.get_opacity());
+                game, canvas, duration, parameters);
         };
     }
 }
