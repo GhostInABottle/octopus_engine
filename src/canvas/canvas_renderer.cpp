@@ -116,7 +116,9 @@ void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_C
 
 void Canvas_Renderer::render_canvas(Base_Canvas& canvas, Base_Canvas* parent, Base_Canvas* root) {
     if (!canvas.is_visible() || check_close(canvas.get_opacity(), 0.0f)) {
-        canvas.mark_as_drawn(game.window_ticks());
+        if (!parent) {
+            canvas.mark_as_drawn(game.window_ticks());
+        }
         return;
     }
 
