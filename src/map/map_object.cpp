@@ -257,12 +257,16 @@ bool Map_Object::is_outlined() const {
 
     auto result = true;
 
-    auto player = game.get_player();
     if ((outline_conditions & Outline_Condition::TOUCHED) != none) {
-        result = player && (player->get_collision_object() == this ||
-            player->get_collision_area() == this);
+        const auto player = game.get_player();
+        const auto collision_object = player->get_collision_object();
+        result = collision_object == this;
+        if (!result && player->get_collision_area() == this) {
+            // Areas are only outlined if there are no proximate/collision objects
+            result = !collision_object && !player->get_proximate_object();
+        }
     } else if ((outline_conditions & Outline_Condition::PROXIMATE) != none) {
-        result = player && player->get_proximate_object() == this;
+        result = game.get_player()->get_proximate_object() == this;
     }
 
     if ((outline_conditions & Outline_Condition::SOLID) != none) {

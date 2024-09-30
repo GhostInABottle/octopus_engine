@@ -147,11 +147,13 @@ void Player_Controller::update(Map_Object& object) {
         }
     }
 
-    process_collision(object, collision, Collision_Type::OBJECT, moved, action_pressed);
-    process_collision(object, collision, Collision_Type::AREA, moved, action_pressed);
+    if (!process_collision(object, collision, Collision_Type::OBJECT, moved, action_pressed)) {
+        // Object interactions have priority over area ones
+        process_collision(object, collision, Collision_Type::AREA, moved, action_pressed);
+    }
 }
 
-void Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool moved, bool action_pressed) {
+bool Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool moved, bool action_pressed) {
     Map_Object* old_object = nullptr;
     Map_Object* collision_object = nullptr;
     bool new_collision = false;
@@ -166,9 +168,13 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
         old_object = object.get_collision_area();
         collision_object = collision.other_area;
         new_collision = collision_object && old_object != collision_object;
-        // Check for movement because player has to manually collide with areas
         if (moved && new_collision) {
+            // Check for movement because player has to manually collide with areas
             object.set_collision_area(collision_object);
+        } else if (new_collision && !old_object) {
+            // Prevent triggering an area when it's not the active one
+            // e.g. pressing action button on the edge of the area without entering it
+            collision_object = nullptr;
         }
     }
 
@@ -196,8 +202,12 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
         if (triggered) {
             other_object->run_trigger_script();
         }
-    } else if (!other_object) {
-        if (run_scripts && moved && old_object && old_object->has_leave_script()) {
+
+        return true;
+    }
+
+    if (old_object && !other_object) {
+        if (run_scripts && moved && old_object->has_leave_script()) {
             old_object->run_leave_script();
         }
 
@@ -207,4 +217,6 @@ void Player_Controller::process_collision(Map_Object& object, Collision_Record c
             object.set_collision_area(nullptr);
         }
     }
+
+    return false;
 }
