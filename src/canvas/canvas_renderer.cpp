@@ -143,6 +143,12 @@ void Canvas_Renderer::render_canvas(Base_Canvas& canvas, Base_Canvas* parent, Ba
             canvas.set_last_camera_position(camera.get_pixel_position());
         }
 
+        if (is_text && !batch.empty()) {
+            // Text rendering isn't batched, so draw any batched images
+            // and clear the batch before drawing any text
+            draw(camera.get_mvp(), root_parent);
+        }
+
         // Render canvas and children
         canvas.render(camera, batch, parent);
 
