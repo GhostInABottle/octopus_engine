@@ -27,7 +27,11 @@ public:
     virtual ~Base_Canvas() noexcept {}
     // Update or render canvas
     virtual void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) = 0;
-    virtual void update() {}
+    virtual void update() {
+        for (auto& child : children) {
+            child->update();
+        }
+    }
     // Add a new child canvas, forwards the arguments to the child Canvas constructor
     template<class CType, class ...Args>
     CType* add_child(const std::string& child_name, Args&&... args) {

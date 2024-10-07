@@ -34,7 +34,10 @@ public:
     // Render the sprite
     void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) override;
     // Update the sprite
-    void update() override { sprite->update(); }
+    void update() override {
+        Base_Canvas::update();
+        sprite->update();
+    }
 private:
     // The underlying sprite
     std::unique_ptr<Sprite> sprite;
