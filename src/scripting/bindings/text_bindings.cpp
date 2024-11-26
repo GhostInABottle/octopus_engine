@@ -92,6 +92,18 @@ namespace detail {
             options.set_background_color(get_value<xd::vec4>(table, "background_color"));
         }
 
+        if (table["select_sound"].valid()) {
+            options.set_select_sound(get_value<std::string>(table, "select_sound"));
+        }
+
+        if (table["confirm_sound"].valid()) {
+            options.set_confirm_sound(get_value<std::string>(table, "confirm_sound"));
+        }
+
+        if (table["cancel_sound"].valid()) {
+            options.set_cancel_sound(get_value<std::string>(table, "cancel_sound"));
+        }
+
         if (table["typewriter_on"].valid()) {
             options.set_typewriter_on(get_value<bool>(table, "typewriter_on"));
         }
@@ -156,9 +168,15 @@ void bind_text_types(sol::state& lua, Game& game) {
     options_type["fade_out_duration"] = sol::readonly(&Text_Options::fade_out_duration);
     options_type["background_visible"] = sol::readonly(&Text_Options::background_visible);
     options_type["background_color"] = sol::readonly(&Text_Options::background_color);
+    options_type["select_sound"] = sol::readonly(&Text_Options::select_sound);
+    options_type["confirm_sound"] = sol::readonly(&Text_Options::confirm_sound);
+    options_type["cancel_sound"] = sol::readonly(&Text_Options::cancel_sound);
     options_type["typewriter_on"] = sol::readonly(&Text_Options::typewriter_on);
     options_type["typewriter_delay"] = sol::readonly(&Text_Options::typewriter_delay);
     options_type["typewriter_sound"] = sol::readonly(&Text_Options::typewriter_sound);
+    options_type["typewriter_sound_volume"] = sol::readonly(&Text_Options::typewriter_sound_volume);
+    options_type["typewriter_sound_pitch"] = sol::readonly(&Text_Options::typewriter_sound_pitch);
+    options_type["typewriter_sound_max_pitch"] = sol::readonly(&Text_Options::typewriter_sound_max_pitch);
     options_type["typewriter_skippable"] = sol::readonly(&Text_Options::typewriter_skippable);
 
     options_type["set_text"] = &Text_Options::set_text;
@@ -174,9 +192,15 @@ void bind_text_types(sol::state& lua, Game& game) {
     options_type["set_fade_out_duration"] = &Text_Options::set_fade_out_duration;
     options_type["set_background_visible"] = &Text_Options::set_background_visible;
     options_type["set_background_color"] = &Text_Options::set_background_color;
+    options_type["set_select_sound"] = &Text_Options::set_select_sound;
+    options_type["set_confirm_sound"] = &Text_Options::set_confirm_sound;
+    options_type["set_cancel_sound"] = &Text_Options::set_cancel_sound;
     options_type["set_typewriter_on"] = &Text_Options::set_typewriter_on;
     options_type["set_typewriter_delay"] = &Text_Options::set_typewriter_delay;
     options_type["set_typewriter_sound"] = &Text_Options::set_typewriter_sound;
+    options_type["set_typewriter_sound_volume"] = &Text_Options::set_typewriter_sound_volume;
+    options_type["set_typewriter_sound_pitch"] = &Text_Options::set_typewriter_sound_pitch;
+    options_type["set_typewriter_sound_max_pitch"] = &Text_Options::set_typewriter_sound_max_pitch;
     options_type["set_typewriter_skippable"] = &Text_Options::set_typewriter_skippable;
     options_type["set_choices"] = [&](Text_Options& options, const sol::table& table) -> Text_Options& {
         std::vector<std::string> choices;

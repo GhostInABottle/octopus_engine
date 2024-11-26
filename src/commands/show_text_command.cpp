@@ -66,9 +66,16 @@ struct Show_Text_Command::Impl : Timed_Command {
 
         // Load choice sound effects
         auto& audio_player = game.get_audio_player();
-        select_sound = audio_player.load_global_config_sound("audio.choice-select-sfx", 3, false);
-        confirm_sound = audio_player.load_global_config_sound("audio.choice-confirm-sfx", 3, false);
-        cancel_sound = audio_player.load_global_config_sound("audio.choice-cancel-sfx", 3, false);
+
+        if (!options.select_sound.empty()) {
+            select_sound = load_sound(audio_player, options.select_sound, "audio.choice-select-sfx");
+        }
+        if (!options.confirm_sound.empty()) {
+            confirm_sound = load_sound(audio_player, options.confirm_sound, "audio.choice-confirm-sfx");
+        }
+        if (!options.cancel_sound.empty()) {
+            cancel_sound = load_sound(audio_player, options.cancel_sound, "audio.choice-cancel-sfx");
+        }
 
         selected_choice_color = "{color=" + color_to_rgba_string(hex_to_color(
             Configurations::get<std::string>("text.choice-selected-color"))) + "}";
@@ -187,6 +194,15 @@ struct Show_Text_Command::Impl : Timed_Command {
         }
 
         canvas->set_visible(true);
+    }
+
+    std::shared_ptr<xd::sound> load_sound(Audio_Player& audio_player,
+            const std::string& filename, const std::string& config) {
+        if (filename == "default") {
+            return audio_player.load_global_config_sound(config, 3, false);
+        } else {
+            return audio_player.load_global_sound(filename, 3, false);
+        }
     }
 
     // The text along with colored/indented choices

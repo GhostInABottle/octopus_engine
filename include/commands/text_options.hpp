@@ -50,6 +50,9 @@ struct Text_Options
     int fade_out_duration;
     bool background_visible;
     xd::vec4 background_color;
+    std::string select_sound;
+    std::string confirm_sound;
+    std::string cancel_sound;
     bool typewriter_on;
     int typewriter_delay;
     std::string typewriter_sound;
@@ -72,6 +75,9 @@ struct Text_Options
         fade_out_duration(-1),
         background_visible(Configurations::get<bool>("text.show-background")),
         background_color(hex_to_color(Configurations::get<std::string>("text.background-color"))),
+        select_sound("default"),
+        confirm_sound("default"),
+        cancel_sound("default"),
         typewriter_on(false),
         typewriter_delay(-1),
         typewriter_sound_volume(1.0f),
@@ -161,6 +167,21 @@ struct Text_Options
 
     Text_Options& set_background_color(xd::vec4 background_color) {
         this->background_color = background_color;
+        return *this;
+    }
+
+    Text_Options& set_select_sound(const std::string& sound) {
+        this->select_sound = sound;
+        return *this;
+    }
+
+    Text_Options& set_confirm_sound(const std::string& sound) {
+        this->confirm_sound = sound;
+        return *this;
+    }
+
+    Text_Options& set_cancel_sound(const std::string& sound) {
+        this->cancel_sound = sound;
         return *this;
     }
 

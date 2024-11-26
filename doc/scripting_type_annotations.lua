@@ -280,6 +280,9 @@ function Engine_User_Data_Folder:save_keymap_file() end
 ---@field fade_out_duration? integer
 ---@field background_visible? boolean
 ---@field background_color? Engine_Color
+---@field select_sound? string
+---@field confirm_sound? string
+---@field cancel_sound? string
 ---@field typewriter_on? boolean
 ---@field typewriter_delay? integer
 ---@field typewriter_sound? string
@@ -344,6 +347,18 @@ function Engine_Text_Options:set_background_color(color) end
 ---@param position_type integer|Engine_Text_Position_Type
 ---@return Engine_Text_Options
 function Engine_Text_Options:set_position_type(position_type) end
+
+---@param sound string
+---@return Engine_Text_Options
+function Engine_Text_Options:set_select_sound(sound) end
+
+---@param sound string
+---@return Engine_Text_Options
+function Engine_Text_Options:set_confirm_sound(sound) end
+
+---@param sound string
+---@return Engine_Text_Options
+function Engine_Text_Options:set_cancel_sound(sound) end
 
 ---@param typewriter_on boolean
 ---@return Engine_Text_Options
@@ -1013,7 +1028,7 @@ function Text_Canvas(x, y, text) end
 ---@field filename string # readonly
 ---@field magnification Engine_Vec2
 ---@field angle integer # in degrees
----@field origin? Engine_Vec2 # defaults to (0, 0) for sprites, (0.5, 0.5) for images
+---@field origin? Engine_Vec2 # defaults to (0, 0) and can be set in sprite file
 ---@field outline_color? Engine_Color
 local Engine_Base_Image_Canvas = {}
 
