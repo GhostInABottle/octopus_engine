@@ -103,8 +103,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             rect.h = std::stof(bb_node->first_attribute("Height")->value());
             pose.bounding_box.x = rect.x;
             pose.bounding_box.y = rect.y;
-            if (rect.w > 0) pose.bounding_box.w = rect.w;
-            if (rect.h > 0) pose.bounding_box.h = rect.h;
+            if (rect.w > 0) {
+                pose.bounding_box.w = rect.w;
+            }
+            if (rect.h > 0) {
+                pose.bounding_box.h = rect.h;
+            }
         }
 
         // Bounding circle
@@ -117,26 +121,32 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         }
 
         // Animation properties
-        if (auto attr = pose_node->first_attribute("Duration"))
+        if (auto attr = pose_node->first_attribute("Duration")) {
             pose.duration = std::stoi(attr->value());
+        }
 
-        if (auto attr = pose_node->first_attribute("Repeats"))
+        if (auto attr = pose_node->first_attribute("Repeats")) {
             pose.repeats = std::stoi(attr->value());
+        }
 
-        if (auto attr = pose_node->first_attribute("Require-Completion"))
+        if (auto attr = pose_node->first_attribute("Require-Completion")) {
             pose.require_completion = string_utilities::string_to_bool(attr->value());
+        }
 
-        if (auto attr = pose_node->first_attribute("X-Origin"))
+        if (auto attr = pose_node->first_attribute("X-Origin")) {
             pose.origin.x = std::stof(attr->value());
-        if (auto attr = pose_node->first_attribute("Y-Origin"))
+        }
+        if (auto attr = pose_node->first_attribute("Y-Origin")) {
             pose.origin.y = std::stof(attr->value());
+        }
 
         // Pose image and transparent color
         if (auto attr = pose_node->first_attribute("Transparent-Color")) {
             transparent_color = hex_to_color(attr->value());
             pose.transparent_color = transparent_color.value();
-        } else if (transparent_color)
+        } else if (transparent_color) {
             pose.transparent_color = transparent_color.value();
+        }
 
         if (auto attr = pose_node->first_attribute("Image")) {
             std::string pose_image_file = attr->value();
@@ -158,7 +168,12 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             }
 
             // Source rectangle
-            if (auto rect_node = frame_node->first_node("Rectangle")) {
+            auto rect_node = frame_node->first_node("Rectangle");
+            if (!rect_node) {
+                // Newer sprites store the source rect as frame attributes
+                rect_node = frame_node;
+            }
+            if (rect_node) {
                 frame.rectangle.x = std::stof(rect_node->first_attribute("X")->value());
                 frame.rectangle.y  = std::stof(rect_node->first_attribute("Y")->value());
                 frame.rectangle.w  = std::stof(rect_node->first_attribute("Width")->value());
@@ -166,26 +181,32 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             }
 
             // Frame properties
-            if (auto attr = frame_node->first_attribute("X-Mag"))
+            if (auto attr = frame_node->first_attribute("X-Mag")) {
                 frame.magnification.x = std::stof(attr->value());
-            if (auto attr = frame_node->first_attribute("Y-Mag"))
+            }
+            if (auto attr = frame_node->first_attribute("Y-Mag")) {
                 frame.magnification.y = std::stof(attr->value());
+            }
 
-            if (auto attr = frame_node->first_attribute("Angle"))
+            if (auto attr = frame_node->first_attribute("Angle")) {
                 frame.angle = std::stoi(attr->value());
+            }
 
-            if (auto attr = frame_node->first_attribute("Opacity"))
+            if (auto attr = frame_node->first_attribute("Opacity")) {
                 frame.opacity = std::stof(attr->value());
+            }
 
-            if (auto attr = frame_node->first_attribute("Tween"))
+            if (auto attr = frame_node->first_attribute("Tween")) {
                 frame.tween_frame = string_utilities::string_to_bool(attr->value());
+            }
 
             // Frame image and transparent color
             if (auto attr = frame_node->first_attribute("Transparent-Color")) {
                 transparent_color = hex_to_color(attr->value());
                 frame.transparent_color = transparent_color.value();
-            } else if (transparent_color)
+            } else if (transparent_color) {
                 frame.transparent_color = transparent_color.value();
+            }
 
             if (auto attr = frame_node->first_attribute("Image")) {
                 std::string frame_image_file = attr->value();
@@ -242,27 +263,50 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
         int pose_index = sprite_ptr->poses.size() - 1;
 
         // Pose tags
+        std::string name, state, direction;
+        if (auto name_attr = pose_node->first_attribute("Name")) {
+            name = name_attr->value();
+        }
+        if (auto state_attr = pose_node->first_attribute("State")) {
+            state = state_attr->value();
+        }
+        if (auto dir_attr = pose_node->first_attribute("Direction")) {
+            direction = dir_attr->value();
+        }
+
+        // For compatibility with older spr files without name/state/dir attributes
         for (auto tag_node = pose_node->first_node("Tag");
                 tag_node; tag_node = tag_node->next_sibling("Tag")) {
             std::string key = tag_node->first_attribute("Key")->value();
             std::string value = tag_node->first_attribute("Value")->value();
             string_utilities::capitalize(key);
-            string_utilities::capitalize(value);
             if (key == "NAME") {
-                sprite_ptr->poses[pose_index].name = value;
-                if (value == sprite_ptr->default_pose) {
-                    default_pose_found = true;
-                }
+                name = value;
             } else if (key == "STATE") {
-                sprite_ptr->poses[pose_index].state = value;
+                state = value;
             } else if (key == "DIRECTION") {
-                auto dir = string_to_direction(value);
-                sprite_ptr->poses[pose_index].direction = dir;
-                if (!sprite_ptr->has_diagonal_directions) {
-                    sprite_ptr->has_diagonal_directions = is_diagonal(dir);
-                }
+                direction = value;
             } else {
                 throw tmx_exception("Unsupported pose tag " + key + " with value " + value);
+            }
+        }
+
+        if (!name.empty()) {
+            string_utilities::capitalize(name);
+            sprite_ptr->poses[pose_index].name = name;
+            if (name == sprite_ptr->default_pose) {
+                default_pose_found = true;
+            }
+        }
+        if (!state.empty()) {
+            string_utilities::capitalize(state);
+            sprite_ptr->poses[pose_index].state = state;
+        }
+        if (!direction.empty()) {;
+            auto dir = string_to_direction(direction);
+            sprite_ptr->poses[pose_index].direction = dir;
+            if (!sprite_ptr->has_diagonal_directions) {
+                sprite_ptr->has_diagonal_directions = is_diagonal(dir);
             }
         }
     }
@@ -272,11 +316,13 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::a
             " when loading " + sprite_ptr->filename);
     }
 
-    if (sprite_ptr->poses.empty())
+    if (sprite_ptr->poses.empty()) {
         throw xml_exception("Invalid sprite data file. Missing poses.");
+    }
 
-    if (!image_loaded && !pose_images_loaded && !frame_images_loaded)
+    if (!image_loaded && !pose_images_loaded && !frame_images_loaded) {
         throw xml_exception("Invalid sprite data file. Missing image.");
+    }
 
     return sprite_ptr;
 }
