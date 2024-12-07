@@ -42,7 +42,7 @@ std::unique_ptr<Layer> Object_Layer::load(rapidxml::xml_node<>& node, Game& game
     for (auto object_node = node.first_node("object");
             object_node; object_node = object_node->next_sibling("object")) {
         try {
-            map.add_object(Map_Object::load(*object_node, game), layer_ptr.get());
+            map.add_object(Map_Object::load(*object_node, game, map.get_asset_manager()), layer_ptr.get());
         } catch (std::runtime_error& error) {
             throw tmx_exception(error.what());
         }

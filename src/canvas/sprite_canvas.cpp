@@ -5,23 +5,23 @@
 #include "../../include/sprite_data.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
 
-Sprite_Canvas::Sprite_Canvas(Game& game, const std::string& sprite, xd::vec2 position, const std::string& pose_name)
+Sprite_Canvas::Sprite_Canvas(Game& game, xd::asset_manager& asset_manager,
+        const std::string& sprite, xd::vec2 position, const std::string& pose_name)
         : Base_Image_Canvas(game, Base_Canvas::Type::SPRITE, position, sprite) {
-    set_sprite(game, sprite, pose_name);
+    set_sprite(game, asset_manager, sprite, pose_name);
 }
 
-void Sprite_Canvas::set_sprite(Game& game, const std::string& sprite_filename, const std::string& pose_name) {
-    if (sprite && filename == sprite_filename)
-        return;
+void Sprite_Canvas::set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& sprite_filename, const std::string& pose_name) {
+    if (sprite && filename == sprite_filename) return;
 
     filename = sprite_filename;
-    auto& asset_manager = game.get_asset_manager();
     auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
     sprite = std::make_unique<Sprite>(game,
         Sprite_Data::load(sprite_filename, asset_manager, audio, channel_group));
-    set_pose(pose_name, "", Direction::NONE);
 
+    set_pose(pose_name, "", Direction::NONE);
     redraw();
 }
 

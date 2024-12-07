@@ -1,7 +1,6 @@
 #include "../../include/game.hpp"
 #include "../../include/map/map.hpp"
 #include "../../include/sprite_data.hpp"
-
 #include "../../include/filesystem/user_data_folder.hpp"
 #include "../../include/vendor/rapidxml.hpp"
 #include "../../include/xd/asset_manager.hpp"
@@ -51,8 +50,9 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
 
     User_Data_Folder::parse_default_config();
     xd::asset_manager manager;
-    auto sprite_data = Sprite_Data::load(*node, manager, nullptr, channel_group_type::sound);
+    auto sprite_data = Sprite_Data::load(*node, "filename", manager, nullptr, channel_group_type::sound);
 
+    BOOST_CHECK_EQUAL(sprite_data->filename, "filename");
     Pose& main_pose = sprite_data->poses[0];
     BOOST_CHECK_EQUAL(main_pose.name, "COOL POSE");
     BOOST_CHECK_EQUAL(main_pose.state, "ST");
@@ -124,8 +124,9 @@ BOOST_AUTO_TEST_CASE(sprite_data_load_compact) {
 
     User_Data_Folder::parse_default_config();
     xd::asset_manager manager;
-    auto sprite_data = Sprite_Data::load(*node, manager, nullptr, channel_group_type::sound);
+    auto sprite_data = Sprite_Data::load(*node, "filename", manager, nullptr, channel_group_type::sound);
 
+    BOOST_CHECK_EQUAL(sprite_data->filename, "filename");
     Pose& main_pose = sprite_data->poses[0];
     BOOST_CHECK_EQUAL(main_pose.name, "COOL POSE");
     BOOST_CHECK_EQUAL(main_pose.state, "ST");

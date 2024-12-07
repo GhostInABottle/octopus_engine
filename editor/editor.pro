@@ -242,7 +242,6 @@ HEADERS  += main_window.hpp \
     ../include/filesystem/user_data_folder.hpp \
     ../include/filesystem/writable_filesystem.hpp \
     ../include/xd/asset_manager.hpp \
-    ../include/xd/asset_serializer.hpp \
     ../include/xd/audio.hpp \
     ../include/xd/audio/audio.hpp \
     ../include/xd/audio/detail/audio_handle.hpp \

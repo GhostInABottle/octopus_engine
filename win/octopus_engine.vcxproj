@@ -344,7 +344,6 @@
     <ClInclude Include="..\include\vendor\unidata.h" />
     <ClInclude Include="..\include\vendor\utf8conv.h" />
     <ClInclude Include="..\include\xd\asset_manager.hpp" />
-    <ClInclude Include="..\include\xd\asset_serializer.hpp" />
     <ClInclude Include="..\include\xd\audio.hpp" />
     <ClInclude Include="..\include\xd\audio\audio.hpp" />
     <ClInclude Include="..\include\xd\audio\channel_group_type.hpp" />

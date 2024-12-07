@@ -4,17 +4,22 @@
 #include "base_image_canvas.hpp"
 #include <memory>
 
+namespace xd {
+    class asset_manager;
+}
+
 // A canvas based on an image file
 class Image_Canvas : public Base_Image_Canvas {
 public:
     Image_Canvas(const Image_Canvas&) = delete;
     Image_Canvas& operator=(const Image_Canvas&) = delete;
     // Create an image canvas with an optional transparent color
-    Image_Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
+    Image_Canvas(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, xd::vec2 position, xd::vec4 trans = xd::vec4(0));
     // Render the image
     void render(Camera& camera, xd::sprite_batch& batch, Base_Canvas* parent) override;
     // Change the image
-    void set_image(std::string image_filename, xd::vec4 trans);
+    void set_image(std::string image_filename, xd::vec4 trans, xd::asset_manager& manager);
     // Get the image texture
     std::shared_ptr<xd::texture> get_image_texture() const {
         return image_texture;

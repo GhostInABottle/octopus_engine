@@ -57,43 +57,53 @@ namespace detail {
         canvas_type["add_child_image"] = sol::overload(
             // with position
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y) {
-                return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y });
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y });
             },
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
-                return parent.add_child<Image_Canvas>(name, game, filename, pos);
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, pos);
             },
             // with hex transparent color
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& hex) {
                 auto color = hex.empty() ? xd::vec4{ 0 } : hex_to_color(hex);
-                return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y }, color);
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, color);
             },
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& hex) {
                 auto color = hex.empty() ? xd::vec4{ 0 } : hex_to_color(hex);
-                return parent.add_child<Image_Canvas>(name, game, filename, pos, color);
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, pos, color);
             },
             // with transparent color as vec4
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, xd::vec4 transparent) {
-                return parent.add_child<Image_Canvas>(name, game, filename, xd::vec2{ x, y }, transparent);
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, transparent);
             },
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-                return parent.add_child<Image_Canvas>(name, game, filename, pos, transparent);
+                return parent.add_child<Image_Canvas>(name, game, game.get_asset_manager(),
+                    filename, pos, transparent);
             }
         );
 
         canvas_type["add_child_sprite"] = sol::overload(
             // with position
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y) {
-                return parent.add_child<Sprite_Canvas>(name, game, filename, xd::vec2{ x, y });
+                return parent.add_child<Sprite_Canvas>(name, game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y });
             },
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos) {
-                return parent.add_child<Sprite_Canvas>(name, game, filename, pos);
+                return parent.add_child<Sprite_Canvas>(name, game, game.get_asset_manager(),
+                    filename, pos);
             },
             // with pose name
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, float x, float y, const std::string& pose) {
-                return parent.add_child<Sprite_Canvas>(name, game, filename, xd::vec2{ x, y }, pose);
+                return parent.add_child<Sprite_Canvas>(name, game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, pose);
             },
             [&](Base_Canvas& parent, const std::string& name, const std::string& filename, xd::vec2 pos, const std::string& pose) {
-                return parent.add_child<Sprite_Canvas>(name, game, filename, pos, pose);
+                return parent.add_child<Sprite_Canvas>(name, game, game.get_asset_manager(),
+                    filename, pos, pose);
             }
         );
 
@@ -233,37 +243,40 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         sol::call_constructor, sol::factories(
             // Canvas constructor (with position)
             [&](const std::string& filename, float x, float y) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename, xd::vec2{ x, y });
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y });
                 game.add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename, pos);
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, pos);
                 game.add_canvas(canvas);
                 return canvas;
             },
             // Canvas constructor (with hex transparent color)
             [&](const std::string& filename, float x, float y, const std::string& color) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename,
-                    xd::vec2{ x, y }, hex_to_color(color));
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, hex_to_color(color));
                 game.add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos, const std::string& color) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename,
-                    pos, hex_to_color(color));
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, pos, hex_to_color(color));
                 game.add_canvas(canvas);
                 return canvas;
             },
             // Canvas constructor (with transparent color as vec4)
             [&](const std::string& filename, float x, float y, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename,
-                    xd::vec2{ x, y }, transparent);
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, transparent);
                 game.add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos, xd::vec4 transparent) {
-                auto canvas = std::make_shared<Image_Canvas>(game, filename, pos, transparent);
+                auto canvas = std::make_shared<Image_Canvas>(game, game.get_asset_manager(),
+                    filename, pos, transparent);
                 game.add_canvas(canvas);
                 return canvas;
             }
@@ -273,8 +286,9 @@ void bind_canvas_types(sol::state& lua, Game& game) {
 
     detail::bind_base_canvas(game, image_canvas_type);
     detail::bind_base_image_canvas(game, image_canvas_type);
-    image_canvas_type["set_image"] = [](Image_Canvas& canvas, const std::string& filename, std::optional<xd::vec4> ck) {
-        canvas.set_image(filename, ck.value_or(xd::vec4{ 0 }));
+    image_canvas_type["set_image"] = [&](Image_Canvas& canvas, const std::string& filename, std::optional<xd::vec4> ck) {
+        auto& asset_manager = game.get_asset_manager();
+        canvas.set_image(filename, ck.value_or(xd::vec4{ 0 }), asset_manager);
     };
     image_canvas_type["width"] = sol::property(&Image_Canvas::get_width);
     image_canvas_type["height"] = sol::property(&Image_Canvas::get_height);
@@ -284,23 +298,27 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         sol::call_constructor, sol::factories(
             // Canvas constructor (with position)
             [&](const std::string& filename, float x, float y) {
-                auto canvas = std::make_shared<Sprite_Canvas>(game, filename, xd::vec2{ x, y });
+                auto canvas = std::make_shared<Sprite_Canvas>(game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y });
                 game.add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos) {
-                auto canvas = std::make_shared<Sprite_Canvas>(game, filename, pos);
+                auto canvas = std::make_shared<Sprite_Canvas>(game, game.get_asset_manager(),
+                    filename, pos);
                 game.add_canvas(canvas);
                 return canvas;
             },
             // Canvas constructor (with pose name)
             [&](const std::string& filename, float x, float y, const std::string& pose) {
-                auto canvas = std::make_shared<Sprite_Canvas>(game, filename, xd::vec2{ x, y }, pose);
+                auto canvas = std::make_shared<Sprite_Canvas>(game, game.get_asset_manager(),
+                    filename, xd::vec2{ x, y }, pose);
                 game.add_canvas(canvas);
                 return canvas;
             },
             [&](const std::string& filename, xd::vec2 pos, const std::string& pose) {
-                auto canvas = std::make_shared<Sprite_Canvas>(game, filename, pos, pose);
+                auto canvas = std::make_shared<Sprite_Canvas>(game, game.get_asset_manager(),
+                    filename, pos, pose);
                 game.add_canvas(canvas);
                 return canvas;
             }
@@ -316,12 +334,12 @@ void bind_canvas_types(sol::state& lua, Game& game) {
     sprite_canvas_type["sprite"] = sol::property(
         &Sprite_Canvas::get_sprite_filename,
         [&](Sprite_Canvas* canvas, const std::string& filename) {
-            canvas->set_sprite(game, filename);
+            canvas->set_sprite(game, game.get_asset_manager(), filename);
         }
     );
     sprite_canvas_type["reset"] = &Sprite_Canvas::reset;
     sprite_canvas_type["set_sprite"] = [&](Sprite_Canvas* canvas, const std::string& filename, std::optional<std::string> pose) {
-        canvas->set_sprite(game, filename, pose.value_or(""));
+        canvas->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
     sprite_canvas_type["show_pose"] = [&](Sprite_Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game.get_current_scripting_interface();

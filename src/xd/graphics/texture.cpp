@@ -22,7 +22,7 @@ xd::texture::texture(int width, int height, const void *data, xd::vec4 ck,
 
 
 xd::texture::texture(const std::string& filename, std::istream& stream, xd::vec4 ck,
-    GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter)
+    GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter) : m_filename(filename)
 {
     init();
     set_wrap(wrap_s, wrap_t);
@@ -31,7 +31,7 @@ xd::texture::texture(const std::string& filename, std::istream& stream, xd::vec4
 }
 
 xd::texture::texture(const xd::image& image,
-    GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter)
+    GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter) : m_filename(image.filename())
 {
     init();
     set_wrap(wrap_s, wrap_t);
@@ -103,14 +103,14 @@ void xd::texture::load(int width, int height, const void *data, xd::vec4 color_k
     }
 }
 
-void xd::texture::load(const void *data)
+void xd::texture::load(const void *data) const
 {
-    if (data) {
-        // load the pixel data
-        bind();
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
+    if (!data) return;
+
+    // load the pixel data
+    bind();
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
 
 void xd::texture::copy_read_buffer(int x, int y, int width, int height)
@@ -121,14 +121,14 @@ void xd::texture::copy_read_buffer(int x, int y, int width, int height)
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, m_width, m_height);
 }
 
-void xd::texture::set_wrap(GLint wrap_s, GLint wrap_t)
+void xd::texture::set_wrap(GLint wrap_s, GLint wrap_t) const
 {
     bind();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
 }
 
-void xd::texture::set_filter(GLint mag_filter, GLint min_filter)
+void xd::texture::set_filter(GLint mag_filter, GLint min_filter) const
 {
     bind();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);

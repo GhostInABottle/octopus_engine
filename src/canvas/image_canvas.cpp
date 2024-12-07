@@ -1,19 +1,31 @@
 #include "../../include/camera.hpp"
 #include "../../include/canvas/image_canvas.hpp"
 #include "../../include/exceptions.hpp"
+#include "../../include/game.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/utility/string.hpp"
+#include "../../include/xd/asset_manager.hpp"
 #include "../../include/xd/graphics/sprite_batch.hpp"
+#include "../../include/xd/graphics/texture.hpp"
 #include <istream>
+#include <memory>
 
-Image_Canvas::Image_Canvas(Game& game, const std::string& filename, xd::vec2 position, xd::vec4 trans)
-    : Base_Image_Canvas(game, Base_Canvas::Type::IMAGE, position, filename)  {
-    set_image(filename, trans);
+Image_Canvas::Image_Canvas(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, xd::vec2 position, xd::vec4 trans)
+        : Base_Image_Canvas(game, Base_Canvas::Type::IMAGE, position, filename)  {
+    set_image(filename, trans, asset_manager);
 }
 
-void Image_Canvas::set_image(std::string image_filename, xd::vec4 trans) {
+void Image_Canvas::set_image(std::string image_filename, xd::vec4 trans, xd::asset_manager& asset_manager) {
     string_utilities::normalize_slashes(image_filename);
     if (image_texture && filename == image_filename) return;
+
+    filename = image_filename;
+    if (asset_manager.contains_key<xd::texture>(filename)) {
+        image_texture = asset_manager.get<xd::texture>(filename);
+        redraw();
+        return;
+    }
 
     auto fs = file_utilities::game_data_filesystem();
     auto stream = fs->open_binary_ifstream(image_filename);
@@ -21,9 +33,7 @@ void Image_Canvas::set_image(std::string image_filename, xd::vec4 trans) {
         throw file_loading_exception("Failed to load image canvas: " + image_filename);
     }
 
-    image_texture = std::make_shared<xd::texture>(image_filename, *stream, trans);
-    filename = image_filename;
-
+    image_texture = asset_manager.load<xd::texture>(image_filename, image_filename, *stream, trans);
     redraw();
 }
 

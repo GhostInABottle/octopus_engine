@@ -5,6 +5,7 @@
 #include "../interfaces/editable.hpp"
 #include "../scripting/lua_object.hpp"
 #include "../vendor/rapidxml.hpp"
+#include "../xd/asset_manager.hpp"
 #include "../xd/entity.hpp"
 #include "../xd/vendor/sol/forward.hpp"
 #include "collision_check_options.hpp"
@@ -177,6 +178,9 @@ public:
     void set_starting_position(xd::vec2 new_pos) {
         starting_position = new_pos;
     }
+    xd::asset_manager& get_asset_manager() {
+        return asset_manager;
+    }
     const Tileset& get_tileset(int index) const {
         return tilesets.at(index);
     }
@@ -222,7 +226,7 @@ public:
     void set_objects_moved(bool moved) {
         objects_moved = moved;
     }
-    bool is_changed() {
+    bool is_changed() const {
         return needs_redraw;
     }
     void sort_canvases() {
@@ -260,6 +264,8 @@ private:
     std::unordered_map<int, std::shared_ptr<Map_Object>> objects;
     // Hash table of object names to IDs
     std::unordered_map<std::string, int> object_name_to_id;
+    // Asset cache for textures and sprites
+    xd::asset_manager asset_manager;
     // List of map tilesets
     std::vector<Tileset> tilesets;
     // Obstruction data tileset

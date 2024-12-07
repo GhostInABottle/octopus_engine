@@ -19,7 +19,7 @@ class Image_Layer;
 
 class Sprite : public xd::component<Map_Object> {
 public:
-    Sprite(Game& game, std::unique_ptr<Sprite_Data> data);
+    Sprite(Game& game, std::shared_ptr<Sprite_Data> data);
     ~Sprite();
     // Render a frame
     void render(Map_Object& object);

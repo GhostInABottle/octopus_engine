@@ -14,8 +14,8 @@
 #include "../../include/utility/string.hpp"
 #include "../../include/utility/xml.hpp"
 
-Map_Object::Map_Object(Game& game, const std::string& name,
-        std::string sprite_file, xd::vec2 pos, Direction dir)
+Map_Object::Map_Object(Game& game, xd::asset_manager& asset_manager,
+        const std::string& name, std::string sprite_file, xd::vec2 pos, Direction dir)
         : game(game)
         , layer(nullptr)
         , id(-1)
@@ -51,7 +51,7 @@ Map_Object::Map_Object(Game& game, const std::string& name,
         , speed(1.0f)
         , sound_attenuation_enabled(false) {
     if (!sprite_file.empty()) {
-        set_sprite(game, sprite_file);
+        set_sprite(game, asset_manager, sprite_file);
     }
     set_speed(1.0f);
 }
@@ -287,13 +287,8 @@ Map_Object::Outline_Condition Map_Object::get_default_outline_conditions() const
     return Outline_Condition::SOLID | Outline_Condition::SCRIPT | Outline_Condition::PROXIMATE;
 }
 
-void Map_Object::set_sprite(Game& game, const std::string& filename, const std::string& new_pose_name) {
-    auto fs = file_utilities::game_data_filesystem();
-    if (!fs->exists(filename)) {
-        throw std::runtime_error("Tried to set sprite for map object " + name +
-            " to nonexistent file " + filename);
-    }
-
+void Map_Object::set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, const std::string& new_pose_name) {
     if (sprite) {
         auto normalized_filename{filename};
         string_utilities::normalize_slashes(normalized_filename);
@@ -301,7 +296,6 @@ void Map_Object::set_sprite(Game& game, const std::string& filename, const std::
             return;
     }
 
-    auto& asset_manager = game.get_asset_manager();
     auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
     auto new_sprite = std::make_shared<Sprite>(game,
@@ -447,8 +441,9 @@ rapidxml::xml_node<>* Map_Object::save(rapidxml::xml_document<>& doc) {
     return node;
 }
 
-std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& game) {
-    auto object_ptr = std::make_unique<Map_Object>(game);
+std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& game,
+        xd::asset_manager& asset_manager) {
+    auto object_ptr = std::make_unique<Map_Object>(game, asset_manager);
 
     if (auto id_node = node.first_attribute("id"))
         object_ptr->id = std::stoi(id_node->value());
@@ -495,7 +490,7 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
 
     // Load sprite first since other properties (like speed) depend on it
     if (properties.contains("sprite")) {
-        object_ptr->set_sprite(game, properties["sprite"]);
+        object_ptr->set_sprite(game, asset_manager, properties["sprite"]);
     }
 
     if (properties.contains("direction")) {

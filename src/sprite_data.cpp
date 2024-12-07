@@ -10,36 +10,31 @@
 #include <optional>
 
 namespace detail {
-    static std::shared_ptr<xd::texture> load_sprite_texture(xd::asset_manager& manager, std::string filename, xd::vec4 transparent_color) {
+    static std::shared_ptr<xd::texture> load_sprite_texture(xd::asset_manager& manager, const std::string& filename, xd::vec4 transparent_color) {
+        if (manager.contains_key<xd::texture>(filename)) {
+            return manager.get<xd::texture>(filename);
+        }
         auto fs = file_utilities::game_data_filesystem();
         auto stream = fs->open_binary_ifstream(filename);
         if (!stream || !*stream) {
             throw file_loading_exception{ "Failed to load sprite image " + filename };
         }
 
-        return manager.load_persistent<xd::texture>(filename, *stream, transparent_color);
+        return manager.load<xd::texture>(filename, filename, *stream, transparent_color);
     }
 }
 
-Sprite_Data::Sprite_Data(xd::asset_manager& manager) : asset_manager(manager), has_diagonal_directions(false) {}
+Sprite_Data::Sprite_Data(const std::string& filename)
+    : filename(filename), has_diagonal_directions(false) {}
 
-Sprite_Data::~Sprite_Data() {
-    // Release persistent textures from manager
-    if (image)
-        asset_manager.release<xd::texture>(image);
-    for (auto& pose : poses) {
-        if (pose.image)
-            asset_manager.release<xd::texture>(pose.image);
-        for (auto& frame : pose.frames) {
-            if (frame.image)
-                asset_manager.release<xd::texture>(frame.image);
-        }
-    }
-}
-
-std::unique_ptr<Sprite_Data> Sprite_Data::load(const std::string& filename, xd::asset_manager& manager,
+std::shared_ptr<Sprite_Data> Sprite_Data::load(std::string filename, xd::asset_manager& manager,
         xd::audio* audio, channel_group_type channel_group) {
     try {
+        string_utilities::normalize_slashes(filename);
+        if (manager.contains_key<Sprite_Data>(filename)) {
+            return manager.get<Sprite_Data>(filename);
+        }
+
         auto doc = std::make_unique<rapidxml::xml_document<>>();
         auto fs = file_utilities::game_data_filesystem();
         auto content = doc->allocate_string(fs->read_file(filename).c_str());
@@ -50,10 +45,7 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(const std::string& filename, xd::
             throw xml_exception("Missing Sprite node.");
         }
 
-        auto sprite_data = load(*sprite_node, manager, audio, channel_group);
-
-        sprite_data->filename = filename;
-        string_utilities::normalize_slashes(sprite_data->filename);
+        auto sprite_data = load(*sprite_node, filename, manager, audio, channel_group);
 
         return sprite_data;
     } catch (std::exception& ex) {
@@ -61,9 +53,11 @@ std::unique_ptr<Sprite_Data> Sprite_Data::load(const std::string& filename, xd::
     }
 }
 
-std::unique_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node, xd::asset_manager& manager,
+std::shared_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node,
+        const std::string& filename, xd::asset_manager& manager,
         xd::audio* audio, channel_group_type channel_group) {
-    auto sprite_ptr = std::make_unique<Sprite_Data>(manager);
+
+    auto sprite_ptr = manager.load<Sprite_Data>(filename, filename);
     // Image and transparent color
     bool image_loaded = false;
     bool pose_images_loaded = true;

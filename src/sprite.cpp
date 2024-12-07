@@ -24,7 +24,7 @@ struct Sprite::Impl {
     // Game instance
     Game& game;
     // Sprite data (poses, frames, etc.)
-    std::unique_ptr<Sprite_Data> data;
+    std::shared_ptr<Sprite_Data> data;
     // Current pose name
     std::string current_pose_name;
     // Current pose state
@@ -70,9 +70,9 @@ struct Sprite::Impl {
     // How fast sound volume falls off
     float sound_attenuation_factor;
 
-    Impl(Game& game, std::unique_ptr<Sprite_Data> data) :
+    Impl(Game& game, std::shared_ptr<Sprite_Data> data) :
         game(game),
-        data(std::move(data)),
+        data(data),
         current_pose_direction(Direction::NONE),
         frame_index(0),
         old_time(game.ticks()),
@@ -359,8 +359,8 @@ struct Sprite::Impl {
 
 const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
 
-Sprite::Sprite(Game& game, std::unique_ptr<Sprite_Data> data)
-        : pimpl(std::make_unique<Impl>(game, std::move(data))) {
+Sprite::Sprite(Game& game, std::shared_ptr<Sprite_Data> data)
+        : pimpl(std::make_unique<Impl>(game, data)) {
     pimpl->reset();
 }
 

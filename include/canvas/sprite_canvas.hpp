@@ -5,15 +5,21 @@
 #include "../sprite.hpp"
 #include "base_image_canvas.hpp"
 
+namespace xd {
+    class asset_manager;
+}
+
 // A canvas for displaying a sprite
 class Sprite_Canvas : public Base_Image_Canvas, public Sprite_Holder {
 public:
     Sprite_Canvas(const Sprite_Canvas&) = delete;
     Sprite_Canvas& operator=(const Sprite_Canvas&) = delete;
     // Create an image canvas with an optional transparent color
-    Sprite_Canvas(Game& game, const std::string& sprite, xd::vec2 position, const std::string& pose_name = "");
+    Sprite_Canvas(Game& game, xd::asset_manager& asset_manager,
+        const std::string& sprite, xd::vec2 position, const std::string& pose_name = "");
     // Change or update the sprite
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
+    void set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, const std::string& pose_name = "") override;
     // Get the sprite, if any
     Sprite* get_sprite() override { return sprite.get(); }
     const Sprite* get_sprite() const override { return sprite.get(); }

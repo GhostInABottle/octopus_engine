@@ -85,18 +85,15 @@ struct Sprite_Data {
     std::string default_pose;
     // List of poses
     std::vector<Pose> poses;
-    // Asset manager for caching the textures
-    xd::asset_manager& asset_manager;
     // Does it have any diagonal directions?
     bool has_diagonal_directions;
 
-    explicit Sprite_Data(xd::asset_manager& manager);
-    ~Sprite_Data();
+    explicit Sprite_Data(const std::string& filename);
 
-    static std::unique_ptr<Sprite_Data> load(const std::string& filename, xd::asset_manager& manager,
+    static std::shared_ptr<Sprite_Data> load(std::string filename, xd::asset_manager& manager,
         xd::audio* audio, channel_group_type channel_group);
-    static std::unique_ptr<Sprite_Data> load(rapidxml::xml_node<>& node, xd::asset_manager& manager,
-        xd::audio* audio, channel_group_type channel_group);
+    static std::shared_ptr<Sprite_Data> load(rapidxml::xml_node<>& node, const std::string& filename,
+        xd::asset_manager& manager, xd::audio* audio, channel_group_type channel_group);
 };
 
 #endif

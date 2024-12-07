@@ -292,109 +292,112 @@ function Engine_User_Data_Folder:save_keymap_file() end
 ---@field typewriter_skippable? boolean
 local Engine_Text_Options = {}
 
+---@class Engine_Text_Options_Builder : Engine_Text_Options
+local Engine_Text_Options_Builder = {}
+
 ---@param text string
----@return Engine_Text_Options
-function Engine_Text_Options:set_text(text) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_text(text) end
 
 ---@param object Engine_Map_Object
----@return Engine_Text_Options
-function Engine_Text_Options:set_object(object) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_object(object) end
 
 ---@param position Engine_Vec2
----@return Engine_Text_Options
-function Engine_Text_Options:set_position(position) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_position(position) end
 
 ---@param duration integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_duration(duration) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_duration(duration) end
 
 ---@param centered boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_centered(centered) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_centered(centered) end
 
 ---@param show_dashes boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_show_dashes(show_dashes) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_show_dashes(show_dashes) end
 
 ---@param cancelable boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_cancelable(cancelable) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_cancelable(cancelable) end
 
 ---@param choice_indent integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_choice_indent(choice_indent) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_choice_indent(choice_indent) end
 
 ---@param priority integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_canvas_priority(priority) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_canvas_priority(priority) end
 
 ---@param duration integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_fade_in_duration(duration) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_fade_in_duration(duration) end
 
 ---@param duration integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_fade_out_duration(duration) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_fade_out_duration(duration) end
 
 ---@param visible boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_background_visible(visible) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_background_visible(visible) end
 
 ---@param color Engine_Color
----@return Engine_Text_Options
-function Engine_Text_Options:set_background_color(color) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_background_color(color) end
 
 ---@param position_type integer|Engine_Text_Position_Type
----@return Engine_Text_Options
-function Engine_Text_Options:set_position_type(position_type) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_position_type(position_type) end
 
 ---@param sound string
----@return Engine_Text_Options
-function Engine_Text_Options:set_select_sound(sound) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_select_sound(sound) end
 
 ---@param sound string
----@return Engine_Text_Options
-function Engine_Text_Options:set_confirm_sound(sound) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_confirm_sound(sound) end
 
 ---@param sound string
----@return Engine_Text_Options
-function Engine_Text_Options:set_cancel_sound(sound) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_cancel_sound(sound) end
 
 ---@param typewriter_on boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_on(typewriter_on) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_on(typewriter_on) end
 
 ---@param typewriter_delay integer
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_delay(typewriter_delay) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_delay(typewriter_delay) end
 
 ---@param typewriter_sound string
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_sound(typewriter_sound) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_sound(typewriter_sound) end
 
 ---@param volume number
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_sound_volume(volume) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_sound_volume(volume) end
 
 ---@param pitch number
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_sound_pitch(pitch) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_sound_pitch(pitch) end
 
 ---@param pitch number
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_sound_max_pitch(pitch) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_sound_max_pitch(pitch) end
 
 ---@param typewriter_skippable boolean
----@return Engine_Text_Options
-function Engine_Text_Options:set_typewriter_skippable(typewriter_skippable) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_typewriter_skippable(typewriter_skippable) end
 
 ---@param choices string[]
----@return Engine_Text_Options
-function Engine_Text_Options:set_choices(choices) end
+---@return Engine_Text_Options_Builder
+function Engine_Text_Options_Builder:set_choices(choices) end
 
----@overload fun(object : Engine_Map_Object) : Engine_Text_Options
+---@overload fun(object : Engine_Map_Object) : Engine_Text_Options_Builder
 ---@param position Engine_Vec2
----@return Engine_Text_Options
+---@return Engine_Text_Options_Builder
 function Text_Options(position) end
 
 ---@overload fun(text_options : Engine_Text_Options) : Engine_Command_Result

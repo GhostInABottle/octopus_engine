@@ -342,8 +342,13 @@ Map_Object* Map::add_object(const std::shared_ptr<Map_Object>& object, Object_La
 
 Map_Object* Map::add_new_object(std::optional<std::string> name, std::optional<std::string> sprite_file,
         std::optional<xd::vec2> pos, std::optional<Direction> dir, std::optional<Object_Layer*> layer) {
-    return add_object(std::make_shared<Map_Object>(game, name.value_or(""), sprite_file.value_or(""),
-        pos.value_or(xd::vec2{}), dir.value_or(Direction::DOWN)), layer.value_or(nullptr));
+    return add_object(std::make_shared<Map_Object>(game,
+        asset_manager,
+        name.value_or(""),
+        sprite_file.value_or(""),
+        pos.value_or(xd::vec2{}),
+        dir.value_or(Direction::DOWN)),
+        layer.value_or(nullptr));
 }
 
 void Map::move_object_to_layer(Map_Object* object, Object_Layer* layer) {
@@ -793,7 +798,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
             }
         } else if (node_name == "imagelayer") {
             layer = std::shared_ptr<Layer>(Image_Layer::load(*layer_node, game,
-                *game.get_camera()));
+                *game.get_camera(), map_ptr->get_asset_manager()));
         } else if (node_name == "objectgroup") {
             layer = std::shared_ptr<Layer>(Object_Layer::load(*layer_node, game, *game.get_camera(), *map_ptr));
             map_ptr->object_layers.push_back(static_cast<Object_Layer*>(layer.get()));

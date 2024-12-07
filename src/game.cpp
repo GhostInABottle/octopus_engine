@@ -14,7 +14,6 @@
 #include "../include/utility/color.hpp"
 #include "../include/utility/file.hpp"
 #include "../include/utility/string.hpp"
-#include "../include/xd/asset_manager.hpp"
 #include "../include/xd/graphics/font.hpp"
 #include "../include/xd/graphics/image.hpp"
 #include "../include/xd/graphics/stock_text_formatter.hpp"
@@ -290,8 +289,6 @@ struct Game::Impl {
     Environment& environment;
     // Was game started in editor mode?
     bool editor_mode;
-    // Texture asset manager
-    xd::asset_manager asset_manager;
     // The shared Lua virtual machine
     xd::lua::virtual_machine vm;
     // Game-specific scripting interface
@@ -468,6 +465,7 @@ void Game::init(const std::string& default_scale_mode) {
     // Create player object
     player = std::make_shared<Map_Object>(
         *this,
+        map->get_asset_manager(),
         "player",
         Configurations::get<std::string>("startup.player-sprite"),
         start_pos);
@@ -802,7 +800,7 @@ void Game::set_next_map(const std::string& filename, Direction dir, std::optiona
 }
 
 xd::asset_manager& Game::get_asset_manager() {
-    return pimpl->asset_manager;
+    return map->get_asset_manager();
 }
 
 std::shared_ptr<xd::font> Game::create_font(const std::string& filename) {

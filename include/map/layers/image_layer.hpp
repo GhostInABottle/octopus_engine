@@ -12,16 +12,19 @@
 
 class Game;
 class Camera;
+namespace xd {
+    class asset_manager;
+}
 
 class Image_Layer : public Layer, public Sprite_Holder, public Color_Holder {
 public:
     // Constructor
     Image_Layer() noexcept : repeat(false), fixed(false), image_color(1.0f) {}
     // Set the sprite
-    using Sprite_Holder::set_sprite;
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
+    void set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, const std::string& pose_name = "") override;
     // Set image
-    void set_image(const std::string& filename);
+    void set_image(std::string filename, xd::asset_manager& manager);
     // Get the sprite, if any
     Sprite* get_sprite() override { return sprite.get(); }
     const Sprite* get_sprite() const override { return sprite.get(); }
@@ -56,7 +59,7 @@ public:
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc) override;
     // Load from XML
     static std::unique_ptr<Layer> load(rapidxml::xml_node<>& node,
-        Game& game, const Camera& camera);
+        Game& game, const Camera& camera, xd::asset_manager& asset_manager);
 private:
     // Does the layer repeat?
     bool repeat;

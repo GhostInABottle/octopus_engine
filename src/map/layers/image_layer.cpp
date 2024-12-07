@@ -1,7 +1,6 @@
 #include "../../../include/audio_player.hpp"
 #include "../../../include/configurations.hpp"
 #include "../../../include/exceptions.hpp"
-#include "../../../include/exceptions.hpp"
 #include "../../../include/game.hpp"
 #include "../../../include/map/layers/image_layer.hpp"
 #include "../../../include/map/layers/image_layer_renderer.hpp"
@@ -12,26 +11,27 @@
 #include "../../../include/utility/math.hpp"
 #include "../../../include/utility/string.hpp"
 #include "../../../include/utility/xml.hpp"
+#include "../../../include/xd/asset_manager.hpp"
 #include <istream>
 
-void Image_Layer::set_sprite(Game& game, const std::string& filename,
-        const std::string& pose_name) {
-    auto fs = file_utilities::game_data_filesystem();
-    if (!fs->exists(filename)) {
-        throw std::runtime_error("Tried to set sprite for layer "
-            + get_name() + " to nonexistent file " + filename);
-    }
-
-    auto& asset_manager = game.get_asset_manager();
+void Image_Layer::set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, const std::string& pose_name) {
     auto audio = game.get_audio_player().get_audio();
     auto channel_group = game.get_sound_group_type();
-    sprite = std::make_unique<Sprite>(game,
-        Sprite_Data::load(filename, asset_manager, audio, channel_group));
+    auto sprite_data = Sprite_Data::load(filename, asset_manager, audio, channel_group);
+    sprite = std::make_unique<Sprite>(game, sprite_data);
 
     set_pose(pose_name, "", Direction::NONE);
 }
 
-void Image_Layer::set_image(const std::string& filename) {
+void Image_Layer::set_image(std::string filename, xd::asset_manager& asset_manager) {
+    string_utilities::normalize_slashes(filename);
+    if (asset_manager.contains_key<xd::texture>(filename)) {
+        image_source = filename;
+        image_texture = asset_manager.get<xd::texture>(filename);
+        return;
+    }
+
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->exists(filename)) {
         throw std::runtime_error("Tried to set image for layer "
@@ -46,8 +46,8 @@ void Image_Layer::set_image(const std::string& filename) {
 
     image_source = filename;
     auto wrap_mode = repeat ? GL_REPEAT : GL_CLAMP_TO_EDGE;
-    image_texture = std::make_shared<xd::texture>(image_source,
-        *stream, image_trans_color, wrap_mode, wrap_mode);
+    image_texture = asset_manager.load<xd::texture>(image_source,
+        image_source, *stream, image_trans_color, wrap_mode, wrap_mode);
 }
 
 rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
@@ -64,7 +64,8 @@ rapidxml::xml_node<>* Image_Layer::save(rapidxml::xml_document<>& doc) {
     return node;
 }
 
-std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game, const Camera& camera) {
+std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
+        const Camera& camera, xd::asset_manager& asset_manager) {
     auto layer_ptr = std::make_unique<Image_Layer>();
     layer_ptr->Layer::load(node);
 
@@ -100,7 +101,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
 
     // Image
     if (!sprite.empty()) {
-        layer_ptr->set_sprite(game, sprite, pose);
+        layer_ptr->set_sprite(game, asset_manager, sprite, pose);
     } else if (auto image_node = node.first_node("image")) {
         layer_ptr->image_source = image_node->first_attribute("source")->value();
         string_utilities::normalize_slashes(layer_ptr->image_source);
@@ -108,7 +109,7 @@ std::unique_ptr<Layer> Image_Layer::load(rapidxml::xml_node<>& node, Game& game,
             layer_ptr->image_trans_color = hex_to_color(trans_attr->value());
         }
         // Load the texture
-        layer_ptr->set_image(layer_ptr->image_source);
+        layer_ptr->set_image(layer_ptr->image_source, asset_manager);
     } else {
         throw tmx_exception("Missing image in image layer");
     }

@@ -39,7 +39,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
     image_layer_type["sprite"] = sol::property(
         &Image_Layer::get_sprite_filename,
         [&](Image_Layer* layer, const std::string& filename) {
-            layer->set_sprite(game, filename);
+            layer->set_sprite(game, game.get_asset_manager(), filename);
         });
     image_layer_type["get_property"] = &Image_Layer::get_property;
     image_layer_type["set_property"] = &Image_Layer::set_property;
@@ -60,7 +60,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
     };
     image_layer_type["reset"] = &Image_Layer::reset;
     image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {
-        layer->set_sprite(game, filename, pose.value_or(""));
+        layer->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
     image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game.get_current_scripting_interface();

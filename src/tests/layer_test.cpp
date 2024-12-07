@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(image_layer_load) {
     auto node = doc->first_node("imagelayer");
     BOOST_CHECK(node);
     xd::asset_manager manager;
-    auto layer = Image_Layer::load(*node, *game, *game->get_camera());
+    auto layer = Image_Layer::load(*node, *game, *game->get_camera(), manager);
     BOOST_CHECK_EQUAL(layer->get_name(), "some image");
     BOOST_CHECK_CLOSE(layer->get_opacity(), 0.55f, 0.001f);
     BOOST_CHECK_EQUAL(layer->is_visible(), false);

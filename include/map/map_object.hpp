@@ -21,6 +21,9 @@
 class Game;
 class Object_Layer;
 class Sprite;
+namespace xd {
+    class asset_manager;
+}
 
 class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder,
     public Editable, public Tmx_Object, public Opacity_Holder, public Color_Holder {
@@ -37,7 +40,8 @@ public:
         NEVER = 16
     };
     // Map object onstructor/destructor
-    Map_Object(Game& game, const std::string& name = "", std::string sprite_file = "",
+    Map_Object(Game& game, xd::asset_manager& asset_manager,
+        const std::string& name = "", std::string sprite_file = "",
         xd::vec2 pos = xd::vec2(), Direction dir = Direction::DOWN);
     ~Map_Object();
     // Move in a direction and return collision object
@@ -318,7 +322,8 @@ public:
     const Sprite* get_sprite() const override {
         return sprite.get();
     }
-    void set_sprite(Game& game, const std::string& filename, const std::string& pose_name = "") override;
+    void set_sprite(Game& game, xd::asset_manager& asset_manager,
+        const std::string& filename, const std::string& pose_name = "") override;
     float get_movement_speed() const;
     void set_movement_speed(float new_speed);
     float get_animation_speed() const;
@@ -401,7 +406,8 @@ public:
     // Serialize object to TMX data
     rapidxml::xml_node<>* save(rapidxml::xml_document<>& doc);
     // Load the object from TMX data
-    static std::unique_ptr<Map_Object> load(rapidxml::xml_node<>& node, Game& game);
+    static std::unique_ptr<Map_Object> load(rapidxml::xml_node<>& node, Game& game,
+        xd::asset_manager& asset_manager);
 private:
     // Game instance
     Game& game;

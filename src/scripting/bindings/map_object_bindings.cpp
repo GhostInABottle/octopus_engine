@@ -124,11 +124,11 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["sprite"] = sol::property(
         &Map_Object::get_sprite_filename,
         [&](Map_Object* obj, const std::string& filename) {
-            obj->set_sprite(game, filename);
+            obj->set_sprite(game, game.get_asset_manager(), filename);
         });
     object_type["reset"] = &Map_Object::reset;
     object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename, std::optional<std::string> pose) {
-        obj->set_sprite(game, filename, pose.value_or(""));
+        obj->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
     object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
         auto si = game.get_current_scripting_interface();

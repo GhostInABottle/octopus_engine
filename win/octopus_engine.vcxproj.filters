@@ -653,9 +653,6 @@
     <ClInclude Include="..\include\xd\asset_manager.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\xd\asset_serializer.hpp">
-      <Filter>Header Files\xd</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\xd\audio.hpp">
       <Filter>Header Files\xd</Filter>
     </ClInclude>
