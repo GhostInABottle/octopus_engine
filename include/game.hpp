@@ -6,7 +6,6 @@
 #include "xd/glm.hpp"
 #include "xd/graphics/font_style.hpp"
 #include "xd/graphics/framebuffer.hpp"
-#include "xd/graphics/simple_text_renderer.hpp"
 #include "xd/system/input.hpp"
 #include "xd/system/window.hpp"
 #include "xd/vendor/sol/forward.hpp"

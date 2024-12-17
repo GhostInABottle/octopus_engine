@@ -17,6 +17,7 @@
 #include "../include/xd/graphics/font.hpp"
 #include "../include/xd/graphics/image.hpp"
 #include "../include/xd/graphics/stock_text_formatter.hpp"
+#include "../include/xd/graphics/text_renderer.hpp"
 #include "../include/xd/lua/virtual_machine.hpp"
 #include <stdexcept>
 #include <unordered_set>
@@ -340,7 +341,7 @@ struct Game::Impl {
     // Text formatter
     xd::stock_text_formatter text_formatter;
     // Text renderer
-    xd::simple_text_renderer text_renderer;
+    xd::text_renderer text_renderer;
     // {shake} decorator
     Shake_Decorator shake_decorator;
     // {typewriter} decorator

@@ -182,11 +182,14 @@ void xd::font::load_size(int size, int load_flags)
         throw font_load_failed(m_filename);
     // free the size in catch block if something goes wrong
     try {
-        if (FT_Activate_Size(font_size) != 0)
+        if (FT_Activate_Size(font_size) != 0) {
             throw font_load_failed(m_filename);
+        }
         // set the pixel size
-        if (FT_Set_Pixel_Sizes(m_face->handle, 0, size) != 0)
+        if (FT_Set_Pixel_Sizes(m_face->handle, 0, size) != 0) {
             throw font_load_failed(m_filename);
+        }
+
         // pre-load 7-bit ASCII glyphs
         for (int i = 0; i < 128; i++) {
             load_glyph(i, size, load_flags);
@@ -220,8 +223,8 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
     m_glyph_map[key] = std::make_unique<glyph>();
     glyph& glyph = *m_glyph_map[key];
     glyph.glyph_index = char_index;
-    glyph.advance.x = static_cast<float>(m_face->handle->glyph->advance.x >> 6);
-    glyph.advance.y = static_cast<float>(m_face->handle->glyph->advance.y >> 6);
+    glyph.advance.x = m_face->handle->glyph->advance.x / 64.0f;
+    glyph.advance.y = m_face->handle->glyph->advance.y / 64.0f;
 
     // get the handle to the bitmap
     FT_Bitmap bitmap = m_face->handle->glyph->bitmap;
@@ -255,24 +258,22 @@ const xd::detail::font::glyph& xd::font::load_glyph(utf8::uint32_t char_index, i
     return glyph;
 }
 
-void xd::font::render(const std::string& text, const font_style& style,
-    xd::shader_program* shader, const glm::mat4& mvp, glm::vec2 *pos,
+glm::vec2 xd::font::render(const std::string& text, const font_style& style,
+    xd::shader_program* shader, const glm::mat4& mvp, std::optional<glm::vec2> pos,
     bool actual_rendering)
 {
     int load_flags = style.m_force_autohint ? FT_LOAD_FORCE_AUTOHINT : FT_LOAD_NO_HINTING;
     // check if we're rendering using this font or a linked font
     if (style.m_type && style.m_type->length() != 0) {
         font_map_t::iterator i = m_linked_fonts.find(*style.m_type);
-        if (i == m_linked_fonts.end())
-            throw invalid_font_type(*style.m_type);
+        if (i == m_linked_fonts.end()) throw invalid_font_type(*style.m_type);
+
         font_style linked_style = style;
         linked_style.m_type = std::nullopt;
-        i->second->render(text, linked_style, shader, mvp, pos, actual_rendering);
-        return;
+        return i->second->render(text, linked_style, shader, mvp, pos, actual_rendering);
     }
 
-    glm::vec2 text_pos;
-    if (pos) text_pos = *pos;
+    glm::vec2 text_pos = pos.value_or(glm::vec2(0, 0));
 
     // check if the font size is already loaded
     auto it = m_face->sizes.find(style.m_size);
@@ -316,6 +317,8 @@ void xd::font::render(const std::string& text, const font_style& style,
             FT_Vector kerning_delta;
             FT_Get_Kerning(m_face->handle, prev_codepoint, codepoint, FT_KERNING_DEFAULT, &kerning_delta);
             text_pos.x += kerning_delta.x / 64.0f;
+        } else if (kerning) {
+            prev_codepoint = codepoint;
         }
 
         auto& hb_glyph_pos = hb_glyph_positions[i];
@@ -390,24 +393,17 @@ void xd::font::render(const std::string& text, const font_style& style,
         text_pos.x += hb_glyph_pos.x_advance / 64.0f;
         text_pos.y -= hb_glyph_pos.y_advance / 64.0f;
         text_pos.x += style.m_letter_spacing;
-
-        // keep track of previous glyph to do kerning
-        prev_codepoint = codepoint;
     }
 
     // Clear buffer
     hb_buffer_clear_contents(m_face->hb_buffer);
 
-    // give back the updated coords
-    if (pos)
-        *pos = text_pos;
+    return text_pos;
 }
 
 float xd::font::get_width(const std::string& text, const font_style& style)
 {
-    glm::vec2 pos(0.0f, 0.0f);
-    render(text, style, nullptr, glm::mat4(), &pos, false);
-    return pos.x;
+    return render(text, style, nullptr, glm::mat4(), std::nullopt, false).x;
 }
 
 const std::string& xd::font::get_mvp_uniform()

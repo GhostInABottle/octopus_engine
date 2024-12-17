@@ -564,17 +564,17 @@ xd::text_decorator::~text_decorator()
 
 void xd::text_decorator::push_text(const xd::formatted_text& text)
 {
-    if (text.length() != 0) {
-        if (m_current_state_changes.size() != 0) {
-            formatted_text format_text = text;
-            detail::text_formatter::state_change_list&
-                state_changes = format_text.begin()->m_state_changes;
-            state_changes.insert(state_changes.begin(), m_current_state_changes.begin(), m_current_state_changes.end());
-            m_current_text += format_text;
-            m_current_state_changes.clear();
-        } else {
-            m_current_text += text;
-        }
+    if (text.length() == 0) return;
+
+    if (m_current_state_changes.size() != 0) {
+        formatted_text format_text = text;
+        detail::text_formatter::state_change_list&
+            state_changes = format_text.begin()->m_state_changes;
+        state_changes.insert(state_changes.begin(), m_current_state_changes.begin(), m_current_state_changes.end());
+        m_current_text += format_text;
+        m_current_state_changes.clear();
+    } else {
+        m_current_text += text;
     }
 }
 
@@ -913,11 +913,16 @@ glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, co
             if (formatted_char.m_state_changes.size() || formatted_char.m_level < current_level) {
                 // draw the current string using current style
                 if (current_str.length() != 0) {
-                    if (!style_stack.positions.empty())
+                    if (!style_stack.positions.empty()) {
                         pos += style_stack.positions.back().value;
-                    font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, actual_rendering);
-                    if (!style_stack.positions.empty())
+                    }
+
+                    pos = font.render(current_str, style_stack.get_font_style(), &shader, mvp,
+                        pos, actual_rendering);
+
+                    if (!style_stack.positions.empty()) {
                         pos -= style_stack.positions.back().value;
+                    }
                     current_str.clear();
                 }
 
@@ -939,24 +944,27 @@ glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, co
         }
 
         // draw the rest of the string
-        if (current_str.length() != 0) {
-            if (!style_stack.positions.empty())
-                pos += style_stack.positions.back().value;
-            font.render(current_str, style_stack.get_font_style(), &shader, mvp, &pos, actual_rendering);
+        if (current_str.length() == 0) return;
+
+        if (!style_stack.positions.empty()) {
+            pos += style_stack.positions.back().value;
         }
+        pos = font.render(current_str, style_stack.get_font_style(), &shader, mvp, pos, actual_rendering);
     };
 
 
     for (auto& element : elements) {
         std::visit(
-            detail::text_formatter::overloaded{
+            detail::text_formatter::overloaded {
                 render_icon,
                 render_text
-            }
-            , element);
+            },
+            element);
     }
+
     if (!m_icon_batch.empty()) {
-        auto icon_mvp = xd::translate(mvp, xd::vec3(m_icon_offset.x, m_icon_offset.y - m_icon_size.y, 0));
+        xd::vec3 icon_offset{ m_icon_offset.x, m_icon_offset.y - m_icon_size.y, 0 };
+        auto icon_mvp = xd::translate(mvp, icon_offset);
         m_icon_batch.draw(xd::shader_uniforms{icon_mvp});
         m_icon_batch.clear();
     }

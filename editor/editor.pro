@@ -117,7 +117,6 @@ SOURCES += main.cpp\
     ../src/xd/graphics/image.cpp \
     ../src/xd/graphics/shader_program.cpp \
     ../src/xd/graphics/shaders.cpp \
-    ../src/xd/graphics/simple_text_renderer.cpp \
     ../src/xd/graphics/sprite_batch.cpp \
     ../src/xd/graphics/stock_text_formatter.cpp \
     ../src/xd/graphics/text_formatter.cpp \
@@ -272,7 +271,6 @@ HEADERS  += main_window.hpp \
     ../include/xd/graphics/matrix_stack.hpp \
     ../include/xd/graphics/shader_program.hpp \
     ../include/xd/graphics/shaders.hpp \
-    ../include/xd/graphics/simple_text_renderer.hpp \
     ../include/xd/graphics/sprite_batch.hpp \
     ../include/xd/graphics/stock_text_formatter.hpp \
     ../include/xd/graphics/text_formatter.hpp \

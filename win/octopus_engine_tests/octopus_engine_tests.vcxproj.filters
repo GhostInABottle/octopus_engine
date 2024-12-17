@@ -246,9 +246,6 @@
     <ClCompile Include="..\..\src\xd\graphics\shaders.cpp">
       <Filter>Source Files\xd\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\xd\graphics\simple_text_renderer.cpp">
-      <Filter>Source Files\xd\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\xd\graphics\sprite_batch.cpp">
       <Filter>Source Files\xd\graphics</Filter>
     </ClCompile>
@@ -615,9 +612,6 @@
       <Filter>Header Files\xd\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\graphics\shaders.hpp">
-      <Filter>Header Files\xd\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xd\graphics\simple_text_renderer.hpp">
       <Filter>Header Files\xd\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xd\graphics\sprite_batch.hpp">

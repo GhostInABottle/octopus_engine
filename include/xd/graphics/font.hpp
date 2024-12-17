@@ -8,6 +8,7 @@
 #include "shader_program.hpp"
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 namespace xd
@@ -26,9 +27,9 @@ namespace xd
         void link_font(const std::string& type, std::shared_ptr<font> font);
         void unlink_font(const std::string& type);
 
-        void render(const std::string& text, const font_style& style,
+        glm::vec2 render(const std::string& text, const font_style& style,
             shader_program* shader, const glm::mat4& mvp,
-            glm::vec2 *pos = 0, bool actual_rendering = true);
+            std::optional<glm::vec2> pos = std::nullopt, bool actual_rendering = true);
 
         float get_width(const std::string& text, const font_style& style);
 

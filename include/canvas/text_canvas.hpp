@@ -7,7 +7,6 @@
 #include <type_traits>
 
 namespace xd {
-    class simple_text_renderer;
     class font;
 }
 

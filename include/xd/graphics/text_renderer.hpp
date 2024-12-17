@@ -19,9 +19,12 @@ namespace xd
         explicit text_renderer(shader_program* shader);
         virtual ~text_renderer();
 
-        void render(xd::font& font, const xd::font_style& style, const mat4& mvp, const std::string& text);
+        void render(xd::font& font, const xd::font_style& style, const xd::mat4& projection, float x, float y, const std::string& text);
         void render_formatted(xd::font& font, xd::text_formatter& formatter,
-            const xd::font_style& style, const mat4& mvp, const std::string& text);
+            const xd::font_style& style, const xd::mat4& projection, float x, float y, const std::string& text);
+
+        float text_width(xd::font& font, xd::text_formatter& formatter,
+            const xd::font_style& style, const std::string& text);
 
     private:
         std::unique_ptr<shader_program> m_shader;
