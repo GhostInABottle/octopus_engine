@@ -30,6 +30,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
             <Tag Key=\"Name\" Value=\"Cool Pose\" /> \
             <Tag Key=\"State\" Value=\"St\" /> \
             <Tag Key=\"Direction\" Value=\"Up\" /> \
+            <Completion-Frame Index=\"1\" /> \
             <Bounding-Box X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
             <Frame Duration=\"200\" X-Mag=\"2.5\" Y-Mag=\"4.0\" Angle=\"10\" Opacity=\"0.5\" Tween=\"true\"> \
               <Rectangle X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
@@ -60,6 +61,8 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(main_pose.duration, 100);
     BOOST_CHECK_EQUAL(main_pose.repeats, 3);
     BOOST_CHECK_EQUAL(main_pose.require_completion, true);
+    BOOST_CHECK(main_pose.completion_frames);
+    BOOST_CHECK_EQUAL(main_pose.completion_frames.value().at(0), 0);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.x, 1);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.y, 2);
     BOOST_CHECK_EQUAL(main_pose.bounding_box.w, 3);
@@ -82,6 +85,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(circle_pose.duration, 10);
     BOOST_CHECK_EQUAL(circle_pose.repeats, -1);
     BOOST_CHECK_EQUAL(circle_pose.require_completion, false);
+    BOOST_CHECK(!circle_pose.completion_frames);
     BOOST_CHECK(circle_pose.bounding_circle.has_value());
     BOOST_CHECK_EQUAL(circle_pose.bounding_circle->x, 5);
     BOOST_CHECK_EQUAL(circle_pose.bounding_circle->y, 7);

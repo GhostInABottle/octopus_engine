@@ -12,9 +12,11 @@
 #include "../include/utility/string.hpp"
 #include "../include/utility/direction.hpp"
 #include "../include/xd/audio.hpp"
+#include <algorithm>
+#include <cstdlib>
 #include <optional>
 #include <unordered_map>
-#include <cstdlib>
+#include <vector>
 
 namespace detail {
     static xd::vec4 default_color(1, 1, 1, 1);
@@ -54,7 +56,7 @@ struct Sprite::Impl {
     // Is the pose completed
     bool completed;
     // Index at which the sprite should complete
-    int completion_index;
+    std::vector<int> completion_indexes;
     // If true, the pose won't be updated anymore
     bool stop_updating;
     // Is the sprite paused
@@ -81,7 +83,6 @@ struct Sprite::Impl {
         frame_count(0),
         tweening(false),
         completed(false),
-        completion_index(-1),
         stop_updating(false),
         paused(false),
         pause_start(-1),
@@ -141,7 +142,11 @@ struct Sprite::Impl {
         }
 
         if (passed_time() > frame_duration) {
-            if (!completed && completion_index > -1 && frame_index == completion_index) {
+            auto complete_infinite = !completed
+                && pose->require_completion
+                && std::find(completion_indexes.begin(), completion_indexes.end(),
+                    frame_index) != completion_indexes.end();
+            if (complete_infinite) {
                 // When a pose requires completion, mark it as complete for 1 frame
                 completed = true;
                 return;
@@ -161,7 +166,8 @@ struct Sprite::Impl {
             }
             frame_index = (frame_index + 1) % frame_count;
             frame_duration = -1;
-            if (completion_index > -1 && pose->require_completion) {
+
+            if (completed && !completion_indexes.empty()) {
                 completed = false;
             }
         }
@@ -201,7 +207,7 @@ struct Sprite::Impl {
         repeat_count = 0;
         last_sound_frame = -1;
         completed = false;
-        completion_index = -1;
+        completion_indexes.clear();
         stop_updating = false;
         tweening = false;
 
@@ -210,8 +216,10 @@ struct Sprite::Impl {
         frame_count = pose->frames.size();
         if (!pose->require_completion) return;
 
-        if (frame_count > 0) {
-            completion_index = frame_count - 1;
+        if (pose->completion_frames) {
+            completion_indexes = *pose->completion_frames;
+        } else if (frame_count > 0) {
+            completion_indexes.push_back(frame_count - 1);
         } else {
             completed = true;
         }
@@ -481,21 +489,6 @@ int Sprite::get_frame_index() const {
 
 bool Sprite::is_complete() const {
     return pimpl->completed;
-}
-
-void Sprite::complete() {
-    if (pimpl->completed) return;
-    complete_at(pimpl->frame_count - 1);
-}
-
-void Sprite::complete_at(int frame_index) {
-    if (frame_index < 0) {
-        pimpl->completion_index = -1;
-        pimpl->completed = true;
-        return;
-    }
-
-    pimpl->completion_index = frame_index;
 }
 
 bool Sprite::is_paused() const {

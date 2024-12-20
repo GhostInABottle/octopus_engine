@@ -6,7 +6,7 @@
 #include "../../include/map/map_object.hpp"
 #include "../../include/map/layers/image_layer.hpp"
 #include "../../include/canvas/sprite_canvas.hpp"
-#include <exception>
+#include <stdexcept>
 
 Sprite_Holder* Show_Pose_Command::get_holder() const {
     auto& map = *map_ptr;
@@ -29,7 +29,9 @@ Sprite_Holder* Show_Pose_Command::get_holder() const {
 
 Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
         const std::string& pose_name, const std::string& state,
-        Direction dir) : holder_info(holder_info), complete(false) {
+        Direction dir)
+        : holder_info(holder_info)
+        , complete(false) {
     map_ptr = &map;
     auto holder = get_holder();
     if (!holder) {

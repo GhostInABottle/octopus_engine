@@ -123,10 +123,6 @@ std::shared_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node,
             pose.repeats = std::stoi(attr->value());
         }
 
-        if (auto attr = pose_node->first_attribute("Require-Completion")) {
-            pose.require_completion = string_utilities::string_to_bool(attr->value());
-        }
-
         if (auto attr = pose_node->first_attribute("X-Origin")) {
             pose.origin.x = std::stof(attr->value());
         }
@@ -251,6 +247,31 @@ std::shared_ptr<Sprite_Data> Sprite_Data::load(rapidxml::xml_node<>& node,
         if (pose.frames.empty()) {
             throw xml_exception("Invalid sprite data file. "
                 "Pose must have at least one frame.");
+        }
+
+        if (auto attr = pose_node->first_attribute("Require-Completion")) {
+            pose.require_completion = string_utilities::string_to_bool(attr->value());
+
+            std::vector<int> completion_frames;
+            for (auto node = pose_node->first_node("Completion-Frame");
+                node; node = node->next_sibling("Completion-Frame")) {
+                if (auto index_attr = node->first_attribute("Index")) {
+                    auto index = std::stoi(index_attr->value());
+                    auto valid_index = index > 0
+                        && static_cast<std::size_t>(index) <= pose.frames.size();
+                    if (!valid_index) {
+                        throw xml_exception("Invalid completion frame index: "
+                            + std::to_string(index));
+                    }
+                    completion_frames.push_back(index - 1);
+                } else {
+                    throw xml_exception("Missing completion frame index");
+                }
+            }
+
+            if (!completion_frames.empty()) {
+                pose.completion_frames = completion_frames;
+            }
         }
 
         sprite_ptr->poses.push_back(pose);

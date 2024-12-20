@@ -52,10 +52,6 @@ public:
     int get_frame_index() const;
     // Is the current animation done?
     bool is_complete() const;
-    // Wait for pose to reach a specific frame index before marking it as complete
-    void complete_at(int frame_index);
-    // Wait for the pose to reach the final frame and mark it as complete
-    void complete();
     // Is the sprite paused / not updating
     bool is_paused() const;
     // Stop updating the sprite

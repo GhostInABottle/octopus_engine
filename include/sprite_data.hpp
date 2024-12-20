@@ -52,10 +52,12 @@ struct Pose {
     std::optional<xd::circle> bounding_circle;
     // Total duration of one pose cycle in milliseconds
     int duration;
-    // Number of times pose is repeated (-1 = forever).
+    // Number of times pose is repeated (-1 = forever)
     int repeats;
-    // Should never-ending pose frames complete before marking as finished?
+    // Should infinite pose frames complete before marking as finished?
     bool require_completion;
+    // The frames on which an infinite pose is marked as completed
+    std::optional<std::vector<int>> completion_frames;
     // Transform origin point
     xd::vec2 origin;
     // Pose image
