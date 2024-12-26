@@ -353,7 +353,8 @@ void Map_Object::set_speed(float new_speed) {
     }
 }
 
-void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state, Direction new_direction) {
+void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state,
+        Direction new_direction, bool reset_current_frame) {
     if (!new_pose_name.empty()) {
         pose_name = new_pose_name;
     } else if (pose_name.empty() && sprite) {
@@ -373,7 +374,7 @@ void Map_Object::set_pose(const std::string& new_pose_name, const std::string& n
 
     if (!sprite) return;
 
-    Sprite_Holder::set_pose(pose_name, state, direction);
+    Sprite_Holder::set_pose(pose_name, state, direction, reset_current_frame);
     bounding_box = sprite->get_bounding_box();
     bounding_circle = sprite->get_bounding_circle();
 
@@ -382,7 +383,8 @@ void Map_Object::set_pose(const std::string& new_pose_name, const std::string& n
     auto sprite_filename = get_sprite_filename();
     for (auto obj : linked_objects) {
         auto same_file = obj->get_sprite_filename() == sprite_filename;
-        obj->set_pose(same_file ? "" : new_pose_name, new_state, new_direction);
+        obj->set_pose(same_file ? "" : new_pose_name, new_state,
+            new_direction, reset_current_frame);
     }
 }
 

@@ -29,7 +29,7 @@ Sprite_Holder* Show_Pose_Command::get_holder() const {
 
 Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
         const std::string& pose_name, const std::string& state,
-        Direction dir)
+        Direction dir, bool reset_current_frame)
         : holder_info(holder_info)
         , complete(false) {
     map_ptr = &map;
@@ -40,7 +40,7 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
             + ") not found when trying to show pose : " + pose_name);
     }
 
-    holder->set_pose(pose_name, state, dir);
+    holder->set_pose(pose_name, state, dir, reset_current_frame);
 }
 
 void Show_Pose_Command::execute() {

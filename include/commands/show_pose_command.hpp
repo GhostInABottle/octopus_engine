@@ -20,7 +20,8 @@ public:
             : type(type), id(id), parent_id(parent_id) {}
     };
     Show_Pose_Command(Map& map, Holder_Info holder_info, const std::string& pose_name,
-        const std::string& state = "", Direction dir = Direction::NONE);
+        const std::string& state = "", Direction dir = Direction::NONE,
+        bool reset_current_frame = true);
     void execute() override;
     bool is_complete() const override;
     void pause() override;

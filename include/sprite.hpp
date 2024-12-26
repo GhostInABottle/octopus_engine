@@ -29,11 +29,12 @@ public:
     void update(Map_Object& object);
     void update();
     // Reset values to their defaults
-    void reset();
+    void reset(bool reset_current_frame = true);
     // Get sprite file name
     std::string get_filename() const;
     // Sets the current pose
-    void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir);
+    void set_pose(const std::string& pose_name, const std::string& state_name,
+        Direction dir, bool reset_current_frame = true);
     // Get the current pose
     Pose& get_pose();
     const Pose& get_pose() const;

@@ -13,8 +13,8 @@ namespace xd {
 class Sprite_Holder {
 public:
     virtual ~Sprite_Holder() = 0;
-    virtual void set_pose(const std::string& pose_name,
-            const std::string& state, Direction direction);
+    virtual void set_pose(const std::string& pose_name, const std::string& state,
+        Direction direction, bool reset_current_frame);
     virtual void reset();
     // Set sprite
     virtual void set_sprite(Game& game, xd::asset_manager& asset_manager,

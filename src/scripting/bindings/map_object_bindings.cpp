@@ -127,15 +127,19 @@ void bind_map_object_types(sol::state& lua, Game& game) {
             obj->set_sprite(game, game.get_asset_manager(), filename);
         });
     object_type["reset"] = &Map_Object::reset;
-    object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename, std::optional<std::string> pose) {
+    object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename,
+            std::optional<std::string> pose) {
         obj->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
-    object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+    object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name,
+            std::optional<std::string> state, std::optional<Direction> dir,
+            std::optional<bool> reset_current_frame) {
         auto si = game.get_current_scripting_interface();
         auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;
         Show_Pose_Command::Holder_Info holder_info{ holder_type, obj->get_id() };
         return si->register_command<Show_Pose_Command>(
-            *game.get_map(), holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            *game.get_map(), holder_info, pose_name, state.value_or(""),
+            dir.value_or(Direction::NONE), reset_current_frame.value_or(true));
     };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);

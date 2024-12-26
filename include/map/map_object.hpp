@@ -375,7 +375,7 @@ public:
     void set_angle(int angle);
     // Set pose
     void set_pose(const std::string& new_pose_name = "", const std::string& new_state = "",
-        Direction new_direction = Direction::NONE) override;
+        Direction new_direction = Direction::NONE, bool reset_current_frame = true) override;
     // Face another object
     void face(const Map_Object& other);
     // Face a certain spot

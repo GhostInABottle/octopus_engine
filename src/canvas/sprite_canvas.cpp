@@ -21,7 +21,7 @@ void Sprite_Canvas::set_sprite(Game& game, xd::asset_manager& asset_manager,
     sprite = std::make_unique<Sprite>(game,
         Sprite_Data::load(sprite_filename, asset_manager, audio, channel_group));
 
-    set_pose(pose_name, "", Direction::NONE);
+    set_pose(pose_name, "", Direction::NONE, true);
     redraw();
 }
 

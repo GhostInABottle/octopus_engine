@@ -200,9 +200,7 @@ struct Sprite::Impl {
         }
     }
 
-    void reset() {
-        frame_index = 0;
-        old_time = game.ticks();
+    void reset(bool reset_current_frame) {
         frame_duration = -1;
         repeat_count = 0;
         last_sound_frame = -1;
@@ -210,10 +208,18 @@ struct Sprite::Impl {
         completion_indexes.clear();
         stop_updating = false;
         tweening = false;
+        if (!pose || reset_current_frame) {
+            frame_index = 0;
+            old_time = game.ticks();
+        }
 
         if (!pose) return;
 
         frame_count = pose->frames.size();
+        if (!reset_current_frame) {
+            frame_index = frame_index % frame_count;
+        }
+
         if (!pose->require_completion) return;
 
         if (pose->completion_frames) {
@@ -262,7 +268,8 @@ struct Sprite::Impl {
         return game.ticks() - old_time - paused_time();
     }
 
-    void set_pose(const std::string& pose_name, const std::string& state_name, Direction dir) {
+    void set_pose(const std::string& pose_name, const std::string& state_name,
+            Direction dir, bool reset_current_frame) {
         // Update current pose tags
         current_pose_name = string_utilities::capitalize(pose_name);
         current_pose_state = string_utilities::capitalize(state_name);
@@ -317,10 +324,11 @@ struct Sprite::Impl {
             // Update pose cache
             tag_map[tag_string] = matched_pose;
         }
+
         // Set matched pose and reset the sprite
         if (pose != &data->poses[matched_pose] || stop_updating) {
             pose = &data->poses[matched_pose];
-            reset();
+            reset(reset_current_frame);
         }
     }
 
@@ -369,7 +377,7 @@ const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
 
 Sprite::Sprite(Game& game, std::shared_ptr<Sprite_Data> data)
         : pimpl(std::make_unique<Impl>(game, data)) {
-    pimpl->reset();
+    pimpl->reset(true);
 }
 
 Sprite::~Sprite() {}
@@ -432,16 +440,17 @@ void Sprite::update() {
     pimpl->update();
 }
 
-void Sprite::reset() {
-    pimpl->reset();
+void Sprite::reset(bool reset_current_frame) {
+    pimpl->reset(reset_current_frame);
 }
 
 std::string Sprite::get_filename() const {
     return pimpl->get_filename();
 }
 
-void Sprite::set_pose(const std::string& pose_name, const std::string& state_name, Direction dir) {
-    pimpl->set_pose(pose_name, state_name, dir);
+void Sprite::set_pose(const std::string& pose_name, const std::string& state_name,
+        Direction dir, bool reset_current_frame) {
+    pimpl->set_pose(pose_name, state_name, dir, reset_current_frame);
 }
 
 Pose& Sprite::get_pose() {

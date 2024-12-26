@@ -59,15 +59,19 @@ void bind_layer_types(sol::state& lua, Game& game) {
             game, *layer, velocity, duration);
     };
     image_layer_type["reset"] = &Image_Layer::reset;
-    image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename, std::optional<std::string> pose) {
+    image_layer_type["set_sprite"] = [&](Image_Layer* layer, const std::string& filename,
+            std::optional<std::string> pose) {
         layer->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
-    image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+    image_layer_type["show_pose"] = [&](Image_Layer* layer, const std::string& pose_name,
+            std::optional<std::string> state, std::optional<Direction> dir,
+            std::optional<bool> reset_current_frame) {
         auto si = game.get_current_scripting_interface();
         auto holder_type = Show_Pose_Command::Holder_Type::LAYER;
         Show_Pose_Command::Holder_Info holder_info{ holder_type, layer->get_id() };
         return si->register_command<Show_Pose_Command>(*game.get_map(),
-            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE),
+            reset_current_frame.value_or(true));
     };
 
     // Object layer

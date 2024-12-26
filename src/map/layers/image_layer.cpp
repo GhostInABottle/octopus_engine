@@ -21,7 +21,7 @@ void Image_Layer::set_sprite(Game& game, xd::asset_manager& asset_manager,
     auto sprite_data = Sprite_Data::load(filename, asset_manager, audio, channel_group);
     sprite = std::make_unique<Sprite>(game, sprite_data);
 
-    set_pose(pose_name, "", Direction::NONE);
+    set_pose(pose_name, "", Direction::NONE, true);
 }
 
 void Image_Layer::set_image(std::string filename, xd::asset_manager& asset_manager) {

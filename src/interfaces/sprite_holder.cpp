@@ -4,11 +4,11 @@
 
 Sprite_Holder::~Sprite_Holder() {}
 
-void Sprite_Holder::set_pose(const std::string& pose_name,
-        const std::string& state, Direction direction) {
+void Sprite_Holder::set_pose(const std::string& pose_name, const std::string& state,
+        Direction direction, bool reset_current_frame) {
     auto sprite = get_sprite();
     if (sprite) {
-        sprite->set_pose(pose_name, state, direction);
+        sprite->set_pose(pose_name, state, direction, reset_current_frame);
     }
 }
 

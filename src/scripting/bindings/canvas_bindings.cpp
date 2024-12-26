@@ -338,10 +338,13 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         }
     );
     sprite_canvas_type["reset"] = &Sprite_Canvas::reset;
-    sprite_canvas_type["set_sprite"] = [&](Sprite_Canvas* canvas, const std::string& filename, std::optional<std::string> pose) {
+    sprite_canvas_type["set_sprite"] = [&](Sprite_Canvas* canvas, const std::string& filename,
+            std::optional<std::string> pose) {
         canvas->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
     };
-    sprite_canvas_type["show_pose"] = [&](Sprite_Canvas* canvas, const std::string& pose_name, std::optional<std::string> state, std::optional<Direction> dir) {
+    sprite_canvas_type["show_pose"] = [&](Sprite_Canvas* canvas, const std::string& pose_name,
+            std::optional<std::string> state, std::optional<Direction> dir,
+            std::optional<bool> reset_current_frame) {
         auto si = game.get_current_scripting_interface();
         auto holder_type = Show_Pose_Command::Holder_Type::CANVAS;
         auto id = canvas->get_id();
@@ -349,7 +352,8 @@ void bind_canvas_types(sol::state& lua, Game& game) {
         auto parent_id = root_parent ? root_parent->get_id() : -1;
         Show_Pose_Command::Holder_Info holder_info{holder_type, id, parent_id};
         return si->register_command<Show_Pose_Command>(*game.get_map(),
-            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE));
+            holder_info, pose_name, state.value_or(""), dir.value_or(Direction::NONE),
+            reset_current_frame.value_or(true));
     };
 
     // A canvas for displaying text

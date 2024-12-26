@@ -1094,8 +1094,9 @@ function Engine_Sprite_Canvas:set_sprite(filename, pose) end
 ---@param pose string
 ---@param state? string
 ---@param direction? string
+---@param reset_current_frame? boolean # defaults to true
 ---@return Engine_Command_Result
-function Engine_Sprite_Canvas:show_pose(pose, state, direction) end
+function Engine_Sprite_Canvas:show_pose(pose, state, direction, reset_current_frame) end
 
 -- Reset the sprite
 function Engine_Sprite_Canvas:reset() end
@@ -1171,8 +1172,9 @@ local Engine_Map_Object = {}
 ---@param pose string
 ---@param state? string
 ---@param direction? Engine_Direction
+---@param reset_current_frame? boolean # defaults to true
 ---@return Engine_Command_Result
-function Engine_Map_Object:show_pose(pose, state, direction) end
+function Engine_Map_Object:show_pose(pose, state, direction, reset_current_frame) end
 
 ---@param filename string
 ---@param pose? string
@@ -1273,8 +1275,9 @@ local Engine_Image_Layer = {}
 ---@param pose string
 ---@param state? string
 ---@param direction? string
+---@param reset_current_frame? boolean # defaults to true
 ---@return Engine_Command_Result
-function Engine_Image_Layer:show_pose(pose, state, direction) end
+function Engine_Image_Layer:show_pose(pose, state, direction, reset_current_frame) end
 
 ---@param filename string
 ---@param pose? string
