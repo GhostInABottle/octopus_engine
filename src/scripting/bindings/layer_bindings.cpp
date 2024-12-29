@@ -41,6 +41,8 @@ void bind_layer_types(sol::state& lua, Game& game) {
         [&](Image_Layer* layer, const std::string& filename) {
             layer->set_sprite(game, game.get_asset_manager(), filename);
         });
+    image_layer_type["last_marker"] = sol::property(&Image_Layer::get_last_marker);
+    image_layer_type["passed_marker"] = &Image_Layer::passed_marker;
     image_layer_type["get_property"] = &Image_Layer::get_property;
     image_layer_type["set_property"] = &Image_Layer::set_property;
     image_layer_type["update_opacity"] = [&](Image_Layer* layer, float opacity, long duration) {

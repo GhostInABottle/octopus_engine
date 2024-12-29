@@ -21,7 +21,9 @@ struct Frame {
     // Frame duration in milliseconds
     int duration;
     // If specified, a random value between duration and max will be used
-    std::optional<int> max_duration;
+    int max_duration;
+    // A name used to identify the frame
+    std::string marker;
     // Source rectangle
     xd::rect rectangle;
     // X and Y magnification
@@ -41,8 +43,8 @@ struct Frame {
     // Original sound file volume (before attenuation)
     float sound_volume;
 
-    Frame() noexcept : duration(-1), magnification(1.0f, 1.0f), angle(0),
-        opacity(1.0f), tween_frame(false), sound_volume(1.0f) {}
+    Frame() noexcept : duration(-1), max_duration(-1), magnification(1.0f, 1.0f),
+        angle(0), opacity(1.0f), tween_frame(false), sound_volume(1.0f) {}
 };
 
 struct Pose {

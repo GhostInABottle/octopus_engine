@@ -1085,6 +1085,7 @@ function Image_Canvas(image_filename, x, y, transparent_color) end
 ---@field pose_state string # readonly
 ---@field pose_direction Engine_Direction # readonly
 ---@field sprite string
+---@field last_marker? string # readonly
 local Engine_Sprite_Canvas = {}
 
 ---@param filename string
@@ -1100,6 +1101,11 @@ function Engine_Sprite_Canvas:show_pose(pose, state, direction, reset_current_fr
 
 -- Reset the sprite
 function Engine_Sprite_Canvas:reset() end
+
+---Check if a marker was passed during the current animation
+---@param marker_name string
+---@return boolean
+function Engine_Sprite_Canvas:passed_marker(marker_name) end
 
 ---@overload fun(sprite_filename : string, position : Engine_Vec2, pose? : string) : Engine_Sprite_Canvas
 ---@param sprite_filename string
@@ -1127,6 +1133,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field layer Engine_Object_Layer
 ---@field size Engine_Vec2
 ---@field sprite string
+---@field last_marker? string # readonly
 ---@field pose string
 ---@field state string
 ---@field direction Engine_Direction
@@ -1181,6 +1188,11 @@ function Engine_Map_Object:show_pose(pose, state, direction, reset_current_frame
 function Engine_Map_Object:set_sprite(filename, pose) end
 
 function Engine_Map_Object:reset() end
+
+---Check if a marker was passed during the current animation
+---@param marker_name string
+---@return boolean
+function Engine_Map_Object:passed_marker(marker_name) end
 
 ---@overload fun(self : Engine_Map_Object, x : number, y : number)
 ---@overload fun(self : Engine_Map_Object, position : Engine_Vec2)
@@ -1269,6 +1281,7 @@ function Engine_Layer:set_property(name, value) end
 ---@class (exact) Engine_Image_Layer : Engine_Layer
 ---@field velocity Engine_Vec2
 ---@field sprite string
+---@field last_marker? string # readonly
 ---@field color Engine_Color
 local Engine_Image_Layer = {}
 
@@ -1284,6 +1297,11 @@ function Engine_Image_Layer:show_pose(pose, state, direction, reset_current_fram
 function Engine_Image_Layer:set_sprite(filename, pose) end
 
 function Engine_Image_Layer:reset() end
+
+---Check if a marker was passed during the current animation
+---@param marker_name string
+---@return boolean
+function Engine_Image_Layer:passed_marker(marker_name) end
 
 ---@param new_color Engine_Color
 ---@param duration integer

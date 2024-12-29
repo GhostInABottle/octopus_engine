@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
           <Pose Duration=\"10\" > \
             <Tag Key=\"Name\" Value=\"Circle Pose\"/> \
             <Bounding-Circle X=\"5\" Y=\"7\" Radius=\"4\" /> \
-            <Frame Max-Duration=\"350\"> \
+            <Frame Max-Duration=\"350\" Marker=\"ABC\"> \
               <Rectangle X=\"11\" Y=\"12\" Width=\"13\" Height=\"14\" /> \
             </Frame> \
           </Pose> \
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(main_pose.frames[0].rectangle.h, 4);
     BOOST_CHECK_EQUAL(main_pose.frames[0].tween_frame, true);
     BOOST_CHECK_EQUAL(main_pose.frames[0].duration, 200);
-    BOOST_CHECK(!main_pose.frames[0].max_duration.has_value());
+    BOOST_CHECK_EQUAL(main_pose.frames[0].max_duration, -1);
     BOOST_CHECK_EQUAL(main_pose.frames[0].angle, 10);
     float epsilon = 0.01f;
     BOOST_CHECK_CLOSE(main_pose.frames[0].magnification.x, 2.5f, epsilon);
@@ -100,8 +100,8 @@ BOOST_AUTO_TEST_CASE(sprite_data_load) {
     BOOST_CHECK_EQUAL(circle_pose.frames[0].rectangle.h, 14);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].tween_frame, false);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].duration, -1);
-    BOOST_CHECK(circle_pose.frames[0].max_duration.has_value());
-    BOOST_CHECK_EQUAL(circle_pose.frames[0].max_duration.value(), 350);
+    BOOST_CHECK_EQUAL(circle_pose.frames[0].max_duration, 350);
+    BOOST_CHECK_EQUAL(circle_pose.frames[0].marker, "ABC");
     BOOST_CHECK_EQUAL(circle_pose.frames[0].angle, 0);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.x, 1.0f);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.y, 1.0f);
@@ -112,13 +112,13 @@ BOOST_AUTO_TEST_CASE(sprite_data_load_compact) {
     char text[] =
         "<?xml version=\"1.0\"?> \
         <Sprite Image=\"../data/player.png\"> \
-          <Pose Name=\"Cool Pose\" State=\"St\" Direction=\"UP\" Repeats=\"3\" Require-Completion=\"true\" > \
+          <Pose Name=\"Cool Pose\" State=\"St\" Direction=\"UP\" Repeats=\"3\" Require-Completion=\"true\"> \
             <Bounding-Box X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" /> \
             <Frame X=\"1\" Y=\"2\" Width=\"3\" Height=\"4\" Duration=\"200\" X-Mag=\"2.5\" Y-Mag=\"4.0\" Angle=\"10\" Opacity=\"0.5\" Tween=\"true\" /> \
           </Pose> \
-          <Pose Name=\"Circle Pose\" Duration=\"10\" > \
+          <Pose Name=\"Circle Pose\" Duration=\"10\"> \
             <Bounding-Circle X=\"5\" Y=\"7\" Radius=\"4\" /> \
-            <Frame X=\"11\" Y=\"12\" Width=\"13\" Height=\"14\" Max-Duration=\"350\" /> \
+            <Frame X=\"11\" Y=\"12\" Width=\"13\" Height=\"14\" Max-Duration=\"350\" Marker=\"ABC\" /> \
           </Pose> \
         </Sprite>";
     auto doc = std::make_unique<rapidxml::xml_document<>>();
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(sprite_data_load_compact) {
     BOOST_CHECK_EQUAL(main_pose.frames[0].rectangle.h, 4);
     BOOST_CHECK_EQUAL(main_pose.frames[0].tween_frame, true);
     BOOST_CHECK_EQUAL(main_pose.frames[0].duration, 200);
-    BOOST_CHECK(!main_pose.frames[0].max_duration.has_value());
+    BOOST_CHECK_EQUAL(main_pose.frames[0].max_duration, -1);
     BOOST_CHECK_EQUAL(main_pose.frames[0].angle, 10);
     float epsilon = 0.01f;
     BOOST_CHECK_CLOSE(main_pose.frames[0].magnification.x, 2.5f, epsilon);
@@ -174,8 +174,8 @@ BOOST_AUTO_TEST_CASE(sprite_data_load_compact) {
     BOOST_CHECK_EQUAL(circle_pose.frames[0].rectangle.h, 14);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].tween_frame, false);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].duration, -1);
-    BOOST_CHECK(circle_pose.frames[0].max_duration.has_value());
-    BOOST_CHECK_EQUAL(circle_pose.frames[0].max_duration.value(), 350);
+    BOOST_CHECK_EQUAL(circle_pose.frames[0].max_duration, 350);
+    BOOST_CHECK_EQUAL(circle_pose.frames[0].marker, "ABC");
     BOOST_CHECK_EQUAL(circle_pose.frames[0].angle, 0);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.x, 1.0f);
     BOOST_CHECK_EQUAL(circle_pose.frames[0].magnification.y, 1.0f);

@@ -45,6 +45,8 @@ struct Sprite::Impl {
     long old_time;
     // Calculated duration of the current frame
     int frame_duration;
+    // Frame markers seen so far
+    std::vector<std::string> passed_markers;
     // Number of times the animation repeated so far
     int repeat_count;
     // Total number of frames
@@ -141,7 +143,7 @@ struct Sprite::Impl {
             last_sound_frame = frame_index;
         }
 
-        if (passed_time() > frame_duration) {
+        if (get_passed_time() > frame_duration) {
             auto complete_infinite = !completed
                 && pose->require_completion
                 && std::find(completion_indexes.begin(), completion_indexes.end(),
@@ -162,6 +164,8 @@ struct Sprite::Impl {
                     completed = true;
                     stop_updating = true;
                     return;
+                } else if (!passed_markers.empty()) {
+                    passed_markers.clear();
                 }
             }
             frame_index = (frame_index + 1) % frame_count;
@@ -173,6 +177,10 @@ struct Sprite::Impl {
         }
 
         current_frame = &pose->frames[frame_index];
+        if (!current_frame->marker.empty()) {
+            passed_markers.push_back(current_frame->marker);
+        }
+
         if (!tweening && current_frame->tween_frame) {
             Frame& prev_frame = pose->frames[frame_index - 1];
             current_frame->rectangle.x = prev_frame.rectangle.x;
@@ -187,7 +195,7 @@ struct Sprite::Impl {
         if (tweening) {
             Frame& prev_frame = pose->frames[frame_index - 1];
             Frame& next_frame = pose->frames[frame_index + 1];
-            const float time_diff = static_cast<float>(passed_time());
+            const float time_diff = static_cast<float>(get_passed_time());
             float alpha = time_diff / frame_duration;
             alpha = std::min(std::max(alpha, 0.0f), 1.0f);
             current_frame->magnification = lerp(prev_frame.magnification,
@@ -206,6 +214,7 @@ struct Sprite::Impl {
         last_sound_frame = -1;
         completed = false;
         completion_indexes.clear();
+        passed_markers.clear();
         stop_updating = false;
         tweening = false;
         if (!pose || reset_current_frame) {
@@ -235,8 +244,8 @@ struct Sprite::Impl {
         int frame_time = frame.duration == -1
             ? pose->duration
             : frame.duration;
-        if (frame.max_duration && frame_time < frame.max_duration) {
-            frame_time += std::rand() % (frame.max_duration.value() - frame_time + 1);
+        if (frame.max_duration > frame_time) {
+            frame_time += std::rand() % (frame.max_duration - frame_time + 1);
         }
         return static_cast<int>(frame_time / speed);
     }
@@ -259,13 +268,27 @@ struct Sprite::Impl {
         pause_start = -1;
     }
 
-    long paused_time() const {
+    long get_paused_time() const {
         if (pause_start == -1) return 0;
         return game.ticks() - pause_start;
     }
 
-    long passed_time() const {
-        return game.ticks() - old_time - paused_time();
+    long get_passed_time() const {
+        return game.ticks() - old_time - get_paused_time();
+    }
+
+    std::optional<std::string> get_last_marker() const {
+        if (passed_markers.empty()) return std::nullopt;
+
+        return passed_markers.back();
+    }
+
+    bool passed_marker(const std::string& marker) const {
+        for (auto& m : passed_markers) {
+            if (m == marker) return true;
+        }
+
+        return false;
     }
 
     void set_pose(const std::string& pose_name, const std::string& state_name,
@@ -495,6 +518,13 @@ int Sprite::get_frame_index() const {
     return pimpl->frame_index;
 }
 
+std::optional<std::string> Sprite::get_last_marker() const {
+    return pimpl->get_last_marker();
+}
+
+bool Sprite::passed_marker(const std::string& marker) const {
+    return pimpl->passed_marker(marker);
+}
 
 bool Sprite::is_complete() const {
     return pimpl->completed;

@@ -126,6 +126,8 @@ void bind_map_object_types(sol::state& lua, Game& game) {
         [&](Map_Object* obj, const std::string& filename) {
             obj->set_sprite(game, game.get_asset_manager(), filename);
         });
+    object_type["last_marker"] = sol::property(&Map_Object::get_last_marker);
+    object_type["passed_marker"] = &Map_Object::passed_marker;
     object_type["reset"] = &Map_Object::reset;
     object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename,
             std::optional<std::string> pose) {

@@ -1,6 +1,7 @@
 #ifndef HPP_SPRITE_HOLDER
 #define HPP_SPRITE_HOLDER
 
+#include <optional>
 #include <string>
 #include "../direction.hpp"
 
@@ -21,7 +22,10 @@ public:
         const std::string& filename, const std::string& pose_name = "") = 0;
     virtual Sprite* get_sprite() = 0;
     virtual const Sprite* get_sprite() const = 0;
-    std::string get_sprite_filename();
+    std::string get_sprite_filename() const;
+    int get_frame_index() const;
+    std::optional<std::string> get_last_marker() const;
+    bool passed_marker(const std::string& marker) const;
 };
 
 #endif

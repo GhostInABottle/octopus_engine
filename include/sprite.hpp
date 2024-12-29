@@ -51,6 +51,10 @@ public:
     const Frame& get_frame() const;
     // Get current frame index
     int get_frame_index() const;
+    // Get the last frame marker
+    std::optional<std::string> get_last_marker() const;
+    // Check if a named frame marker was reached
+    bool passed_marker(const std::string& marker) const;
     // Is the current animation done?
     bool is_complete() const;
     // Is the sprite paused / not updating
