@@ -305,6 +305,7 @@ struct Game::Impl {
     Direction next_direction;
     std::string next_map;
     std::optional<std::string> next_music;
+    std::optional<std::string> next_layer;
     // Was it paused because screen got unfocused?
     bool focus_pause;
     // Should the game be paused while unfocused?
@@ -793,11 +794,13 @@ channel_group_type Game::get_sound_group_type() const {
     return pimpl->audio_player.get_sound_group_type(!paused);
 }
 
-void Game::set_next_map(const std::string& filename, Direction dir, std::optional<xd::vec2> pos, std::optional<std::string> music) {
+void Game::set_next_map(const std::string& filename, Direction dir, std::optional<xd::vec2> pos,
+        std::optional<std::string> music, std::optional<std::string> layer) {
     pimpl->next_map = filename;
     pimpl->next_direction = dir == Direction::NONE ? player->get_direction() : dir;
     pimpl->next_position = pos;
     pimpl->next_music = music;
+    pimpl->next_layer = layer;
 }
 
 xd::asset_manager& Game::get_asset_manager() {
@@ -867,7 +870,11 @@ void Game::load_next_map() {
     auto start_pos = pimpl->next_position.value_or(map->get_starting_position());
     player->set_position(start_pos);
     player->face(pimpl->next_direction);
-    map->add_object(player);
+    Object_Layer* layer = nullptr;
+    if (pimpl->next_layer) {
+        layer = map->get_object_layer_by_name(*pimpl->next_layer);
+    }
+    map->add_object(player, layer);
     camera->set_object(player.get());
     camera->update();
 

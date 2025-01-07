@@ -118,14 +118,16 @@ void bind_game_types(sol::state& lua) {
         [](Game* game, const std::string& filename, int dir) {
             game->set_next_map(filename, static_cast<Direction>(dir));
         },
-            [](Game* game, const std::string& filename, int dir, std::optional<std::string> music) {
-            game->set_next_map(filename, static_cast<Direction>(dir), std::nullopt, music);
+        [](Game* game, const std::string& filename, int dir,
+                std::optional<std::string> music, std::optional<std::string> layer) {
+            game->set_next_map(filename, static_cast<Direction>(dir), std::nullopt, music, layer);
         },
-            [](Game* game, const std::string& filename, float x, float y, int dir) {
+        [](Game* game, const std::string& filename, float x, float y, int dir) {
             game->set_next_map(filename, static_cast<Direction>(dir), xd::vec2{ x, y });
         },
-            [](Game* game, const std::string& filename, xd::vec2 pos, int dir, std::optional<std::string> music) {
-            game->set_next_map(filename, static_cast<Direction>(dir), pos, music);
+        [](Game* game, const std::string& filename, xd::vec2 pos, int dir,
+                std::optional<std::string> music, std::optional<std::string> layer) {
+            game->set_next_map(filename, static_cast<Direction>(dir), pos, music, layer);
         }
     );
 

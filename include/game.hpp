@@ -206,7 +206,8 @@ public:
     void set_next_map(const std::string& filename,
         Direction dir = Direction::NONE,
         std::optional<xd::vec2> pos = std::nullopt,
-        std::optional<std::string> music = std::nullopt);
+        std::optional<std::string> music = std::nullopt,
+        std::optional<std::string> layer = std::nullopt);
     // Load the map specified by set_next_map
     void load_next_map();
     // Get the map

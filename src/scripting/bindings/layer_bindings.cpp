@@ -18,6 +18,7 @@
 void bind_layer_types(sol::state& lua, Game& game) {
     // Map layer
     auto layer_type = lua.new_usertype<Layer>("Layer");
+    layer_type["id"] = sol::readonly_property(&Layer::get_id);
     layer_type["name"] = sol::readonly_property(&Layer::get_name);
     layer_type["visible"] = sol::property(&Layer::is_visible, &Layer::set_visible);
     layer_type["opacity"] = sol::property(&Layer::get_opacity, &Layer::set_opacity);
@@ -31,6 +32,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
 
     // Image layer
     auto image_layer_type = lua.new_usertype<Image_Layer>("Image_Layer");
+    image_layer_type["id"] = sol::readonly_property(&Image_Layer::get_id);
     image_layer_type["name"] = sol::readonly_property(&Image_Layer::get_name);
     image_layer_type["visible"] = sol::property(&Image_Layer::is_visible, &Image_Layer::set_visible);
     image_layer_type["opacity"] = sol::property(&Image_Layer::get_opacity, &Image_Layer::set_opacity);
@@ -78,6 +80,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
 
     // Object layer
     auto object_layer_type = lua.new_usertype<Object_Layer>("Layer");
+    object_layer_type["id"] = sol::readonly_property(&Object_Layer::get_id);
     object_layer_type["name"] = sol::readonly_property(&Object_Layer::get_name);
     object_layer_type["visible"] = sol::property(&Object_Layer::is_visible, &Object_Layer::set_visible);
     object_layer_type["opacity"] = sol::property(&Object_Layer::get_opacity, &Object_Layer::set_opacity);

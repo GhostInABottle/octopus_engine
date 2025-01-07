@@ -1259,6 +1259,8 @@ player = {}
 -- Layer
 
 ---@class (exact) Engine_Layer
+---@field id integer # readonly
+---@field name string # readonly
 ---@field visible boolean
 ---@field opacity number
 local Engine_Layer = {}
@@ -1697,14 +1699,15 @@ function game:set_int_config(name, value) end
 ---@param value integer
 function game:set_unsigned_config(name, value) end
 
----@overload fun(self : Engine_Game, filename : string, direction : Engine_Direction?, music_file : string?)
----@overload fun(self : Engine_Game, filename : string, position : Engine_Vec2, direction : Engine_Direction, music_file : string?)
+---@overload fun(self : Engine_Game, filename : string, direction? : Engine_Direction, music_file? : string, layer? : string)
+---@overload fun(self : Engine_Game, filename : string, position : Engine_Vec2, direction : Engine_Direction, music_file? : string, layer? : string)
 ---@param filename string
 ---@param x number
 ---@param y number
----@param direction Engine_Direction
+---@param direction? Engine_Direction
 ---@param music_file? string
-function game:load_map(filename, x, y, direction, music_file) end
+---@param layer? string
+function game:load_map(filename, x, y, direction, music_file, layer) end
 
 function game:pause() end
 
