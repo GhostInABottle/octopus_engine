@@ -42,7 +42,7 @@ void Move_Object_Command::execute() {
     }
 
     complete = stopped || object->is_stopped() || pixels <= 0.01f;
-    if (complete || paused) {
+    if ((complete || paused) && object->get_state() == object->get_walk_state()) {
         object->set_state(old_state);
     }
 }

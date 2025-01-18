@@ -356,13 +356,13 @@ void Map_Object::set_speed(float new_speed) {
 void Map_Object::set_pose(const std::string& new_pose_name, const std::string& new_state,
         Direction new_direction, bool reset_current_frame) {
     if (!new_pose_name.empty()) {
-        pose_name = new_pose_name;
+        pose_name = string_utilities::capitalize(new_pose_name);
     } else if (pose_name.empty() && sprite) {
         pose_name = sprite->get_default_pose();
     }
 
     if (!new_state.empty()) {
-        state = new_state;
+        state = string_utilities::capitalize(new_state);
     }
 
     if (new_direction != Direction::NONE) {
@@ -404,6 +404,14 @@ void Map_Object::face(Direction dir) {
     if (is_relative_direction(dir)) return;
 
     set_pose("", "", static_cast<Direction>(dir));
+}
+
+void Map_Object::set_face_state(const std::string& name) {
+    face_state = string_utilities::capitalize(name);
+}
+
+void Map_Object::set_walk_state(const std::string& name) {
+    walk_state = string_utilities::capitalize(name);
 }
 
 void Map_Object::set_state_and_direction(const std::string& new_state, Direction dir, bool animated) {

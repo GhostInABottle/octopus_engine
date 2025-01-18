@@ -200,15 +200,11 @@ public:
     std::string get_face_state() const {
         return face_state;
     }
-    void set_face_state(const std::string& name) {
-        face_state = name;
-    }
+    void set_face_state(const std::string& name);
     std::string get_walk_state() const {
         return walk_state;
     }
-    void set_walk_state(const std::string& name) {
-        walk_state = name;
-    }
+    void set_walk_state(const std::string& name);
     void set_state_and_direction(const std::string& new_state, Direction dir, bool animated);
     Script_Context get_script_context() const {
         return script_context;
