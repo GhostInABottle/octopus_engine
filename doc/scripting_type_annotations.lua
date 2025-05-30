@@ -1085,6 +1085,7 @@ function Image_Canvas(image_filename, x, y, transparent_color) end
 ---@field pose_state string # readonly
 ---@field pose_direction Engine_Direction # readonly
 ---@field sprite string
+---@field sfx_volume number
 ---@field last_marker? string # readonly
 local Engine_Sprite_Canvas = {}
 
@@ -1173,6 +1174,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field outlining_object? Engine_Map_Object
 ---@field outline_conditions Engine_Outline_Condition
 ---@field sfx_attenuation boolean
+---@field sfx_volume number
 ---@field draw_order Engine_Draw_Order
 local Engine_Map_Object = {}
 
@@ -1283,6 +1285,7 @@ function Engine_Layer:set_property(name, value) end
 ---@class (exact) Engine_Image_Layer : Engine_Layer
 ---@field velocity Engine_Vec2
 ---@field sprite string
+---@field sfx_volume number
 ---@field last_marker? string # readonly
 ---@field color Engine_Color
 local Engine_Image_Layer = {}

@@ -43,6 +43,7 @@ void bind_layer_types(sol::state& lua, Game& game) {
         [&](Image_Layer* layer, const std::string& filename) {
             layer->set_sprite(game, game.get_asset_manager(), filename);
         });
+    image_layer_type["sfx_volume"] = sol::property(&Image_Layer::get_sfx_volume, &Image_Layer::set_sfx_volume);
     image_layer_type["last_marker"] = sol::property(&Image_Layer::get_last_marker);
     image_layer_type["passed_marker"] = &Image_Layer::passed_marker;
     image_layer_type["get_property"] = &Image_Layer::get_property;

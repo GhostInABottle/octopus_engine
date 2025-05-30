@@ -337,6 +337,7 @@ void bind_canvas_types(sol::state& lua, Game& game) {
             canvas->set_sprite(game, game.get_asset_manager(), filename);
         }
     );
+    sprite_canvas_type["sfx_volume"] = sol::property(&Sprite_Canvas::get_sfx_volume, &Sprite_Canvas::set_sfx_volume);
     sprite_canvas_type["last_marker"] = sol::property(&Sprite_Canvas::get_last_marker);
     sprite_canvas_type["passed_marker"] = &Sprite_Canvas::passed_marker;
     sprite_canvas_type["reset"] = &Sprite_Canvas::reset;

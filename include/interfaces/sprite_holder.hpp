@@ -26,6 +26,8 @@ public:
     int get_frame_index() const;
     std::optional<std::string> get_last_marker() const;
     bool passed_marker(const std::string& marker) const;
+    float get_sfx_volume() const;
+    void set_sfx_volume(float volume);
 };
 
 #endif
