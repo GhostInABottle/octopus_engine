@@ -22,9 +22,9 @@
 #include <cstdlib>
 
 struct Camera::Impl {
-    explicit Impl(const std::string& default_scale_mode)
+    Impl(const std::string& default_scale_mode, xd::vec4 clear_color)
         : postprocessing_enabled(Configurations::get<bool>("graphics.postprocessing-enabled"))
-        , clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color")))
+        , default_clear_color(clear_color)
         , default_scale_mode(default_scale_mode) {}
     // Update OpenGL viewport
     void update_viewport(xd::rect viewport, xd::vec2 shake_offset = xd::vec2{0.0f}) const {
@@ -37,8 +37,8 @@ struct Camera::Impl {
     bool postprocessing_enabled;
     xd::sprite_batch full_screen_batch;
     std::shared_ptr<xd::texture> full_screen_texture;
-    // Screen clearing color
-    xd::vec4 clear_color;
+    // Configured screen clearing color
+    xd::vec4 default_clear_color;
     // Last screen size
     xd::ivec2 screen_size;
     // Default environment scale mode
@@ -158,7 +158,8 @@ Camera::Camera(Game& game, const std::string& default_scale_mode)
         object_center_offset(Configurations::get<float>("player.camera-center-offset-x"),
             Configurations::get<float>("player.camera-center-offset-y")),
         shaker(nullptr),
-        pimpl(std::make_unique<Impl>(default_scale_mode))
+        current_clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color"))),
+        pimpl(std::make_unique<Impl>(default_scale_mode, current_clear_color))
 {
     calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
     // Add components
@@ -236,7 +237,7 @@ void Camera::update_viewport(xd::vec2 shake_offset) const {
     pimpl->update_viewport(viewport, shake_offset);
 }
 
-void Camera::setup_opengl() const {
+void Camera::setup_opengl() {
     // Setup OpenGL state
     set_clear_color();
     glEnable(GL_ALPHA_TEST);
@@ -246,9 +247,10 @@ void Camera::setup_opengl() const {
     glActiveTexture(GL_TEXTURE0);
 }
 
-void Camera::set_clear_color() const {
-    const auto& color = pimpl->clear_color;
-    glClearColor(color.r, color.g, color.b, color.a);
+void Camera::set_clear_color(std::optional<xd::vec4> color) {
+    current_clear_color = color.value_or(pimpl->default_clear_color);
+    glClearColor(current_clear_color.r, current_clear_color.g,
+        current_clear_color.b, current_clear_color.a);
 }
 
 void Camera::center_at(xd::vec2 pos) {

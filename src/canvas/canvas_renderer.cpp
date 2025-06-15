@@ -64,7 +64,7 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    camera.set_clear_color();
+    camera.set_clear_color(camera.get_clear_color());
 
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
         GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

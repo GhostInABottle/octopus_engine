@@ -14,6 +14,7 @@
 #include "../../include/map/map_object.hpp"
 #include "../../include/map/tileset.hpp"
 #include "../../include/scripting/scripting_interface.hpp"
+#include "../../include/utility/color.hpp"
 #include "../../include/utility/direction.hpp"
 #include "../../include/utility/file.hpp"
 #include "../../include/utility/string.hpp"
@@ -630,6 +631,13 @@ void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
     }
 
     needs_redraw = true;
+}
+
+std::optional<xd::vec4> Map::get_clear_color() const {
+    auto prop = get_property("color");
+    if (prop.empty()) return std::nullopt;
+
+    return hex_to_color(prop);
 }
 
 void Map::save(std::string save_filename) {

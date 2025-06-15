@@ -481,6 +481,7 @@ void Game::init(const std::string& default_scale_mode) {
     pimpl->audio_player.play_ambient(*map);
     // Track player by camera
     camera->set_object(player.get());
+    camera->set_clear_color(map->get_clear_color());
     // Bind game keys
     pimpl->process_keymap(*this);
     // Setup Lua scripts
@@ -876,6 +877,7 @@ void Game::load_next_map() {
     }
     map->add_object(player, layer);
     camera->set_object(player.get());
+    camera->set_clear_color(map->get_clear_color());
     camera->update();
 
     // Play background music and ambient

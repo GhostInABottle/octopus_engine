@@ -223,6 +223,7 @@ public:
     void set_startup_scripts(const std::string& scripts) {
         set_property("scripts", scripts);
     }
+    std::optional<xd::vec4> get_clear_color() const;
     void set_objects_moved(bool moved) {
         objects_moved = moved;
     }

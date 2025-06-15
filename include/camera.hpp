@@ -5,6 +5,7 @@
 #include "xd/graphics/transform_geometry.hpp"
 #include "xd/graphics/types.hpp"
 #include <memory>
+#include <optional>
 #include <string>
 
 class Game;
@@ -24,9 +25,13 @@ public:
     // Setup viewport for rendering
     void update_viewport(xd::vec2 shake_offset = xd::vec2{0.0f}) const;
     // Setup initial OpenGL state
-    void setup_opengl() const;
+    void setup_opengl();
+    // Get OpenGL clear color
+    xd::vec4 get_clear_color() const {
+        return current_clear_color;
+    }
     // Set OpenGL clear color
-    void set_clear_color() const;
+    void set_clear_color(std::optional<xd::vec4> color = std::nullopt);
     // Center camera at position
     void center_at(xd::vec2 pos);
     // Center camera at object
@@ -147,6 +152,8 @@ private:
     xd::vec2 object_center_offset;
     // Screen shaker component
     std::shared_ptr<Screen_Shaker> shaker;
+    // Current screen clearing color
+    xd::vec4 current_clear_color;
     // Implementation details
     struct Impl;
     friend struct Impl;
