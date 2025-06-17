@@ -79,7 +79,8 @@ public:
     // Get number of objects
     int object_count() const noexcept;
     // Add an object to object layer (or center object layer if no layer)
-    Map_Object* add_object(const std::shared_ptr<Map_Object>& object, Object_Layer* layer = nullptr);
+    Map_Object* add_object(const std::shared_ptr<Map_Object>& object,
+        Object_Layer* layer = nullptr);
     // Create and add an object
     Map_Object* add_new_object(std::optional<std::string> name = std::nullopt,
         std::optional<std::string> sprite_file = std::nullopt,
@@ -317,6 +318,5 @@ class Map_Updater : public xd::logic_component<Map> {
 public:
     virtual void update(Map& map);
 };
-
 
 #endif

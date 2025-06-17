@@ -131,7 +131,6 @@ BOOST_AUTO_TEST_CASE(text_parser_exceptions) {
     }
 }
 
-
 BOOST_AUTO_TEST_CASE(text_parser_no_exceptions_if_permissive) {
     for (auto& invalid : detail::invalid_parsing_cases) {
         try {
@@ -164,7 +163,6 @@ BOOST_AUTO_TEST_CASE(text_parser_parses_simple_tag) {
 
     detail::validate_tokens("{b}hello{/b}", tokens);
 }
-
 
 BOOST_AUTO_TEST_CASE(text_parser_parses_unicode_text) {
     std::vector<Token> tokens = {

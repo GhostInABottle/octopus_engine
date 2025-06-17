@@ -33,8 +33,7 @@ inline Text_Position_Type operator&(Text_Position_Type a, Text_Position_Type b) 
     return static_cast<Text_Position_Type>(static_cast<int>(a) & static_cast<int>(b));
 }
 
-struct Text_Options
-{
+struct Text_Options {
     std::string text;
     std::vector<std::string> choices;
     Map_Object* object;
@@ -84,7 +83,6 @@ struct Text_Options
         typewriter_sound_pitch(1.0f),
         typewriter_sound_max_pitch(-1.0f),
         typewriter_skippable(true) {}
-
 
     Text_Options(Map_Object* object) : Text_Options() {
         set_object(object);

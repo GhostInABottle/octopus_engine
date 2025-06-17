@@ -2,7 +2,6 @@
 #include "../../../include/xd/graphics/texture.hpp"
 #include <stdexcept>
 
-
 xd::framebuffer::framebuffer()
 {
     if (extension_supported())

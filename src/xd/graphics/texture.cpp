@@ -20,7 +20,6 @@ xd::texture::texture(int width, int height, const void *data, xd::vec4 ck,
     load(width, height, data, ck);
 }
 
-
 xd::texture::texture(const std::string& filename, std::istream& stream, xd::vec4 ck,
     GLint wrap_s, GLint wrap_t, GLint mag_filter, GLint min_filter) : m_filename(filename)
 {

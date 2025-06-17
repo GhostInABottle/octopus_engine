@@ -4,7 +4,6 @@
 #include "../../../include/xd/graphics/text_renderer.hpp"
 #include <memory>
 
-
 xd::text_renderer::text_renderer()
     : m_shader(std::make_unique<xd::text_shader>())
 {

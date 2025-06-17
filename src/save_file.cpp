@@ -226,7 +226,6 @@ namespace detail {
             write_type_tag(stream, key_type, compact);
             write_value(stream, key_type, key);
 
-
             // Write the value
             auto val_type = sol_type_to_type_tag(sol_val_type, val, compact);
             write_type_tag(stream, val_type, compact);
@@ -261,12 +260,10 @@ namespace detail {
             // Read the key
             read_type_tag(stream, tag, compact);
 
-            if (tag == type_tag::end_of_table)
-                return obj;
+            if (tag == type_tag::end_of_table) return obj;
 
             auto key = read_value(stream, state, tag);
-            if (!key.valid())
-                throw std::runtime_error("Invalid object key");
+            if (!key.valid()) throw std::runtime_error("Invalid object key");
 
             // Read the value
             read_type_tag(stream, tag, compact);
@@ -314,7 +311,6 @@ sol::object& Save_File::lua_data() { return pimpl->data; }
 sol::object& Save_File::header_data() { return pimpl->header; }
 
 bool Save_File::is_valid() const { return pimpl->valid; }
-
 
 std::ostream& operator<<(std::ostream& stream, Save_File& save_file) {
     save_file.pimpl->valid = false;

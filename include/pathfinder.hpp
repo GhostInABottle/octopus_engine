@@ -154,5 +154,4 @@ private:
     Collision_Check_Type check_type;
 };
 
-
 #endif

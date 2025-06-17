@@ -5,15 +5,14 @@
 #include "../../include/configurations.hpp"
 #include "../../include/game.hpp"
 #include "../../include/map/map.hpp"
-#include "../../include/sprite_data.hpp"
 #include "../../include/utility/math.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
-    : game(game),
-    camera(camera),
-    fbo_supported(Configurations::get<bool>("graphics.use-fbo", "debug.use-fbo")
-        && xd::framebuffer::extension_supported()),
-    background_margins(
+    : game(game)
+    , camera(camera)
+    , fbo_supported(Configurations::get<bool>("graphics.use-fbo", "debug.use-fbo")
+        && xd::framebuffer::extension_supported())
+    , background_margins(
         Configurations::get<int>("text.background-margin-left"),
         Configurations::get<int>("text.background-margin-top"),
         Configurations::get<int>("text.background-margin-right"),
@@ -60,11 +59,15 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
 
     auto game_width = game.game_width();
     auto game_height = game.game_height();
-    glViewport(0, 0, game_width, game_height);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    camera.set_clear_color(camera.get_clear_color());
+    original_viewport = camera.get_viewport();
+    camera.set_viewport(xd::rect{0, 0, game_width, game_height});
+
+    // Clear the screen then restore the old color
+    auto old_color = camera.get_clear_color();
+    camera.set_clear_color(xd::vec4{0.0f});
+    camera.clear_color_buffer();
+    camera.set_clear_color(old_color);
 
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
         GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -72,9 +75,9 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     if (!has_scissor_box) return;
 
     // Use a texture-sized viewport when calculating scissor box
-    xd::rect viewport{ 0, 0,
+    xd::rect viewport{0, 0,
         static_cast<float>(game_width),
-        static_cast<float>(game_height) };
+        static_cast<float>(game_height)};
     camera.enable_scissor_test(scissor_box, viewport);
 }
 
@@ -98,7 +101,7 @@ void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_C
     }
     batch.add(canvas.get_fbo_texture(), x, y, xd::vec4(1.0f));
 
-    camera.update_viewport();
+    camera.set_viewport(original_viewport);
 
     xd::transform_geometry geometry;
     geometry.projection().load(

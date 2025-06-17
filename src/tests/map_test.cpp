@@ -73,7 +73,6 @@ BOOST_AUTO_TEST_CASE(map_load) {
     detail::check_map(*map);
 }
 
-
 BOOST_AUTO_TEST_CASE(map_load_file) {
     auto map = Map::load(*game, "test_tiled.tmx");
     detail::check_map(*map);

@@ -6,7 +6,6 @@
 #include <iosfwd>
 #include "../channel_group_type.hpp"
 
-
 namespace xd::detail {
     class sound_handle;
 

@@ -4,7 +4,6 @@
 #include "../graphics/vertex_batch.hpp"
 #include <utility>
 
-
 namespace xd
 {
     template <typename V, typename S, typename... Args>

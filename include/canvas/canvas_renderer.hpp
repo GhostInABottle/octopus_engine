@@ -17,7 +17,8 @@ public:
 private:
     void setup_framebuffer(const Base_Canvas& canvas);
     void render_framebuffer(const Base_Canvas& canvas, const Base_Canvas& root);
-    void render_canvas(Base_Canvas& canvas, Base_Canvas* parent = nullptr, Base_Canvas* root = nullptr);
+    void render_canvas(Base_Canvas& canvas, Base_Canvas* parent = nullptr,
+        Base_Canvas* root = nullptr);
     void render_background(Base_Canvas& canvas, Base_Canvas* parent = nullptr);
     bool should_redraw(const Base_Canvas& canvas);
     void draw(const xd::mat4 mvp, const Base_Canvas& root);
@@ -27,6 +28,7 @@ private:
     xd::sprite_batch batch;
     bool fbo_supported;
     xd::rect background_margins;
+    xd::rect original_viewport;
 };
 
 #endif

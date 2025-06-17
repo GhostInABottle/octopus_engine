@@ -10,7 +10,6 @@
 #include <deque>
 #include <string>
 
-
 struct Move_Object_To_Command::Impl {
     Impl(Map& map, Map_Object& object, float x, float y,
             Collision_Check_Type check_type, bool keep_trying)
@@ -69,6 +68,7 @@ struct Move_Object_To_Command::Impl {
     // Called every frame
     void execute(bool stopped, bool paused) {
         if (paused) return;
+
         if ((blocked || !path_found) && keep_trying) {
             object.set_state(old_state);
             const int time_passed = map.get_game().ticks() - last_attempt_time;
@@ -80,9 +80,7 @@ struct Move_Object_To_Command::Impl {
             return;
         }
 
-        if (!path_found) {
-            return;
-        }
+        if (!path_found) return;
 
         const auto check_completion = [&](bool is_stopped) {
             const auto pos = object.get_real_position();
@@ -144,7 +142,6 @@ Move_Object_To_Command::Move_Object_To_Command(Map& map, Map_Object& object,
 }
 
 Move_Object_To_Command::~Move_Object_To_Command() {}
-
 
 void Move_Object_To_Command::execute() {
     pimpl->execute(stopped, paused);

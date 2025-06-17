@@ -50,15 +50,19 @@ struct Game::Impl {
             reset_scripting(false),
             text_formatter(
                 make_icon_texture(),
-                xd::vec2{Configurations::get<float>("font.icon-width"), Configurations::get<float>("font.icon-height")},
-                xd::vec2{Configurations::get<float>("font.icon-offset-x"), Configurations::get<float>("font.icon-offset-y")}),
+                xd::vec2{Configurations::get<float>("font.icon-width"),
+                    Configurations::get<float>("font.icon-height")},
+                xd::vec2{Configurations::get<float>("font.icon-offset-x"),
+                    Configurations::get<float>("font.icon-offset-y")}),
             shake_decorator(game),
             typewriter_decorator(game, audio_player) {
         // Register decorators
-        text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+        text_formatter.register_decorator("shake", [=](xd::text_decorator& decorator,
+                const xd::formatted_text& text, const xd::text_decorator_args& args) {
             shake_decorator(decorator, text, args);
         });
-        text_formatter.register_decorator("typewriter", [=](xd::text_decorator& decorator, const xd::formatted_text& text, const xd::text_decorator_args& args) {
+        text_formatter.register_decorator("typewriter", [=](xd::text_decorator& decorator,
+                const xd::formatted_text& text, const xd::text_decorator_args& args) {
             typewriter_decorator(decorator, text, args);
         });
 
@@ -420,7 +424,6 @@ void Game::init(const std::string& default_scale_mode) {
     pimpl->debug_style.line_height(12.0f).force_autohint(true);
     auto font_file = Configurations::get<std::string>("font.default");
 
-
     auto fs = file_utilities::game_data_filesystem();
     if (!fs->exists(font_file)) {
         throw std::runtime_error("Couldn't read font file " + font_file);
@@ -746,7 +749,6 @@ void Game::unbind_virtual_key(const std::string& virtual_name) {
 std::vector<std::string> Game::get_bound_keys(const std::string& virtual_name) const {
     return pimpl->key_binder->get_bound_keys(virtual_name);
 }
-
 
 std::string Game::get_key_name(const std::string& physical_key) const {
     auto keys = pimpl->key_binder->get_keys(physical_key);

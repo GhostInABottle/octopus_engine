@@ -10,7 +10,9 @@ namespace {
             const Map& map, Direction current_dir, float speed, int tolerance_pixels) {
         auto object_with_script = other && other->has_any_script();
         // Reduce the edge tolerance around scripted objects to make them easier to trigger
-        auto factor = object_with_script ? (other->get_bounding_circle() ? 0.1f : 0.25f) : 1.0f;
+        auto factor = object_with_script
+            ? (other->get_bounding_circle() ? 0.1f : 0.25f)
+            : 1.0f;
         auto max_tolerance = static_cast<int>(std::ceil(factor * tolerance_pixels / speed));
 
         for (auto tolerance = max_tolerance; tolerance > 0; tolerance--) {
@@ -99,7 +101,6 @@ void Player_Controller::update(Map_Object& object) {
 
     auto collision = map->passable({ object, direction });
 
-
     auto check_type = Collision_Check_Type::BOTH;
     // Check if stuck inside another object
     if (moved && collision.type == Collision_Type::OBJECT) {
@@ -153,7 +154,8 @@ void Player_Controller::update(Map_Object& object) {
     }
 }
 
-bool Player_Controller::process_collision(Map_Object& object, Collision_Record collision, Collision_Type type, bool moved, bool action_pressed) {
+bool Player_Controller::process_collision(Map_Object& object, Collision_Record collision,
+        Collision_Type type, bool moved, bool action_pressed) {
     Map_Object* old_object = nullptr;
     Map_Object* collision_object = nullptr;
     bool new_collision = false;

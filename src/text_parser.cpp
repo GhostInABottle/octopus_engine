@@ -48,7 +48,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
 
     auto start = text.begin(), end = text.end();
 
-    auto validate = [permissive, &text](const char* error_message) {
+    auto fail = [permissive, &text](const char* error_message) {
         if (permissive)
             return;
 
@@ -57,9 +57,10 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
         throw parsing_exception(ss.str());
     };
 
-    auto validate_condition = [permissive, validate](bool condition, const char* error_message) {
-        if (condition && !permissive)
-            validate(error_message);
+    auto check = [permissive, fail](bool condition, const char* error_message) {
+        if (condition && !permissive) {
+            fail(error_message);
+        }
 
         return condition;
     };
@@ -75,13 +76,12 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             tag_token.unmatched = false;
             tag_token.start_index = utf8::distance(text.begin(), start);
             start++;
-            if (validate_condition(start == end, "open brace at the end")) break;
+            if (check(start == end, "open brace at the end")) break;
 
             if (*start == '/') {
                 tag_token.type = Token_Type::CLOSING_TAG;
                 start++;
-                if (validate_condition(start == end, "close brace at the end"))
-                    break;
+                if (check(start == end, "close brace at the end")) break;
             } else {
                 tag_token.type = Token_Type::OPENING_TAG;
             }
@@ -107,13 +107,13 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
             auto close_tag = [&]() {
                 tag_token.end_index = utf8::distance(text.begin(), start);
                 if (tag_token.tag.empty()) {
-                    if (validate_condition(tag_name.empty(), "empty tag")) {
+                    if (check(tag_name.empty(), "empty tag")) {
                         error = true;
                         return false;
                     }
                     tag_token.tag = tag_name;
                 } else {
-                    if (validate_condition(value.empty(), "empty value")) {
+                    if (check(value.empty(), "empty value")) {
                         error = true;
                         return false;
                     }
@@ -132,7 +132,8 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
 
             // Read tag name and value
             while (start != end) {
-                auto is_special = std::find(std::begin(special), std::end(special), *start) != std::end(special);
+                auto is_special = std::find(std::begin(special),
+                    std::end(special), *start) != std::end(special);
                 auto next = start + 1;
                 auto has_tag_name = !tag_token.tag.empty();
                 if (is_special && *start == '/' && next != end && *next != '}' && has_tag_name) {
@@ -153,7 +154,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                             tag_token.tag = tag_name;
                             has_value = true;
                         } else {
-                            validate("equal sign in closing tag");
+                            fail("equal sign in closing tag");
                             error = true;
                             break;
                         }
@@ -164,8 +165,8 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                     } else if (*start == '/') {
                         // Handle self-closing tokens, e.g. {a/}
                         start++;
-                        if (validate_condition(start == end, "close brace at the end of tag")) break;
-                        if (validate_condition(*start != '}', "unexpected / in tag")) break;
+                        if (check(start == end, "close brace at the end of tag")) break;
+                        if (check(*start != '}', "unexpected / in tag")) break;
 
                         tag_token.self_closing = true;
                         if (!close_tag()) break;
@@ -178,7 +179,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                         start++;
                         break;
                     } else {
-                        validate("unexpected character in tag");
+                        fail("unexpected character in tag");
                         error = true;
                         break;
                     }
@@ -188,7 +189,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
 
             // Add tokens unless they were not properly closed
             auto unclosed_tag = tag_token.tag.empty() || (has_value && tag_token.value.empty());
-            if (!error && !validate_condition(unclosed_tag, "tag was not closed ")) {
+            if (!error && !check(unclosed_tag, "tag was not closed ")) {
                 tokens.push_back(tag_token);
                 if (!close_token.tag.empty()) {
                     match_closing_tag(close_token);
@@ -216,7 +217,7 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
                 } else if (*start == '{') {
                     break;
                 } else {
-                    validate_condition(*start == '}', "unexpected closing tag");
+                    check(*start == '}', "unexpected closing tag");
                 }
 
                 start++;
@@ -224,7 +225,9 @@ std::vector<Token> Text_Parser::parse(const std::string& text, bool permissive) 
 
             if (!parsed_text.empty()) {
                 text_token.value = parsed_text;
-                text_token.end_index = parsed_text.empty() ? text_token.start_index : utf8::distance(text.begin(), start) - 1;
+                text_token.end_index = parsed_text.empty()
+                    ? text_token.start_index
+                    : utf8::distance(text.begin(), start) - 1;
                 tokens.push_back(text_token);
             }
         }
@@ -262,7 +265,8 @@ std::vector<std::string> Text_Parser::split_to_lines(const std::string& text, bo
     return text_lines;
 }
 
-std::string Text_Parser::strip_tags(const std::string& original, const std::unordered_set<std::string>& tags_to_strip, bool permissive) {
+std::string Text_Parser::strip_tags(const std::string& original,
+        const std::unordered_set<std::string>& tags_to_strip, bool permissive) {
     auto found = false;
     for (auto& tag : tags_to_strip) {
         if (original.find(tag + "}") != std::string::npos) {
@@ -275,7 +279,10 @@ std::string Text_Parser::strip_tags(const std::string& original, const std::unor
     auto tokens = parse(original, permissive);
     std::string result;
     for (auto& token : tokens) {
-        if (!token.tag.empty() && tags_to_strip.find(token.tag) != tags_to_strip.end()) continue;
+        auto skip = !token.tag.empty()
+            && tags_to_strip.find(token.tag) != tags_to_strip.end();
+        if (skip) continue;
+
         result += token.to_string();
     }
     return result;

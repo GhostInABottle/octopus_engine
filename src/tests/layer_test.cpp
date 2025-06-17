@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     BOOST_CHECK_EQUAL(obj1.get_state(), "mystate");
     BOOST_CHECK_CLOSE(obj1.get_speed(), 3.5f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_opacity(), 0.4f, 0.1f);
-    BOOST_CHECK_EQUAL(obj1.get_face_state(), "facing");
-    BOOST_CHECK_EQUAL(obj1.get_walk_state(), "walking");
+    BOOST_CHECK_EQUAL(obj1.get_face_state(), "FACING");
+    BOOST_CHECK_EQUAL(obj1.get_walk_state(), "WALKING");
     BOOST_CHECK_EQUAL(obj2.get_id(), 6);
     BOOST_CHECK_EQUAL(obj2.get_name(), "COLLISION");
     BOOST_CHECK_CLOSE(obj2.get_size()[0], 8.0f, 0.1f);

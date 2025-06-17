@@ -50,7 +50,6 @@ namespace xd { namespace detail { namespace text_formatter {
         utf8::advance(start, utf8::distance(string_to_consume.begin(), string_to_consume.end()), end);
     }
 
-
     // token types
     struct token_text
     {
@@ -449,7 +448,6 @@ namespace xd { namespace detail { namespace text_formatter {
         std::list<nested_force_autohint> force_autohints;
     };
 
-
     class apply_state_changes
     {
     public:
@@ -703,7 +701,6 @@ void xd::text_decorator::pop_force_autohint()
     m_current_state_changes.push_back(state_change);
 }
 
-
 xd::text_formatter::text_formatter(std::shared_ptr<xd::texture> icon_texture, vec2 icon_size, vec2 icon_offset)
         : m_decorator_open_delim("{")
         , m_decorator_open_escape_delim("{{")
@@ -951,7 +948,6 @@ glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, co
         }
         pos = font.render(current_str, style_stack.get_font_style(), &shader, mvp, pos, actual_rendering);
     };
-
 
     for (auto& element : elements) {
         std::visit(

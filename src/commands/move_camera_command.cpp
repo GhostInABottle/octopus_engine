@@ -5,7 +5,6 @@
 #include "../../include/utility/direction.hpp"
 #include "../../include/utility/math.hpp"
 
-
 Move_Camera_Command::Move_Camera_Command(Camera& camera, float x, float y, float speed)
         : camera(camera)
         , camera_object(camera.get_object())
@@ -27,6 +26,7 @@ Move_Camera_Command::Move_Camera_Command(Camera& camera, Direction dir, float pi
 
 void Move_Camera_Command::execute() {
     if (paused) return;
+
     do {
         xd::vec2 new_position = camera.get_position() + direction * speed;
         camera.set_position(new_position);

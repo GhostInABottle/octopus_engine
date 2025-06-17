@@ -13,7 +13,7 @@ enum class Token_Type {
 };
 
 struct Token {
-    Token_Type type;
+    Token_Type type = Token_Type::TEXT;
     std::string tag;
     std::string value;
     bool unmatched = false;
@@ -36,7 +36,8 @@ class Text_Parser {
 public:
     static std::vector<Token> parse(const std::string& text, bool permissive = false);
     static std::vector<std::string> split_to_lines(const std::string& text, bool permissive = false);
-    static std::string strip_tags(const std::string& original, const std::unordered_set<std::string>& tags_to_strip, bool permissive = false);
+    static std::string strip_tags(const std::string& original,
+        const std::unordered_set<std::string>& tags_to_strip, bool permissive = false);
 };
 
 #endif

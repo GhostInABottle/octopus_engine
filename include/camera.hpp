@@ -24,14 +24,18 @@ public:
     void calculate_viewport(int width, int height);
     // Setup viewport for rendering
     void update_viewport(xd::vec2 shake_offset = xd::vec2{0.0f}) const;
-    // Setup initial OpenGL state
-    void setup_opengl();
-    // Get OpenGL clear color
+    // Get clear color
     xd::vec4 get_clear_color() const {
         return current_clear_color;
     }
-    // Set OpenGL clear color
+    // Set clear color
     void set_clear_color(std::optional<xd::vec4> color = std::nullopt);
+    // Clear the screen to the clear color
+    void clear_color_buffer() const;
+    // Clear the depth buffer
+    void clear_depth_buffer() const;
+    // Clear both color and depth buffers
+    void clear() const;
     // Center camera at position
     void center_at(xd::vec2 pos);
     // Center camera at object
@@ -71,6 +75,10 @@ public:
     }
     xd::rect get_viewport() const {
         return viewport;
+    }
+    void set_viewport(xd::rect new_viewport) {
+        viewport = new_viewport;
+        update_viewport();
     }
     xd::transform_geometry& get_geometry() {
         return geometry;

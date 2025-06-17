@@ -277,7 +277,6 @@ bool Map_Object::is_outlined() const {
         result = result && !trigger_script.empty();
     }
 
-
     result = result || (outlining_object && outlining_object->is_outlined());
 
     return result;

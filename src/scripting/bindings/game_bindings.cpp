@@ -34,7 +34,8 @@ void bind_game_types(sol::state& lua) {
     game_type["game_width"] = sol::property([](Game& game) { return game.game_width(); });
     game_type["game_height"] = sol::property([](Game& game) { return game.game_height(); });
     game_type["game_center"] = sol::property([](Game& game) { return game.game_center(); });
-    game_type["magnification"] = sol::property(&Game::get_magnification, &Game::set_magnification);
+    game_type["magnification"] = sol::property(&Game::get_magnification,
+        &Game::set_magnification);
 
     game_type["ticks"] = sol::property(&Game::ticks);
     game_type["window_ticks"] = sol::property(&Game::window_ticks);
@@ -43,8 +44,10 @@ void bind_game_types(sol::state& lua) {
     game_type["stopped"] = sol::property(&Game::stopped);
     game_type["seconds"] = sol::property(&Game::seconds);
     game_type["paused"] = sol::property(&Game::is_paused);
-    game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled, &Game::set_pausing_enabled);
-    game_type["script_scheduler_paused"] = sol::property(&Game::is_script_scheduler_paused, &Game::set_script_scheduler_paused);
+    game_type["pausing_enabled"] = sol::property(&Game::is_pausing_enabled,
+        &Game::set_pausing_enabled);
+    game_type["script_scheduler_paused"] = sol::property(&Game::is_script_scheduler_paused,
+        &Game::set_script_scheduler_paused);
     game_type["debug"] = sol::property(&Game::is_debug);
 
     game_type["game_data_filesystem"] = sol::property([](Game&) {
@@ -57,12 +60,20 @@ void bind_game_types(sol::state& lua) {
         return file_utilities::user_data_folder(game.get_environment());
     });
 
-    game_type["triggered_keys"] = sol::property([](Game* game) { return sol::as_table(game->triggered_keys()); });
+    game_type["triggered_keys"] = sol::property([](Game* game) {
+        return sol::as_table(game->triggered_keys());
+    });
     game_type["last_input_type"] = sol::property(&Game::get_last_input_type);
     game_type["gamepad_enabled"] = sol::property(&Game::gamepad_enabled);
-    game_type["gamepad_names"] = sol::property([](Game* game) { return sol::as_table(game->gamepad_names()); });
-    game_type["gamepad_name"] = sol::property([](Game* game) { return game->get_gamepad_name(-1); });
-    game_type["gamepad_guid"] = sol::property([](Game* game) { return game->get_gamepad_guid(-1); });
+    game_type["gamepad_names"] = sol::property([](Game* game) {
+        return sol::as_table(game->gamepad_names());
+    });
+    game_type["gamepad_name"] = sol::property([](Game* game) {
+        return game->get_gamepad_name();
+    });
+    game_type["gamepad_guid"] = sol::property([](Game* game) {
+        return game->get_gamepad_guid();
+    });
     game_type["character_input"] = sol::property(&Game::character_input);
 
     game_type["monitor_resolution"] = sol::property(&Game::get_current_resolution);
@@ -85,12 +96,16 @@ void bind_game_types(sol::state& lua) {
         game->resume(script.value_or(""));
     };
 
-    game_type["pressed"] = [](Game* game, const std::string& key) { return game->pressed(key); };
+    game_type["pressed"] = [](Game* game, const std::string& key) {
+        return game->pressed(key);
+    };
     game_type["triggered"] = sol::overload(
         [](Game* game) { return game->triggered(); },
         [](Game* game, const std::string& key) { return game->triggered(key); }
     );
-    game_type["triggered_once"] = [](Game* game, const std::string& key) { return game->triggered_once(key); };
+    game_type["triggered_once"] = [](Game* game, const std::string& key) {
+        return game->triggered_once(key);
+    };
     game_type["bind_key"] = sol::resolve<void(const std::string&, const std::string&)>(&Game::bind_key);
     game_type["unbind_physical_key"] = sol::resolve<void(const std::string&)>(&Game::unbind_physical_key);
     game_type["unbind_virtual_key"] = &Game::unbind_virtual_key;
@@ -131,12 +146,24 @@ void bind_game_types(sol::state& lua) {
         }
     );
 
-    game_type["get_config"] = [](Game*, const std::string& key) { return Configurations::get_string(key); };
-    game_type["get_bool_config"] = [](Game*, const std::string& key) { return Configurations::get<bool>(key); };
-    game_type["get_float_config"] = [](Game*, const std::string& key) { return Configurations::get<float>(key); };
-    game_type["get_int_config"] = [](Game*, const std::string& key) { return Configurations::get<int>(key); };
-    game_type["get_unsigned_config"] = [](Game*, const std::string& key) { return Configurations::get<unsigned int>(key); };
-    game_type["get_string_config"] = [](Game*, const std::string& key) { return Configurations::get<std::string>(key); };
+    game_type["get_config"] = [](Game*, const std::string& key) {
+        return Configurations::get_string(key);
+    };
+    game_type["get_bool_config"] = [](Game*, const std::string& key) {
+        return Configurations::get<bool>(key);
+    };
+    game_type["get_float_config"] = [](Game*, const std::string& key) {
+        return Configurations::get<float>(key);
+    };
+    game_type["get_int_config"] = [](Game*, const std::string& key) {
+        return Configurations::get<int>(key);
+    };
+    game_type["get_unsigned_config"] = [](Game*, const std::string& key) {
+        return Configurations::get<unsigned int>(key);
+    };
+    game_type["get_string_config"] = [](Game*, const std::string& key) {
+        return Configurations::get<std::string>(key);
+    };
     game_type["set_bool_config"] = [](Game*, const std::string& key, bool value) {
         Configurations::set(key, value);
     };

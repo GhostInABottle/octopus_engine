@@ -203,7 +203,6 @@ BOOST_AUTO_TEST_CASE(xd_types_rect_extend) {
     detail::check_rect(r1.extend(5), xd::rect{ -4, -3, 15, 14 });
     detail::check_rect(r1.extend(0), xd::rect{ 1, 2, 5, 4 });
 
-
     xd::rect r2{ 1, 2, -1, 4 };
     detail::check_rect(r2.extend(5), xd::rect{ 1, 2, -1, 4 });
 

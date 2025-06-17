@@ -48,15 +48,25 @@ struct Camera::Impl {
     // Render a full-screen shader
     void render_shader(Game& game, const xd::rect& viewport, xd::transform_geometry& geometry,
         float brightness, float contrast, float saturation);
+    // Update OpenGL claer color
+    void set_gl_clear_color(const xd::vec4& color) {
+        glClearColor(color.r, color.g, color.b, color.a);
+    }
+    // Setup OpenGL state
+    void setup_opengl() {
+        set_gl_clear_color(default_clear_color);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glActiveTexture(GL_TEXTURE0);
+    }
     // Draw a quad (for screen tint)
-    struct quad_vertex
-    {
+    struct quad_vertex {
         xd::vec2 pos;
     };
-    struct quad_vertex_traits : xd::vertex_traits<quad_vertex>
-    {
-        quad_vertex_traits()
-        {
+    struct quad_vertex_traits : xd::vertex_traits<quad_vertex> {
+        quad_vertex_traits() {
             bind_vertex_attribute(xd::VERTEX_POSITION, &quad_vertex::pos);
         }
     };
@@ -148,24 +158,23 @@ void Camera::Impl::draw_quad(xd::mat4 mvp, xd::rect rect,
 }
 
 Camera::Camera(Game& game, const std::string& default_scale_mode)
-        : game(game),
-        position(0.0f, 0.0f),
-        screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color"))),
-        brightness(Configurations::get<float>("graphics.brightness")),
-        contrast(Configurations::get<float>("graphics.contrast")),
-        saturation(Configurations::get<float>("graphics.saturation")),
-        object(nullptr),
-        object_center_offset(Configurations::get<float>("player.camera-center-offset-x"),
-            Configurations::get<float>("player.camera-center-offset-y")),
-        shaker(nullptr),
-        current_clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color"))),
-        pimpl(std::make_unique<Impl>(default_scale_mode, current_clear_color))
-{
-    calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
-    // Add components
+        : game(game)
+        , position(0.0f, 0.0f)
+        , screen_tint(hex_to_color(Configurations::get<std::string>("startup.tint-color")))
+        , brightness(Configurations::get<float>("graphics.brightness"))
+        , contrast(Configurations::get<float>("graphics.contrast"))
+        , saturation(Configurations::get<float>("graphics.saturation"))
+        , object(nullptr)
+        , object_center_offset(Configurations::get<float>("player.camera-center-offset-x"),
+            Configurations::get<float>("player.camera-center-offset-y"))
+        , shaker(nullptr)
+        , current_clear_color(hex_to_color(Configurations::get<std::string>("startup.clear-color")))
+        , pimpl(std::make_unique<Impl>(default_scale_mode, current_clear_color)) {
     add_component(std::make_shared<Camera_Renderer>(game));
     add_component(std::make_shared<Object_Tracker>());
-    setup_opengl();
+
+    pimpl->setup_opengl();
+    calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
     update_viewport();
 }
 
@@ -182,7 +191,6 @@ void Camera::set_size(int width, int height, bool force) {
 }
 
 void Camera::calculate_viewport(int width, int height) {
-    // Calculate viewport rectangle
     auto scale_mode = Configurations::get<std::string>("graphics.scale-mode");
     const auto screen_width = static_cast<float>(width);
     const auto screen_height = static_cast<float>(height);
@@ -237,20 +245,21 @@ void Camera::update_viewport(xd::vec2 shake_offset) const {
     pimpl->update_viewport(viewport, shake_offset);
 }
 
-void Camera::setup_opengl() {
-    // Setup OpenGL state
-    set_clear_color();
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTexture(GL_TEXTURE0);
-}
-
 void Camera::set_clear_color(std::optional<xd::vec4> color) {
     current_clear_color = color.value_or(pimpl->default_clear_color);
-    glClearColor(current_clear_color.r, current_clear_color.g,
-        current_clear_color.b, current_clear_color.a);
+    pimpl->set_gl_clear_color(current_clear_color);
+}
+
+void Camera::clear_color_buffer() const {
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Camera::clear_depth_buffer() const {
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Camera::clear() const {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Camera::center_at(xd::vec2 pos) {
@@ -303,7 +312,6 @@ void Camera::enable_scissor_test(xd::rect rect, xd::rect custom_viewport) {
     if (custom_viewport.w == 0) {
         custom_viewport = viewport;
     }
-
 
     const float game_width = static_cast<float>(game.game_width());
     const float game_height = static_cast<float>(game.game_height());
@@ -363,7 +371,7 @@ void Camera::draw_map_tint() const {
 }
 
 void Camera_Renderer::render(Camera& camera) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera.clear();
 
     const auto width = static_cast<float>(game.game_width());
     const auto height = static_cast<float>(game.game_height());

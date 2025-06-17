@@ -227,13 +227,15 @@ public:
     // Create a font
     std::shared_ptr<xd::font> create_font(const std::string& filename);
     // Render some text
-    void render_text(xd::font& font, const xd::font_style& style, float x, float y, const std::string& text);
+    void render_text(xd::font& font, const xd::font_style& style,
+        float x, float y, const std::string& text);
     // Get font
     std::shared_ptr<xd::font> get_font() { return font; }
     // Get style
     const xd::font_style& get_font_style() { return style; }
     // Get width of text, in pixels
-    float text_width(const std::string& text, xd::font* font = nullptr, const xd::font_style* style = nullptr);
+    float text_width(const std::string& text, xd::font* font = nullptr,
+        const xd::font_style* style = nullptr);
     // Get clock
     Clock* get_clock() { return clock.get(); }
     // Is time stopped
@@ -257,9 +259,9 @@ public:
         return window->joystick_names();
     }
     // Get current gamepad's name
-    std::string get_gamepad_name(int id) const;
+    std::string get_gamepad_name(int id = -1) const;
     // Get current gamepad's guid
-    std::string get_gamepad_guid(int id) const;
+    std::string get_gamepad_guid(int id = -1) const;
     // Get string to be added to map object scripts
     std::string get_object_script_preamble() const;
     // Get arguments used to launch the game

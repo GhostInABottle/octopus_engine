@@ -201,7 +201,6 @@ float xd::detail::fmod_sound_handle::get_pitch() const {
     return pitch;
 }
 
-
 void xd::detail::fmod_sound_handle::set_looping(bool looping) {
     auto result = sound->setLoopCount(looping ? -1 : 0);
     if (result != FMOD_OK) {

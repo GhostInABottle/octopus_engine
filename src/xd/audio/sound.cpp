@@ -40,7 +40,6 @@ void xd::sound::stop()
     m_handle->stop();
 }
 
-
 bool xd::sound::playing() const
 {
     return m_handle->is_playing();
