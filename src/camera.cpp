@@ -121,9 +121,10 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
     );
     geometry.model_view().push(xd::mat4());
 
-    auto same_viewport = viewport == xd::rect{0, 0, w, h};
+    xd::rect full_screen_viewport{0, 0, w, h};
+    auto same_viewport = viewport == full_screen_viewport;
     if (!same_viewport) {
-        glViewport(0, 0, w, h);
+        update_viewport(full_screen_viewport);
     }
 
     full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(),
@@ -174,8 +175,9 @@ Camera::Camera(Game& game, const std::string& default_scale_mode)
     add_component(std::make_shared<Object_Tracker>());
 
     pimpl->setup_opengl();
-    calculate_viewport(game.framebuffer_width(), game.framebuffer_height());
-    update_viewport();
+    const auto width = game.framebuffer_width();
+    const auto height = game.framebuffer_height();
+    set_viewport(calculate_viewport(width, height));
 }
 
 Camera::~Camera() {}
@@ -184,13 +186,12 @@ void Camera::set_size(int width, int height, bool force) {
     if (!force && width == pimpl->screen_size.x && height == pimpl->screen_size.y) return;
     LOGGER_I << "Setting camera size to " << width << "x" << height;
     pimpl->full_screen_texture.reset();
-    calculate_viewport(width, height);
-    update_viewport();
+    set_viewport(calculate_viewport(width, height));
     pimpl->screen_size.x = width;
     pimpl->screen_size.y = height;
 }
 
-void Camera::calculate_viewport(int width, int height) {
+xd::rect Camera::calculate_viewport(int width, int height) {
     auto scale_mode = Configurations::get<std::string>("graphics.scale-mode");
     const auto screen_width = static_cast<float>(width);
     const auto screen_height = static_cast<float>(height);
@@ -204,41 +205,43 @@ void Camera::calculate_viewport(int width, int height) {
     }
 
     if (scale_mode == "stretch") {
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.w = screen_width;
-        viewport.h = screen_height;
-        return;
+        calculated_viewport.x = 0.0f;
+        calculated_viewport.y = 0.0f;
+        calculated_viewport.w = screen_width;
+        calculated_viewport.h = screen_height;
+        return calculated_viewport;
     }
 
     if (scale_mode == "none") {
-        viewport.w = std::min(screen_width, game_width);
-        viewport.h = std::min(screen_height, game_height);
+        calculated_viewport.w = std::min(screen_width, game_width);
+        calculated_viewport.h = std::min(screen_height, game_height);
     } else if (scale_mode == "aspect" ||
             screen_width < game_width || screen_height < game_height) {
         float target_ratio = game_width / game_height;
 
-        viewport.w = screen_width;
-        viewport.h = viewport.w / target_ratio;
+        calculated_viewport.w = screen_width;
+        calculated_viewport.h = calculated_viewport.w / target_ratio;
 
-        if (viewport.h > screen_height) {
-            viewport.h = screen_height;
-            viewport.w = viewport.h * target_ratio;
+        if (calculated_viewport.h > screen_height) {
+            calculated_viewport.h = screen_height;
+            calculated_viewport.w = calculated_viewport.h * target_ratio;
         }
     } else {
         int scale_x = static_cast<int>(screen_width / game_width);
         int scale_y = static_cast<int>(screen_height / game_height);
         if (scale_x > scale_y) {
-            viewport.w = game_width * scale_y;
-            viewport.h = game_height * scale_y;
+            calculated_viewport.w = game_width * scale_y;
+            calculated_viewport.h = game_height * scale_y;
         } else {
-            viewport.w = game_width * scale_x;
-            viewport.h = game_height * scale_x;
+            calculated_viewport.w = game_width * scale_x;
+            calculated_viewport.h = game_height * scale_x;
         }
     }
 
-    viewport.x = screen_width / 2 - viewport.w / 2;
-    viewport.y = screen_height / 2 - viewport.h / 2;
+    calculated_viewport.x = screen_width / 2 - calculated_viewport.w / 2;
+    calculated_viewport.y = screen_height / 2 - calculated_viewport.h / 2;
+
+    return calculated_viewport;
 }
 
 void Camera::update_viewport(xd::vec2 shake_offset) const {
@@ -385,7 +388,7 @@ void Camera_Renderer::render(Camera& camera) {
     geometry.model_view().translate(-cam_pos.x, -cam_pos.y, 0);
 
     if (camera.is_shaking()) {
-        camera.update_viewport(camera.shake_offset());
+        camera.set_shake_offset(camera.shake_offset());
     }
 
     game.get_map()->render();

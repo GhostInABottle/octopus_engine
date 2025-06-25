@@ -60,7 +60,6 @@ void Canvas_Renderer::setup_framebuffer(const Base_Canvas& canvas) {
     auto game_width = game.game_width();
     auto game_height = game.game_height();
 
-    original_viewport = camera.get_viewport();
     camera.set_viewport(xd::rect{0, 0, game_width, game_height});
 
     // Clear the screen then restore the old color
@@ -101,7 +100,7 @@ void Canvas_Renderer::render_framebuffer(const Base_Canvas& canvas, const Base_C
     }
     batch.add(canvas.get_fbo_texture(), x, y, xd::vec4(1.0f));
 
-    camera.set_viewport(original_viewport);
+    camera.use_calculated_viewport();
 
     xd::transform_geometry geometry;
     geometry.projection().load(

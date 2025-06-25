@@ -71,7 +71,7 @@ std::unique_ptr<Layer> Tile_Layer::load(rapidxml::xml_node<>& node, Camera& came
     std::string decoded_data = base64_decode(raw_data);
     int num_tiles = layer_ptr->width * layer_ptr->height;
     uLongf size = num_tiles * 4;
-    const std::unique_ptr<unsigned int> tile_array(new unsigned int[num_tiles]);
+    const auto tile_array = std::make_unique<unsigned int[]>(num_tiles);
     auto result = uncompress((Bytef*) tile_array.get(), &size,
         (const Bytef*) decoded_data.c_str(), decoded_data.size());
 

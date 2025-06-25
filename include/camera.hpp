@@ -21,9 +21,7 @@ public:
     // Called when game window size is changed
     void set_size(int width, int height, bool force = false);
     // Calculate viewport rectangle based on screen width and height
-    void calculate_viewport(int width, int height);
-    // Setup viewport for rendering
-    void update_viewport(xd::vec2 shake_offset = xd::vec2{0.0f}) const;
+    xd::rect calculate_viewport(int width, int height);
     // Get clear color
     xd::vec4 get_clear_color() const {
         return current_clear_color;
@@ -66,6 +64,10 @@ public:
     void start_shaking(xd::vec2 strength, xd::vec2 speed);
     // Cease shaking screen
     void cease_shaking();
+    // Set shake offset
+    void set_shake_offset(xd::vec2 shake_offset) {
+        update_viewport(shake_offset);
+    }
     // Getters and setters
     xd::vec2 get_position() const {
         return position;
@@ -79,6 +81,9 @@ public:
     void set_viewport(xd::rect new_viewport) {
         viewport = new_viewport;
         update_viewport();
+    }
+    void use_calculated_viewport() {
+        set_viewport(calculated_viewport);
     }
     xd::transform_geometry& get_geometry() {
         return geometry;
@@ -136,12 +141,16 @@ public:
     // Get current shake offset
     xd::vec2 shake_offset() const;
 private:
+    // Setup viewport for rendering
+    void update_viewport(xd::vec2 shake_offset = xd::vec2{ 0.0f }) const;
     // Game instance
     Game& game;
     // Camera position
     xd::vec2 position;
-    // Viewport rectangle
+    // Current viewport rectangle
     xd::rect viewport;
+    // Last calculated viewport
+    xd::rect calculated_viewport;
     // Projection and model view matrices
     xd::transform_geometry geometry;
     // Screen tint color (affects everything)

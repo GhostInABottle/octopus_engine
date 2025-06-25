@@ -28,7 +28,6 @@ private:
     xd::sprite_batch batch;
     bool fbo_supported;
     xd::rect background_margins;
-    xd::rect original_viewport;
 };
 
 #endif

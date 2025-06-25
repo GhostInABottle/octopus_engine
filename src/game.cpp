@@ -715,8 +715,9 @@ int Game::game_height(bool magnified) const {
 
 void Game::set_magnification(float mag) {
     magnification = mag;
-    camera->calculate_viewport(framebuffer_width(), framebuffer_height());
-    camera->update_viewport();
+    const auto width = framebuffer_width();
+    const auto height = framebuffer_height();
+    camera->set_viewport(camera->calculate_viewport(width, height));
 }
 
 std::vector<std::string> Game::triggered_keys() const {
