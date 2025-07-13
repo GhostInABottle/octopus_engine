@@ -512,10 +512,12 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_direction(string_to_direction(properties["direction"]));
     }
     if (properties.contains("pose")) {
-        object_ptr->pose_name = properties["pose"];
+        const std::string pose{properties["pose"]};
+        object_ptr->pose_name = string_utilities::capitalize(pose);
     }
     if (properties.contains("state")) {
-        object_ptr->state = properties["state"];
+        const std::string state{properties["state"]};
+        object_ptr->state = string_utilities::capitalize(state);
     }
     if (properties.contains("face-state")) {
         object_ptr->set_face_state(properties["face-state"]);

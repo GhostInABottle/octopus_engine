@@ -107,8 +107,8 @@ BOOST_AUTO_TEST_CASE(object_layer_load) {
     BOOST_CHECK_CLOSE(obj1.get_size()[1], 0.0f, 0.1f);
     BOOST_CHECK_EQUAL(obj1.get_property("elf"), "qui");
     BOOST_CHECK_EQUAL(obj1.get_direction(), Direction::RIGHT);
-    BOOST_CHECK_EQUAL(obj1.get_pose_name(), "mypose");
-    BOOST_CHECK_EQUAL(obj1.get_state(), "mystate");
+    BOOST_CHECK_EQUAL(obj1.get_pose_name(), "MYPOSE");
+    BOOST_CHECK_EQUAL(obj1.get_state(), "MYSTATE");
     BOOST_CHECK_CLOSE(obj1.get_speed(), 3.5f, 0.1f);
     BOOST_CHECK_CLOSE(obj1.get_opacity(), 0.4f, 0.1f);
     BOOST_CHECK_EQUAL(obj1.get_face_state(), "FACING");
