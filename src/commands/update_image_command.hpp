@@ -16,11 +16,7 @@ public:
         std::optional<float> angle;
         float opacity;
         Parameters() : opacity(1.0f) {}
-        Parameters(const Base_Image_Canvas& canvas)
-            : position(canvas.get_position())
-            , magnification(canvas.get_magnification())
-            , angle(canvas.get_angle())
-            , opacity(canvas.get_opacity()) {}
+        Parameters(const Base_Image_Canvas& canvas);
     };
     Update_Image_Command(Game& game, Base_Image_Canvas& canvas);
     Update_Image_Command(Game& game, Base_Image_Canvas& canvas, int duration, Parameters parameters);

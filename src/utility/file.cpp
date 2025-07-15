@@ -1,16 +1,16 @@
-#include "../../include/filesystem/standard_filesystem.hpp"
-#include "../../include/utility/file.hpp"
+#include "file.hpp"
+#include "string.hpp"
+#include "../filesystem/standard_filesystem.hpp"
 #if OCB_USE_BOOST_FILESYSTEM
-    #include "../../include/filesystem/boost_filesystem.hpp"
+    #include "../filesystem/boost_filesystem.hpp"
 #endif
-#include "../../include/filesystem/physfs_filesystem.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/configurations.hpp"
-#include "../../include/log.hpp"
+#include "../filesystem/physfs_filesystem.hpp"
+#include "../configurations.hpp"
+#include "../log.hpp"
 #include <cstdlib>
 
 #ifdef _WIN32
-#include "../../include/vendor/utf8conv.h"
+#include "../vendor/utf8conv.h"
 #include <stdexcept>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>

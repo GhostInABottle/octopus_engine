@@ -1,8 +1,8 @@
-#include "../../include/audio_player.hpp"
-#include "../../include/decorators/typewriter_decorator.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/xd/graphics/text_formatter.hpp"
+#include "typewriter_decorator.hpp"
+#include "../audio_player.hpp"
+#include "../game.hpp"
+#include "../utility/string.hpp"
+#include "../xd/graphics/text_formatter.hpp"
 #include <cstdlib>
 
 Typewriter_Decorator::Typewriter_Decorator(Game& game, Audio_Player& audio_player)

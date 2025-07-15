@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "../../include/vendor/platform_folders.hpp"
+#include "platform_folders.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <cstdio>

@@ -1,13 +1,13 @@
-#include "../include/configurations.hpp"
-#include "../include/environments/default_environment.hpp"
-#include "../include/game.hpp"
-#include "../include/log.hpp"
-#include "../include/vendor/rapidxml.hpp"
+#include "configurations.hpp"
+#include "environments/default_environment.hpp"
+#include "game.hpp"
+#include "log.hpp"
+#include "vendor/rapidxml.hpp"
 #ifdef OCB_USE_STEAM_SDK
-#include "../include/environments/steam_environment.hpp"
+#include "environments/steam_environment.hpp"
 #endif
-#include "../include/utility/file.hpp"
-#include "../include/xd/audio/audio.hpp"
+#include "utility/file.hpp"
+#include "xd/audio/audio.hpp"
 #include <string>
 #include <variant>
 #include <vector>

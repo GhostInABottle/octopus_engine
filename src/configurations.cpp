@@ -1,5 +1,5 @@
-#include "../include/configurations.hpp"
-#include "../include/utility/string.hpp"
+#include "configurations.hpp"
+#include "utility/string.hpp"
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <type_traits>

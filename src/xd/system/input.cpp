@@ -1,4 +1,4 @@
-#include "../../../include/xd/system/input.hpp"
+#include "input.hpp"
 #ifdef _WIN32
     #include <GL/glfw3.h>
 #else

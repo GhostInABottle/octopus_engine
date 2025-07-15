@@ -1,12 +1,12 @@
-#include "../../include/commands/move_object_to_command.hpp"
-#include "../../include/direction.hpp"
-#include "../../include/game.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/map/map_object.hpp"
-#include "../../include/pathfinder.hpp"
-#include "../../include/utility/direction.hpp"
-#include "../../include/utility/math.hpp"
-#include "../../include/xd/graphics/types.hpp"
+#include "move_object_to_command.hpp"
+#include "../direction.hpp"
+#include "../game.hpp"
+#include "../map/map.hpp"
+#include "../map/map_object.hpp"
+#include "../pathfinder.hpp"
+#include "../utility/direction.hpp"
+#include "../utility/math.hpp"
+#include "../xd/graphics/types.hpp"
 #include <deque>
 #include <string>
 

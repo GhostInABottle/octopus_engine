@@ -1,9 +1,9 @@
-#include "../../../include/exceptions.hpp"
-#include "../../../include/map/layers/tile_layer.hpp"
-#include "../../../include/map/layers/tile_layer_renderer.hpp"
-#include "../../../include/utility/string.hpp"
-#include "../../../include/utility/xml.hpp"
-#include "../../../include/vendor/base64.hpp"
+#include "tile_layer.hpp"
+#include "tile_layer_renderer.hpp"
+#include "../../exceptions.hpp"
+#include "../../utility/string.hpp"
+#include "../../utility/xml.hpp"
+#include "../../vendor/base64.hpp"
 #include <cmath>
 #include <zlib.h>
 

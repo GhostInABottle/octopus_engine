@@ -1,11 +1,11 @@
-#include "../../include/camera.hpp"
-#include "../../include/canvas/base_canvas.hpp"
-#include "../../include/canvas/base_image_canvas.hpp"
-#include "../../include/canvas/canvas_renderer.hpp"
-#include "../../include/configurations.hpp"
-#include "../../include/game.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/utility/math.hpp"
+#include "canvas_renderer.hpp"
+#include "base_canvas.hpp"
+#include "base_image_canvas.hpp"
+#include "../camera.hpp"
+#include "../configurations.hpp"
+#include "../game.hpp"
+#include "../map/map.hpp"
+#include "../utility/math.hpp"
 
 Canvas_Renderer::Canvas_Renderer(Game& game, Camera& camera)
     : game(game)

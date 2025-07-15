@@ -1,5 +1,5 @@
-#include "../../../include/xd/graphics/framebuffer.hpp"
-#include "../../../include/xd/graphics/texture.hpp"
+#include "framebuffer.hpp"
+#include "texture.hpp"
 #include <stdexcept>
 
 xd::framebuffer::framebuffer()

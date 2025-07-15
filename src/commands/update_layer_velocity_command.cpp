@@ -1,7 +1,7 @@
-#include "../../include/commands/update_layer_velocity_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/map/layers/image_layer.hpp"
-#include "../../include/utility/math.hpp"
+#include "update_layer_velocity_command.hpp"
+#include "../game.hpp"
+#include "../map/layers/image_layer.hpp"
+#include "../utility/math.hpp"
 
 Update_Layer_Velocity_Command::Update_Layer_Velocity_Command(Game& game, Image_Layer& layer, xd::vec2 velocity, long duration)
     : Timed_Command(game, duration)

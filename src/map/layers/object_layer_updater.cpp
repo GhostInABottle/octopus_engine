@@ -1,6 +1,6 @@
-#include "../../../include/map/layers/object_layer.hpp"
-#include "../../../include/map/layers/object_layer_updater.hpp"
-#include "../../../include/map/map_object.hpp"
+#include "object_layer_updater.hpp"
+#include "object_layer.hpp"
+#include "../map_object.hpp"
 
 void Object_Layer_Updater::update(Map&) {
     if (!layer.is_visible()) return;

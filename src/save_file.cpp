@@ -1,6 +1,6 @@
-#include "../include/configurations.hpp"
-#include "../include/save_file.hpp"
-#include "../include/xd/vendor/sol/sol.hpp"
+#include "configurations.hpp"
+#include "save_file.hpp"
+#include "xd/vendor/sol/sol.hpp"
 #include <cmath>
 #include <cstdint>
 #include <cstdio>

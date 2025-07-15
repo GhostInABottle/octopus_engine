@@ -1,7 +1,7 @@
-#include "../../include/map/collision_check_options.hpp"
-#include "../../include/map/map_object.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/configurations.hpp"
+#include "collision_check_options.hpp"
+#include "map_object.hpp"
+#include "../utility/string.hpp"
+#include "../configurations.hpp"
 
 int Collision_Check_Options::proximity_distance = -1;
 

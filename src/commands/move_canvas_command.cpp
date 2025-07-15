@@ -1,7 +1,7 @@
-#include "../../include/canvas/base_canvas.hpp"
-#include "../../include/commands/move_canvas_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/math.hpp"
+#include "move_canvas_command.hpp"
+#include "../canvas/base_canvas.hpp"
+#include "../game.hpp"
+#include "../utility/math.hpp"
 
 Move_Canvas_Command::Move_Canvas_Command(Game& game, Base_Canvas& canvas, xd::vec2 pos, long duration)
         : Timed_Command(game, duration)

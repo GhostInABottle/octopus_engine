@@ -2,7 +2,7 @@
 #include <string>
 #include <stdexcept>
 #include <string.h>
-#include "../../include/vendor/physfs.hpp"
+#include "physfs.hpp"
 
 /*
 

@@ -1,7 +1,13 @@
-#include "../../include/canvas/base_image_canvas.hpp"
-#include "../../include/commands/update_image_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/math.hpp"
+#include "update_image_command.hpp"
+#include "../canvas/base_image_canvas.hpp"
+#include "../game.hpp"
+#include "../utility/math.hpp"
+
+Update_Image_Command::Parameters::Parameters(const Base_Image_Canvas& canvas)
+    : position(canvas.get_position())
+    , magnification(canvas.get_magnification())
+    , angle(canvas.get_angle())
+    , opacity(canvas.get_opacity()) {}
 
 Update_Image_Command::Update_Image_Command(Game& game, Base_Image_Canvas& canvas)
         : Timed_Command(game, 0), canvas(canvas) {

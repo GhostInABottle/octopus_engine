@@ -1,13 +1,13 @@
-#include "../../include/configurations.hpp"
-#include "../../include/environments/environment.hpp"
-#include "../../include/exceptions.hpp"
-#include "../../include/filesystem/user_data_folder.hpp"
-#include "../../include/key_binder.hpp"
-#include "../../include/log.hpp"
-#include "../../include/save_file.hpp"
-#include "../../include/utility/file.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/vendor/platform_folders.hpp"
+#include "user_data_folder.hpp"
+#include "../configurations.hpp"
+#include "../environments/environment.hpp"
+#include "../exceptions.hpp"
+#include "../key_binder.hpp"
+#include "../log.hpp"
+#include "../save_file.hpp"
+#include "../utility/file.hpp"
+#include "../utility/string.hpp"
+#include "../vendor/platform_folders.hpp"
 #include <stdexcept>
 
 bool User_Data_Folder::parsed_default_config = false;
@@ -70,7 +70,7 @@ void User_Data_Folder::try_to_copy_old_version() {
     if (keymap_path_absolute || filesystem.exists(version_path + keymap_filename)) return;
 
     auto old_keymap_path = version_to_copy + keymap_filename;
-    // No warning if it doesn't exist—it just means the mappings weren't modified
+    // No warning if it doesn't existï¿½it just means the mappings weren't modified
     if (!filesystem.exists(old_keymap_path)) return;
 
     logs.push_back(std::make_tuple(Log_Level::info,

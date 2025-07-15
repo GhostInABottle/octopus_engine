@@ -1,6 +1,6 @@
-#include "../../../include/xd/audio/audio.hpp"
-#include "../../../include/xd/audio/music.hpp"
-#include "../../../include/xd/audio/sound.hpp"
+#include "audio.hpp"
+#include "music.hpp"
+#include "sound.hpp"
 #include <istream>
 #include <memory>
 

@@ -1,6 +1,6 @@
-#include "../../include/environments/default_environment.hpp"
-#include "../../include/log.hpp"
-#include "../../include/utility/file.hpp"
+#include "default_environment.hpp"
+#include "../log.hpp"
+#include "../utility/file.hpp"
 
 bool Default_Environment::open_store_page(Open_Page_Mode mode) {
     if (!can_open_store_page(mode)) {

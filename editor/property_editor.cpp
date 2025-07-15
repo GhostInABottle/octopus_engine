@@ -5,10 +5,10 @@
 #include "mappers/object_layer_mapper.hpp"
 #include "qtpropertybrowser/src/qtpropertymanager.h"
 #include "qtpropertybrowser/src/qtvariantproperty.h"
-#include "../include/map.hpp"
-#include "../include/map_object.hpp"
-#include "../include/image_layer.hpp"
-#include "../include/object_layer.hpp"
+#include "../src/map.hpp"
+#include "../src/map_object.hpp"
+#include "../src/image_layer.hpp"
+#include "../src/object_layer.hpp"
 #include <QMessageBox>
 
 Property_Editor::Property_Editor()

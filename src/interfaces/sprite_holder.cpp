@@ -1,6 +1,6 @@
-#include "../../include/direction.hpp"
-#include "../../include/interfaces/sprite_holder.hpp"
-#include "../../include/sprite.hpp"
+#include "sprite_holder.hpp"
+#include "../direction.hpp"
+#include "../sprite.hpp"
 
 Sprite_Holder::~Sprite_Holder() {}
 

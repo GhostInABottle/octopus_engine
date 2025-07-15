@@ -1,8 +1,8 @@
 #ifdef OCB_USE_STEAM_SDK
-#include "../../include/configurations.hpp"
-#include "../../include/environments/steam_environment.hpp"
-#include "../../include/log.hpp"
-#include "../../include/utility/file.hpp"
+#include "steam_environment.hpp"
+#include "../configurations.hpp"
+#include "../log.hpp"
+#include "../utility/file.hpp"
 #include <steam/steam_api.h>
 
 Steam_Environment::Steam_Environment()

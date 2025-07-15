@@ -1,9 +1,9 @@
-#include "../../include/audio_player.hpp"
-#include "../../include/camera.hpp"
-#include "../../include/canvas/sprite_canvas.hpp"
-#include "../../include/game.hpp"
-#include "../../include/sprite_data.hpp"
-#include "../../include/xd/graphics/sprite_batch.hpp"
+#include "sprite_canvas.hpp"
+#include "../audio_player.hpp"
+#include "../camera.hpp"
+#include "../game.hpp"
+#include "../sprite_data.hpp"
+#include "../xd/graphics/sprite_batch.hpp"
 
 Sprite_Canvas::Sprite_Canvas(Game& game, xd::asset_manager& asset_manager,
         const std::string& sprite, xd::vec2 position, const std::string& pose_name)

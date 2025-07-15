@@ -1,7 +1,7 @@
 #ifndef HPP_GAME_FIXTURE
 #define HPP_GAME_FIXTURE
 
-#include "../../include/game.hpp"
+#include "../game.hpp"
 #include "../environments/environment.hpp"
 #include <memory>
 

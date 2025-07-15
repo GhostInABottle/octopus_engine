@@ -1,7 +1,7 @@
 #ifndef MAP_MAPPER_HPP
 #define MAP_MAPPER_HPP
 
-#include "../../include/interfaces/editable.hpp"
+#include "../../src/interfaces/editable.hpp"
 
 class Map;
 

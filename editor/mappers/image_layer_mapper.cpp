@@ -2,8 +2,8 @@
 #include "qtpropertybrowser/src/qttreepropertybrowser.h"
 #include "../qtpropertybrowser/src/qtpropertymanager.h"
 #include "../qtpropertybrowser/src/qtvariantproperty.h"
-#include "../../include/image_layer.hpp"
-#include "../../include/sprite_data.hpp"
+#include "../../src/map/layers/image_layer.hpp"
+#include "../../src/sprite_data.hpp"
 
 Image_Layer_Mapper::Image_Layer_Mapper(Game& game, Image_Layer* layer) : Layer_Mapper(layer), game(game), layer(layer) {}
 

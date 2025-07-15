@@ -1,7 +1,7 @@
-#include "../../../include/xd/lua/scheduler.hpp"
-#include "../../../include/xd/lua/scheduler_task.hpp"
-#include "../../../include/xd/lua/virtual_machine.hpp"
-#include "../../../include/xd/lua/exceptions.hpp"
+#include "scheduler.hpp"
+#include "scheduler_task.hpp"
+#include "virtual_machine.hpp"
+#include "exceptions.hpp"
 
 xd::lua::scheduler::scheduler(virtual_machine& vm)
     : state(vm.lua_state())

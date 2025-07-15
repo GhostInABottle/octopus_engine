@@ -1,7 +1,7 @@
-#include "../../include/commands/update_color_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/interfaces/color_holder.hpp"
-#include "../../include/utility/math.hpp"
+#include "update_color_command.hpp"
+#include "../game.hpp"
+#include "../interfaces/color_holder.hpp"
+#include "../utility/math.hpp"
 
 Update_Color_Command::Update_Color_Command(Game& game, Color_Holder& holder, xd::vec4 color, long duration)
     : Timed_Command(game, duration)

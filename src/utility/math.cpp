@@ -1,4 +1,4 @@
-#include "../../include/utility/math.hpp"
+#include "math.hpp"
 
 xd::vec2 lerp(const xd::vec2& start, const xd::vec2& end, float alpha) noexcept {
     xd::vec2 result;

@@ -1,12 +1,12 @@
-#include "../../include/camera.hpp"
-#include "../../include/canvas/image_canvas.hpp"
-#include "../../include/exceptions.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/file.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/xd/asset_manager.hpp"
-#include "../../include/xd/graphics/sprite_batch.hpp"
-#include "../../include/xd/graphics/texture.hpp"
+#include "image_canvas.hpp"
+#include "../camera.hpp"
+#include "../exceptions.hpp"
+#include "../game.hpp"
+#include "../utility/file.hpp"
+#include "../utility/string.hpp"
+#include "../xd/asset_manager.hpp"
+#include "../xd/graphics/sprite_batch.hpp"
+#include "../xd/graphics/texture.hpp"
 #include <istream>
 #include <memory>
 

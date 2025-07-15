@@ -1,13 +1,13 @@
-#include "../..//include/utility/direction.hpp"
-#include "../../include/map/layers/image_layer.hpp"
-#include "../../include/map/layers/object_layer.hpp"
-#include "../../include/map/layers/tile_layer.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/map/map_object.hpp"
-#include "../../include/tests/game_fixture.hpp"
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/xd/asset_manager.hpp"
-#include "../../include/xd/audio/music.hpp"
+#include "game_fixture.hpp"
+#include "../utility/direction.hpp"
+#include "../map/layers/image_layer.hpp"
+#include "../map/layers/object_layer.hpp"
+#include "../map/layers/tile_layer.hpp"
+#include "../map/map.hpp"
+#include "../map/map_object.hpp"
+#include "../vendor/rapidxml.hpp"
+#include "../xd/asset_manager.hpp"
+#include "../xd/audio/music.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(layer_tests, Game_Fixture)

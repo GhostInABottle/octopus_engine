@@ -1,5 +1,5 @@
-#include "../include/clock.hpp"
-#include "../include/game.hpp"
+#include "clock.hpp"
+#include "game.hpp"
 
 Clock::Clock(Game& game) : game(game), start_time(game.ticks()), time_stop(false),
     stop_start_time(0), total_stopped_time(0) {}

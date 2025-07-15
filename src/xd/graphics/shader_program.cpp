@@ -1,6 +1,6 @@
-#include "../../../include/xd/glm.hpp"
-#include "../../../include/xd/graphics/exceptions.hpp"
-#include "../../../include/xd/graphics/shader_program.hpp"
+#include "shader_program.hpp"
+#include "exceptions.hpp"
+#include "../glm.hpp"
 
 xd::shader_program::shader_program()
 {

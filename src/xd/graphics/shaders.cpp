@@ -1,5 +1,5 @@
-#include "../../../include/xd/graphics/shaders.hpp"
-#include "../../../include/xd/graphics/vertex_traits.hpp"
+#include "shaders.hpp"
+#include "vertex_traits.hpp"
 
 xd::flat_shader::flat_shader()
 {

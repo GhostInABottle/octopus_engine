@@ -1,9 +1,9 @@
-#include "../../../include/camera.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/map/layers/tile_layer.hpp"
-#include "../../../include/map/layers/tile_layer_renderer.hpp"
-#include "../../../include/map/map.hpp"
-#include "../../../include/xd/graphics/shader_uniforms.hpp"
+#include "tile_layer_renderer.hpp"
+#include "tile_layer.hpp"
+#include "../map.hpp"
+#include "../../camera.hpp"
+#include "../../game.hpp"
+#include "../../xd/graphics/shader_uniforms.hpp"
 
 void Tile_Layer_Renderer::render(Map& map) {
     if (!layer.is_visible()) return;

@@ -1,9 +1,9 @@
-#include "../../include/exceptions.hpp"
-#include "../../include/map/tileset.hpp"
-#include "../../include/utility/color.hpp"
-#include "../../include/utility/file.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/utility/xml.hpp"
+#include "tileset.hpp"
+#include "../exceptions.hpp"
+#include "../utility/color.hpp"
+#include "../utility/file.hpp"
+#include "../utility/string.hpp"
+#include "../utility/xml.hpp"
 #include <istream>
 
 rapidxml::xml_node<>* Tileset::save(rapidxml::xml_document<>& doc) {

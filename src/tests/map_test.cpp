@@ -1,8 +1,9 @@
+#include "game_fixture.hpp"
+#include "../map/map.hpp"
+#include "../map/layers/tile_layer.hpp"
+#include "../vendor/rapidxml.hpp"
 #include <boost/test/unit_test.hpp>
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/map/layers/tile_layer.hpp"
-#include "../../include/tests/game_fixture.hpp"
+
 
 namespace detail {
     static void check_map(Map& map) {

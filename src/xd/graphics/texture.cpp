@@ -1,5 +1,5 @@
+#include "texture.hpp"
 #include <stdexcept>
-#include "../../../include/xd/graphics/texture.hpp"
 
 namespace xd { namespace detail { namespace texture {
 

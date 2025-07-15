@@ -1,9 +1,9 @@
-#include "../../include/game.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/sprite_data.hpp"
-#include "../../include/filesystem/user_data_folder.hpp"
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/xd/asset_manager.hpp"
+#include "../game.hpp"
+#include "../map/map.hpp"
+#include "../sprite_data.hpp"
+#include "../filesystem/user_data_folder.hpp"
+#include "../vendor/rapidxml.hpp"
+#include "../xd/asset_manager.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(sprite_data_tests)

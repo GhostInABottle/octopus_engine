@@ -1,7 +1,7 @@
-#include "../../include/configurations.hpp"
-#include "../../include/decorators/shake_decorator.hpp"
-#include "../../include/game.hpp"
-#include "../../include/xd/graphics/text_formatter.hpp"
+#include "shake_decorator.hpp"
+#include "../configurations.hpp"
+#include "../game.hpp"
+#include "../xd/graphics/text_formatter.hpp"
 #include <random>
 
 Shake_Decorator::Shake_Decorator(Game& game) : game(game) {}

@@ -1,5 +1,5 @@
-#include "../../include/utility/color.hpp"
-#include "../../include/configurations.hpp"
+#include "color.hpp"
+#include "../configurations.hpp"
 #include <stdexcept>
 #include <sstream>
 

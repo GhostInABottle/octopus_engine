@@ -1,7 +1,7 @@
-#include "../../include/camera.hpp"
-#include "../../include/commands/tint_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/math.hpp"
+#include "tint_command.hpp"
+#include "../camera.hpp"
+#include "../game.hpp"
+#include "../utility/math.hpp"
 
 Tint_Command::Tint_Command(Tint_Target target, Game& game, xd::vec4 color, long duration) :
         Timed_Command(game, duration), target(target), new_color(color), complete(false) {

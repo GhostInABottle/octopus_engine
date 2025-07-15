@@ -1,4 +1,4 @@
-#include "../../include/utility/xml.hpp"
+#include "xml.hpp"
 
 rapidxml::xml_node<>* xml_node(rapidxml::xml_document<>& doc,
     const std::string& name, const std::string& value,

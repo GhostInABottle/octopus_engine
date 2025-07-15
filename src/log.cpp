@@ -1,8 +1,8 @@
-#include "../include/configurations.hpp"
-#include "../include/environments/environment.hpp"
-#include "../include/log.hpp"
-#include "../include/utility/file.hpp"
-#include "../include/utility/string.hpp"
+#include "configurations.hpp"
+#include "environments/environment.hpp"
+#include "log.hpp"
+#include "utility/file.hpp"
+#include "utility/string.hpp"
 #include <iostream>
 
 namespace detail {

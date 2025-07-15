@@ -1,9 +1,9 @@
-#include "../../include/exceptions.hpp"
-#include "../../include/filesystem/disk_filesystem.hpp"
-#include "../../include/log.hpp"
-#include "../../include/utility/string.hpp"
+#include "disk_filesystem.hpp"
+#include "../exceptions.hpp"
+#include "../log.hpp"
+#include "../utility/string.hpp"
 #ifdef _WIN32
-#include "../../include/vendor/utf8conv.h"
+#include "../vendor/utf8conv.h"
 #endif
 #include <stdexcept>
 #include <fstream>

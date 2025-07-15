@@ -1,6 +1,6 @@
-#include "../../include/commands/timed_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/math.hpp"
+#include "timed_command.hpp"
+#include "../game.hpp"
+#include "../utility/math.hpp"
 
 Timed_Command::Timed_Command(Game& game, int duration, int start_time) :
     game(game),

@@ -1,8 +1,8 @@
-#include "../../include/commands/move_object_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/map/map_object.hpp"
-#include "../../include/utility/direction.hpp"
+#include "move_object_command.hpp"
+#include "../game.hpp"
+#include "../map/map.hpp"
+#include "../map/map_object.hpp"
+#include "../utility/direction.hpp"
 
 Move_Object_Command::Move_Object_Command(Game& game, Move_Object_Command::Options options)
         : game(game)

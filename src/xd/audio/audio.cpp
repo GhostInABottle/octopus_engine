@@ -1,5 +1,5 @@
-#include "../../../include/xd/audio/audio.hpp"
-#include "../../../include/xd/audio/detail/fmod_audio_handle.hpp"
+#include "audio.hpp"
+#include "detail/fmod_audio_handle.hpp"
 
 xd::audio::audio() : m_audio_handle(std::make_unique<detail::fmod_audio_handle>()) {}
 

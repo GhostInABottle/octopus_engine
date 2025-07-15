@@ -1,12 +1,12 @@
-#include "../../../include/camera.hpp"
-#include "../../../include/configurations.hpp"
-#include "../../../include/game.hpp"
-#include "../../../include/map/layers/object_layer.hpp"
-#include "../../../include/map/layers/object_layer_renderer.hpp"
-#include "../../../include/map/map.hpp"
-#include "../../../include/map/map_object.hpp"
-#include "../../../include/utility/color.hpp"
-#include "../../../include/utility/math.hpp"
+#include "object_layer_renderer.hpp"
+#include "object_layer.hpp"
+#include "../map.hpp"
+#include "../map_object.hpp"
+#include "../../camera.hpp"
+#include "../../configurations.hpp"
+#include "../../game.hpp"
+#include "../../utility/color.hpp"
+#include "../../utility/math.hpp"
 #include <algorithm>
 #include <limits>
 

@@ -2,11 +2,11 @@
 #include "qtpropertybrowser/src/qttreepropertybrowser.h"
 #include "../qtpropertybrowser/src/qtpropertymanager.h"
 #include "../qtpropertybrowser/src/qtvariantproperty.h"
-#include "../../include/map_object.hpp"
-#include "../../include/sprite.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/direction.hpp"
-#include "../../include/utility/string.hpp"
+#include "../../src/map/map_object.hpp"
+#include "../../src/sprite.hpp"
+#include "../../src/game.hpp"
+#include "../../src/utility/direction.hpp"
+#include "../../src/utility/string.hpp"
 
 namespace detail {
     QStringList types;

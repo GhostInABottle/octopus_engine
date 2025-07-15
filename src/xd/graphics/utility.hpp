@@ -1,7 +1,7 @@
 #ifndef H_XD_GRAPHICS_UTILITY
 #define H_XD_GRAPHICS_UTILITY
 
-#include "../graphics/vertex_batch.hpp"
+#include "vertex_batch.hpp"
 #include <utility>
 
 namespace xd

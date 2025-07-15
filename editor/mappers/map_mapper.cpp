@@ -2,7 +2,7 @@
 #include "qtpropertybrowser/src/qttreepropertybrowser.h"
 #include "../qtpropertybrowser/src/qtpropertymanager.h"
 #include "../qtpropertybrowser/src/qtvariantproperty.h"
-#include "../../include/map.hpp"
+#include "../../src/map/map.hpp"
 
 Map_Mapper::Map_Mapper(Map* map) : map(map) {}
 

@@ -1,5 +1,5 @@
-#include "../../../include/xd/graphics/exceptions.hpp"
-#include "../../../include/xd/graphics/image.hpp"
+#include "exceptions.hpp"
+#include "image.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_STDIO
 #define STBI_NO_PSD
@@ -8,7 +8,7 @@
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 #define STBI_FAILURE_USERMSG // readable error messages
-#include "../../../include/xd/vendor/stb/stb_image.h"
+#include "../vendor/stb/stb_image.h"
 #include <fstream>
 
 namespace xd { namespace detail { namespace image {

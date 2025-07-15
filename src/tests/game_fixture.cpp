@@ -1,7 +1,7 @@
-#include "../../include/environments/default_environment.hpp"
-#include "../../include/filesystem/user_data_folder.hpp"
-#include "../../include/tests/game_fixture.hpp"
-#include "../../include/utility/file.hpp"
+#include "game_fixture.hpp"
+#include "../environments/default_environment.hpp"
+#include "../filesystem/user_data_folder.hpp"
+#include "../utility/file.hpp"
 #include <string>
 #include <vector>
 

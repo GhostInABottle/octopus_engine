@@ -1,8 +1,8 @@
-#include "../include/key_binder.hpp"
-#include "../include/game.hpp"
-#include "../include/utility/string.hpp"
-#include "../include/log.hpp"
-#include "../include/configurations.hpp"
+#include "key_binder.hpp"
+#include "game.hpp"
+#include "utility/string.hpp"
+#include "log.hpp"
+#include "configurations.hpp"
 #include <string>
 #include <fstream>
 #include <algorithm>

@@ -1,8 +1,8 @@
-#include "../../include/canvas/base_canvas.hpp"
-#include "../../include/configurations.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/color.hpp"
-#include "../../include/map/map.hpp"
+#include "base_canvas.hpp"
+#include "../configurations.hpp"
+#include "../game.hpp"
+#include "../utility/color.hpp"
+#include "../map/map.hpp"
 
 Base_Canvas::Base_Canvas(Game& game, Base_Canvas::Type type, xd::vec2 position) :
     root_parent(nullptr),

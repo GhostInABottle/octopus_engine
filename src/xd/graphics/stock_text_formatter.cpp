@@ -1,4 +1,4 @@
-#include "../../../include/xd/graphics/stock_text_formatter.hpp"
+#include "stock_text_formatter.hpp"
 #include <functional>
 
 xd::stock_text_formatter::stock_text_formatter(std::shared_ptr<xd::texture> icon_texture, vec2 icon_size, vec2 icon_offset)

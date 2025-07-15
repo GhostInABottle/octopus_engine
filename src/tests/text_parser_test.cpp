@@ -1,7 +1,7 @@
+#include "../text_parser.hpp"
+#include "../utility/string.hpp"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
-#include "../../include/text_parser.hpp"
-#include "../../include/utility/string.hpp"
 
 namespace detail {
     static std::string invalid_parsing_cases[] = {

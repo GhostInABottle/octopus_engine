@@ -1,11 +1,11 @@
-#include "../include/exceptions.hpp"
-#include "../include/sprite_data.hpp"
-#include "../include/utility/color.hpp"
-#include "../include/utility/direction.hpp"
-#include "../include/utility/file.hpp"
-#include "../include/utility/string.hpp"
-#include "../include/xd/asset_manager.hpp"
-#include "../include/xd/audio.hpp"
+#include "exceptions.hpp"
+#include "sprite_data.hpp"
+#include "utility/color.hpp"
+#include "utility/direction.hpp"
+#include "utility/file.hpp"
+#include "utility/string.hpp"
+#include "xd/asset_manager.hpp"
+#include "xd/audio.hpp"
 #include <iostream>
 #include <optional>
 

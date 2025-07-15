@@ -1,11 +1,11 @@
-#include "../../include/commands/show_pose_command.hpp"
-#include "../../include/interfaces/sprite_holder.hpp"
-#include "../../include/sprite.hpp"
-#include "../../include/sprite_data.hpp"
-#include "../../include/map/map.hpp"
-#include "../../include/map/map_object.hpp"
-#include "../../include/map/layers/image_layer.hpp"
-#include "../../include/canvas/sprite_canvas.hpp"
+#include "show_pose_command.hpp"
+#include "../interfaces/sprite_holder.hpp"
+#include "../sprite.hpp"
+#include "../sprite_data.hpp"
+#include "../map/map.hpp"
+#include "../map/map_object.hpp"
+#include "../map/layers/image_layer.hpp"
+#include "../canvas/sprite_canvas.hpp"
 #include <stdexcept>
 
 Sprite_Holder* Show_Pose_Command::get_holder() const {

@@ -1,7 +1,7 @@
+#include "../map/tileset.hpp"
+#include "../filesystem/user_data_folder.hpp"
+#include "../vendor/rapidxml.hpp"
 #include <boost/test/unit_test.hpp>
-#include "../../include/vendor/rapidxml.hpp"
-#include "../../include/map/tileset.hpp"
-#include "../../include/filesystem/user_data_folder.hpp"
 
 BOOST_AUTO_TEST_SUITE(tileset_tests)
 

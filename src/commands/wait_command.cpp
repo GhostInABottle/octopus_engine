@@ -1,5 +1,5 @@
-#include "../../include/commands/wait_command.hpp"
-#include "../../include/game.hpp"
+#include "wait_command.hpp"
+#include "../game.hpp"
 
 Wait_Command::Wait_Command(Game& game, int duration, int start)
     : Timed_Command(game, duration, start) {}

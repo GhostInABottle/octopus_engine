@@ -1,7 +1,7 @@
-#include "../../../../include/xd/audio/detail/fmod_sound_handle.hpp"
-#include "../../../../include/xd/audio/detail/fmod_audio_handle.hpp"
-#include "../../../../include/xd/audio/exceptions.hpp"
-#include "../../../../include/log.hpp"
+#include "fmod_sound_handle.hpp"
+#include "fmod_audio_handle.hpp"
+#include "../exceptions.hpp"
+#include "../../../log.hpp"
 #include <FMOD/fmod.hpp>
 #include <istream>
 

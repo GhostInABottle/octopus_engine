@@ -2,7 +2,7 @@
 #include "qtpropertybrowser/src/qttreepropertybrowser.h"
 #include "../qtpropertybrowser/src/qtpropertymanager.h"
 #include "../qtpropertybrowser/src/qtvariantproperty.h"
-#include "../../include/layer.hpp"
+#include "../../src/map/layers/layer.hpp"
 
 Layer_Mapper::Layer_Mapper(Layer* layer) : layer(layer) {}
 

@@ -1,5 +1,5 @@
-#include "../../../include/xd/lua/virtual_machine.hpp"
-#include "../../../include/vendor/lutf8lib.hpp"
+#include "virtual_machine.hpp"
+#include "../../vendor/lutf8lib.hpp"
 
 xd::lua::virtual_machine::virtual_machine()
 {

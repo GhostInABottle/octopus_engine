@@ -1,3 +1,3 @@
-#include "../../include/commands/command.hpp"
+#include "command.hpp"
 
 Command::~Command() {}

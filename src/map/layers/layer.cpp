@@ -1,10 +1,10 @@
-#include "../../../include/exceptions.hpp"
-#include "../../../include/map/layers/layer.hpp"
-#include "../../../include/map/layers/layer_renderer.hpp"
-#include "../../../include/map/layers/layer_updater.hpp"
-#include "../../../include/utility/math.hpp"
-#include "../../../include/utility/string.hpp"
-#include "../../../include/utility/xml.hpp"
+#include "layer.hpp"
+#include "layer_renderer.hpp"
+#include "layer_updater.hpp"
+#include "../../exceptions.hpp"
+#include "../../utility/math.hpp"
+#include "../../utility/string.hpp"
+#include "../../utility/xml.hpp"
 
 Layer::Layer() : width(0), height(0), id(-1), opacity(1.0f), visible(true) {}
 

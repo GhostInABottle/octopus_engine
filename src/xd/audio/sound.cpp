@@ -1,8 +1,8 @@
-#include "../../../include/log.hpp"
-#include "../../../include/xd/audio/audio.hpp"
-#include "../../../include/xd/audio/detail/audio_handle.hpp"
-#include "../../../include/xd/audio/detail/sound_handle.hpp"
-#include "../../../include/xd/audio/sound.hpp"
+#include "sound.hpp"
+#include "audio.hpp"
+#include "detail/audio_handle.hpp"
+#include "detail/sound_handle.hpp"
+#include "../../log.hpp"
 #include <memory>
 
 xd::sound::sound(audio& audio, const std::string& filename,

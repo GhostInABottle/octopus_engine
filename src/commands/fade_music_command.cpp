@@ -1,8 +1,8 @@
-#include "../../include/audio_player.hpp"
-#include "../../include/commands/fade_music_command.hpp"
-#include "../../include/game.hpp"
-#include "../../include/utility/math.hpp"
-#include "../../include/xd/audio.hpp"
+#include "fade_music_command.hpp"
+#include "../audio_player.hpp"
+#include "../game.hpp"
+#include "../utility/math.hpp"
+#include "../xd/audio.hpp"
 
 Fade_Music_Command::Fade_Music_Command(Game& game, std::shared_ptr<xd::music> playing_music, float volume, long duration) :
         Timed_Command(game, duration),

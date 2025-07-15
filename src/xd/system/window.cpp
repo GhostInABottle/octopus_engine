@@ -1,7 +1,7 @@
-#include "../../../include/xd/system/window.hpp"
-#include "../../../include/xd/system/exceptions.hpp"
-#include "../../../include/xd/vendor/glm/gtx/hash.hpp"
-#include "../../../include/xd/vendor/utf8.h"
+#include "window.hpp"
+#include "exceptions.hpp"
+#include "../vendor/glm/gtx/hash.hpp"
+#include "../vendor/utf8.h"
 #include <GL/glew.h>
 #ifdef _WIN32
     #include <GL/glfw3.h>

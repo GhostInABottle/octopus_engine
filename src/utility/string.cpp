@@ -1,5 +1,5 @@
-#include "../../include/log.hpp"
-#include "../../include/utility/string.hpp"
+#include "string.hpp"
+#include "../log.hpp"
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <cctype>

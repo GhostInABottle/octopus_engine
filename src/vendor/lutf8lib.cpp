@@ -29,7 +29,7 @@ SOFTWARE.
 #include <assert.h>
 #include <string.h>
 
-#include "../../include/vendor/lutf8lib.hpp"
+#include "lutf8lib.hpp"
 
 #ifdef OCB_USE_C_LUA
 extern "C"
@@ -143,7 +143,7 @@ static int utf8_range(const char *s, const char *e, lua_Integer *i, lua_Integer 
 
 /* Unicode character categories */
 
-#include "../../include/vendor/unidata.h"
+#include "unidata.h"
 
 #define table_size(t) (sizeof(t)/sizeof((t)[0]))
 

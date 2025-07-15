@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include "ui_main_window.h"
 #include "property_editor.hpp"
-#include "../include/exceptions.hpp"
+#include "../src/exceptions.hpp"
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QList>

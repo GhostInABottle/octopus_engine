@@ -1,8 +1,8 @@
-#include "../../include/utility/color.hpp"
-#include "../../include/utility/direction.hpp"
-#include "../../include/utility/math.hpp"
-#include "../../include/utility/string.hpp"
-#include "../../include/xd/graphics/types.hpp"
+#include "../utility/color.hpp"
+#include "../utility/direction.hpp"
+#include "../utility/math.hpp"
+#include "../utility/string.hpp"
+#include "../xd/graphics/types.hpp"
 #include <boost/test/unit_test.hpp>
 #include <unordered_map>
 

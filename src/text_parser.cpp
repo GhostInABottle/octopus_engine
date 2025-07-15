@@ -1,7 +1,7 @@
-#include "../include/text_parser.hpp"
+#include "text_parser.hpp"
 
-#include "../include/utility/string.hpp"
-#include "../include/xd/vendor/utf8.h"
+#include "utility/string.hpp"
+#include "xd/vendor/utf8.h"
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
