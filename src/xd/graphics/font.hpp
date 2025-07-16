@@ -3,7 +3,6 @@
 
 #include "../glm.hpp"
 #include "../vendor/utf8.h"
-#include "detail/font.hpp"
 #include "font_style.hpp"
 #include "shader_program.hpp"
 #include <iosfwd>
@@ -13,6 +12,11 @@
 
 namespace xd
 {
+    namespace detail::font {
+        struct glyph;
+        struct face;
+    }
+
     // font class
     class font
     {

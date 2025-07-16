@@ -233,6 +233,7 @@
     <ClCompile Include="..\src\xd\audio\detail\fmod_sound_handle.cpp" />
     <ClCompile Include="..\src\xd\audio\music.cpp" />
     <ClCompile Include="..\src\xd\audio\sound.cpp" />
+    <ClCompile Include="..\src\xd\graphics\detail\font_details.cpp" />
     <ClCompile Include="..\src\xd\graphics\font.cpp" />
     <ClCompile Include="..\src\xd\graphics\framebuffer.cpp" />
     <ClCompile Include="..\src\xd\graphics\image.cpp" />
@@ -360,7 +361,7 @@
     <ClInclude Include="..\src\xd\event_bus.hpp" />
     <ClInclude Include="..\src\xd\exception.hpp" />
     <ClInclude Include="..\src\xd\glm.hpp" />
-    <ClInclude Include="..\src\xd\graphics\detail\font.hpp" />
+    <ClInclude Include="..\src\xd\graphics\detail\font_details.hpp" />
     <ClInclude Include="..\src\xd\graphics\detail\image.hpp" />
     <ClInclude Include="..\src\xd\graphics\detail\sprite_batch.hpp" />
     <ClInclude Include="..\src\xd\graphics\detail\text_formatter.hpp" />

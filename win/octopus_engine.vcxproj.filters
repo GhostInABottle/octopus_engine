@@ -124,6 +124,9 @@
     <Filter Include="Source Files\map\layers">
       <UniqueIdentifier>{89d1175c-c889-40bb-92ee-3fe6aad2d8e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\xd\graphics\detail">
+      <UniqueIdentifier>{c43b7512-9523-4a83-8b1d-3efe8be6d254}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\xd\audio\music.cpp">
@@ -453,6 +456,9 @@
     <ClCompile Include="..\src\map\collision_check_options.cpp">
       <Filter>Source Files\map</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\xd\graphics\detail\font_details.cpp">
+      <Filter>Source Files\xd\graphics\detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\xd\detail\entity.hpp">
@@ -524,7 +530,7 @@
     <ClInclude Include="..\src\xd\graphics\vertex_traits.hpp">
       <Filter>Header Files\xd\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\xd\graphics\detail\font.hpp">
+    <ClInclude Include="..\src\xd\graphics\detail\font_details.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\src\xd\graphics\detail\image.hpp">

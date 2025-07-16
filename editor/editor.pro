@@ -112,6 +112,7 @@ SOURCES += main.cpp\
     ../src/xd/audio/audio.cpp \
     ../src/xd/audio/music.cpp \
     ../src/xd/audio/sound.cpp \
+    ../src/xd/graphics/detail/font_details.cpp \
     ../src/xd/graphics/font.cpp \
     ../src/xd/graphics/framebuffer.cpp \
     ../src/xd/graphics/image.cpp \
@@ -258,7 +259,7 @@ HEADERS  += main_window.hpp \
     ../src/xd/event_bus.hpp \
     ../src/xd/exception.hpp \
     ../src/xd/glm.hpp \
-    ../src/xd/graphics/detail/font.hpp \
+    ../src/xd/graphics/detail/font_details.hpp \
     ../src/xd/graphics/detail/image.hpp \
     ../src/xd/graphics/detail/sprite_batch.hpp \
     ../src/xd/graphics/detail/text_formatter.hpp \

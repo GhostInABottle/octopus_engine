@@ -24,6 +24,7 @@ file(GLOB XD_SOURCES LIST_DIRECTORIES false
     src/xd/audio/*.cpp
     src/xd/audio/detail/*.cpp
     src/xd/graphics/*.cpp
+    src/xd/graphics/detail/*.cpp
     src/xd/lua/*.cpp
     src/xd/system/*.cpp)
 

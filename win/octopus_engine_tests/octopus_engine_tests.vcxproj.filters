@@ -127,6 +127,9 @@
     <Filter Include="Source Files\map\layers">
       <UniqueIdentifier>{19b71310-b315-4309-999b-242d3c9fda77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\xd\graphics\detail">
+      <UniqueIdentifier>{9d85b567-aeb1-4a08-bd7d-86bbfe963450}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\game.cpp">
@@ -477,6 +480,9 @@
     <ClCompile Include="..\..\src\map\collision_check_options.cpp">
       <Filter>Source Files\map</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\xd\graphics\detail\font_details.cpp">
+      <Filter>Source Files\xd\graphics\detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\game.hpp">
@@ -643,9 +649,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\xd\graphics\vertex_traits.hpp">
       <Filter>Header Files\xd\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\xd\graphics\detail\font.hpp">
-      <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\xd\graphics\detail\image.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
@@ -913,6 +916,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\map\collision_check_options.hpp">
       <Filter>Header Files\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\xd\graphics\detail\font_details.hpp">
+      <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
