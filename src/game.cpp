@@ -905,7 +905,9 @@ void Game::add_canvas(std::shared_ptr<Base_Canvas> canvas) {
 }
 
 bool Game::gamepad_enabled() const {
-    return Configurations::get<bool>("controls.gamepad-enabled");
+    // Using static to avoid creating a new string every frame
+    const static std::string config_name = "controls.gamepad-enabled";
+    return Configurations::get<bool>(config_name);
 }
 
 std::string Game::get_gamepad_name(int id) const {

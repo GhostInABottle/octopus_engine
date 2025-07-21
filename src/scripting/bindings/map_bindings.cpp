@@ -22,10 +22,7 @@ void bind_map_types(sol::state& lua) {
     map_type["tile_width"] = sol::property(&Map::get_tile_width);
     map_type["tile_height"] = sol::property(&Map::get_tile_height);
     map_type["filename"] = sol::property(&Map::get_filename);
-    map_type["filename_stem"] = sol::property([](const Map& map) {
-        auto fs = file_utilities::game_data_filesystem();
-        return fs->stem_component(map.get_filename());
-    });
+    map_type["filename_stem"] = sol::property(&Map::get_filename_stem);
     map_type["name"] = sol::property(&Map::get_name);
     map_type["objects"] = sol::property([&](Map* map) {
         return sol::as_table(map->get_objects());

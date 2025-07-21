@@ -173,6 +173,9 @@ public:
     std::string get_filename() const {
         return filename;
     }
+    std::string get_filename_stem() const {
+        return filename_stem;
+    }
     xd::vec2 get_starting_position() const {
         return starting_position;
     }
@@ -256,6 +259,8 @@ private:
     int tile_height;
     // Map file name
     std::string filename;
+    // Map file name, without the extension
+    std::string filename_stem;
     // Counter to set IDs of new objects
     int next_object_id;
     // Starting position for player

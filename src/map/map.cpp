@@ -698,6 +698,7 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
 
     map->filename = filename;
     string_utilities::normalize_slashes(map->filename);
+    map->filename_stem = fs->stem_component(map->filename);
 
     return map;
 }
