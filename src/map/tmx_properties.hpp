@@ -26,6 +26,12 @@ public:
             ordered_keys.end(), key), ordered_keys.end());
         properties.erase(key);
     }
+    std::unordered_map<std::string, std::string>::iterator begin() { return properties.begin(); }
+    std::unordered_map<std::string, std::string>::iterator end() { return properties.end(); }
+    std::unordered_map<std::string, std::string>::const_iterator begin() const { return cbegin(); }
+    std::unordered_map<std::string, std::string>::const_iterator end() const { return cend(); }
+    std::unordered_map<std::string, std::string>::const_iterator cbegin() const { return properties.cbegin(); }
+    std::unordered_map<std::string, std::string>::const_iterator cend() const { return properties.cend(); }
     void read(rapidxml::xml_node<>& parent_node);
     void save(rapidxml::xml_document<>& doc, rapidxml::xml_node<>& node);
 private:

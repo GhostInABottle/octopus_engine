@@ -3,7 +3,6 @@
 #include "../map.hpp"
 #include "../../camera.hpp"
 #include "../../game.hpp"
-#include "../../xd/graphics/shader_uniforms.hpp"
 
 void Tile_Layer_Renderer::render(Map& map) {
     if (!layer.is_visible()) return;
@@ -32,5 +31,6 @@ void Tile_Layer_Renderer::render(Map& map) {
         needs_redraw = false;
     }
 
-    batch.draw(xd::shader_uniforms{camera.get_mvp(), map.get_game().ticks()}, cache);
+    batch.set_uniform("ticks", map.get_game().ticks());
+    batch.draw(camera.get_mvp(), cache);
 }

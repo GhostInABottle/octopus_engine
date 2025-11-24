@@ -208,15 +208,13 @@ bool Canvas_Renderer::should_redraw(const Base_Canvas& canvas) {
 }
 
 void Canvas_Renderer::draw(const xd::mat4 mvp, const Base_Canvas& root) {
-    xd::shader_uniforms uniforms{mvp};
-
     auto root_image = dynamic_cast<const Base_Image_Canvas*>(&root);
     auto outline_color = root_image ? root_image->get_outline_color() : std::nullopt;
     if (outline_color.has_value()) {
         batch.set_outline_color(outline_color.value());
-        batch.draw_outlined(uniforms);
+        batch.draw_outlined(mvp);
     } else {
-        batch.draw(uniforms);
+        batch.draw(mvp);
     }
 
     batch.clear();

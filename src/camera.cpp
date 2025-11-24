@@ -127,8 +127,12 @@ void Camera::Impl::render_shader(Game& game, const xd::rect& viewport, xd::trans
         update_viewport(full_screen_viewport);
     }
 
-    full_screen_batch.draw(xd::shader_uniforms{geometry.mvp(), game.ticks(),
-        brightness, contrast, saturation});
+    full_screen_batch.set_uniform("ticks", game.ticks());
+    full_screen_batch.set_uniform("brightness", brightness);
+    full_screen_batch.set_uniform("contrast", contrast);
+    full_screen_batch.set_uniform("saturation", saturation);
+
+    full_screen_batch.draw(geometry.mvp());
 
     if (!same_viewport) {
         update_viewport(viewport);

@@ -961,7 +961,7 @@ glm::vec2 xd::text_formatter::render(const std::string& text, xd::font& font, co
     if (!m_icon_batch.empty()) {
         xd::vec3 icon_offset{ m_icon_offset.x, m_icon_offset.y - m_icon_size.y, 0 };
         auto icon_mvp = xd::translate(mvp, icon_offset);
-        m_icon_batch.draw(xd::shader_uniforms{icon_mvp});
+        m_icon_batch.draw(icon_mvp);
         m_icon_batch.clear();
     }
 

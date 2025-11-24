@@ -5,9 +5,10 @@
 #include "vertex_batch.hpp"
 #include "types.hpp"
 #include "../glm.hpp"
-#include "shader_uniforms.hpp"
 #include <vector>
 #include <memory>
+#include <string>
+#include <variant>
 
 namespace xd
 {
@@ -25,15 +26,15 @@ namespace xd
         void clear();
         bool empty() const;
 
-        typedef std::vector<std::shared_ptr<xd::vertex_batch<detail::sprite_vertex_traits>>> batch_list;
+        typedef std::vector<std::shared_ptr<vertex_batch<detail::sprite_vertex_traits>>> batch_list;
         batch_list create_batches();
 
-        void draw(const shader_uniforms& uniforms, const batch_list& batches);
-        void draw(const shader_uniforms& uniforms);
-        void draw(xd::shader_program& shader, const shader_uniforms& uniforms, const batch_list& batches);
-        void draw(xd::shader_program& shader, const shader_uniforms& uniforms);
-        void draw_outlined(const shader_uniforms& uniforms, const batch_list& batches);
-        void draw_outlined(const shader_uniforms& uniforms);
+        void draw(mat4 mvp_matrix, const batch_list& batches);
+        void draw(mat4 mvp_matrix);
+        void draw(xd::shader_program& shader, mat4 mvp_matrix, const batch_list& batches);
+        void draw(xd::shader_program& shader, mat4 mvp_matrix);
+        void draw_outlined(mat4 mvp_matrix, const batch_list& batches);
+        void draw_outlined(mat4 mvp_matrix);
 
         void set_scale(float scale) noexcept { m_scale = scale; }
         float get_scale() const noexcept { return m_scale; }
@@ -42,6 +43,10 @@ namespace xd
 
         void set_shader(std::unique_ptr<shader_program> shader);
         void reset_shader();
+
+        typedef std::variant<int, float, xd::vec2, xd::vec3, xd::vec4,
+            xd::mat2, xd::mat3, xd::mat4> uniform_types;
+        void set_uniform(const std::string& name, uniform_types val);
 
         void add(const std::shared_ptr<texture>& texture, float x, float y,
             const vec4& color = vec4(1), const vec2& origin = vec2(0, 0));
@@ -61,8 +66,10 @@ namespace xd
     private:
         std::unique_ptr<detail::sprite_batch_data> m_data;
         std::unique_ptr<xd::vertex_batch<detail::sprite_vertex_traits>> m_batch;
+        std::unordered_map<std::string, uniform_types> m_uniforms;
         float m_scale;
         vec4 m_outline_color;
+        void bind_uniform(const std::string& name, const uniform_types& variant);
     };
 }
 

@@ -410,7 +410,6 @@
     <ClInclude Include="..\..\src\xd\graphics\matrix_stack.hpp" />
     <ClInclude Include="..\..\src\xd\graphics\shaders.hpp" />
     <ClInclude Include="..\..\src\xd\graphics\shader_program.hpp" />
-    <ClInclude Include="..\..\src\xd\graphics\shader_uniforms.hpp" />
     <ClInclude Include="..\..\src\xd\graphics\sprite_batch.hpp" />
     <ClInclude Include="..\..\src\xd\graphics\stock_text_formatter.hpp" />
     <ClInclude Include="..\..\src\xd\graphics\texture.hpp" />

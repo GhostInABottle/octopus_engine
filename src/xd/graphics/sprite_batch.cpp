@@ -121,41 +121,40 @@ xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 
     return batches;
 }
-void xd::sprite_batch::draw(const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw(mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
-    draw(*m_data->shader, uniforms, batches);
+    draw(*m_data->shader, mvp_matrix, batches);
 }
 
-void xd::sprite_batch::draw(const shader_uniforms& uniforms)
+void xd::sprite_batch::draw(mat4 mvp_matrix)
 {
-    draw(*m_data->shader, uniforms);
+    draw(*m_data->shader, mvp_matrix);
 }
 
-void xd::sprite_batch::draw_outlined(const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw_outlined(mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
-    draw(*m_data->shader, uniforms, batches);
-    draw(*m_data->outline_shader, uniforms, batches);
+    draw(*m_data->shader, mvp_matrix, batches);
+    draw(*m_data->outline_shader, mvp_matrix, batches);
 }
 
-void xd::sprite_batch::draw_outlined(const shader_uniforms& uniforms)
+void xd::sprite_batch::draw_outlined(mat4 mvp_matrix)
 {
-    draw(*m_data->shader, uniforms);
-    draw(*m_data->outline_shader, uniforms);
+    draw(*m_data->shader, mvp_matrix);
+    draw(*m_data->outline_shader, mvp_matrix);
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& uniforms, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
     assert(m_data->sprites.size() == batches.size());
     if (empty())
         return;
     // setup the shader
     shader.use();
-    shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    shader.bind_uniform("mvpMatrix", mvp_matrix);
     shader.bind_uniform("vOutlineColor", m_outline_color);
-    if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
-    if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
-    if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
-    if (uniforms.saturation) shader.bind_uniform("saturation", *uniforms.saturation);
+    for (const auto& [name, value] : m_uniforms) {
+        bind_uniform(name, value);
+    }
 
     // iterate through all sprites
     for (unsigned int i = 0; i < m_data->sprites.size(); ++i) {
@@ -175,7 +174,7 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& u
     }
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& uniforms)
+void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix)
 {
     if (empty())
         return;
@@ -186,12 +185,11 @@ void xd::sprite_batch::draw(xd::shader_program& shader, const shader_uniforms& u
 
     // setup the shader
     shader.use();
-    shader.bind_uniform("mvpMatrix", uniforms.mvp_matrix);
+    shader.bind_uniform("mvpMatrix", mvp_matrix);
     shader.bind_uniform("vOutlineColor", m_outline_color);
-    if (uniforms.ticks) shader.bind_uniform("ticks", *uniforms.ticks);
-    if (uniforms.brightness) shader.bind_uniform("brightness", *uniforms.brightness);
-    if (uniforms.contrast) shader.bind_uniform("contrast", *uniforms.contrast);
-    if (uniforms.saturation) shader.bind_uniform("saturation", *uniforms.saturation);
+    for (const auto& [name, value] : m_uniforms) {
+        bind_uniform(name, value);
+    }
 
     // create a quad for rendering sprites
     detail::sprite_vertex quad[4];
@@ -229,6 +227,17 @@ void xd::sprite_batch::set_shader(std::unique_ptr<shader_program> shader) {
 
 void xd::sprite_batch::reset_shader() {
     m_data->shader = std::make_unique<xd::sprite_shader>();
+}
+
+void xd::sprite_batch::set_uniform(const std::string& name, uniform_types val) {
+    m_uniforms[name] = val;
+}
+
+void xd::sprite_batch::bind_uniform(const std::string& name, const uniform_types& variant) {
+    auto visitor = [&](auto&& typed_value) {
+        m_data->shader->bind_uniform(name, typed_value);
+    };
+    std::visit(visitor, variant);
 }
 
 void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, float x, float y,

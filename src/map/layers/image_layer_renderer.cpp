@@ -31,5 +31,6 @@ void Image_Layer_Renderer::render(Map& map) {
         }
     }
 
-    batch.draw(xd::shader_uniforms{camera.get_mvp(), map.get_game().ticks()});
+    batch.set_uniform("ticks", map.get_game().ticks());
+    batch.draw(camera.get_mvp());
 }

@@ -51,21 +51,22 @@ void Object_Layer_Renderer::render(Map& map) {
     });
 
     bool draw_outlines = map.get_draw_outlines();
-    xd::shader_uniforms uniforms{camera.get_mvp(), map.get_game().ticks()};
+    const auto& mvp = camera.get_mvp();
+    batch.set_uniform("ticks", map.get_game().ticks());
 
     for (auto& object : objects) {
         if (draw_outlines && object->is_outlined()) {
             auto color = object->get_outline_color();
             batch.set_outline_color(color.value_or(default_outline_color));
-            batch.draw(uniforms);
+            batch.draw(mvp);
             batch.clear();
             object->render();
-            batch.draw_outlined(uniforms);
+            batch.draw_outlined(mvp);
             batch.clear();
         } else {
             object->render();
         }
     }
 
-    batch.draw(uniforms);
+    batch.draw(mvp);
 }

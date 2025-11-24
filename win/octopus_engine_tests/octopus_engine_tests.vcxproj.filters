@@ -719,9 +719,6 @@
     <ClInclude Include="..\..\src\utility\xml.hpp">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\xd\graphics\shader_uniforms.hpp">
-      <Filter>Header Files\xd\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\utility\direction.hpp">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
