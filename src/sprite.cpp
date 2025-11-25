@@ -98,17 +98,17 @@ struct Sprite::Impl {
     void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
             xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
             std::optional<float> angle = std::nullopt, std::optional<xd::vec2> origin = std::nullopt,
-        bool repeat = false, xd::vec2 repeat_pos = xd::vec2()) const {
+            std::optional<xd::vec2> repeat_pos = std::nullopt) const {
         auto& frame = pose->frames[frame_index];
         auto& image = frame.image ? frame.image :
             (pose->image ? pose->image : data->image);
         if (!image) return;
 
         xd::rect src = frame.rectangle;
-        if (repeat) {
+        if (repeat_pos) {
             // Sprite's src rectangle position is ignored
-            src.x = -repeat_pos.x;
-            src.y = -repeat_pos.y;
+            src.x = -repeat_pos->x;
+            src.y = -repeat_pos->y;
         }
 
         color.a *= opacity * frame.opacity;
@@ -435,6 +435,10 @@ void Sprite::render(xd::sprite_batch& batch, const Sprite_Canvas& canvas, const 
 void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, const xd::vec2 pos) const {
     if (!image_layer.is_visible()) return;
 
+    auto repeat_pos = image_layer.is_repeating()
+        ? std::optional<xd::vec2>{image_layer.get_position()}
+        : std::nullopt;
+
     pimpl->render(batch,
         pos,
         image_layer.get_opacity(),
@@ -442,8 +446,7 @@ void Sprite::render(xd::sprite_batch& batch, const Image_Layer& image_layer, con
         image_layer.get_color(),    // color
         std::nullopt,               // angle
         std::nullopt,               // origin
-        image_layer.is_repeating(),
-        image_layer.get_position());
+        repeat_pos);
 }
 
 void Sprite::update(Map_Object& object) {

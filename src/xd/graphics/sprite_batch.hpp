@@ -29,12 +29,12 @@ namespace xd
         typedef std::vector<std::shared_ptr<vertex_batch<detail::sprite_vertex_traits>>> batch_list;
         batch_list create_batches();
 
-        void draw(mat4 mvp_matrix, const batch_list& batches);
-        void draw(mat4 mvp_matrix);
-        void draw(xd::shader_program& shader, mat4 mvp_matrix, const batch_list& batches);
-        void draw(xd::shader_program& shader, mat4 mvp_matrix);
-        void draw_outlined(mat4 mvp_matrix, const batch_list& batches);
-        void draw_outlined(mat4 mvp_matrix);
+        void draw(const mat4& mvp_matrix, const batch_list& batches);
+        void draw(const mat4& mvp_matrix);
+        void draw(xd::shader_program& shader, const mat4& mvp_matrix, const batch_list& batches);
+        void draw(xd::shader_program& shader, const mat4& mvp_matrix);
+        void draw_outlined(const mat4& mvp_matrix, const batch_list& batches);
+        void draw_outlined(const mat4& mvp_matrix);
 
         void set_scale(float scale) noexcept { m_scale = scale; }
         float get_scale() const noexcept { return m_scale; }

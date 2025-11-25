@@ -13,21 +13,20 @@ namespace xd { namespace detail {
         rect src;
         float x, y;
         float rotation;
-        xd::vec2 scale;
-        xd::vec2 origin;
-        xd::vec4 color;
-        float depth;
+        vec2 scale;
+        vec2 origin;
+        vec4 color;
     };
 
     struct sprite_batch_data
     {
         std::deque<sprite> sprites;
-        std::unique_ptr<xd::shader_program> shader;
-        std::unique_ptr<xd::shader_program> outline_shader;
+        std::unique_ptr<shader_program> shader;
+        std::unique_ptr<shader_program> outline_shader;
 
         sprite_batch_data() :
-            shader(std::make_unique<xd::sprite_shader>()),
-            outline_shader(std::make_unique<xd::sprite_outline_shader>()) {}
+            shader(std::make_unique<sprite_shader>()),
+            outline_shader(std::make_unique<sprite_outline_shader>()) {}
     };
 
     static void set_tex_positions(sprite_vertex quad[4], rect src, int tw, int th) {
@@ -100,10 +99,10 @@ bool xd::sprite_batch::empty() const {
 
 xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
 {
-    xd::sprite_batch::batch_list batches;
+    sprite_batch::batch_list batches;
 
     // create a quad for rendering sprites
-    xd::detail::sprite_vertex quad[4];
+    detail::sprite_vertex quad[4];
 
     // iterate through all sprites
     for (auto i = m_data->sprites.begin(); i != m_data->sprites.end(); ++i) {
@@ -114,40 +113,40 @@ xd::sprite_batch::batch_list xd::sprite_batch::create_batches()
         detail::setup_quad(quad, *i, m_scale, tw, th);
 
         // create a vertex batch for sending vertex data
-        auto batch = std::make_shared<xd::vertex_batch<detail::sprite_vertex_traits>>(&quad[0], 4, GL_QUADS);
+        auto batch = std::make_shared<vertex_batch<detail::sprite_vertex_traits>>(&quad[0], 4, GL_QUADS);
         batches.push_back(batch);
 
     }
 
     return batches;
 }
-void xd::sprite_batch::draw(mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw(const mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
     draw(*m_data->shader, mvp_matrix, batches);
 }
 
-void xd::sprite_batch::draw(mat4 mvp_matrix)
+void xd::sprite_batch::draw(const mat4& mvp_matrix)
 {
     draw(*m_data->shader, mvp_matrix);
 }
 
-void xd::sprite_batch::draw_outlined(mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw_outlined(const mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
     draw(*m_data->shader, mvp_matrix, batches);
     draw(*m_data->outline_shader, mvp_matrix, batches);
 }
 
-void xd::sprite_batch::draw_outlined(mat4 mvp_matrix)
+void xd::sprite_batch::draw_outlined(const mat4& mvp_matrix)
 {
     draw(*m_data->shader, mvp_matrix);
     draw(*m_data->outline_shader, mvp_matrix);
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix, const xd::sprite_batch::batch_list& batches)
+void xd::sprite_batch::draw(xd::shader_program& shader, const mat4& mvp_matrix, const xd::sprite_batch::batch_list& batches)
 {
+    if (empty()) return;
+
     assert(m_data->sprites.size() == batches.size());
-    if (empty())
-        return;
     // setup the shader
     shader.use();
     shader.bind_uniform("mvpMatrix", mvp_matrix);
@@ -161,7 +160,7 @@ void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix, const x
         auto& sprite = m_data->sprites[i];
         auto& batch = batches[i];
         // give required params to shader
-        shader.bind_uniform("vPosition", vec4(sprite.x, sprite.y, sprite.depth, 0));
+        shader.bind_uniform("vPosition", vec4(sprite.x, sprite.y, 0, 0));
         shader.bind_uniform("vColor", sprite.color);
         shader.bind_uniform("vColorKey", sprite.tex->color_key());
 
@@ -174,13 +173,13 @@ void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix, const x
     }
 }
 
-void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix)
+void xd::sprite_batch::draw(xd::shader_program& shader, const mat4& mvp_matrix)
 {
-    if (empty())
-        return;
+    if (empty()) return;
+
     // create a vertex batch for sending vertex data
     if (!m_batch) {
-        m_batch = std::make_unique<xd::vertex_batch<detail::sprite_vertex_traits>>(GL_QUADS);
+        m_batch = std::make_unique<vertex_batch<detail::sprite_vertex_traits>>(GL_QUADS);
     }
 
     // setup the shader
@@ -195,7 +194,8 @@ void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix)
     detail::sprite_vertex quad[4];
 
     // iterate through all sprites
-    for (auto i = m_data->sprites.begin(); i != m_data->sprites.end(); ++i) {
+    const auto& sprites = m_data->sprites;
+    for (auto i = sprites.begin(); i != sprites.end(); ++i) {
         // so we need to type less ;)
         auto& tex = *i->tex;
         auto tw = tex.width();
@@ -208,7 +208,7 @@ void xd::sprite_batch::draw(xd::shader_program& shader, mat4 mvp_matrix)
         m_batch->load(&quad[0], 4);
 
         // give required params to shader
-        shader.bind_uniform("vPosition", vec4(i->x, i->y, i->depth, 0));
+        shader.bind_uniform("vPosition", vec4(i->x, i->y, 0, 0));
         shader.bind_uniform("vColor", i->color);
         shader.bind_uniform("vColorKey", tex.color_key());
 
@@ -226,7 +226,7 @@ void xd::sprite_batch::set_shader(std::unique_ptr<shader_program> shader) {
 }
 
 void xd::sprite_batch::reset_shader() {
-    m_data->shader = std::make_unique<xd::sprite_shader>();
+    m_data->shader = std::make_unique<sprite_shader>();
 }
 
 void xd::sprite_batch::set_uniform(const std::string& name, uniform_types val) {
@@ -279,15 +279,5 @@ void xd::sprite_batch::add(const std::shared_ptr<xd::texture>& texture, const xd
         float x, float y, float rotation, const xd::vec2& scale,
         const xd::vec4& color, const xd::vec2& origin)
 {
-    detail::sprite sprite;
-    sprite.tex = texture;
-    sprite.src = src;
-    sprite.x = x;
-    sprite.y = y;
-    sprite.rotation = rotation;
-    sprite.scale = scale;
-    sprite.origin = origin;
-    sprite.color = color;
-    sprite.depth = 0.0f;
-    m_data->sprites.push_back(sprite);
+    m_data->sprites.push_back(detail::sprite{texture, src, x, y, rotation, scale, origin, color});
 }

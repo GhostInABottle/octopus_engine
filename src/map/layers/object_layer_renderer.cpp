@@ -52,7 +52,6 @@ void Object_Layer_Renderer::render(Map& map) {
 
     bool draw_outlines = map.get_draw_outlines();
     const auto& mvp = camera.get_mvp();
-    batch.set_uniform("ticks", map.get_game().ticks());
 
     for (auto& object : objects) {
         if (draw_outlines && object->is_outlined()) {

@@ -31,6 +31,5 @@ void Tile_Layer_Renderer::render(Map& map) {
         needs_redraw = false;
     }
 
-    batch.set_uniform("ticks", map.get_game().ticks());
     batch.draw(camera.get_mvp(), cache);
 }
