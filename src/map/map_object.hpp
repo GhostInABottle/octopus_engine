@@ -114,9 +114,7 @@ public:
     void set_opacity(float new_opacity) override {
         opacity = new_opacity;
     }
-    bool is_visible() const {
-        return visible;
-    }
+    bool is_visible() const;
     void set_visible(bool new_visible);
     bool is_disabled() const {
         return disabled;

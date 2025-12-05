@@ -1,6 +1,6 @@
 #include "map_object.hpp"
 #include "map.hpp"
-#include "collision_check_options.hpp"
+#include "layers/object_layer.hpp"
 #include "../audio_player.hpp"
 #include "../configurations.hpp"
 #include "../exceptions.hpp"
@@ -241,6 +241,10 @@ void Map_Object::set_outlined(std::optional<bool> new_outlined) {
     } else {
         outline_conditions = Outline_Condition::NEVER;
     }
+}
+
+bool Map_Object::is_visible() const {
+    return visible && (!layer || layer->is_visible());
 }
 
 void Map_Object::set_visible(bool new_visible) {
