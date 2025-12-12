@@ -2,11 +2,8 @@
 #include "tile_layer.hpp"
 #include "../map.hpp"
 #include "../../camera.hpp"
-#include "../../game.hpp"
 
 void Tile_Layer_Renderer::render(Map& map) {
-    if (!layer.is_visible()) return;
-
     if (needs_redraw) {
         batch.clear();
         auto& tiles = static_cast<const Tile_Layer&>(layer).get_tiles();

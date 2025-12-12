@@ -6,8 +6,6 @@ class Game;
 class Clock {
 public:
     explicit Clock(Game& game);
-    // Get game ticks
-    int ticks() const;
     // Check if game time is stopped
     bool stopped() const noexcept { return time_stop; }
     // Stop game time

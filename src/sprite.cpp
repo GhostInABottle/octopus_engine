@@ -25,6 +25,8 @@ namespace detail {
 struct Sprite::Impl {
     // Game instance
     Game& game;
+    // Game audio
+    xd::audio* audio;
     // Sprite data (poses, frames, etc.)
     std::shared_ptr<Sprite_Data> data;
     // Current pose name
@@ -76,6 +78,7 @@ struct Sprite::Impl {
 
     Impl(Game& game, std::shared_ptr<Sprite_Data> data) :
         game(game),
+        audio(game.get_audio_player().get_audio()),
         data(data),
         current_pose_direction(Direction::NONE),
         frame_index(0),
@@ -129,7 +132,6 @@ struct Sprite::Impl {
             frame_duration = get_frame_time(*current_frame);
         }
 
-        auto audio = game.get_audio_player().get_audio();
         auto& sound_file = current_frame->sound_file;
         auto play_sfx = audio && sound_file
             && (last_sound_frame != frame_index || sound_file->stopped());
@@ -143,7 +145,8 @@ struct Sprite::Impl {
             last_sound_frame = frame_index;
         }
 
-        if (get_passed_time() > frame_duration) {
+        auto ticks = game.ticks();
+        if (get_passed_time(ticks) > frame_duration) {
             auto complete_infinite = !completed
                 && pose->require_completion
                 && std::find(completion_indexes.begin(), completion_indexes.end(),
@@ -154,7 +157,7 @@ struct Sprite::Impl {
                 return;
             }
 
-            old_time = game.ticks();
+            old_time = ticks;
             tweening = false;
 
             if (frame_index + 1 >= frame_count) {
@@ -187,7 +190,7 @@ struct Sprite::Impl {
             current_frame->rectangle.y = prev_frame.rectangle.y;
             current_frame->rectangle.w = prev_frame.rectangle.w;
             current_frame->rectangle.h = prev_frame.rectangle.h;
-            old_time = game.ticks();
+            old_time = ticks;
             frame_duration = get_frame_time(*current_frame);
             tweening = true;
         }
@@ -195,7 +198,7 @@ struct Sprite::Impl {
         if (tweening) {
             Frame& prev_frame = pose->frames[frame_index - 1];
             Frame& next_frame = pose->frames[frame_index + 1];
-            const float time_diff = static_cast<float>(get_passed_time());
+            const float time_diff = static_cast<float>(get_passed_time(ticks));
             float alpha = time_diff / frame_duration;
             alpha = std::min(std::max(alpha, 0.0f), 1.0f);
             current_frame->magnification = lerp(prev_frame.magnification,
@@ -268,13 +271,13 @@ struct Sprite::Impl {
         pause_start = -1;
     }
 
-    long get_paused_time() const {
+    long get_paused_time(long ticks) const {
         if (pause_start == -1) return 0;
-        return game.ticks() - pause_start;
+        return ticks - pause_start;
     }
 
-    long get_passed_time() const {
-        return game.ticks() - old_time - get_paused_time();
+    long get_passed_time(long ticks) const {
+        return ticks - old_time - get_paused_time(ticks);
     }
 
     std::optional<std::string> get_last_marker() const {

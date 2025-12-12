@@ -5,8 +5,6 @@
 #include "../../game.hpp"
 
 void Image_Layer_Updater::update(Map& map) {
-    if (!layer.is_visible()) return;
-
     auto& image_layer = static_cast<Image_Layer&>(layer);
     auto sprite = image_layer.get_sprite();
     if (sprite) {

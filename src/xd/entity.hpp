@@ -209,7 +209,8 @@ namespace xd
         void update()
         {
             for (auto i = m_components.begin(); i != m_components.end(); ++i) {
-                for (auto j = i->second.logic_components.begin(); j != i->second.logic_components.end(); ++j) {
+                auto& logic_components = i->second.logic_components;
+                for (auto j = logic_components.begin(); j != logic_components.end(); ++j) {
                     (*j)->update(*static_cast<Class*>(this));
                 }
             }
@@ -218,7 +219,8 @@ namespace xd
         void render()
         {
             for (auto i = m_components.begin(); i != m_components.end(); ++i) {
-                for (auto j = i->second.render_components.begin(); j != i->second.render_components.end(); ++j) {
+                auto& render_components = i->second.render_components;
+                for (auto j = render_components.begin(); j != render_components.end(); ++j) {
                     (*j)->render(*static_cast<Class*>(this));
                 }
             }

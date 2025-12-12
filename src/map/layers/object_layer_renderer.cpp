@@ -18,14 +18,10 @@ Object_Layer_Renderer::Object_Layer_Renderer(const Layer& layer, const Camera& c
 }
 
 void Object_Layer_Renderer::render(Map& map) {
-    if (!layer.is_visible())
-        return;
-
     batch.clear();
 
     // Casting the const away is fine since we're only sorting
-    auto& object_layer =
-        const_cast<Object_Layer&>(static_cast<const Object_Layer&>(layer));
+    auto& object_layer = const_cast<Object_Layer&>(static_cast<const Object_Layer&>(layer));
 
     auto& objects = object_layer.get_objects();
     std::sort(objects.begin(), objects.end(),

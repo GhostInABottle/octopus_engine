@@ -845,11 +845,13 @@ float Game::seconds() const {
 }
 
 int Game::ticks() const {
-    if (!window)
-        return editor_ticks;
+    if (!window) return editor_ticks;
+
+    auto ticks = window->ticks();
     int stopped_time = pimpl->total_paused_time + (paused ?
-        window->ticks() - pimpl->pause_start_time : 0);
-    return window->ticks() - stopped_time;
+        ticks - pimpl->pause_start_time : 0);
+
+    return ticks - stopped_time;
 }
 
 std::string Game::get_scripts_directory() const {

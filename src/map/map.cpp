@@ -837,14 +837,18 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
 
 void Map_Renderer::render(Map& map) {
     for (auto& layer : map.layers) {
-        if (auto renderer = layer->get_renderer()) {
-            if (map.needs_redraw) {
-                renderer->redraw();
-            }
+        auto renderer = layer->get_renderer();
+        if (!renderer) continue;
 
+        if (map.needs_redraw) {
+            renderer->redraw();
+        }
+
+        if (layer->is_visible()) {
             renderer->render(map);
         }
     }
+
     map.needs_redraw = false;
 }
 
@@ -855,7 +859,8 @@ void Map_Updater::update(Map& map) {
     map.scripting_interface->update();
 
     for (auto& layer : map.layers) {
-        if (auto updater = layer->get_updater()) {
+        auto updater = layer->get_updater();
+        if (updater && layer->is_visible()) {
             updater->update(map);
         }
     }
