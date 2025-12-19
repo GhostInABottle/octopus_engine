@@ -30,7 +30,6 @@ Map_Object::Map_Object(Game& game, xd::asset_manager& asset_manager,
         , opacity(1.0f)
         , visible(true)
         , disabled(false)
-        , stopped(false)
         , frozen(false)
         , passthrough(false)
         , passthrough_type(Passthrough_Type::BOTH)

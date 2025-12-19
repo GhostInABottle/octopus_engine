@@ -116,7 +116,6 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["magnification"] = sol::property(&Map_Object::get_magnification, &Map_Object::set_magnification);
     object_type["opacity"] = sol::property(&Map_Object::get_opacity, &Map_Object::set_opacity);
     object_type["disabled"] = sol::property(&Map_Object::is_disabled, &Map_Object::set_disabled);
-    object_type["stopped"] = sol::property(&Map_Object::is_stopped, &Map_Object::set_stopped);
     object_type["frozen"] = sol::property(&Map_Object::is_frozen, &Map_Object::set_frozen);
     object_type["passthrough"] = sol::property(&Map_Object::is_passthrough, &Map_Object::set_passthrough);
     object_type["passthrough_type"] = sol::property(&Map_Object::get_passthrough_type, &Map_Object::set_passthrough_type);

@@ -84,7 +84,7 @@ struct Move_Object_To_Command::Impl {
 
         const auto check_completion = [&](bool is_stopped) {
             const auto pos = object.get_real_position();
-            return is_stopped || object.is_stopped() || (!path_found && !keep_trying) ||
+            return is_stopped || (!path_found && !keep_trying) ||
                 (check_close(pos.x, destination.x, 1) && check_close(pos.y, destination.y, 1));
         };
 

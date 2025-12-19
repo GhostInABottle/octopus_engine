@@ -124,12 +124,6 @@ public:
         if (state != walk_state) return;
         set_state(face_state);
     }
-    bool is_stopped() const {
-        return stopped;
-    }
-    void set_stopped(bool new_stopped) {
-        stopped = new_stopped;
-    }
     bool is_frozen() const {
         return frozen;
     }
@@ -437,8 +431,6 @@ private:
     bool visible;
     // Does the player ignore user input?
     bool disabled;
-    // Stop moving at all?
-    bool stopped;
     // Are movement state changes ignored?
     bool frozen;
     // Can object pass through obstaces?
