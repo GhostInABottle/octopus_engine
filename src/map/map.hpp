@@ -295,8 +295,10 @@ private:
     // Background ambient
     std::string background_ambient_filename;
     float background_ambient_volume;
-    // Startup script filenames
-    std::vector<std::string> start_scripts;
+    // Filenames of scripts to run before the global map load script
+    std::vector<std::string> pre_load_scripts;
+    // Filenames of scripts to run after the global map load script
+    std::vector<std::string> post_load_scripts;
     // Should object outlines be drawn?
     bool draw_object_outlines;
     // Do we need to redraw static elements?

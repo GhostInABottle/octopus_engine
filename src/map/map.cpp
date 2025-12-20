@@ -89,6 +89,14 @@ namespace {
         return { static_cast<int>(glm::distance(obj1_center, obj2_center)),
             glm::dot(obj1_dir_vector, facing_dir_vector) };
     }
+
+    static inline void add_startup_scripts(const std::string& prop_value, std::vector<std::string>& scripts) {
+        auto filenames = string_utilities::split(prop_value, ",");
+        for (std::string filename : filenames) {
+            string_utilities::trim(filename);
+            scripts.push_back(filename);
+        }
+    }
 }
 
 Map::Map(Game& game) :
@@ -139,11 +147,17 @@ void Map::run_function(const sol::protected_function& function) {
 void Map::run_startup_scripts() {
     LOGGER_I << "Running startup scripts";
     scripting_interface->set_globals();
+
+    for (auto& script : pre_load_scripts) {
+        run_script_file(script);
+    }
+
     auto map_loaded_script = Configurations::get<std::string>("game.map-loaded-script");
     if (!map_loaded_script.empty()) {
         run_script_file(map_loaded_script);
     }
-    for (auto& script : start_scripts) {
+
+    for (auto& script : post_load_scripts) {
         run_script_file(script);
     }
 }
@@ -154,22 +168,21 @@ bool Map::is_script_scheduler_paused() const {
 
 void Map::set_script_scheduler_paused(bool paused) {
     auto& scheduler = scripting_interface->get_scheduler();
-    if (paused)
+    if (paused) {
         scheduler.pause();
-    else
+    } else {
         scheduler.resume();
+    }
 }
 
 Collision_Record Map::passable(Collision_Check_Options options) const {
     Collision_Record result;
 
     auto& object = options.object;
-    if (object.initiates_passthrough())
-        return result;
+    if (object.initiates_passthrough()) return result;
 
     const auto& bounding_box = object.get_bounding_box();
-    if (bounding_box.w <= 0.0f || bounding_box.h <= 0.0f)
-        return result;
+    if (bounding_box.w <= 0.0f || bounding_box.h <= 0.0f) return result;
 
     auto change = direction_to_vector(options.direction) * options.speed;
     auto new_pos = options.position + change;
@@ -196,8 +209,9 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
 
             // Special case for skipping tile collision detection
             const auto passthrough = other_object->receives_passthrough();
-            if (other_object->overrides_tile_collision() && passthrough && intersects)
+            if (other_object->overrides_tile_collision() && passthrough && intersects) {
                 check_tile_collision = false;
+            }
 
             // Areas are passthrough objects with a script
             const auto has_script = other_object->has_any_script();
@@ -287,9 +301,9 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
 }
 
 bool Map::tile_passable(int x, int y) const noexcept {
-    if (x < 0 || x >= width || y < 0 || y >= height)
-        return false;
+    if (x < 0 || x >= width || y < 0 || y >= height) return false;
     if (!collision_layer || !collision_tileset) return true;
+
     const int tile_index = x + y * width;
     const auto& tiles = collision_layer->get_tiles();
     return tiles[tile_index] - collision_tileset->first_id <= 1;
@@ -374,6 +388,7 @@ Map_Object* Map::get_object(std::string name) const {
     if (object_name_to_id.find(name) != object_name_to_id.end()) {
         return get_object(object_name_to_id.at(name));
     }
+
     return nullptr;
 }
 
@@ -433,19 +448,14 @@ int Map::layer_count() const {
 }
 
 Layer* Map::get_layer_by_index(int index) const {
-    if (index >= 1 && index <= layer_count())
-        return layers[index - 1].get();
-    else
-        return nullptr;
+    return index >= 1 && index <= layer_count()
+        ? layers[index - 1].get()
+        : nullptr;
 }
 
 Layer* Map::get_layer_by_id(int id) const {
     auto result = layers_by_id.find(id);
-
-    if (result != layers_by_id.end())
-        return result->second;
-    else
-        return nullptr;
+    return result != layers_by_id.end() ? result->second : nullptr;
 }
 
 Layer* Map::get_layer_by_name(std::string name) const {
@@ -456,10 +466,8 @@ Layer* Map::get_layer_by_name(std::string name) const {
             string_utilities::capitalize(layer_name);
             return layer_name == name;
     });
-    if (layer != layers.end())
-        return layer->get();
-    else
-        return nullptr;
+
+    return layer != layers.end() ? layer->get() : nullptr;
 }
 
 Image_Layer* Map::get_image_layer_by_index(int index) const {
@@ -596,10 +604,8 @@ const std::vector<Map::Canvas_Ref>& Map::get_canvases() {
                 auto b = canvas_b.ptr.lock();
                 if (a && b) {
                     return a->get_priority() < b->get_priority();
-                } else if (a) {
-                    return true;
                 } else {
-                    return false;
+                    return a.get() != nullptr;
                 }
             }
         );
@@ -609,11 +615,8 @@ const std::vector<Map::Canvas_Ref>& Map::get_canvases() {
 
 Base_Canvas* Map::get_canvas(int id) const {
     auto result = canvases_by_id.find(id);
-
-    if (result != canvases_by_id.end() && result->second.lock())
-        return result->second.lock().get();
-    else
-        return nullptr;
+    auto exists = result != canvases_by_id.end() && result->second.lock();
+    return exists ? result->second.lock().get() : nullptr;
 }
 
 void Map::resize(xd::ivec2 map_size, xd::ivec2 tile_size) {
@@ -691,8 +694,9 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
     doc->parse<0>(content);
 
     auto map_node = doc->first_node("map");
-    if (!map_node)
+    if (!map_node) {
         throw tmx_exception("Invalid TMX file. Missing map node");
+    }
 
     auto map = load(game, *map_node);
 
@@ -706,28 +710,33 @@ std::unique_ptr<Map> Map::load(Game& game, const std::string& filename) {
 std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     auto map_ptr = std::make_unique<Map>(game);
 
-    if (node.first_attribute("orientation")->value() != std::string("orthogonal"))
+    if (node.first_attribute("orientation")->value() != std::string("orthogonal")) {
         throw tmx_exception("Invalid map orientation, expected orthogonal");
+    }
 
-    if (auto width_node = node.first_attribute("width"))
+    if (auto width_node = node.first_attribute("width")) {
         map_ptr->width = std::stoi(width_node->value());
-    else
+    } else {
         throw tmx_exception("Map width is missing");
+    }
 
-    if (auto height_node = node.first_attribute("height"))
+    if (auto height_node = node.first_attribute("height")) {
         map_ptr->height = std::stoi(height_node->value());
-    else
+    } else {
         throw tmx_exception("Map height is missing");
+    }
 
-    if (auto tile_width_node = node.first_attribute("tilewidth"))
+    if (auto tile_width_node = node.first_attribute("tilewidth")) {
         map_ptr->tile_width = std::stoi(tile_width_node->value());
-    else
+    } else {
         throw tmx_exception("Map tile width is missing");
+    }
 
-    if (auto tile_height_node = node.first_attribute("tileheight"))
+    if (auto tile_height_node = node.first_attribute("tileheight")) {
         map_ptr->tile_height = std::stoi(tile_height_node->value());
-    else
+    } else {
         throw tmx_exception("Map tile height is missing");
+    }
 
     // Map properties
     map_ptr->properties.read(node);
@@ -748,20 +757,21 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
     }
 
     if (map_ptr->properties.contains("music-script")) {
-        if (!map_ptr->background_music_filename.empty())
-            throw tmx_exception("Tried to set a map music script, but music was already specified as: " + map_ptr->background_music_filename);
+        if (!map_ptr->background_music_filename.empty()) {
+            throw tmx_exception("Tried to set a map music script, but music was already specified as: "
+                + map_ptr->background_music_filename);
+        }
 
         auto si = game.get_current_scripting_interface();
         map_ptr->background_music_filename = si->call<std::string>(map_ptr->properties["music-script"]);
     }
 
     // Startup scripts
+    if (map_ptr->properties.contains("pre-load-scripts")) {
+        add_startup_scripts(map_ptr->properties["pre-load-scripts"], map_ptr->pre_load_scripts);
+    }
     if (map_ptr->properties.contains("scripts")) {
-        auto filenames = string_utilities::split(map_ptr->properties["scripts"], ",");
-        for (std::string filename : filenames) {
-            string_utilities::trim(filename);
-            map_ptr->start_scripts.push_back(filename);
-        }
+        add_startup_scripts(map_ptr->properties["scripts"], map_ptr->post_load_scripts);
     }
 
     // Player position
@@ -790,8 +800,9 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
             tileset_ptr = Tileset::load(*tileset_node);
         }
         map_ptr->tilesets.push_back(*tileset_ptr);
-        if (tileset_ptr->name == "collision")
-                map_ptr->collision_tileset = &(map_ptr->tilesets[map_ptr->tilesets.size() - 1]);
+        if (tileset_ptr->name == "collision") {
+            map_ptr->collision_tileset = &(map_ptr->tilesets[map_ptr->tilesets.size() - 1]);
+        }
     }
 
     // Layers
@@ -820,8 +831,9 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         layer_node = layer_node->next_sibling();
     }
 
-    if (map_ptr->object_layers.empty())
+    if (map_ptr->object_layers.empty()) {
         throw tmx_exception("Must have at least one object layer in map");
+    }
 
     // Set up chained outlining of objects
     for (auto& object : map_ptr->get_objects()) {
