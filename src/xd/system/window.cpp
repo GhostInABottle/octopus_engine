@@ -15,6 +15,10 @@ namespace
 {
     xd::window *window_instance = nullptr;
 
+    void on_window_resize(GLFWwindow*, int width, int height) {
+        window_instance->set_window_size(width, height, true);
+    }
+
     void on_key_proxy(GLFWwindow*, int key, int, int action, int) {
         window_instance->on_input(xd::input_type::INPUT_KEYBOARD, key, action);
     }
@@ -81,27 +85,29 @@ xd::window::window(const std::string& title, int width, int height, const window
 
     // Calculate windowed size
     auto resolution = current_resolution();
-    auto size_not_specified = m_width == -1 || m_height == -1;
+    auto res_width = static_cast<int>(resolution.x);
+    auto res_height = static_cast<int>(resolution.y);
+    auto size_specified = m_width != -1 && m_height != -1;
 
-    if (!size_not_specified && !options.fullscreen) {
+    if (size_specified && !options.fullscreen) {
         m_windowed_size = xd::vec2(m_width, m_height);
     } else {
-        auto screen_dim = resolution.x < resolution.y ? resolution.x : resolution.y;
-        auto game_dim = static_cast<float>(resolution.x < resolution.y
-            ? options.game_width : options.game_height);
+        auto screen_dim = res_width < res_height ? res_width : res_height;
+        auto game_dim = res_width < res_height ? options.game_width : options.game_height;
+        auto game_to_scree_ratio = static_cast<float>(game_dim) / screen_dim;
         int factor = 1;
 
-        while (factor * game_dim / screen_dim < options.max_windowed_size_percentage) {
+        while (factor * game_to_scree_ratio < options.max_windowed_size_percentage) {
             factor++;
         }
 
         m_windowed_size = xd::ivec2(options.game_width, options.game_height) * (factor - 1);
     }
 
-    if (size_not_specified && options.fullscreen) {
-        m_width = static_cast<int>(resolution.x);
-        m_height = static_cast<int>(resolution.y);
-    } else if (size_not_specified) {
+    if (!size_specified && options.fullscreen) {
+        m_width = res_width;
+        m_height = res_height;
+    } else if (!size_specified) {
         m_width = m_windowed_size.x;
         m_height = m_windowed_size.y;
     }
@@ -116,9 +122,21 @@ xd::window::window(const std::string& title, int width, int height, const window
     }
 
     // Calculate windowed position
-    m_windowed_pos.x = (static_cast<int>(resolution.x) - m_windowed_size.x) / 2;
-    m_windowed_pos.y = (static_cast<int>(resolution.y) - m_windowed_size.y) / 2;
+    m_windowed_pos.x = (res_width - m_windowed_size.x) / 2;
+    m_windowed_pos.y = (res_height - m_windowed_size.y) / 2;
     glfwSetWindowPos(m_window, m_windowed_pos.x, m_windowed_pos.y);
+
+    if (options.allow_resize) {
+        auto numer = options.aspect_ratio_numerator < 1 ?
+            GLFW_DONT_CARE : options.aspect_ratio_numerator;
+        auto denom = options.aspect_ratio_denominator < 1 ?
+            GLFW_DONT_CARE : options.aspect_ratio_denominator;
+        glfwSetWindowAspectRatio(m_window, numer, denom);
+        glfwSetWindowSizeLimits(m_window, options.game_width, options.game_height,
+            res_width, res_height);
+        glfwSetWindowSizeCallback(m_window, &::on_window_resize);
+    }
+
     glfwShowWindow(m_window);
 
     glfwMakeContextCurrent(m_window);
@@ -443,9 +461,18 @@ int xd::window::framebuffer_height() const {
     return height;
 }
 
-void xd::window::set_window_size(int width, int height) {
+void xd::window::set_window_size(int width, int height, bool via_callback) {
     auto fullscreen = is_fullscreen();
     auto size_not_specified = width == -1 || height == -1;
+
+    if (via_callback) {
+        // We only handle manual user resizing in windowed mode
+        if (fullscreen || size_not_specified) return;
+
+        m_windowed_size.x = width;
+        m_windowed_size.y = height;
+        return;
+    }
 
     if (size_not_specified && fullscreen) {
         auto size = current_resolution();

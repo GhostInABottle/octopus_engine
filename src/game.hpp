@@ -66,7 +66,7 @@ public:
     void resume(const std::string& script = "");
     // Exit game
     void exit();
-    // Window dimensions in screen coordinates
+    // Content area dimensions in screen coordinates
     int window_width() const {
         return window ? window->width() : editor_size.x;
     }

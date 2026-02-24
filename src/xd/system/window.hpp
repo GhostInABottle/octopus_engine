@@ -41,7 +41,8 @@ namespace xd
         int height() const;
         int framebuffer_width() const;
         int framebuffer_height() const;
-        void set_window_size(int width, int height);
+        void set_window_size(int width, int height, bool via_callback = false);
+        ivec2 get_windowed_size() const { return m_windowed_size; }
         xd::vec2 current_resolution() const;
         std::vector<xd::vec2> monitor_resolutions() const;
         bool is_fullscreen() const;

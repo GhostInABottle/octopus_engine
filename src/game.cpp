@@ -42,6 +42,7 @@ struct Game::Impl {
             fullscreen_change_ticks(-1),
             fullscreen_update_delay(1),
             was_fullscreen(false),
+            windowed_size_check_ticks(game.window_ticks()),
             debug_style(xd::vec4(1.0f), Configurations::get<int>("font.size")),
             game_width(Configurations::get<int>("graphics.game-width", "debug.width")),
             game_height(Configurations::get<int>("graphics.game-height", "debug.height")),
@@ -110,7 +111,7 @@ struct Game::Impl {
     }
 
     // Process configuration changes
-    void process_config_changes(Game& game, xd::window* window) {
+    void process_config_changes(Game& game, xd::window& window) {
         if (config_changes.empty()) return;
         if (config_changed("game.pause-unfocused")) {
             pause_unfocused = Configurations::get<bool>("game.pause-unfocused");
@@ -128,8 +129,8 @@ struct Game::Impl {
         if (config_changed("graphics.fullscreen")) {
             start_fullscreen_change(game);
         }
-        if (config_changed("graphics.vsync") && window) {
-            window->set_vsync(Configurations::get<bool>("graphics.vsync"));
+        if (config_changed("graphics.vsync")) {
+            window.set_vsync(Configurations::get<bool>("graphics.vsync"));
         }
         if (config_changed("graphics.scale-mode")) {
             game.get_camera()->set_size(game.framebuffer_width(), game.framebuffer_height(), true);
@@ -143,8 +144,8 @@ struct Game::Impl {
         if (config_changed("graphics.saturation")) {
             game.get_camera()->set_saturation(Configurations::get<float>("graphics.saturation"));
         }
-        if (config_changed("graphics.gamma") && window) {
-            window->set_gamma(Configurations::get<float>("graphics.gamma"));
+        if (config_changed("graphics.gamma")) {
+            window.set_gamma(Configurations::get<float>("graphics.gamma"));
         }
         if (config_changed("audio.music-volume")) {
             audio_player.set_global_music_volume(Configurations::get<float>("audio.music-volume"));
@@ -152,16 +153,17 @@ struct Game::Impl {
         if (config_changed("audio.sound-volume")) {
             audio_player.set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
         }
-        if (config_changed("controls.gamepad-enabled") && window) {
-            window->set_joystick_enabled(Configurations::get<bool>("controls.gamepad-enabled"));
+        if (config_changed("controls.gamepad-enabled")) {
+            window.set_joystick_enabled(Configurations::get<bool>("controls.gamepad-enabled"));
         }
-        if (config_changed("controls.preferred-gamepad-guid") && window) {
+        if (config_changed("controls.preferred-gamepad-guid")) {
             auto preferred = Configurations::get<std::string>("controls.preferred-gamepad-guid");
-            window->set_preferred_joystick_guid(preferred);
+            window.set_preferred_joystick_guid(preferred);
         }
         if (config_changed("debug.show-fps")) {
             show_fps = Configurations::get<bool>("debug.show-fps");
         }
+
         config_changes.clear();
     }
 
@@ -256,6 +258,20 @@ struct Game::Impl {
         }
     }
 
+    // Update saved windowed size in case the window was manually resized
+    void update_windowed_size(xd::window& window) {
+        auto ticks = window.ticks();
+        auto should_update = ticks - windowed_size_check_ticks > 10
+            && !config_changed("graphics.window-width")
+            && !config_changed("graphics.window-height");
+        if (!should_update) return;
+
+        auto windowed_size = window.get_windowed_size();
+        Configurations::override_value<int>("graphics.window-width", windowed_size.x);
+        Configurations::override_value<int>("graphics.window-height", windowed_size.y);
+        windowed_size_check_ticks = ticks;
+    }
+
     void set_icons(xd::window& window) {
         auto base_name = Configurations::get<std::string>("game.icon_base_name");
         auto sizes_string = Configurations::get<std::string>("game.icon_sizes");
@@ -323,6 +339,8 @@ struct Game::Impl {
     int fullscreen_change_ticks;
     int fullscreen_update_delay;
     bool was_fullscreen;
+    // Last time the saved windowed size was checked
+    int windowed_size_check_ticks;
     // Is it time to exit the main loop?
     bool exit_requested;
     // Debug font style (FPS and time display)
@@ -373,7 +391,9 @@ Game::Game(const std::vector<std::string>& args,
                 Configurations::get<int>("graphics.game-width", "debug.width"),
                 Configurations::get<int>("graphics.game-height", "debug.height"),
                 0.8f, // max windowed size percentage
-                false, // allow resize
+                Configurations::get<bool>("graphics.resizable-window"),
+                Configurations::get<int>("graphics.aspect-ratio-numerator"),
+                Configurations::get<int>("graphics.aspect-ratio-denominator"),
                 false, // display cursor
                 Configurations::get<bool>("graphics.vsync"),
                 Configurations::get<bool>("controls.gamepad-enabled"),
@@ -526,8 +546,9 @@ void Game::frame_update() {
     pimpl->audio_player.update();
 
     // Toggle fullscreen when ALT+Enter is pressed
+    auto fullscreen = is_fullscreen();
     if ((pressed(xd::KEY_RALT) || pressed(xd::KEY_LALT)) && triggered_once(xd::KEY_ENTER)) {
-        Configurations::set("graphics.fullscreen", !is_fullscreen());
+        Configurations::set("graphics.fullscreen", !fullscreen);
     }
 
     // Check if gamepad was disconnected
@@ -571,7 +592,7 @@ void Game::frame_update() {
         // We still update map canvases, but not scripts
         if (pimpl->next_map.empty())
             map->update();
-        pimpl->process_config_changes(*this, window.get());
+        pimpl->process_config_changes(*this, *window);
         return;
     }
 
@@ -592,7 +613,11 @@ void Game::frame_update() {
         pimpl->end_fullscreen_change(*this);
     }
 
-    pimpl->process_config_changes(*this, window.get());
+    if (!fullscreen && window) {
+        pimpl->update_windowed_size(*window);
+    }
+
+    pimpl->process_config_changes(*this, *window);
 
     // Switch map if needed
     if (!pimpl->next_map.empty()) {
