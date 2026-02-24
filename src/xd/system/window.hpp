@@ -47,6 +47,8 @@ namespace xd
         std::vector<xd::vec2> monitor_resolutions() const;
         bool is_fullscreen() const;
         void set_fullscreen(bool fullscreen);
+        bool is_maximized() const;
+        void set_maximized(bool maximized);
         void set_vsync(bool vsync) const;
         void set_gamma(float gamma) const;
         void set_icons(std::vector<std::shared_ptr<xd::image>> icon_images) const;

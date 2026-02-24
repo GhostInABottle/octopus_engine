@@ -76,6 +76,7 @@ xd::window::window(const std::string& title, int width, int height, const window
     }
 
     glfwWindowHint(GLFW_RESIZABLE, options.allow_resize);
+    glfwWindowHint(GLFW_MAXIMIZED, options.maximized);
     glfwWindowHint(GLFW_SAMPLES, options.antialiasing_level);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, options.major_version);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, options.minor_version);
@@ -529,6 +530,18 @@ void xd::window::set_fullscreen(bool fullscreen) {
     } else {
         glfwSetWindowMonitor(m_window, nullptr, m_windowed_pos.x, m_windowed_pos.y,
             m_windowed_size.x, m_windowed_size.y, GLFW_DONT_CARE);
+    }
+}
+
+bool xd::window::is_maximized() const {
+    return glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED) != GLFW_FALSE;
+}
+
+void xd::window::set_maximized(bool maximized) {
+    if (maximized) {
+        glfwMaximizeWindow(m_window);
+    } else {
+        glfwRestoreWindow(m_window);
     }
 }
 

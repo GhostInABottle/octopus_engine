@@ -15,6 +15,7 @@ namespace xd
             , allow_resize(false)
             , aspect_ratio_numerator(-1)
             , aspect_ratio_denominator(-1)
+            , maximized(false)
             , display_cursor(true)
             , vsync(true)
             , enable_joystick(true)
@@ -32,7 +33,7 @@ namespace xd
         window_options(bool fullscreen, int game_width, int game_height,
             float max_windowed_size_percentage, bool allow_resize,
             int aspect_ratio_numerator, int aspect_ratio_denominator,
-            bool display_cursor, bool vsync,
+            bool maximized, bool display_cursor, bool vsync,
             bool enable_joystick, std::string joystick_guid,
             bool gamepad_detection, bool axis_as_dpad,
             float stick_sensitivity, float trigger_sensitivity,
@@ -45,6 +46,7 @@ namespace xd
             , allow_resize(allow_resize)
             , aspect_ratio_numerator(aspect_ratio_numerator)
             , aspect_ratio_denominator(aspect_ratio_denominator)
+            , maximized(maximized)
             , display_cursor(display_cursor)
             , vsync(vsync)
             , enable_joystick(enable_joystick)
@@ -67,6 +69,7 @@ namespace xd
         bool allow_resize;
         int aspect_ratio_numerator;
         int aspect_ratio_denominator;
+        bool maximized;
         bool display_cursor;
         bool vsync;
         bool enable_joystick;

@@ -81,6 +81,7 @@ void bind_game_types(sol::state& lua) {
         return sol::as_table(game.get_monitor_resolutions());
     });
     game_type["fullscreen"] = sol::property(&Game::is_fullscreen, &Game::set_fullscreen);
+    game_type["maximized"] = sol::property(&Game::is_maximized, &Game::set_maximized);
 
     game_type["command_line_args"] = sol::property([&](Game& game) {
         return sol::as_table(game.get_command_line_args());

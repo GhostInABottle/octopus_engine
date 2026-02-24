@@ -100,6 +100,15 @@ public:
     }
     // Toggle fullscreen mode
     void set_fullscreen(bool fullscreen);
+    // Check if window is maximized
+    bool is_maximized() const {
+        return window ? window->is_maximized() : false;
+    }
+    // Maximize or restore window
+    void set_maximized(bool maximized) {
+        if (!window) return;
+        window->set_maximized(maximized);
+    }
     // Set the swap interval
     void set_vsync(bool vsync) const {
         if (!window) return;

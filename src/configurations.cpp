@@ -46,6 +46,7 @@ void Configurations::load_defaults() {
     defaults.emplace("graphics.resizable-window", Configurations::Default{ true });
     defaults.emplace("graphics.aspect-ratio-numerator", Configurations::Default{ -1 });
     defaults.emplace("graphics.aspect-ratio-denominator", Configurations::Default{ -1 });
+    defaults.emplace("graphics.maximized-window", Configurations::Default { false });
     defaults.emplace("graphics.logic-fps", Configurations::Default{ 60 });
     defaults.emplace("graphics.canvas-fps", Configurations::Default{ 40 });
     defaults.emplace("graphics.fullscreen", Configurations::Default{ false });

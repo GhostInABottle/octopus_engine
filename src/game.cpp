@@ -269,6 +269,7 @@ struct Game::Impl {
         auto windowed_size = window.get_windowed_size();
         Configurations::override_value<int>("graphics.window-width", windowed_size.x);
         Configurations::override_value<int>("graphics.window-height", windowed_size.y);
+        Configurations::override_value<bool>("graphics.maximized-window", window.is_maximized());
         windowed_size_check_ticks = ticks;
     }
 
@@ -394,6 +395,7 @@ Game::Game(const std::vector<std::string>& args,
                 Configurations::get<bool>("graphics.resizable-window"),
                 Configurations::get<int>("graphics.aspect-ratio-numerator"),
                 Configurations::get<int>("graphics.aspect-ratio-denominator"),
+                Configurations::get<bool>("graphics.maximized-window"),
                 false, // display cursor
                 Configurations::get<bool>("graphics.vsync"),
                 Configurations::get<bool>("controls.gamepad-enabled"),

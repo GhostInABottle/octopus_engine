@@ -1650,6 +1650,7 @@ function Engine_Environment:open_url(url, mode) end
 ---@field debug boolean # readonly
 ---@field command_line_args string[] # readonly
 ---@field fullscreen boolean
+---@field maximized boolean
 ---@field magnification integer
 ---@field audio_player Engine_Audio_Player # readonly
 ---@field environment Engine_Environment # readonly
