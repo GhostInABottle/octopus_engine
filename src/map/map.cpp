@@ -193,9 +193,7 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
 
     // Check object collisions
     if (options.check_type & Collision_Check_Type::OBJECT) {
-        for (auto& object_pair : objects) {
-            auto other_id = object_pair.first;
-            auto other_object = object_pair.second.get();
+        for (auto& [other_id, other_object] : objects) {
 
             // Skip invisible objects and self-intersection
             if (!other_object->is_visible() || other_id == object.get_id()) continue;
@@ -222,9 +220,9 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
                 && !passthrough
                 && has_script
                 && !result.other_object
-                && other_object->proximity_distance() != 0;
+                && other_object->get_proximity_distance() != 0;
             if (check_nearby) {
-                auto int_proximity_distance = other_object->proximity_distance();
+                auto int_proximity_distance = other_object->get_proximity_distance();
                 auto proximity_distance = static_cast<float>(int_proximity_distance == -1
                     ? options.proximity_distance
                     : int_proximity_distance);
@@ -236,7 +234,7 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
                     ? distance_and_dot(nearby_box, other_box, options.direction)
                     : std::make_tuple(-1, 0.0f);
                 if (nearby_intersects && distance < minimum_distance && dot > 0) {
-                    result.proximate_object = other_object;
+                    result.proximate_object = other_object.get();
                     minimum_distance = distance;
                 }
             }
@@ -245,21 +243,30 @@ Collision_Record Map::passable(Collision_Check_Options options) const {
             bool skip = !intersects || (!is_area && passthrough);
             if (skip) continue;
 
+            // Prefer the highest priority object with a script
+            auto existing_object = is_area ? result.other_area : result.other_object;
+            auto priority_diff = existing_object
+                ? other_object->get_collision_priority() - existing_object->get_collision_priority()
+                : 1;
+            auto consider_object = priority_diff > 0 || (priority_diff == 0 && has_script);
+
             if (is_area) {
                 if (result.type == Collision_Type::NONE) {
                     result.type = Collision_Type::AREA;
                 }
-                result.other_area = other_object;
+                if (consider_object) {
+                    result.other_area = other_object.get();
+                }
                 continue;
             }
 
             result.type = Collision_Type::OBJECT;
-            // Prefer objects with scripts
-            if (!result.other_object || has_script) {
-                result.other_object = other_object;
-                result.proximate_object = other_object;
-            }
             check_tile_collision = false;
+
+            if (consider_object) {
+                result.other_object = other_object.get();
+                result.proximate_object = other_object.get();
+            }
         }
     }
 

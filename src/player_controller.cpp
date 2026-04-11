@@ -149,7 +149,7 @@ void Player_Controller::update(Map_Object& object) {
     }
 
     if (!process_collision(object, collision, Collision_Type::OBJECT, moved, action_pressed)) {
-        // Object interactions have priority over area ones
+        // Object interactions have priority over area ones (see below for exception)
         process_collision(object, collision, Collision_Type::AREA, moved, action_pressed);
     }
 }
@@ -159,6 +159,7 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
     Map_Object* old_object = nullptr;
     Map_Object* collision_object = nullptr;
     bool new_collision = false;
+    auto prevent_trigger = false;
     if (type == Collision_Type::OBJECT) {
         old_object = object.get_collision_object();
         collision_object = collision.other_object;
@@ -166,6 +167,16 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
         if (new_collision) {
             object.set_collision_object(collision_object);
         }
+
+        // Objects have priority over areas, except for areas with trigger scripts
+        // that have higher collision priority
+        auto area = collision.other_area;
+        prevent_trigger = action_pressed
+            && collision_object
+            && area
+            && area->has_trigger_script()
+            && area == object.get_collision_area()
+            && area->get_collision_priority() - collision_object->get_collision_priority() > 0;
     } else {
         old_object = object.get_collision_area();
         collision_object = collision.other_area;
@@ -180,7 +191,6 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
         }
     }
 
-    auto other_object = collision_object;
     auto run_scripts = !object.is_disabled();
     auto touched = run_scripts && moved && new_collision
         && collision_object->has_touch_script();
@@ -191,24 +201,25 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
     auto check_proximate_object = run_scripts && !collision_object
         && action_pressed && collision.proximate_object;
     if (check_proximate_object) {
-        other_object = collision.proximate_object;
+        collision_object = collision.proximate_object;
         triggered = collision.proximate_object->has_trigger_script();
     }
 
     if (touched || triggered) {
-        object.set_triggered_object(other_object);
+        object.set_triggered_object(collision_object);
 
         if (touched) {
-            other_object->run_touch_script();
+            collision_object->run_touch_script();
         }
-        if (triggered) {
-            other_object->run_trigger_script();
+        if (!prevent_trigger) {
+            if (triggered) {
+                collision_object->run_trigger_script();
+            }
+            return true;
         }
-
-        return true;
     }
 
-    if (old_object && !other_object) {
+    if (old_object && !collision_object) {
         if (run_scripts && moved && old_object->has_leave_script()) {
             old_object->run_leave_script();
         }

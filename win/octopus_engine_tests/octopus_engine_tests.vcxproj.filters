@@ -483,6 +483,9 @@
     <ClCompile Include="..\..\src\xd\graphics\detail\font_details.cpp">
       <Filter>Source Files\xd\graphics\detail</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\tests\map_object_tests.cpp">
+      <Filter>Source Files\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\game.hpp">

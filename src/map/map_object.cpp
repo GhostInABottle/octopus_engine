@@ -34,6 +34,7 @@ Map_Object::Map_Object(Game& game, xd::asset_manager& asset_manager,
         , passthrough(false)
         , passthrough_type(Passthrough_Type::BOTH)
         , override_tile_collision(false)
+        , collision_priority(0)
         , strict_multidirectional_movement(false)
         , use_layer_color(true)
         , direction(dir)
@@ -405,7 +406,7 @@ void Map_Object::face(xd::vec2 other_position) {
 void Map_Object::face(Direction dir) {
     if (is_relative_direction(dir)) return;
 
-    set_pose("", "", static_cast<Direction>(dir));
+    set_pose("", "", dir);
 }
 
 void Map_Object::set_face_state(const std::string& name) {
@@ -463,26 +464,33 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         xd::asset_manager& asset_manager) {
     auto object_ptr = std::make_unique<Map_Object>(game, asset_manager);
 
-    if (auto id_node = node.first_attribute("id"))
+    if (auto id_node = node.first_attribute("id")) {
         object_ptr->id = std::stoi(id_node->value());
-    else
+    } else {
         throw tmx_exception("Missing map object ID");
+    }
 
-    if (auto name_node = node.first_attribute("name"))
+    if (auto name_node = node.first_attribute("name")) {
         object_ptr->set_name(name_node->value());
+    }
 
-    if (auto type_node = node.first_attribute("type"))
+    if (auto type_node = node.first_attribute("type")) {
         object_ptr->set_type(type_node->value());
+    }
 
-    if (auto x_node = node.first_attribute("x"))
+    if (auto x_node = node.first_attribute("x")) {
         object_ptr->position.x = std::stof(x_node->value());
-    else
-        throw tmx_exception("Missing X coordinate for object with ID " + std::to_string(object_ptr->id));
+    } else {
+        throw tmx_exception("Missing X coordinate for object with ID "
+            + std::to_string(object_ptr->id));
+    }
 
-    if (auto y_node = node.first_attribute("y"))
+    if (auto y_node = node.first_attribute("y")) {
         object_ptr->position.y = std::stof(y_node->value());
-    else
-        throw tmx_exception("Missing Y coordinate for object with ID " + std::to_string(object_ptr->id));
+    } else {
+        throw tmx_exception("Missing Y coordinate for object with ID "
+            + std::to_string(object_ptr->id));
+    }
 
     float obj_width = 0.0f;
     float obj_height = 0.0f;
@@ -496,11 +504,13 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->size.y = obj_height;
     }
 
-    if (auto gid_node = node.first_attribute("gid"))
+    if (auto gid_node = node.first_attribute("gid")) {
         object_ptr->gid = std::stoi(gid_node->value());
+    }
 
-    if (auto visible_node = node.first_attribute("visible"))
+    if (auto visible_node = node.first_attribute("visible")) {
         object_ptr->visible = string_utilities::string_to_bool(visible_node->value());
+    }
 
     // Object properties
     auto& properties = object_ptr->properties;
@@ -559,19 +569,24 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_script_context(context);
     }
 
-    if (properties.contains("script"))
+    if (properties.contains("script")) {
         object_ptr->set_trigger_script(properties["script"]);
-    else if (properties.contains("trigger-script"))
+    } else if (properties.contains("trigger-script")) {
         object_ptr->set_trigger_script(properties["trigger-script"]);
+    }
 
-    if (properties.contains("touch-script"))
+    if (properties.contains("touch-script")) {
         object_ptr->set_touch_script(properties["touch-script"]);
+    }
 
-    if (properties.contains("leave-script"))
+    if (properties.contains("leave-script")) {
         object_ptr->set_leave_script(properties["leave-script"]);
+    }
 
-    if (properties.contains("passthrough"))
-        object_ptr->set_passthrough(string_utilities::string_to_bool(properties["passthrough"]));
+    if (properties.contains("passthrough")) {
+        auto passthrough = string_utilities::string_to_bool(properties["passthrough"]);
+        object_ptr->set_passthrough(passthrough);
+    }
 
     if (properties.contains("passthrough-type")) {
         auto type_string{properties["passthrough-type"]};
@@ -588,16 +603,26 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
         object_ptr->set_passthrough_type(type);
     }
 
-    if (properties.contains("override-tile-collision"))
-        object_ptr->set_passthrough(string_utilities::string_to_bool(properties["override-tile-collision"]));
+    if (properties.contains("override-tile-collision")) {
+        auto override = string_utilities::string_to_bool(properties["override-tile-collision"]);
+        object_ptr->set_override_tile_collision(override);
+    }
+
+    if (properties.contains("collision-priority")) {
+        auto collision_priority = std::stoi(properties["collision-priority"]);
+        object_ptr->set_collision_priority(collision_priority);
+    }
 
 
     if (properties.contains("proximity-distance")) {
-        object_ptr->set_proximity_distance(string_utilities::string_to_bool(properties["proximity-distance"]));
+        auto distance = std::stoi(properties["proximity-distance"]);
+        object_ptr->set_proximity_distance(distance);
     }
 
-    if (properties.contains("use-layer-color"))
-        object_ptr->set_use_layer_color(string_utilities::string_to_bool(properties["use-layer-color"]));
+    if (properties.contains("use-layer-color")) {
+        auto use_layer_color = string_utilities::string_to_bool(properties["use-layer-color"]);
+        object_ptr->set_use_layer_color(use_layer_color);
+    }
 
     if (properties.contains("outlined")) {
         auto outlined{properties["outlined"]};
@@ -651,12 +676,8 @@ std::unique_ptr<Map_Object> Map_Object::load(rapidxml::xml_node<>& node, Game& g
     }
 
     if (properties.contains("sfx-attenuation")) {
-        auto attenuation{properties["sfx-attenuation"]};
-        string_utilities::capitalize(attenuation);
-        if (attenuation == "TRUE")
-            object_ptr->set_sound_attenuation_enabled(true);
-        else if (attenuation != "FALSE")
-            throw tmx_exception("Invalid object sfx-attenuation value: " + attenuation);
+        auto attenuation{string_utilities::string_to_bool(properties["sfx-attenuation"])};
+        object_ptr->set_sound_attenuation_enabled(attenuation);
     }
 
     // Collision box and circle

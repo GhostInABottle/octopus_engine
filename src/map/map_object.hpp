@@ -158,6 +158,12 @@ public:
     void set_override_tile_collision(bool new_override) {
         override_tile_collision = new_override;
     }
+    int get_collision_priority() const {
+        return collision_priority;
+    }
+    void set_collision_priority(int priority) {
+        collision_priority = priority;
+    }
     bool get_strict_multidirectional_movement() const {
         return strict_multidirectional_movement;
     }
@@ -252,7 +258,7 @@ public:
     void set_proximate_object(Map_Object* object) {
         proximate_object = object;
     }
-    int proximity_distance() const {
+    int get_proximity_distance() const {
         return proximity_pixels;
     }
     void set_proximity_distance(int pixels) {
@@ -433,13 +439,15 @@ private:
     bool disabled;
     // Are movement state changes ignored?
     bool frozen;
-    // Can object pass through obstaces?
+    // Can object pass through obstacles?
     bool passthrough;
     // How does passthrough work? INITIATOR can pass through others,
     // RECEIVER can be passed through. Defaults to BOTH
     Passthrough_Type passthrough_type;
     // Does this object override tile collision?
     bool override_tile_collision;
+    // Decides which object to register as a collision if colliding with multiple objects
+    int collision_priority;
     // When moving in multiple directions and hitting an obstacle, movement is corrected
     // to a single direction along the obstacle by default, unless this flag is set
     bool strict_multidirectional_movement;

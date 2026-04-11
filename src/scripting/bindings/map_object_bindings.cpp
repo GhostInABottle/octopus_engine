@@ -154,6 +154,8 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["leave_script"] = sol::property(&Map_Object::get_leave_script, &Map_Object::set_leave_script);
     object_type["overrides_tile_collision"] = sol::property(&Map_Object::overrides_tile_collision,
         &Map_Object::set_override_tile_collision);
+    object_type["collision_priority"] = sol::property(&Map_Object::get_collision_priority,
+        &Map_Object::set_collision_priority);
     object_type["strict_multidirectional_movement"] = sol::property(&Map_Object::get_strict_multidirectional_movement,
         &Map_Object::set_strict_multidirectional_movement);
     object_type["uses_layer_color"] = sol::property(&Map_Object::uses_layer_color, &Map_Object::set_use_layer_color);
@@ -161,7 +163,7 @@ void bind_map_object_types(sol::state& lua, Game& game) {
     object_type["collision_object"] = sol::property(&Map_Object::get_collision_object, &Map_Object::set_collision_object);
     object_type["collision_area"] = sol::property(&Map_Object::get_collision_area, &Map_Object::set_collision_area);
     object_type["proximate_object"] = sol::property(&Map_Object::get_proximate_object, &Map_Object::set_proximate_object);
-    object_type["proximity_distance"] = sol::property(&Map_Object::proximity_distance, &Map_Object::set_proximity_distance);
+    object_type["proximity_distance"] = sol::property(&Map_Object::get_proximity_distance, &Map_Object::set_proximity_distance);
     object_type["outlined"] = sol::property(&Map_Object::is_outlined, &Map_Object::set_outlined);
     object_type["outline_conditions"] = sol::property(&Map_Object::get_outline_conditions,
         &Map_Object::set_outline_conditions);

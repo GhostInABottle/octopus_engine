@@ -212,6 +212,7 @@
     <ClCompile Include="..\..\src\scripting\bindings\math_bindings.cpp" />
     <ClCompile Include="..\..\src\scripting\bindings\text_bindings.cpp" />
     <ClCompile Include="..\..\src\scripting\bindings\utility_bindings.cpp" />
+    <ClCompile Include="..\..\src\tests\map_object_tests.cpp" />
     <ClCompile Include="..\..\src\utility\color.cpp" />
     <ClCompile Include="..\..\src\utility\file.cpp" />
     <ClCompile Include="..\..\src\filesystem\boost_filesystem.cpp" />
