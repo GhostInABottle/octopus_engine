@@ -45,6 +45,11 @@ namespace {
 
         return Direction::NONE;
     }
+
+    static inline bool area_has_trigger_priority(Map_Object* area, Map_Object* existing_area, Map_Object* collision_object) {
+        return area && area->has_trigger_script() && area == existing_area
+            && area->get_collision_priority() - collision_object->get_collision_priority() > 0;
+    }
 }
 
 Player_Controller::Player_Controller(Game& game)
@@ -167,16 +172,11 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
         if (new_collision) {
             object.set_collision_object(collision_object);
         }
-
         // Objects have priority over areas, except for areas with trigger scripts
         // that have higher collision priority
-        auto area = collision.other_area;
-        prevent_trigger = action_pressed
-            && collision_object
-            && area
-            && area->has_trigger_script()
-            && area == object.get_collision_area()
-            && area->get_collision_priority() - collision_object->get_collision_priority() > 0;
+        prevent_trigger = action_pressed && collision_object
+            && area_has_trigger_priority(collision.other_area,
+                object.get_collision_area(), collision_object);
     } else {
         old_object = object.get_collision_area();
         collision_object = collision.other_area;
@@ -199,7 +199,9 @@ bool Player_Controller::process_collision(Map_Object& object, Collision_Record c
 
     object.set_proximate_object(collision.proximate_object);
     auto check_proximate_object = run_scripts && !collision_object
-        && action_pressed && collision.proximate_object;
+        && action_pressed && collision.proximate_object
+        && !area_has_trigger_priority(collision.other_area,
+            object.get_collision_area(), collision.proximate_object);
     if (check_proximate_object) {
         collision_object = collision.proximate_object;
         triggered = collision.proximate_object->has_trigger_script();

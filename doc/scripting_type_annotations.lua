@@ -1167,6 +1167,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field leave_script string
 ---@field script_context Engine_Script_Context
 ---@field overrides_tile_collision boolean
+---@field collision_priority integer
 ---@field strict_multidirectional_movement boolean
 ---@field outline_color Engine_Color
 ---@field outlined? boolean
