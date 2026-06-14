@@ -9,6 +9,7 @@ steam_appid.txt
 *.sdf
 *.suo
 *.user
+*.user.props
 *.opensdf
 *.log
 *.opendb
