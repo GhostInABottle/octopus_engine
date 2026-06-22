@@ -11,11 +11,19 @@
 Audio_Player::Audio_Player(std::shared_ptr<xd::audio> audio)
         : audio(audio),
         audio_folder(Configurations::get<std::string>("audio.audio-folder")),
+        audio_folder_path_is_absolute(false),
         music_was_paused(false),
         ambient_was_paused(false) {
+    // Used to allow loading music from absolute paths
+    if (!audio_folder.empty()) {
+        auto fs = file_utilities::disk_filesystem();
+        audio_folder_path_is_absolute = fs->is_absolute_path(audio_folder);
+    }
+
     // Set default volumes
     set_global_music_volume(Configurations::get<float>("audio.music-volume"));
     set_global_sound_volume(Configurations::get<float>("audio.sound-volume"));
+
     // Cache default sounds
     load_global_config_sound("audio.choice-select-sfx", 3, false);
     load_global_config_sound("audio.choice-confirm-sfx", 3, false);
@@ -91,7 +99,7 @@ std::shared_ptr<xd::music> Audio_Player::play_music_or_ambient(bool is_music, Ma
         new_music = load_music(current_map, filename);
         LOGGER_D << "Playing cached music file: " << filename;
     } else {
-        auto fs = file_utilities::game_data_filesystem();
+        auto fs = get_audio_filesystem();
         auto full_name = audio_folder + filename;
         new_music = std::make_shared<xd::music>(*audio, full_name,
             fs->open_binary_ifstream(full_name));
@@ -226,6 +234,13 @@ void Audio_Player::resume() {
     audio->resume_sounds();
 }
 
+Readable_Filesystem* Audio_Player::get_audio_filesystem() const
+{
+    return audio_folder_path_is_absolute
+        ? file_utilities::user_data_filesystem()
+        : file_utilities::game_data_filesystem();
+}
+
 std::shared_ptr<xd::sound> Audio_Player::load_sound(Audio_Cache& cache, const std::string& key,
         const std::string& filename, unsigned int channel_count, bool pausable) {
     if (!audio || filename.empty() || channel_count == 0) return nullptr;
@@ -237,7 +252,7 @@ std::shared_ptr<xd::sound> Audio_Player::load_sound(Audio_Cache& cache, const st
     if (channel_count <= old_count) return sounds.back();
 
     auto full_name = audio_folder + filename;
-    auto fs = file_utilities::game_data_filesystem();
+    auto fs = get_audio_filesystem();
     for (unsigned int i = 0; i < channel_count - old_count; ++i) {
         sounds.emplace_back(std::make_shared<xd::sound>(*audio, full_name,
             fs->open_binary_ifstream(full_name), group_type));
@@ -252,7 +267,7 @@ std::shared_ptr<xd::music> Audio_Player::load_music(Audio_Cache& cache, const st
     auto& sounds = cache[filename];
     if (sounds.empty()) {
         LOGGER_D << "Loading music file: " << filename;
-        auto fs = file_utilities::game_data_filesystem();
+        auto fs = get_audio_filesystem();
         auto full_name = audio_folder + filename;
         sounds.emplace_back(std::make_shared<xd::music>(*audio, full_name,
             fs->open_binary_ifstream(full_name)));

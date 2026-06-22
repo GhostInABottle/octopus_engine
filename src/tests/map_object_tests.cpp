@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(map_object_load) {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
          <object id=\"3\" name=\"stairs\" type=\"area\" x=\"312\" y=\"112\" width=\"63\" height=\"122\" gid=\"5\" visible=\"0\"> \
           <properties> \
-           <property name=\"sprite\" value=\"data/sprite.spr\"/> \
+           <property name=\"sprite\" value=\"sprite.spr\"/> \
            <property name=\"direction\" value=\"UP|LEFT\"/> \
            <property name=\"pose\" value=\"pose name\"/> \
            <property name=\"state\" value=\"state name\"/> \
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(map_object_load) {
     BOOST_CHECK_CLOSE(object->get_size().y, 122.0f, epsilon);
     BOOST_CHECK_EQUAL(object->get_gid(), 5u);
     BOOST_CHECK_EQUAL(object->is_visible(), false);
-    BOOST_CHECK_EQUAL(object->get_sprite_filename(), "data/sprite.spr");
+    BOOST_CHECK_EQUAL(object->get_sprite_filename(), "sprite.spr");
     BOOST_CHECK_EQUAL(static_cast<int>(object->get_direction()),
         static_cast<int>(diagonal_to_four_directions(Direction::UP | Direction::LEFT)));
     BOOST_CHECK_EQUAL(object->get_pose_name(), "POSE NAME");

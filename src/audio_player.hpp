@@ -10,6 +10,7 @@
 
 class Game;
 class Map;
+class Readable_Filesystem;
 
 namespace xd {
     class music;
@@ -103,6 +104,7 @@ public:
     void resume();
 private:
     typedef std::unordered_map<std::string, std::vector<std::shared_ptr<xd::sound>>> Audio_Cache;
+    Readable_Filesystem* get_audio_filesystem() const;
     std::shared_ptr<xd::sound> load_sound(Audio_Cache& cache, const std::string& key,
         const std::string& filename, unsigned int channel_count = 1, bool pausable = true);
     std::shared_ptr<xd::music> load_music(Audio_Cache& cache, const std::string& filename);
@@ -116,6 +118,7 @@ private:
     std::shared_ptr<xd::audio> audio;
     Audio_Cache global_cache;
     std::string audio_folder;
+    bool audio_folder_path_is_absolute;
     // was music already paused when game got paused?
     bool music_was_paused;
     bool ambient_was_paused;
