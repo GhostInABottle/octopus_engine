@@ -64,15 +64,17 @@ void Pathfinder::calculate_path() {
             } else { // if not goal
                 // Keep track of the node with the lowest cost so far
                 if (current_node.h < nearest_node.h || nearest_node.h < 1 ||
-                        (current_node.h == nearest_node.h &&
-                        current_node.tile_pos() == nearest_node.tile_pos()))
+                    (current_node.h == nearest_node.h &&
+                        current_node.tile_pos() == nearest_node.tile_pos())) {
                     nearest_node = current_node;
+                }
 
                 // Check if we can add adjacent nodes to open list
                 auto adjacent_nodes = get_adjacent_nodes(current_node);
                 for (auto& adj_node : adjacent_nodes) {
-                    if (skip_node(adj_node))
+                    if (skip_node(adj_node)) {
                         continue;   // Node already exists in one of the lists
+                    }
                     open_list.push(adj_node);
                 }
             }
@@ -96,18 +98,20 @@ void Pathfinder::add_node(std::vector<Node>& nodes, xd::vec2 pos, Node& parent) 
             detail::show_test_tile(map, tile_pos.x, tile_pos.y, "TPass");
         return;
     }
-    auto dir = facing_direction(parent.pos, pos, true);
+    auto parent_pos = parent.pos - object.get_bounding_box().position();
+    auto dir = facing_direction(parent_pos, pos, true);
 
     auto speed = static_cast<float>(tile_width);
-    auto collision = map.passable({ object, dir, check_type, parent.pos, speed });
+    auto collision = map.passable({ object, dir, check_type, parent_pos, speed });
     if (collision.passable()) {
         int g = parent.g + 1;
         int h = distance(tile_pos, goal_node.tile_pos());
         // Penalize frequent path changes when moving diagonally
         if (is_diagonal(dir) && parent.parent) {
-            auto p_dir = facing_direction(parent.parent->pos, parent.pos, true);
-            if (dir != p_dir)
-                h++;
+            auto p_dir = facing_direction(parent.parent->pos, parent_pos, true);
+            if (dir != p_dir) {
+                h = h + 1;
+            }
         }
         Node* parent_address = &closed_list[parent.tile_pos()];
         nodes.emplace_back(tile_width, tile_height, pos, parent_address, g, h);
@@ -165,6 +169,9 @@ std::deque<Direction> Pathfinder::generate_path() {
     Node* node = &goal_node;
     while (node->parent) {
         auto direction = facing_direction(node->parent->pos, node->pos, true);
+        if (detail::debug_mode) {
+            detail::show_test_tile(map, node->tile_pos().x, node->tile_pos().y, "Path");
+        }
         path.push_front(direction);
         node = node->parent;
     }

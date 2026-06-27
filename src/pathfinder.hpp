@@ -117,7 +117,7 @@ private:
     int distance(xd::ivec2 pos1, xd::ivec2 pos2) const noexcept {
         const int dx = std::abs(pos1.x - pos2.x);
         const int dy = std::abs(pos1.y - pos2.y);
-        return std::max(dx, dy) ;
+        return dx + dy;
     }
     // Get a list of adjacent nodes to the given node
     std::vector<Node> get_adjacent_nodes(Node& node);

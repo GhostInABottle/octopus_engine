@@ -107,7 +107,7 @@ void Configurations::load_defaults() {
 
     defaults.emplace("debug.show-fps", Configurations::Default{ true });
     defaults.emplace("debug.show-time", Configurations::Default{ false });
-    defaults.emplace("debug.pathfinding-sprite", Configurations::Default{ std::string{}, false });
+    defaults.emplace("debug.pathfinding-sprite", Configurations::Default{ std::string{} });
     defaults.emplace("debug.seed-lua-rng", Configurations::Default{ true });
     defaults.emplace("debug.save-signature", Configurations::Default{ 0x7BEDEADu, false });
     defaults.emplace("debug.update-config-files", Configurations::Default{ true });

@@ -22,6 +22,7 @@ struct Move_Object_To_Command::Impl {
             , last_attempt_time(0)
             , blocked(false)
             , complete(false)
+            , following_path(false)
             , check_type(check_type)
             , nearest(nullptr)
             , old_state(object.get_state()) {}
@@ -35,6 +36,7 @@ struct Move_Object_To_Command::Impl {
     int last_attempt_time;
     bool blocked;
     bool complete;
+    bool following_path;
     Collision_Check_Type check_type;
     std::unique_ptr<Pathfinder::Node> nearest;
     std::string old_state;
@@ -43,8 +45,9 @@ struct Move_Object_To_Command::Impl {
         complete = false;
         path_found = false;
         Pathfinder finder(map, object, destination, 0, true, check_type);
-        if (nearest)
+        if (nearest) {
             finder.nearest() = *nearest;
+        }
         finder.calculate_path();
         if (finder.nearest().h > 0 &&
             (!nearest || finder.nearest().h < nearest->h)) {
@@ -53,6 +56,7 @@ struct Move_Object_To_Command::Impl {
         }
         path = finder.generate_path();
         path_found = finder.is_found();
+        following_path = true;
         pixels = 0.0f;
         last_attempt_time = map.get_game().ticks();
     }
@@ -69,18 +73,16 @@ struct Move_Object_To_Command::Impl {
     void execute(bool stopped, bool paused) {
         if (paused) return;
 
-        if ((blocked || !path_found) && keep_trying) {
+        if ((blocked || !path_found) && !following_path && keep_trying) {
             object.set_state(old_state);
             const int time_passed = map.get_game().ticks() - last_attempt_time;
-            if ((map.get_objects_moved() && time_passed > 1000) || time_passed > 5000) {
+            if ((map.get_objects_moved() && time_passed > 2000) || time_passed > 5000) {
                 init();
                 map.set_objects_moved(false);
                 blocked = false;
             }
             return;
         }
-
-        if (!path_found) return;
 
         const auto check_completion = [&](bool is_stopped) {
             const auto pos = object.get_real_position();
@@ -99,7 +101,7 @@ struct Move_Object_To_Command::Impl {
                 pixels += object.get_fps_independent_speed() * correction;
             } else {
                 blocked = true;
-                }
+            }
 
             complete = check_completion(stopped);
             if (complete) {
@@ -109,6 +111,7 @@ struct Move_Object_To_Command::Impl {
             return;
         }
 
+        following_path = false;
         complete = check_completion(stopped);
         if (!complete) {
             // Try to manually move to the destination
