@@ -502,6 +502,7 @@ void Game::init(const std::string& default_scale_mode) {
     // Add player to the map
     map->add_object(player);
     // Play background music and ambient
+    pimpl->audio_player.load_map_audio(*map);
     pimpl->audio_player.play_music(*map);
     pimpl->audio_player.play_ambient(*map);
     // Track player by camera

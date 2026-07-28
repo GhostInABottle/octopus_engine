@@ -159,7 +159,7 @@ std::shared_ptr<xd::sound> Audio_Player::play_sound(Game& game, const std::strin
         auto pausable = channels.empty()
             ? !game.is_paused()
             : channels.back()->get_channel_group_type() != channel_group_type::non_pausable_sound;
-        LOGGER_D << "Loading an additional " << (pausable ? "" : "non-") << "channel for " << key;
+        LOGGER_D << "Loading an additional " << (pausable ? "" : "non-pausable ") << "channel for " << key;
         sound = load_sound(*cache, key, filename, channels.size() + 1, pausable);
         if (!sound) return nullptr;
     }
