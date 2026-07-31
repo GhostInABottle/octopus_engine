@@ -101,6 +101,32 @@ struct Game::Impl {
         );
     }
 
+    // Set up the player, play audio and run map scripts after loading a map
+    void setup_map(Map& map, std::shared_ptr<Map_Object> player, Camera& camera) {
+        // Add the player to the map
+        Object_Layer* layer = next_layer
+            ? map.get_object_layer_by_name(*next_layer)
+            : nullptr;
+
+        map.add_object(player, layer);
+
+        // Track player by camera
+        camera.set_object(player.get());
+        camera.set_clear_color(map.get_clear_color());
+
+        // Play background music and ambient
+        audio_player.load_map_audio(map);
+        if (next_music) {
+            audio_player.play_music(map, *next_music, true, map.get_bg_music_volume());
+        } else {
+            audio_player.play_music(map);
+        }
+        audio_player.play_ambient(map);
+
+        // Run map startup scripts
+        map.run_startup_scripts();
+    }
+
     // Called when a configuration changes
     void on_config_change(const std::string& config_key) {
         config_changes.insert(config_key);
@@ -499,15 +525,7 @@ void Game::init(const std::string& default_scale_mode) {
     // Create input controller for player
     auto controller = std::make_shared<Player_Controller>(*this);
     player->add_component(controller);
-    // Add player to the map
-    map->add_object(player);
-    // Play background music and ambient
-    pimpl->audio_player.load_map_audio(*map);
-    pimpl->audio_player.play_music(*map);
-    pimpl->audio_player.play_ambient(*map);
-    // Track player by camera
-    camera->set_object(player.get());
-    camera->set_clear_color(map->get_clear_color());
+
     // Bind game keys
     pimpl->process_keymap(*this);
     // Setup Lua scripts
@@ -518,8 +536,10 @@ void Game::init(const std::string& default_scale_mode) {
         pimpl->pause_scripting_interface = std::make_unique<Scripting_Interface>(*this);
         pimpl->pause_scripting_interface->set_globals();
     }
-    // Run map startup scripts
-    map->run_startup_scripts();
+
+    // Add player to map, play music and run map scripts
+    pimpl->setup_map(*map, player, *camera);
+
     // Set frame update function and frequency
     int logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
     window->register_tick_handler(std::bind(&Game::frame_update, this), 1000 / logic_fps);
@@ -900,27 +920,14 @@ void Game::load_next_map() {
     player->clear_linked_objects();
     player->set_layer(nullptr);
 
-    // Add the player to the map
     auto start_pos = pimpl->next_position.value_or(map->get_starting_position());
     player->set_position(start_pos);
     player->face(pimpl->next_direction);
-    Object_Layer* layer = nullptr;
-    if (pimpl->next_layer) {
-        layer = map->get_object_layer_by_name(*pimpl->next_layer);
-    }
-    map->add_object(player, layer);
-    camera->set_object(player.get());
-    camera->set_clear_color(map->get_clear_color());
+
+    // Add player to map, play music and load map scripts
+    pimpl->setup_map(*map, player, *camera);
+
     camera->update();
-
-    // Play background music and ambient
-    auto& audio_player = pimpl->audio_player;
-    audio_player.load_map_audio(*map);
-    auto bg_music = pimpl->next_music.value_or(map->get_bg_music_filename());
-    audio_player.play_music(*map, bg_music, true, map->get_bg_music_volume());
-    audio_player.play_ambient(*map);
-
-    map->run_startup_scripts();
     pimpl->next_map = "";
 }
 
