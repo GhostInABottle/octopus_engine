@@ -264,11 +264,18 @@ public:
     void set_proximity_distance(int pixels) {
         proximity_pixels = pixels;
     }
+    bool has_linked_object(const Map_Object* object) const {
+        for (auto obj : linked_objects) {
+            if (obj == object) return true;
+        }
+
+        return false;
+    }
     void add_linked_object(Map_Object* obj) {
-        if (obj == this) return;
+        if (obj == this || has_linked_object(obj)) return;
         linked_objects.push_back(obj);
     }
-    void remove_linked_object(Map_Object* obj) {
+    void remove_linked_object(const Map_Object* obj) {
         linked_objects.erase(
             std::remove_if(linked_objects.begin(), linked_objects.end(),
                 [obj](const Map_Object* o) { return o == obj; }),
@@ -298,11 +305,29 @@ public:
     void set_outlined_object_id(int id) {
         outlined_object_id = id;
     }
-    Map_Object* get_outlining_object() {
-        return outlining_object;
+    std::vector<Map_Object*>& get_outlining_objects() {
+        return outlining_objects;
     }
-    void set_outlining_object(Map_Object* object) {
-        outlining_object = object;
+    bool has_outlining_object(const Map_Object* object) const {
+        for (auto obj : outlining_objects) {
+            if (obj == object) return true;
+        }
+
+        return false;
+    }
+    void add_outlining_object(Map_Object* object) {
+        if (object == this || has_outlining_object(object)) return;
+
+        outlining_objects.push_back(object);
+    }
+    void remove_outlining_object(const Map_Object* object) {
+        outlining_objects.erase(
+            std::remove_if(outlining_objects.begin(), outlining_objects.end(),
+                [object](const Map_Object* obj) { return obj == object; }),
+            outlining_objects.end());
+    }
+    void clear_outlining_objects() {
+        outlining_objects.clear();
     }
     Draw_Order get_draw_order() const {
         return draw_order;
@@ -427,8 +452,8 @@ private:
     Outline_Condition outline_conditions;
     // ID of other object that is outlined when this object is interacted with
     int outlined_object_id;
-    // Object that causes this one to be outlined
-    Map_Object* outlining_object;
+    // Objects that causes this one to be outlined
+    std::vector<Map_Object*> outlining_objects;
     // Optional reference to a tile
     unsigned int gid;
     // Object opacity

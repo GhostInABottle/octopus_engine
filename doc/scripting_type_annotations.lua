@@ -898,6 +898,7 @@ Text_Parser = {}
 ---@param text string
 ---@param permissive boolean
 ---@return Engine_Token[]
+---@nodiscard
 function Text_Parser:parse(text, permissive) end
 
 -- Shared canvas properties and methods
@@ -1172,7 +1173,7 @@ function Sprite_Canvas(sprite_filename, x, y, pose) end
 ---@field outline_color Engine_Color
 ---@field outlined? boolean
 ---@field outlined_object? Engine_Map_Object
----@field outlining_object? Engine_Map_Object
+---@field outlining_objects Engine_Map_Object[]
 ---@field outline_conditions Engine_Outline_Condition
 ---@field sfx_attenuation boolean
 ---@field sfx_volume number

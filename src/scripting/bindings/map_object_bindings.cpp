@@ -127,22 +127,6 @@ void bind_map_object_types(sol::state& lua, Game& game) {
         });
     object_type["sfx_volume"] = sol::property(&Map_Object::get_sfx_volume, &Map_Object::set_sfx_volume);
     object_type["last_marker"] = sol::property(&Map_Object::get_last_marker);
-    object_type["passed_marker"] = &Map_Object::passed_marker;
-    object_type["reset"] = &Map_Object::reset;
-    object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename,
-            std::optional<std::string> pose) {
-        obj->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
-    };
-    object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name,
-            std::optional<std::string> state, std::optional<Direction> dir,
-            std::optional<bool> reset_current_frame) {
-        auto si = game.get_current_scripting_interface();
-        auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;
-        Show_Pose_Command::Holder_Info holder_info{ holder_type, obj->get_id() };
-        return si->register_command<Show_Pose_Command>(
-            *game.get_map(), holder_info, pose_name, state.value_or(""),
-            dir.value_or(Direction::NONE), reset_current_frame.value_or(true));
-    };
     object_type["state"] = sol::property(&Map_Object::get_state, &Map_Object::set_state);
     object_type["walk_state"] = sol::property(&Map_Object::get_walk_state, &Map_Object::set_walk_state);
     object_type["face_state"] = sol::property(&Map_Object::get_face_state, &Map_Object::set_face_state);
@@ -177,15 +161,20 @@ void bind_map_object_types(sol::state& lua, Game& game) {
             auto map = game.get_map();
             if (!other) {
                 other = map->get_object(object->get_outlined_object_id());
-                if (other) other->set_outlining_object(nullptr);
+                if (other) {
+                    other->remove_outlining_object(object);
+                }
                 object->set_outlined_object_id(-1);
                 return;
             }
             object->set_outlined_object_id(other->get_id());
-            other->set_outlining_object(object);
+            other->add_outlining_object(object);
         }
     );
-    object_type["outlining_object"] = sol::property(&Map_Object::get_outlining_object);
+    object_type["outlining_objects"] = sol::property([&](Map_Object* object) {
+            return sol::as_table(object->get_outlining_objects());
+        }
+    );
     object_type["draw_order"] = sol::property(&Map_Object::get_draw_order, &Map_Object::set_draw_order);
     object_type["real_position"] = sol::property(&Map_Object::get_real_position);
     object_type["positioned_bounding_box"] = sol::property(&Map_Object::get_positioned_bounding_box);
@@ -211,6 +200,22 @@ void bind_map_object_types(sol::state& lua, Game& game) {
         &Map_Object::set_sound_attenuation_enabled);
     object_type["get_property"] = &Map_Object::get_property;
     object_type["set_property"] = &Map_Object::set_property;
+    object_type["passed_marker"] = &Map_Object::passed_marker;
+    object_type["reset"] = &Map_Object::reset;
+    object_type["set_sprite"] = [&](Map_Object* obj, const std::string& filename,
+            std::optional<std::string> pose) {
+        obj->set_sprite(game, game.get_asset_manager(), filename, pose.value_or(""));
+    };
+    object_type["show_pose"] = [&](Map_Object* obj, const std::string& pose_name,
+            std::optional<std::string> state, std::optional<Direction> dir,
+            std::optional<bool> reset_current_frame) {
+        auto si = game.get_current_scripting_interface();
+        auto holder_type = Show_Pose_Command::Holder_Type::MAP_OBJECT;
+        Show_Pose_Command::Holder_Info holder_info{ holder_type, obj->get_id() };
+        return si->register_command<Show_Pose_Command>(
+            *game.get_map(), holder_info, pose_name, state.value_or(""),
+            dir.value_or(Direction::NONE), reset_current_frame.value_or(true));
+    };
     object_type["move_to"] = sol::overload(
         [&](Map_Object* obj, float x, float y) {
             auto si = game.get_current_scripting_interface();

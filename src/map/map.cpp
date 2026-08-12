@@ -438,8 +438,8 @@ void Map::erase_object_references(const Map_Object* object) {
         if (object == player->get_proximate_object()) {
             player->set_proximate_object(nullptr);
         }
-        if (object == player->get_outlining_object()) {
-            player->set_outlining_object(nullptr);
+        if (player->has_outlining_object(object)) {
+            player->remove_outlining_object(object);
         }
     }
 
@@ -848,7 +848,7 @@ std::unique_ptr<Map> Map::load(Game& game, rapidxml::xml_node<>& node) {
         auto target = map_ptr->get_object(target_id);
         if (!target) continue;
 
-        target->set_outlining_object(object.second.get());
+        target->add_outlining_object(object.second.get());
     }
 
     return map_ptr;

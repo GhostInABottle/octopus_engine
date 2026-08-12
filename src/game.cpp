@@ -916,7 +916,7 @@ void Game::load_next_map() {
     player->set_collision_object(nullptr);
     player->set_collision_area(nullptr);
     player->set_proximate_object(nullptr);
-    player->set_outlining_object(nullptr);
+    player->clear_outlining_objects();
     player->clear_linked_objects();
     player->set_layer(nullptr);
 

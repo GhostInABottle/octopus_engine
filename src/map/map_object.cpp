@@ -25,7 +25,6 @@ Map_Object::Map_Object(Game& game, xd::asset_manager& asset_manager,
         , magnification(1.0f)
         , outline_conditions(get_default_outline_conditions())
         , outlined_object_id(-1)
-        , outlining_object(nullptr)
         , gid(0)
         , opacity(1.0f)
         , visible(true)
@@ -281,7 +280,12 @@ bool Map_Object::is_outlined() const {
         result = result && !trigger_script.empty();
     }
 
-    result = result || (outlining_object && outlining_object->is_outlined());
+    if (result) return true;
+
+    for (auto outlining_object : outlining_objects) {
+        result = result || (outlining_object && outlining_object->is_outlined());
+        if (result) break;
+    }
 
     return result;
 }
