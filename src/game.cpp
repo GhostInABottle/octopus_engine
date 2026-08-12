@@ -101,7 +101,7 @@ struct Game::Impl {
         );
     }
 
-    // Set up the player, play audio and run map scripts after loading a map
+    // Set up the player and play music/ambient
     void setup_map(Map& map, std::shared_ptr<Map_Object> player, Camera& camera) {
         // Add the player to the map
         Object_Layer* layer = next_layer
@@ -122,9 +122,6 @@ struct Game::Impl {
             audio_player.play_music(map);
         }
         audio_player.play_ambient(map);
-
-        // Run map startup scripts
-        map.run_startup_scripts();
     }
 
     // Called when a configuration changes
@@ -526,6 +523,9 @@ void Game::init(const std::string& default_scale_mode) {
     auto controller = std::make_shared<Player_Controller>(*this);
     player->add_component(controller);
 
+    // Add the player to the map/camera and play background music
+    pimpl->setup_map(*map, player, *camera);
+
     // Bind game keys
     pimpl->process_keymap(*this);
     // Setup Lua scripts
@@ -537,8 +537,8 @@ void Game::init(const std::string& default_scale_mode) {
         pimpl->pause_scripting_interface->set_globals();
     }
 
-    // Add player to map, play music and run map scripts
-    pimpl->setup_map(*map, player, *camera);
+    // Run map startup scripts
+    map->run_startup_scripts();
 
     // Set frame update function and frequency
     int logic_fps = Configurations::get<int>("graphics.logic-fps", "debug.logic-fps");
@@ -880,8 +880,8 @@ void Game::render_text(xd::font& font, const xd::font_style& style, float x, flo
 }
 
 float Game::text_width(const std::string& text, xd::font* font, const xd::font_style* style) {
-    return pimpl->text_renderer.text_width(font ? *font : *this->font, pimpl->text_formatter,
-        style ? *style : this->style, text);
+    return pimpl->text_renderer.text_width(font ? *font : *this->font,
+        pimpl->text_formatter, style ? *style : this->style, text);
 }
 
 bool Game::stopped() const {
@@ -924,8 +924,8 @@ void Game::load_next_map() {
     player->set_position(start_pos);
     player->face(pimpl->next_direction);
 
-    // Add player to map, play music and load map scripts
     pimpl->setup_map(*map, player, *camera);
+    map->run_startup_scripts();
 
     camera->update();
     pimpl->next_map = "";
