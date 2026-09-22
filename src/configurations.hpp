@@ -128,6 +128,12 @@ private:
         Default(value_type value = false, bool modifiable = true)
             : value(value), modifiable(modifiable) {}
     };
+    static Default create_default(value_type value) {
+        return Default{ value, true };
+    }
+    static Default create_immutable_default(value_type value) {
+        return Default{ value, false };
+    }
     inline static bool changed_since_save = false;
     // Variable map to store the options
     inline static value_map values;

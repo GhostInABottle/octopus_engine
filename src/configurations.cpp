@@ -6,135 +6,137 @@
 #include <unordered_set>
 
 void Configurations::load_defaults() {
-    defaults.emplace("config.version", Configurations::Default{ 0, false });
+    defaults = {
+        { "config.version", create_immutable_default(0) },
 
-    defaults.emplace("game.title", Configurations::Default{ std::string{"Untitled"}, false });
-    defaults.emplace("game.pause-unfocused", Configurations::Default{ true });
-    defaults.emplace("game.data-folder", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.data-folder-version", Configurations::Default{ std::string{"v0_1"}, false });
-    defaults.emplace("game.copy-old-data-folder", Configurations::Default{ std::string{""}, false });
-    defaults.emplace("game.object-outline-color", Configurations::Default{ std::string{"#FFFFFF00"} });
-    defaults.emplace("game.object-script-preamble", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.map-loaded-script", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.pause-script", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.scripts-folder", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.store-url", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.archive-path", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.icon_base_name", Configurations::Default{ std::string{}, false });
-    defaults.emplace("game.icon_sizes", Configurations::Default{ std::string{}, false });
+        { "game.title", create_immutable_default(std::string{"Untitled"}) },
+        { "game.pause-unfocused", create_default(true) },
+        { "game.data-folder", create_immutable_default(std::string{}) },
+        { "game.data-folder-version", create_immutable_default(std::string{"v0_1"}) },
+        { "game.copy-old-data-folder", create_immutable_default(std::string{""}) },
+        { "game.object-outline-color", create_default(std::string{"#FFFFFF00"}) },
+        { "game.object-script-preamble", create_immutable_default(std::string{}) },
+        { "game.map-loaded-script", create_immutable_default(std::string{}) },
+        { "game.pause-script", create_immutable_default(std::string{}) },
+        { "game.scripts-folder", create_immutable_default(std::string{}) },
+        { "game.store-url", create_immutable_default(std::string{}) },
+        { "game.archive-path", create_immutable_default(std::string{}) },
+        { "game.icon_base_name", create_immutable_default(std::string{}) },
+        { "game.icon_sizes", create_immutable_default(std::string{}) },
 
-    defaults.emplace("text.fade-in-duration", Configurations::Default{ 250 });
-    defaults.emplace("text.fade-out-duration", Configurations::Default{ 250 });
-    defaults.emplace("text.choice-press-delay", Configurations::Default{ 250 });
-    defaults.emplace("text.choice-selected-color", Configurations::Default{ std::string{"#FF00FF00"} });
-    defaults.emplace("text.canvas-priority", Configurations::Default{ 1000, false });
-    defaults.emplace("text.show-background", Configurations::Default{ true });
-    defaults.emplace("text.background-color", Configurations::Default{ std::string{"#7F000000"} });
-    defaults.emplace("text.background-margin-left", Configurations::Default{ 5 });
-    defaults.emplace("text.background-margin-top", Configurations::Default{ 5 });
-    defaults.emplace("text.background-margin-right", Configurations::Default{ 5 });
-    defaults.emplace("text.background-margin-bottom", Configurations::Default{ 5 });
-    defaults.emplace("text.screen-edge-margin-x", Configurations::Default{ 20 });
-    defaults.emplace("text.screen-edge-margin-y", Configurations::Default{ 20 });
+        { "text.fade-in-duration", create_default(250) },
+        { "text.fade-out-duration", create_default(250) },
+        { "text.choice-press-delay", create_default(250) },
+        { "text.choice-selected-color", create_default(std::string{"#FF00FF00"}) },
+        { "text.canvas-priority", create_immutable_default(1000) },
+        { "text.show-background", create_default(true) },
+        { "text.background-color", create_default(std::string{"#7F000000"}) },
+        { "text.background-margin-left", create_default(5) },
+        { "text.background-margin-top", create_default(5) },
+        { "text.background-margin-right", create_default(5) },
+        { "text.background-margin-bottom", create_default(5) },
+        { "text.screen-edge-margin-x", create_default(20) },
+        { "text.screen-edge-margin-y", create_default(20) },
 
-    defaults.emplace("graphics.game-width", Configurations::Default{ 320, false });
-    defaults.emplace("graphics.game-height", Configurations::Default{ 240, false });
-    defaults.emplace("graphics.screen-width", Configurations::Default{ -1 });
-    defaults.emplace("graphics.screen-height", Configurations::Default{ -1 });
-    defaults.emplace("graphics.window-width", Configurations::Default{ -1 });
-    defaults.emplace("graphics.window-height", Configurations::Default{ -1 });
-    defaults.emplace("graphics.resizable-window", Configurations::Default{ true });
-    defaults.emplace("graphics.aspect-ratio-numerator", Configurations::Default{ -1 });
-    defaults.emplace("graphics.aspect-ratio-denominator", Configurations::Default{ -1 });
-    defaults.emplace("graphics.maximized-window", Configurations::Default { false });
-    defaults.emplace("graphics.logic-fps", Configurations::Default{ 60 });
-    defaults.emplace("graphics.canvas-fps", Configurations::Default{ 40 });
-    defaults.emplace("graphics.fullscreen", Configurations::Default{ false });
-    defaults.emplace("graphics.vsync", Configurations::Default{ false });
-    // Scaling modes: aspect, window, stretch, default
-    defaults.emplace("graphics.scale-mode", Configurations::Default{ std::string{"default"} });
-    defaults.emplace("graphics.vertex-shader", Configurations::Default{ std::string{} });
-    defaults.emplace("graphics.fragment-shader", Configurations::Default{ std::string{} });
-    defaults.emplace("graphics.pause-vertex-shader", Configurations::Default{ std::string{} });
-    defaults.emplace("graphics.pause-fragment-shader", Configurations::Default{ std::string{} });
-    defaults.emplace("graphics.brightness", Configurations::Default{ 1.0f });
-    defaults.emplace("graphics.contrast", Configurations::Default{ 1.0f });
-    defaults.emplace("graphics.saturation", Configurations::Default{ 1.0f });
-    defaults.emplace("graphics.gamma", Configurations::Default{ 1.0f });
-    defaults.emplace("graphics.use-fbo", Configurations::Default{ true });
-    defaults.emplace("graphics.postprocessing-enabled", Configurations::Default{ true });
-    defaults.emplace("graphics.magnification", Configurations::Default{ 1.0f });
+        { "graphics.game-width", create_immutable_default(320) },
+        { "graphics.game-height", create_immutable_default(240) },
+        { "graphics.screen-width", create_default(-1) },
+        { "graphics.screen-height", create_default(-1) },
+        { "graphics.window-width", create_default(-1) },
+        { "graphics.window-height", create_default(-1) },
+        { "graphics.resizable-window", create_default(true) },
+        { "graphics.aspect-ratio-numerator", create_default(-1) },
+        { "graphics.aspect-ratio-denominator", create_default(-1) },
+        { "graphics.maximized-window", create_default(false) },
+        { "graphics.logic-fps", create_default(60) },
+        { "graphics.canvas-fps", create_default(40) },
+        { "graphics.fullscreen", create_default(false) },
+        { "graphics.vsync", create_default(false) },
+            // Scaling modes: aspect, window, stretch, default
+        { "graphics.scale-mode", create_default(std::string{"default"}) },
+        { "graphics.vertex-shader", create_default(std::string{}) },
+        { "graphics.fragment-shader", create_default(std::string{}) },
+        { "graphics.pause-vertex-shader", create_default(std::string{}) },
+        { "graphics.pause-fragment-shader", create_default(std::string{}) },
+        { "graphics.brightness", create_default(1.0f) },
+        { "graphics.contrast", create_default(1.0f) },
+        { "graphics.saturation", create_default(1.0f) },
+        { "graphics.gamma", create_default(1.0f) },
+        { "graphics.use-fbo", create_default(true) },
+        { "graphics.postprocessing-enabled", create_default(true) },
+        { "graphics.magnification", create_default(1.0f) },
 
-    defaults.emplace("audio.audio-folder", Configurations::Default{ std::string{}, false });
-    defaults.emplace("audio.music-volume", Configurations::Default{ 1.0f });
-    defaults.emplace("audio.sound-volume", Configurations::Default{ 1.0f });
-    defaults.emplace("audio.choice-select-sfx", Configurations::Default{ std::string{} });
-    defaults.emplace("audio.choice-confirm-sfx", Configurations::Default{ std::string{} });
-    defaults.emplace("audio.choice-cancel-sfx", Configurations::Default{ std::string{} });
-    defaults.emplace("audio.mute-on-pause", Configurations::Default{ true });
-    defaults.emplace("audio.sound-attenuation-factor", Configurations::Default{ 50.0f });
+        { "audio.audio-folder", create_immutable_default(std::string{}) },
+        { "audio.music-volume", create_default(1.0f) },
+        { "audio.sound-volume", create_default(1.0f) },
+        { "audio.choice-select-sfx", create_default(std::string{}) },
+        { "audio.choice-confirm-sfx", create_default(std::string{}) },
+        { "audio.choice-cancel-sfx", create_default(std::string{}) },
+        { "audio.mute-on-pause", create_default(true) },
+        { "audio.sound-attenuation-factor", create_default(50.0f) },
 
-    defaults.emplace("font.default", Configurations::Default{ std::string{}, false });
-    defaults.emplace("font.bold", Configurations::Default{ std::string{}, false });
-    defaults.emplace("font.italic", Configurations::Default{ std::string{}, false });
-    defaults.emplace("font.size", Configurations::Default{ 12, false });
-    defaults.emplace("font.line-height", Configurations::Default{ 12.0f, false });
-    defaults.emplace("font.icon-image", Configurations::Default{ std::string{}, false });
-    defaults.emplace("font.icon-width", Configurations::Default{ 12.0f, false });
-    defaults.emplace("font.icon-height", Configurations::Default{ 12.0f, false });
-    defaults.emplace("font.icon-offset-x", Configurations::Default{ 0.0f, false });
-    defaults.emplace("font.icon-offset-y", Configurations::Default{ 0.0f, false });
-    defaults.emplace("font.icon-transparent-color", Configurations::Default{ std::string{"FF00FF00"}, false });
+        { "font.default", create_immutable_default(std::string{}) },
+        { "font.bold", create_immutable_default(std::string{}) },
+        { "font.italic", create_immutable_default(std::string{}) },
+        { "font.size", create_immutable_default(12) },
+        { "font.line-height", create_immutable_default(12.0f) },
+        { "font.icon-image", create_immutable_default(std::string{}) },
+        { "font.icon-width", create_immutable_default(12.0f) },
+        { "font.icon-height", create_immutable_default(12.0f) },
+        { "font.icon-offset-x", create_immutable_default(0.0f) },
+        { "font.icon-offset-y", create_immutable_default(0.0f) },
+        { "font.icon-transparent-color", create_immutable_default(std::string{"FF00FF00"}) },
 
-    defaults.emplace("controls.gamepad-enabled", Configurations::Default{ true });
-    defaults.emplace("controls.gamepad-detection", Configurations::Default{ true });
-    defaults.emplace("controls.preferred-gamepad-guid", Configurations::Default{ std::string{""} });
-    defaults.emplace("controls.axis-as-dpad", Configurations::Default{ true });
-    defaults.emplace("controls.stick-sensitivity", Configurations::Default{ 0.5f });
-    defaults.emplace("controls.trigger-sensitivity", Configurations::Default{ 0.5f });
-    defaults.emplace("controls.action-button", Configurations::Default{ std::string{"a"} });
-    defaults.emplace("controls.cancel-button", Configurations::Default{ std::string{"b"} });
-    defaults.emplace("controls.pause-button", Configurations::Default{ std::string{"pause"} });
-    defaults.emplace("controls.mapping-file", Configurations::Default{ std::string{"keymap.ini"}, false });
-    defaults.emplace("controls.pause-on-gamepad-disconnect", Configurations::Default{ std::string{"auto"} });
+        { "controls.gamepad-enabled", create_default(true) },
+        { "controls.gamepad-detection", create_default(true) },
+        { "controls.preferred-gamepad-guid", create_default(std::string{""}) },
+        { "controls.axis-as-dpad", create_default(true) },
+        { "controls.stick-sensitivity", create_default(0.5f) },
+        { "controls.trigger-sensitivity", create_default(0.5f) },
+        { "controls.action-button", create_default(std::string{"a"}) },
+        { "controls.cancel-button", create_default(std::string{"b"}) },
+        { "controls.pause-button", create_default(std::string{"pause"}) },
+        { "controls.mapping-file", create_immutable_default(std::string{"keymap.ini"}) },
+        { "controls.pause-on-gamepad-disconnect", create_default(std::string{"auto"}) },
 
-    defaults.emplace("logging.enabled", Configurations::Default{ true });
-    defaults.emplace("logging.filename", Configurations::Default{ std::string{"game.log"} });
-    defaults.emplace("logging.level", Configurations::Default{ std::string{"debug"} });
-    defaults.emplace("logging.mode", Configurations::Default{ std::string{"truncate"} });
-    defaults.emplace("logging.file-count", Configurations::Default{ -1 });
-    defaults.emplace("logging.max-file-size-kb", Configurations::Default{ -1 });
+        { "logging.enabled", create_default(true) },
+        { "logging.filename", create_default(std::string{"game.log"}) },
+        { "logging.level", create_default(std::string{"debug"}) },
+        { "logging.mode", create_default(std::string{"truncate"}) },
+        { "logging.file-count", create_default(-1) },
+        { "logging.max-file-size-kb", create_default(-1) },
 
-    defaults.emplace("debug.show-fps", Configurations::Default{ true });
-    defaults.emplace("debug.show-time", Configurations::Default{ false });
-    defaults.emplace("debug.pathfinding-sprite", Configurations::Default{ std::string{} });
-    defaults.emplace("debug.seed-lua-rng", Configurations::Default{ true });
-    defaults.emplace("debug.save-signature", Configurations::Default{ 0x7BEDEADu, false });
-    defaults.emplace("debug.update-config-files", Configurations::Default{ true });
-    // Deprecated configurations, use graphics.[config_name] instead
-    defaults.emplace("debug.width", Configurations::Default{ 320 });
-    defaults.emplace("debug.height", Configurations::Default{ 240 });
-    defaults.emplace("debug.magnification", Configurations::Default{ 1.0f });
-    defaults.emplace("debug.logic-fps", Configurations::Default{ 60 });
-    defaults.emplace("debug.canvas-fps", Configurations::Default{ 40 });
-    defaults.emplace("debug.use-fbo", Configurations::Default{ true });
+        { "debug.show-fps", create_default(true) },
+        { "debug.show-time", create_default(false) },
+        { "debug.pathfinding-sprite", create_default(std::string{}) },
+        { "debug.seed-lua-rng", create_default(true) },
+        { "debug.save-signature", create_immutable_default(0x7BEDEADu) },
+        { "debug.update-config-files", create_default(true) },
+            // Deprecated configurations, use graphics.[config_name] instead
+        { "debug.width", create_default(320) },
+        { "debug.height", create_default(240) },
+        { "debug.magnification", create_default(1.0f) },
+        { "debug.logic-fps", create_default(60) },
+        { "debug.canvas-fps", create_default(40) },
+        { "debug.use-fbo", create_default(true) },
 
-    defaults.emplace("player.collision-check-delay", Configurations::Default{ 50 });
-    defaults.emplace("player.edge-tolerance-pixels", Configurations::Default{ 8 });
-    defaults.emplace("player.proximity-distance", Configurations::Default{ 8 });
-    defaults.emplace("player.camera-center-offset-x", Configurations::Default{ 0.0f });
-    defaults.emplace("player.camera-center-offset-y", Configurations::Default{ 0.0f });
+        { "player.collision-check-delay", create_default(50) },
+        { "player.edge-tolerance-pixels", create_default(8) },
+        { "player.proximity-distance", create_default(8) },
+        { "player.camera-center-offset-x", create_default(0.0f) },
+        { "player.camera-center-offset-y", create_default(0.0f) },
 
-    defaults.emplace("startup.map", Configurations::Default{ std::string{} });
-    defaults.emplace("startup.player-sprite", Configurations::Default{ std::string{} });
-    defaults.emplace("startup.player-position-x", Configurations::Default{ 70.0f });
-    defaults.emplace("startup.player-position-y", Configurations::Default{ 50.0f });
-    defaults.emplace("startup.tint-color", Configurations::Default{ std::string{"00000000"} });
-    defaults.emplace("startup.clear-color", Configurations::Default{ std::string{"00000000"} });
-    defaults.emplace("startup.scripts-list", Configurations::Default{ std::string{}, false });
+        { "startup.map", create_default(std::string{}) },
+        { "startup.player-sprite", create_default(std::string{}) },
+        { "startup.player-position-x", create_default(70.0f) },
+        { "startup.player-position-y", create_default(50.0f) },
+        { "startup.tint-color", create_default(std::string{"00000000"}) },
+        { "startup.clear-color", create_default(std::string{"00000000"}) },
+        { "startup.scripts-list", create_immutable_default(std::string{}) },
 
-    defaults.emplace("steam.app-id", Configurations::Default{ 0, false });
-    defaults.emplace("steam.restart-in-steam", Configurations::Default{ false });
+        { "steam.app-id", create_immutable_default(0) },
+        { "steam.restart-in-steam", create_default(false) }
+    };
 }
 
 std::vector<std::string> Configurations::parse(std::istream& stream, bool is_default) {
