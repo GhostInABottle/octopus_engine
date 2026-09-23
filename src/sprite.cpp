@@ -12,15 +12,46 @@
 #include "utility/string.hpp"
 #include "utility/direction.hpp"
 #include "xd/audio.hpp"
+#include <boost/container_hash/hash.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <optional>
 #include <unordered_map>
 #include <vector>
 
+
 namespace detail {
-    static xd::vec4 default_color(1, 1, 1, 1);
+    struct Pose_Name_State_Direction {
+        std::string name;
+        std::string state;
+        Direction direction;
+        Pose_Name_State_Direction() : direction(Direction::NONE) {}
+        Pose_Name_State_Direction(const std::string& name, const std::string& state, Direction direction)
+            : name(string_utilities::capitalize(name))
+            , state(string_utilities::capitalize(state))
+            , direction(direction) {}
+        bool operator==(const Pose_Name_State_Direction other) const noexcept {
+            return name == other.name && state == other.state && direction == other.direction;
+        }
+        bool operator!=(const Pose_Name_State_Direction& other) noexcept
+        {
+            return !(*this == other);
+        }
+    };
 }
+
+template<>
+struct std::hash<detail::Pose_Name_State_Direction>
+{
+    size_t operator()(const detail::Pose_Name_State_Direction& p) const noexcept
+    {
+        size_t seed = 0;
+        boost::hash_combine(seed, p.name);
+        boost::hash_combine(seed, p.state);
+        boost::hash_combine(seed, p.direction);
+        return seed;
+    }
+};
 
 struct Sprite::Impl {
     // Game instance
@@ -29,14 +60,10 @@ struct Sprite::Impl {
     xd::audio* audio;
     // Sprite data (poses, frames, etc.)
     std::shared_ptr<Sprite_Data> data;
-    // Current pose name
-    std::string current_pose_name;
-    // Current pose state
-    std::string current_pose_state;
-    // Current direction
-    Direction current_pose_direction;
+    // Current pose name, state and direction
+    detail::Pose_Name_State_Direction current_pose_info;
     // Cache of tag combination to poses
-    std::unordered_map<std::string, int> tag_map;
+    std::unordered_map<detail::Pose_Name_State_Direction, int> tag_map;
     // Currently active pose
     Pose* pose;
     // Source rectangle of current frame
@@ -55,8 +82,6 @@ struct Sprite::Impl {
     int frame_count;
     // Is animation in a tween frame
     bool tweening;
-    // Default color
-    const static xd::vec4 default_color;
     // Is the pose completed
     bool completed;
     // Index at which the sprite should complete
@@ -77,29 +102,28 @@ struct Sprite::Impl {
     float sound_attenuation_factor;
 
     Impl(Game& game, std::shared_ptr<Sprite_Data> data) :
-        game(game),
-        audio(game.get_audio_player().get_audio()),
-        data(data),
-        current_pose_direction(Direction::NONE),
-        frame_index(0),
-        old_time(game.ticks()),
-        frame_duration(-1),
-        repeat_count(0),
-        frame_count(0),
-        tweening(false),
-        completed(false),
-        stop_updating(false),
-        paused(false),
-        pause_start(-1),
-        last_sound_frame(-1),
-        speed(1.0f),
-        sfx_volume(1.0f),
-        sound_attenuation_factor(Configurations::get<float>("audio.sound-attenuation-factor")) {
+            game(game),
+            audio(game.get_audio_player().get_audio()),
+            data(data),
+            frame_index(0),
+            old_time(game.ticks()),
+            frame_duration(-1),
+            repeat_count(0),
+            frame_count(0),
+            tweening(false),
+            completed(false),
+            stop_updating(false),
+            paused(false),
+            pause_start(-1),
+            last_sound_frame(-1),
+            speed(1.0f),
+            sfx_volume(1.0f),
+            sound_attenuation_factor(Configurations::get<float>("audio.sound-attenuation-factor")) {
         set_default_pose();
     }
 
-    void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity = 1.0f,
-            xd::vec2 mag = xd::vec2(1.0f), xd::vec4 color = xd::vec4(1.0f),
+    void render(xd::sprite_batch& batch, xd::vec2 pos, float opacity,
+            xd::vec2 mag, xd::vec4 color,
             std::optional<float> angle = std::nullopt, std::optional<xd::vec2> origin = std::nullopt,
             std::optional<xd::vec2> repeat_pos = std::nullopt) const {
         auto& frame = pose->frames[frame_index];
@@ -297,16 +321,12 @@ struct Sprite::Impl {
     void set_pose(const std::string& pose_name, const std::string& state_name,
             Direction dir, bool reset_current_frame) {
         // Update current pose tags
-        current_pose_name = string_utilities::capitalize(pose_name);
-        current_pose_state = string_utilities::capitalize(state_name);
-        current_pose_direction = dir;
+        current_pose_info = detail::Pose_Name_State_Direction{ pose_name, state_name, dir };
         // Lookup pose in cache
-        std::string tag_string;
-        tag_string = "P:" + current_pose_name + "|S:" + current_pose_state + "|D:" + direction_to_string(dir);
         int matched_pose = -1;
         bool default_name_matched = false;
-        if (tag_map.find(tag_string) != tag_map.end()) {
-            matched_pose = tag_map[tag_string];
+        if (tag_map.find(current_pose_info) != tag_map.end()) {
+            matched_pose = tag_map[current_pose_info];
         } else {
             // Map of pose IDs to their tag match count
             std::unordered_map<int, unsigned int> matches;
@@ -314,12 +334,12 @@ struct Sprite::Impl {
                 + (state_name.empty() ? 0 : 1)
                 + (dir == Direction::NONE ? 0 : 1);
             int default_pose = -1;
-            bool is_default = data->default_pose != "" && current_pose_name == data->default_pose;
+            bool is_default = data->default_pose != "" && current_pose_info.name == data->default_pose;
             // Loop over poses incrementing poses that match
             for (unsigned int i = 0; i < data->poses.size(); ++i) {
                 auto& pose = data->poses[i];
-                auto name_matched = current_pose_name == pose.name;
-                if (!current_pose_name.empty() && name_matched) {
+                auto name_matched = current_pose_info.name == pose.name;
+                if (!current_pose_info.name.empty() && name_matched) {
                     matches[i]++;
                     // Update best default pose
                     if (is_default && compare_matches(i, default_pose, matches) > 0) {
@@ -327,7 +347,7 @@ struct Sprite::Impl {
                         default_name_matched = true;
                     }
                 }
-                if (!current_pose_state.empty() && current_pose_state == pose.state) {
+                if (!current_pose_info.state.empty() && current_pose_info.state == pose.state) {
                     matches[i]++;
                 }
                 if (dir != Direction::NONE && dir == pose.direction) {
@@ -348,7 +368,7 @@ struct Sprite::Impl {
                 matched_pose = default_pose == -1 ? 0 : default_pose;
             }
             // Update pose cache
-            tag_map[tag_string] = matched_pose;
+            tag_map[current_pose_info] = matched_pose;
         }
 
         // Set matched pose and reset the sprite
@@ -398,8 +418,6 @@ struct Sprite::Impl {
         sound_file->set_volume(volume * sfx_volume);
     }
 };
-
-const xd::vec4 Sprite::Impl::default_color(1, 1, 1, 1);
 
 Sprite::Sprite(Game& game, std::shared_ptr<Sprite_Data> data)
         : pimpl(std::make_unique<Impl>(game, data)) {

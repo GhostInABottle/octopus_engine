@@ -4,19 +4,10 @@
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <boost/container_hash/hash.hpp>
 
 namespace xd
 {
-    namespace detail
-    {
-        template <class T>
-        inline void hash_combine(std::size_t& seed, const T& v) noexcept
-        {
-            std::hash<T> hasher;
-            seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        }
-    }
-
     enum class input_type
     {
         INPUT_KEYBOARD,
@@ -33,9 +24,9 @@ namespace xd
 
     inline bool operator==(const key& lhs, const key& rhs) noexcept
     {
-        return (lhs.type == rhs.type
+        return lhs.type == rhs.type
             && lhs.code == rhs.code
-            && lhs.device_id == rhs.device_id);
+            && lhs.device_id == rhs.device_id;
     }
 
     inline bool operator!=(const key& lhs, const key& rhs) noexcept
@@ -46,9 +37,9 @@ namespace xd
     inline std::size_t hash_value(const key& k) noexcept
     {
         std::size_t seed = 0;
-        detail::hash_combine(seed, k.type);
-        detail::hash_combine(seed, k.code);
-        detail::hash_combine(seed, k.device_id);
+        boost::hash_combine(seed, k.type);
+        boost::hash_combine(seed, k.code);
+        boost::hash_combine(seed, k.device_id);
         return seed;
     }
 
@@ -264,16 +255,13 @@ namespace xd
 }
 
 // specialize hash<> for xd::key
-namespace std
+template <>
+struct std::hash<xd::key>
 {
-    template <>
-    struct hash<xd::key>
+    size_t operator()(const xd::key& k) const noexcept
     {
-        size_t operator()(const xd::key& k) const noexcept
-        {
-            return xd::hash_value(k);
-        }
-    };
-}
+        return xd::hash_value(k);
+    }
+};
 
 #endif
