@@ -602,31 +602,22 @@ void Game::frame_update() {
         }
     }
 
-    if (paused) {
+    if (paused && pimpl->pause_scripting_interface) {
         // Update the paused state script
-        if (pimpl->pause_scripting_interface) {
-            set_current_scripting_interface(pimpl->pause_scripting_interface.get());
-            pimpl->pause_scripting_interface->update();
-            if (pimpl->reset_scripting) {
-                pimpl->reset_scripting_interface(*this);
-            }
-        }
-
-        // We still update map canvases, but not scripts
-        if (pimpl->next_map.empty())
-            map->update();
-        pimpl->process_config_changes(*this, *window);
-        return;
+        set_current_scripting_interface(pimpl->pause_scripting_interface.get());
+        pimpl->pause_scripting_interface->update();
+    } else if (!paused) {
+        set_current_scripting_interface(pimpl->scripting_interface.get());
+        pimpl->scripting_interface->update();
     }
-
-    set_current_scripting_interface(pimpl->scripting_interface.get());
-    pimpl->scripting_interface->update();
 
     if (pimpl->reset_scripting) {
         pimpl->reset_scripting_interface(*this);
     }
 
-    camera->update();
+    if (!paused) {
+        camera->update();
+    }
 
     if (pimpl->next_map.empty()) {
         map->update();
@@ -642,8 +633,7 @@ void Game::frame_update() {
 
     pimpl->process_config_changes(*this, *window);
 
-    // Switch map if needed
-    if (!pimpl->next_map.empty()) {
+    if (!pimpl->next_map.empty() && !paused) {
         load_next_map();
     }
 }
