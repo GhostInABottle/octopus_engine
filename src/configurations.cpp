@@ -190,6 +190,19 @@ std::vector<std::string> Configurations::parse(std::istream& stream, bool is_def
         }
 
         auto key = line.substr(0, eq);
+
+        std::string value_type;
+        if (key.find(':') != std::string::npos) {
+            auto parts = string_utilities::split(key, ":");
+            if (parts.size() != 2) {
+                errors.push_back("Config file has an unexpected key: " + key);
+                continue;
+            }
+            key = parts[0];
+            value_type = parts[1];
+            string_utilities::trim(value_type);
+        }
+
         string_utilities::trim(key);
         if (key.empty()) {
             errors.push_back("Config file is missing configuration key at line "
@@ -199,6 +212,11 @@ std::vector<std::string> Configurations::parse(std::istream& stream, bool is_def
 
         if (!current_section.empty()) {
             key = current_section + "." + key;
+        }
+
+        if (value_type.empty() && explicit_value_types.find(key) != explicit_value_types.end()) {
+            // Value type defined in default file but not in user config file
+            value_type = explicit_value_types[key];
         }
 
         if (seen_keys.find(key) != std::end(seen_keys)) {
@@ -222,7 +240,34 @@ std::vector<std::string> Configurations::parse(std::istream& stream, bool is_def
                 using T = std::decay_t<decltype(default_value)>;
                 return Configurations::value_type{ boost::lexical_cast<T>(value_string) };
             };
-            values[key] = std::visit(cast_to_default_type, defaults[key].value);
+            try {
+                values[key] = std::visit(cast_to_default_type, defaults[key].value);
+            } catch (boost::bad_lexical_cast&) {
+                errors.push_back("Invalid default value format for key: " + key + ", line_content: " + line);
+                continue;
+            }
+            seen_keys.insert(key);
+        }
+        else if (!value_type.empty() && value_type != "string" && should_add) {
+            try {
+                if (value_type == "number" || value_type == "float") {
+                    values[key] = boost::lexical_cast<float>(value_string);
+                } else if (value_type == "integer" || value_type == "int") {
+                    values[key] = boost::lexical_cast<int>(value_string);
+                } else if (value_type == "boolean" || value_type == "bool") {
+                    if (value_string == "true") value_string = "1";
+                    if (value_string == "false") value_string = "0";
+                    values[key] = boost::lexical_cast<bool>(value_string);
+                } else {
+                    errors.push_back("Unexpected value type '" + value_type + "' for key: " + key);
+                    continue;
+                }
+            } catch (boost::bad_lexical_cast&) {
+                errors.push_back("Invalid value format for key: " + key + " : " + value_type
+                    + ", line_content: " + line);
+                continue;
+            }
+            explicit_value_types[key] = value_type;
             seen_keys.insert(key);
         } else if (should_add) {
             values[key] = value_string;
@@ -259,16 +304,20 @@ void Configurations::save(std::ostream& stream) {
         }
 
         for (const auto& line_or_key : lines_or_keys) {
-            const auto is_line = line_or_key.empty()
+            const auto is_empty_or_comment = line_or_key.empty()
                 || line_or_key[0] == '#'
                 || line_or_key[0] == ';';
-            if (is_line) {
+            if (is_empty_or_comment) {
                 stream << line_or_key << "\n";
                 if (!stream) {
                     throw config_exception("Error writing line " + line_or_key + " to config file");
                 }
             } else {
                 if (!has_value(line_or_key)) continue;
+                std::string value_type;
+                if (explicit_value_types.find(line_or_key) != explicit_value_types.end()) {
+                    value_type = explicit_value_types[line_or_key];
+                }
                 const auto dot = line_or_key.find(".");
                 const auto key = dot == std::string::npos
                     ? line_or_key
@@ -276,7 +325,11 @@ void Configurations::save(std::ostream& stream) {
                 const auto value = get_string(line_or_key);
                 const auto space = value.empty() ? "" : " ";
 
-                stream << key << " =" << space << value << "\n";
+                stream << key;
+                if (!value_type.empty()) {
+                    stream << " : " << value_type;
+                }
+                stream << " =" << space << value << "\n";
                 if (!stream) {
                     throw config_exception("Error writing key " + line_or_key + " to config file");
                 }

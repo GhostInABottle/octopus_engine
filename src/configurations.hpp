@@ -143,6 +143,8 @@ private:
     typedef std::tuple<std::string, std::vector<std::string>> section_ordered_values;
     typedef std::vector<section_ordered_values> section_order_list;
     inline static section_order_list section_order;
+    // Custom types for non-default values (e.g. abc : int = 5), key => type mapping
+    inline static std::unordered_map<std::string, std::string> explicit_value_types;
     // Observers to be called when the config changes
     inline static std::unordered_map<std::string, callback> observers;
     // Add an ordered section/keys tuple
