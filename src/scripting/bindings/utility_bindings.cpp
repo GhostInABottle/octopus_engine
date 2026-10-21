@@ -10,6 +10,7 @@
 #include "../../map/map.hpp"
 #include "../../map/map_object.hpp"
 #include "../../utility/direction.hpp"
+#include "../../xd/lua/script_context.hpp"
 #include "../../xd/vendor/sol/sol.hpp"
 #include <memory>
 #include <optional>
@@ -68,6 +69,14 @@ void bind_utility_types(sol::state& lua, Game& game) {
     bit["bnot"] = [](int a) { return ~a; };
     bit["rshift"] = [](int a, int b) { return a >> b; };
     bit["lshift"] = [](int a, int b) { return a << b; };
+
+    // Script context
+    lua.new_enum<Script_Context>("Script_Context",
+        {
+            {"global", Script_Context::GLOBAL},
+            {"map", Script_Context::MAP}
+        }
+    );
 
     // Direction utilities
     auto dir = lua["direction"].get_or_create<sol::table>();

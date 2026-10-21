@@ -3,6 +3,7 @@
 
 #include "../vendor/sol/sol.hpp"
 #include "scheduler_task.hpp"
+#include "script_context.hpp"
 #include <list>
 #include <memory>
 #include <stack>
@@ -25,8 +26,8 @@ namespace xd
             scheduler& operator=(const scheduler&) = delete;
             scheduler(virtual_machine&  vm);
             virtual ~scheduler() = default;
-            void start(const std::string& code, const std::string& context, const std::string& chunk_name = "");
-            void start(const sol::protected_function& function, const std::string& context);
+            void start(const std::string& code, Script_Context context, const std::string& chunk_name = "");
+            void start(const sol::protected_function& function, Script_Context context);
             void run();
             void pause() { m_paused = true; }
             void resume() { m_paused = false;  }
@@ -90,9 +91,9 @@ namespace xd
             struct scheduler_cothread {
                 sol::thread thread;
                 sol::coroutine coroutine;
-                std::string context;
-                scheduler_cothread(sol::state& state, const std::string& code, const std::string& chunk_name, const std::string& context);
-                scheduler_cothread(sol::state& state, const sol::protected_function& function, const std::string& context);
+                Script_Context context;
+                scheduler_cothread(sol::state& state, const std::string& code, const std::string& chunk_name, Script_Context context);
+                scheduler_cothread(sol::state& state, const sol::protected_function& function, Script_Context context);
             };
             struct scheduler_thread_task
             {

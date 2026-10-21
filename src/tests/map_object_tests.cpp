@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(map_object_load) {
         color_to_hex(string_to_color("red")));
     BOOST_CHECK_CLOSE(object->get_opacity(), 0.5, epsilon);
     BOOST_CHECK_EQUAL(static_cast<int>(object->get_script_context()),
-        static_cast<int>(Map_Object::Script_Context::GLOBAL));
+        static_cast<int>(Script_Context::GLOBAL));
     BOOST_CHECK_EQUAL(object->has_trigger_script(), true);
     BOOST_CHECK_EQUAL(object->get_trigger_script(), "trigger script");
     BOOST_CHECK_EQUAL(object->has_leave_script(), true);

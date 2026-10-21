@@ -130,9 +130,9 @@ void Map::run_script_impl(const std::string& script_or_filename, bool is_filenam
     game.set_current_scripting_interface(scripting_interface.get());
     if (is_filename) {
         auto scripts_folder = game.get_scripts_directory();
-        scripting_interface->schedule_file(scripts_folder + script_or_filename, "MAP");
+        scripting_interface->schedule_file(scripts_folder + script_or_filename, Script_Context::MAP);
     } else {
-        scripting_interface->schedule_code(script_or_filename, "MAP");
+        scripting_interface->schedule_code(script_or_filename, Script_Context::MAP);
     }
     game.set_current_scripting_interface(old_interface);
 }
@@ -140,7 +140,7 @@ void Map::run_script_impl(const std::string& script_or_filename, bool is_filenam
 void Map::run_function(const sol::protected_function& function) {
     auto old_interface = game.get_current_scripting_interface();
     game.set_current_scripting_interface(scripting_interface.get());
-    scripting_interface->schedule_function(function, "MAP");
+    scripting_interface->schedule_function(function, Script_Context::MAP);
     game.set_current_scripting_interface(old_interface);
 }
 

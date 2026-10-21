@@ -9,6 +9,7 @@
 #include "../vendor/rapidxml.hpp"
 #include "../xd/entity.hpp"
 #include "../xd/graphics/types.hpp"
+#include "../xd/lua/script_context.hpp"
 #include "collision_check_types.hpp"
 #include "collision_record.hpp"
 #include "tmx_properties.hpp"
@@ -29,7 +30,6 @@ class Map_Object : public xd::entity<Map_Object>, public Sprite_Holder,
     public Editable, public Tmx_Object, public Opacity_Holder, public Color_Holder {
 public:
     enum class Draw_Order { BELOW, NORMAL, ABOVE };
-    enum class Script_Context { MAP, GLOBAL };
     enum class Passthrough_Type { INITIATOR = 1, RECEIVER = 2, BOTH = 3 };
     enum class Outline_Condition {
         NONE = 0,

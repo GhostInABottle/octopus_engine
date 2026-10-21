@@ -79,7 +79,7 @@ void Scripting_Interface::update() {
         scheduler.run();
 }
 
-void Scripting_Interface::schedule_code(const std::string& script, const std::string& context) {
+void Scripting_Interface::schedule_code(const std::string& script, Script_Context context) {
     if (script.empty()) {
         LOGGER_W << "Tried to schedule an empty script";
         return;
@@ -87,12 +87,12 @@ void Scripting_Interface::schedule_code(const std::string& script, const std::st
     scheduler.start(script, context);
 }
 
-void Scripting_Interface::schedule_file(const std::string& filename, const std::string& context) {
+void Scripting_Interface::schedule_file(const std::string& filename, Script_Context context) {
     auto fs = file_utilities::game_data_filesystem();
     scheduler.start(fs->read_file(filename), context, "@" + filename);
 }
 
-void Scripting_Interface::schedule_function(const sol::protected_function& function, const std::string& context) {
+void Scripting_Interface::schedule_function(const sol::protected_function& function, Script_Context context) {
     scheduler.start(function, context);
 }
 
@@ -120,7 +120,7 @@ void Scripting_Interface::setup_scripts() {
     auto& vm = *game->get_lua_vm();
 
     if (Configurations::get<bool>("debug.seed-lua-rng")) {
-        scheduler.start("math.randomseed(os.time())", "");
+        scheduler.start("math.randomseed(os.time())", Script_Context::GLOBAL);
     }
 
     auto& lua = vm.lua_state();

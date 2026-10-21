@@ -2,6 +2,7 @@
 #define HPP_SCRIPTING_INTERFACE
 
 #include "../xd/lua/scheduler.hpp"
+#include "../xd/lua/script_context.hpp"
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,9 +19,9 @@ public:
     Scripting_Interface& operator=(const Scripting_Interface&) = delete;
     explicit Scripting_Interface(Game& game);
     void update();
-    void schedule_code(const std::string& script, const std::string& context = "");
-    void schedule_file(const std::string& filename, const std::string& context = "");
-    void schedule_function(const sol::protected_function& function, const std::string& context = "");
+    void schedule_code(const std::string& script, Script_Context context = Script_Context::GLOBAL);
+    void schedule_file(const std::string& filename, Script_Context context = Script_Context::GLOBAL);
+    void schedule_function(const sol::protected_function& function, Script_Context context = Script_Context::GLOBAL);
     template <typename T>
     T call(const std::string& script) {
         return lua_state().script(script).get<T>();

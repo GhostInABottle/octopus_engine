@@ -10,12 +10,12 @@ xd::lua::scheduler::scheduler(virtual_machine& vm)
 {
 }
 
-void xd::lua::scheduler::start(const std::string& code, const std::string& context, const std::string& chunk_name)
+void xd::lua::scheduler::start(const std::string& code, Script_Context context, const std::string& chunk_name)
 {
     start(std::make_shared<scheduler_cothread>(state, code, chunk_name, context));
 }
 
-void xd::lua::scheduler::start(const sol::protected_function& function, const std::string& context) {
+void xd::lua::scheduler::start(const sol::protected_function& function, Script_Context context) {
     start(std::make_shared<scheduler_cothread>(state, function, context));
 }
 
@@ -96,7 +96,7 @@ void xd::lua::scheduler::start(const std::shared_ptr<xd::lua::scheduler::schedul
 }
 
 xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const std::string& code,
-        const std::string& chunk_name, const std::string& context) {
+        const std::string& chunk_name, Script_Context context) {
     thread = sol::thread::create(state);
     auto load_result = thread.state().load(code, chunk_name);
     if (!load_result.valid()) {
@@ -107,7 +107,7 @@ xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, co
     this->context = context;
 }
 
-xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::protected_function& function, const std::string& context) {
+xd::lua::scheduler::scheduler_cothread::scheduler_cothread(sol::state& state, const sol::protected_function& function, Script_Context context) {
     thread = sol::thread::create(state);
     coroutine = { thread.state(), function };
     this->context = context;

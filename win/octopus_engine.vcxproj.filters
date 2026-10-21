@@ -899,6 +899,9 @@
     <ClInclude Include="..\src\map\collision_check_options.hpp">
       <Filter>Header Files\map</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\xd\lua\script_context.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="octopus_engine.rc">

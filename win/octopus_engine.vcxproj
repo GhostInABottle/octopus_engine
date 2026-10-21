@@ -395,6 +395,7 @@
     <ClInclude Include="..\src\xd\lua\exceptions.hpp" />
     <ClInclude Include="..\src\xd\lua\scheduler.hpp" />
     <ClInclude Include="..\src\xd\lua\scheduler_task.hpp" />
+    <ClInclude Include="..\src\xd\lua\script_context.hpp" />
     <ClInclude Include="..\src\xd\lua\virtual_machine.hpp" />
     <ClInclude Include="..\src\xd\system\exceptions.hpp" />
     <ClInclude Include="..\src\xd\system\input.hpp" />

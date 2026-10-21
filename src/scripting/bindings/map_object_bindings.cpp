@@ -72,13 +72,6 @@ void bind_map_object_types(sol::state& lua, Game& game) {
             {"above", Map_Object::Draw_Order::ABOVE}
         }
     );
-    // Script context
-    lua.new_enum<Map_Object::Script_Context>("Script_Context",
-        {
-            {"global", Map_Object::Script_Context::GLOBAL},
-            {"map", Map_Object::Script_Context::MAP}
-        }
-    );
     // Passthrough type
     lua.new_enum<Map_Object::Passthrough_Type>("Passthrough_Type",
         {

@@ -920,5 +920,8 @@
     <ClInclude Include="..\..\src\xd\graphics\detail\font_details.hpp">
       <Filter>Header Files\xd\graphics\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\xd\lua\script_context.hpp">
+      <Filter>Header Files\xd\lua</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
