@@ -20,7 +20,7 @@ Move_Object_Command::Move_Object_Command(Game& game, Move_Object_Command::Option
         direction = opposite_direction(options.object.get_direction());
         change_facing = false;
     }
-    map_ptr = game.get_map();
+    map_sequence_number = game.get_map_sequence_number();
 }
 
 void Move_Object_Command::execute() {

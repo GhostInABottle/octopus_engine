@@ -4,12 +4,12 @@
 #include "../utility/math.hpp"
 
 Update_Layer_Velocity_Command::Update_Layer_Velocity_Command(Game& game, Image_Layer& layer, xd::vec2 velocity, long duration)
-    : Timed_Command(game, duration)
-    , layer(layer)
-    , old_velocity(layer.get_velocity())
-    , new_velocity(velocity)
-    , complete(false) {
-    map_ptr = game.get_map();
+        : Timed_Command(game, duration)
+        , layer(layer)
+        , old_velocity(layer.get_velocity())
+        , new_velocity(velocity)
+        , complete(false) {
+    map_sequence_number = game.get_map_sequence_number();
 }
 
 void Update_Layer_Velocity_Command::execute() {

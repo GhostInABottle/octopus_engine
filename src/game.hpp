@@ -9,6 +9,7 @@
 #include "xd/system/input.hpp"
 #include "xd/system/window.hpp"
 #include "xd/vendor/sol/forward.hpp"
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -223,6 +224,8 @@ public:
     void load_next_map();
     // Get the map
     Map* get_map() { return map.get(); }
+    // Get the sequence number of the current map
+    std::size_t get_map_sequence_number() const;
     // Create a new map
     void new_map(xd::ivec2 map_size, xd::ivec2 tile_size);
     // Add a canvas to current map

@@ -141,7 +141,7 @@ struct Move_Object_To_Command::Impl {
 Move_Object_To_Command::Move_Object_To_Command(Map& map, Map_Object& object,
         float x, float y, Collision_Check_Type check_type, bool keep_trying)
         :  pimpl(std::make_unique<Impl>(map, object, x, y, check_type, keep_trying)) {
-    map_ptr = &map;
+    map_sequence_number =map.get_sequence_number();
 }
 
 Move_Object_To_Command::~Move_Object_To_Command() {}

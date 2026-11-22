@@ -24,6 +24,7 @@ void bind_map_types(sol::state& lua) {
     map_type["filename"] = sol::property(&Map::get_filename);
     map_type["filename_stem"] = sol::property(&Map::get_filename_stem);
     map_type["name"] = sol::property(&Map::get_name);
+    map_type["sequence_number"] = sol::property(&Map::get_sequence_number);
     map_type["objects"] = sol::property([&](Map* map) {
         return sol::as_table(map->get_objects());
     });

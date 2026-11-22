@@ -904,6 +904,10 @@ std::string Game::get_scripts_directory() const {
     return pimpl->scripts_folder;
 }
 
+std::size_t Game::get_map_sequence_number() const {
+    return map->get_sequence_number();
+}
+
 void Game::load_next_map() {
     map = Map::load(*this, pimpl->next_map);
     if (pimpl->editor_mode) return;

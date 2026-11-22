@@ -51,13 +51,13 @@ Scripting_Interface::Scripting_Interface(Game& game) : scheduler(*game.get_lua_v
 
 void Scripting_Interface::update() {
     // Execute pending commands
-    auto current_map = game->get_map();
+    auto current_map_number = game->get_map_sequence_number();
     for (auto i = commands.begin(); i < commands.end();) {
         auto& command = *i;
 
         // Don't execute commands if they belong to a different map
-        auto command_map = command->get_map_ptr();
-        auto map_changed = command_map && command_map != current_map;
+        auto command_map = command->get_map_sequence_number();
+        auto map_changed = command_map && *command_map != current_map_number;
 
         if (!map_changed) {
             command->execute();

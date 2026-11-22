@@ -11,7 +11,7 @@ Update_Image_Command::Parameters::Parameters(const Base_Image_Canvas& canvas)
 
 Update_Image_Command::Update_Image_Command(Game& game, Base_Image_Canvas& canvas)
         : Timed_Command(game, 0), canvas(canvas) {
-    map_ptr = game.get_map();
+    map_sequence_number = game.get_map_sequence_number();
     reset();
 }
 
@@ -20,7 +20,7 @@ Update_Image_Command::Update_Image_Command(Game& game, Base_Image_Canvas& canvas
         : Timed_Command(game, duration)
         , canvas(canvas)
         , new_parameters(parameters) {
-    map_ptr = game.get_map();
+    map_sequence_number = game.get_map_sequence_number();
     reset(false);
 }
 

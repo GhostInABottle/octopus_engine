@@ -32,6 +32,7 @@ Show_Pose_Command::Show_Pose_Command(Map& map, Holder_Info holder_info,
         Direction dir, bool reset_current_frame)
         : holder_info(holder_info)
         , complete(false) {
+    map_sequence_number = map.get_sequence_number();
     map_ptr = &map;
     auto holder = get_holder();
     if (!holder) {

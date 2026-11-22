@@ -9,7 +9,7 @@ Update_Opacity_Command::Update_Opacity_Command(Game& game, Opacity_Holder& holde
         , old_opacity(holder.get_opacity())
         , new_opacity(opacity)
         , complete(false) {
-    map_ptr = game.get_map();
+    map_sequence_number = game.get_map_sequence_number();
 }
 
 void Update_Opacity_Command::execute() {

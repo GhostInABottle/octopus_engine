@@ -13,6 +13,7 @@
 #include "layers/layer_types.hpp"
 #include "tileset.hpp"
 #include "tmx_properties.hpp"
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -45,6 +46,8 @@ public:
     // Constructor and destructor
     explicit Map(Game& game);
     ~Map();
+    Map(const Map&) = delete;
+    Map& operator=(const Map&) = delete;
     // Get map name
     std::string get_name() const {
         if (properties.contains("name"))
@@ -56,6 +59,8 @@ public:
     void set_name(const std::string& name) {
         properties["name"] = name;
     }
+    // Get sequence number
+    std::size_t get_sequence_number() const { return sequence_number; }
     // Run a script (limited to this map)
     void run_script(const std::string& script) {
         run_script_impl(script, false);
@@ -252,19 +257,23 @@ private:
     // Allows defining extra Lua properties on the object
     Lua_Object lua_data;
     // Width in tiles
-    int width;
+    int width = 1;
     // Height in tiles
-    int height;
+    int height = 1;
     // Width of each tile in pixels
-    int tile_width;
+    int tile_width = 1;
     // Height of each tile in pixels
-    int tile_height;
+    int tile_height = 1;
     // Map file name
     std::string filename;
     // Map file name, without the extension
     std::string filename_stem;
+    // A counter that increments every time a map is constructed
+    inline static std::size_t sequence_number_counter = 0;
+    // A unique number identifying the map since starting the game
+    std::size_t sequence_number = sequence_number_counter++;
     // Counter to set IDs of new objects
-    int next_object_id;
+    int next_object_id = 1;
     // Starting position for player
     xd::vec2 starting_position;
     // Scripting interface for map scripts
@@ -278,11 +287,11 @@ private:
     // List of map tilesets
     std::vector<Tileset> tilesets;
     // Obstruction data tileset
-    Tileset* collision_tileset;
+    Tileset* collision_tileset = nullptr;
     // Object layer
     std::vector<Object_Layer*> object_layers;
     // Obstruction data layer
-    Tile_Layer* collision_layer;
+    Tile_Layer* collision_layer = nullptr;
     // List of map layers
     std::vector<std::shared_ptr<Layer>> layers;
     // Lookup table of layer IDs to layer pointers
@@ -293,26 +302,26 @@ private:
     std::unordered_map<int, std::weak_ptr<Base_Canvas>> canvases_by_id;
     // Background music
     std::string background_music_filename;
-    float background_music_volume;
+    float background_music_volume = 1.0f;
     // Background ambient
     std::string background_ambient_filename;
-    float background_ambient_volume;
+    float background_ambient_volume = 1.0f;
     // Filenames of scripts to run before the global map load script
     std::vector<std::string> pre_load_scripts;
     // Filenames of scripts to run after the global map load script
     std::vector<std::string> post_load_scripts;
     // Should object outlines be drawn?
-    bool draw_object_outlines;
+    bool draw_object_outlines = true;
     // Do we need to redraw static elements?
-    bool needs_redraw;
+    bool needs_redraw = true;
     // Did any objects move?
-    bool objects_moved;
+    bool objects_moved = true;
     // Is canvas list already sorted?
-    bool canvases_sorted;
+    bool canvases_sorted = false;
     // Cached sounds/audio for the map
     Audio_Cache audio_cache;
     // Used to uniquely identify typewriter text effects
-    int last_typewriter_slot;
+    int last_typewriter_slot = 100;
     // Remove object from ID and name hash tables
     void erase_object_references(const Map_Object* object);
     void run_script_impl(const std::string& script_or_filename, bool is_filename);

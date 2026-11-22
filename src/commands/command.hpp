@@ -1,12 +1,19 @@
 #ifndef HPP_COMMAND
 #define HPP_COMMAND
 
+#include <cstddef>
+#include <optional>
+
 class Map;
 
 class Command {
 public:
     Command() noexcept : stopped(false), force_stopped(false),
-        paused(false), map_ptr(nullptr) {}
+        paused(false), map_sequence_number(std::nullopt) {}
+    // Get the sequence number of the map associated with this command, if any
+    std::optional<std::size_t> get_map_sequence_number() const {
+        return map_sequence_number;
+    }
     // Called while the command isn't completed
     virtual void execute() = 0;
     // Version with specific time
@@ -31,15 +38,13 @@ public:
     virtual void resume() { paused = false; }
     // Is the command paused
     virtual bool is_paused() const { return paused;  }
-    // Get the map associated with the command, if any
-    const Map* get_map_ptr() const { return map_ptr; }
     // Virtual destructor
     virtual ~Command() = 0;
 protected:
     bool stopped;
     bool force_stopped;
     bool paused;
-    Map* map_ptr;
+    std::optional<std::size_t> map_sequence_number;
 };
 
 #endif

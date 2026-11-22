@@ -4,12 +4,12 @@
 #include "../utility/math.hpp"
 
 Update_Color_Command::Update_Color_Command(Game& game, Color_Holder& holder, xd::vec4 color, long duration)
-    : Timed_Command(game, duration)
-    , color_holder(holder)
-    , old_color(holder.get_color())
-    , new_color(color)
-    , complete(false) {
-    map_ptr = game.get_map();
+        : Timed_Command(game, duration)
+        , color_holder(holder)
+        , old_color(holder.get_color())
+        , new_color(color)
+        , complete(false) {
+    map_sequence_number = game.get_map_sequence_number();
 }
 
 void Update_Color_Command::execute() {

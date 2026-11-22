@@ -99,23 +99,7 @@ namespace {
     }
 }
 
-Map::Map(Game& game) :
-        game(game),
-        width(1),
-        height(1),
-        tile_width(1),
-        tile_height(1),
-        next_object_id(1),
-        scripting_interface(std::make_unique<Scripting_Interface>(game)),
-        collision_tileset(nullptr),
-        collision_layer(nullptr),
-        background_music_volume(1.0f),
-        background_ambient_volume(1.0f),
-        draw_object_outlines(true),
-        needs_redraw(true),
-        objects_moved(true),
-        canvases_sorted(false),
-        last_typewriter_slot(100) {
+Map::Map(Game& game) : game(game), scripting_interface(std::make_unique<Scripting_Interface>(game)) {
     Base_Canvas::reset_last_child_id();
     add_component(std::make_shared<Map_Renderer>());
     add_component(std::make_shared<Map_Updater>());

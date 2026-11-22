@@ -28,6 +28,7 @@ public:
     void resume() override;
 private:
     Sprite_Holder* get_holder() const;
+    Map* map_ptr;
     Holder_Info holder_info;
     bool complete;
 };

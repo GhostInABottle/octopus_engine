@@ -9,7 +9,7 @@ Move_Canvas_Command::Move_Canvas_Command(Game& game, Base_Canvas& canvas, xd::ve
         , old_position(canvas.get_position())
         , new_position(pos)
         , complete(false) {
-    map_ptr = game.get_map();
+    map_sequence_number = game.get_map_sequence_number();
 }
 
 void Move_Canvas_Command::execute() {
