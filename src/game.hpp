@@ -207,6 +207,8 @@ public:
     bool is_script_scheduler_paused() const;
     // Pause or resume the Lua scheduler
     void set_script_scheduler_paused(bool paused);
+    // Stop running commands
+    void stop_script_commands(bool force);
     // Get the cached audio subsystem
     Audio_Player& get_audio_player();
     // Get the active channel group for sound effects

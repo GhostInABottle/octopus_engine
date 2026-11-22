@@ -73,10 +73,22 @@ void Scripting_Interface::update() {
             i = commands.erase(i);
             continue;
         }
+
         ++i;
     }
-    if (scheduler.pending_tasks() > 0)
+    if (scheduler.pending_tasks() > 0) {
         scheduler.run();
+    }
+}
+
+void Scripting_Interface::stop_all_commands(bool force) {
+    for (auto& command : commands) {
+        if (force) {
+            command->force_stop();
+        } else {
+            command->stop();
+        }
+    }
 }
 
 void Scripting_Interface::schedule_code(const std::string& script, Script_Context context) {

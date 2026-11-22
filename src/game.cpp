@@ -828,6 +828,14 @@ void Game::set_script_scheduler_paused(bool paused) {
         scheduler.resume();
 }
 
+void Game::stop_script_commands(bool force) {
+    if (paused && pimpl->pause_scripting_interface) {
+        pimpl->pause_scripting_interface->stop_all_commands(force);
+    } else {
+        pimpl->scripting_interface->stop_all_commands(force);
+    }
+}
+
 Audio_Player& Game::get_audio_player() {
     return pimpl->audio_player;
 }

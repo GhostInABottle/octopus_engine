@@ -204,9 +204,9 @@ namespace xd::detail::font {
     static const UCDRecord* get_ucd_record(uint32_t code) {
         int index, offset;
 
-        if (code >= 0x110000)
+        if (code >= 0x110000) {
             index = 0;
-        else {
+        } else {
             index = index0[code >> (SHIFT1 + SHIFT2)] << SHIFT1;
             offset = (code >> SHIFT2) & ((1 << SHIFT1) - 1);
             index = index1[index + offset] << SHIFT2;

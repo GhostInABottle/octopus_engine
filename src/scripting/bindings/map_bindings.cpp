@@ -54,6 +54,7 @@ void bind_map_types(sol::state& lua) {
     map_type["run_script"] = &Map::run_script;
     map_type["run_script_file"] = &Map::run_script_file;
     map_type["run_function"] = &Map::run_function;
+    map_type["stop_script_commands"] = &Map::stop_script_commands;
     map_type["passable"] = [&](Map& map, const Map_Object& object, int dir) {
         auto c = map.passable({ object, static_cast<Direction>(dir) });
         return c.passable();

@@ -20,7 +20,7 @@ FORWARD = 16
 ---@type Engine_Direction
 BACKWARD = 32
 
----@type 'GLOBAL'|'MAP'
+---@type Engine_Script_Context
 SCRIPT_CONTEXT = nil
 
 -- Enumerations
@@ -1407,6 +1407,9 @@ function current_map:run_script(script) end
 ---@param filename string
 function current_map:run_script_file(filename) end
 
+---@param force boolean
+function current_map:stop_script_commands(force) end
+
 -- Camera
 
 ---@class (exact) Engine_Camera
@@ -1781,6 +1784,9 @@ function game:run_script(script) end
 
 ---@param filename string
 function game:run_script_file(filename) end
+
+---@param force boolean
+function game:stop_script_commands(force) end
 
 ---@param filename string
 ---@return function

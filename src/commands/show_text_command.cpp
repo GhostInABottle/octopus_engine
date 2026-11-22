@@ -263,13 +263,11 @@ struct Show_Text_Command::Impl : Timed_Command {
                     press_start = 0;
                     dir = pressed_dir;
                 }
-            }
-            else {
+            } else {
                 pressed_direction = pressed_dir;
                 press_start = ticks;
             }
-        }
-        else {
+        } else {
             pressed_direction = Direction::NONE;
             press_start = 0;
         }

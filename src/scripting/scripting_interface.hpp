@@ -19,6 +19,7 @@ public:
     Scripting_Interface& operator=(const Scripting_Interface&) = delete;
     explicit Scripting_Interface(Game& game);
     void update();
+    void stop_all_commands(bool force);
     void schedule_code(const std::string& script, Script_Context context = Script_Context::GLOBAL);
     void schedule_file(const std::string& filename, Script_Context context = Script_Context::GLOBAL);
     void schedule_function(const sol::protected_function& function, Script_Context context = Script_Context::GLOBAL);

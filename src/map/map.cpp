@@ -175,6 +175,10 @@ void Map::set_script_scheduler_paused(bool paused) {
     }
 }
 
+void Map::stop_script_commands(bool force) {
+    scripting_interface->stop_all_commands(force);
+}
+
 Collision_Record Map::passable(Collision_Check_Options options) const {
     Collision_Record result;
 

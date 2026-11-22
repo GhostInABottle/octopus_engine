@@ -123,6 +123,7 @@ void bind_game_types(sol::state& lua) {
     game_type["run_script_file"] = &Game::run_script_file;
     game_type["run_function"] = &Game::run_function;
     game_type["reset_scripting"] = &Game::reset_scripting;
+    game_type["stop_script_commands"] = &Game::stop_script_commands;
 
     game_type["stop_time"] = [](Game* game) { game->get_clock()->stop_time(); };
     game_type["resume_time"] = [](Game* game) { game->get_clock()->resume_time(); };

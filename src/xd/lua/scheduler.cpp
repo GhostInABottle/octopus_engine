@@ -52,12 +52,12 @@ void xd::lua::scheduler::run()
             }
             // reset current thread
             m_thread_stack.pop();
-            if (m_thread_stack.empty())
+            if (m_thread_stack.empty()) {
                 m_current_thread = nullptr;
-            else
+            } else {
                 m_current_thread = m_thread_stack.top();
-        }
-        else {
+            }
+        } else {
             ++i;
         }
     }

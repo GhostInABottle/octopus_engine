@@ -156,8 +156,7 @@ namespace detail {
             signed char type;
             read(stream, type);
             tag = static_cast<type_tag>(type);
-        }
-        else {
+        } else {
             read(stream, tag);
         }
     }

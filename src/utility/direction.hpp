@@ -91,15 +91,15 @@ inline Direction string_to_direction(std::string str) {
     string_utilities::capitalize(str);
     auto parts = string_utilities::split(str, "|");
     for (auto& part : parts) {
-        if (part == "UP")
+        if (part == "UP") {
             dir = dir | Direction::UP;
-        else if (part == "DOWN")
+        } else if (part == "DOWN") {
             dir = dir | Direction::DOWN;
-        else if (part == "LEFT")
+        } else if (part == "LEFT") {
             dir = dir | Direction::LEFT;
-        else if (part == "RIGHT")
+        } else if (part == "RIGHT") {
             dir = dir | Direction::RIGHT;
-        else {
+        } else {
             LOGGER_W << "Unexpected direction " << part << " in directional string " << str;
         }
 

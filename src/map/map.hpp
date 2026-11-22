@@ -72,6 +72,8 @@ public:
     bool is_script_scheduler_paused() const;
     // Pause or resume the Lua scheduler
     void set_script_scheduler_paused(bool paused);
+    // Stop all running commands
+    void stop_script_commands(bool force);
     // Check if object can move in given direction
     Collision_Record passable(Collision_Check_Options options) const;
     // Check if a particular tile is passable
