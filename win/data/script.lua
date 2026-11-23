@@ -448,6 +448,8 @@ elseif c.selected == 8 then
         d = 6.5,
         e = false,
         f = {
+			v = 100000,
+			w = -100000,
             x = 1,
             y = true,
             z = 'w',

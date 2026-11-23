@@ -1336,6 +1336,7 @@ function Engine_Object_Layer:update_color(new_color, duration) end
 
 ---@class (exact) Engine_Map
 ---@field data table
+---@field sequence_number integer
 ---@field name string # from TMX file
 ---@field filename string # full filename including folders
 ---@field filename_stem string # last part of filename without the extension

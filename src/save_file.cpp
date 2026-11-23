@@ -29,21 +29,24 @@ namespace detail {
     static type_tag get_numeric_type_tag(double value, bool compact) {
         if (!compact) return type_tag::double_number;
 
-        auto can_be_int = !std::isnan(value) && !std::isinf(value)
-            && std::trunc(value) == value;
+        auto abs_value = std::abs(value);
+        auto can_be_int = std::isfinite(value) && std::trunc(value) == value;
 
         if (can_be_int) {
-            if (value <= std::numeric_limits<std::int8_t>().max())
+            // INT64_MAX can't be represented exactly as double so a simple comparison isn't enough
+            constexpr double int64_limit = 0x1p63;
+            if (abs_value <= std::numeric_limits<std::int8_t>().max()) {
                 return type_tag::byte_number;
-            else if (value <= std::numeric_limits<std::int16_t>().max())
+            } else if (abs_value <= std::numeric_limits<std::int16_t>().max()) {
                 return type_tag::short_number;
-            else if (value <= std::numeric_limits<std::int32_t>().max())
+            } else if (abs_value <= std::numeric_limits<std::int32_t>().max()) {
                 return type_tag::long_number;
-            else if (value <= std::numeric_limits<std::int64_t>().max())
+            } else if (value >= -int64_limit && value < int64_limit) {
                 return type_tag::long_long_number;
+            }
         }
 
-        return value <= std::numeric_limits<float>().max()
+        return abs_value <= std::numeric_limits<float>().max()
             ? type_tag::float_number
             : type_tag::double_number;
     }
@@ -80,19 +83,21 @@ namespace detail {
     static void write(std::ostream& stream, const std::string& value, type_tag tag) {
         auto length = value.length();
 
-        if (tag == type_tag::small_string)
+        if (tag == type_tag::small_string) {
             write(stream, static_cast<unsigned char>(length));
-        else
+        } else {
             write(stream, length);
+        }
 
         stream.write(value.c_str(), length);
     }
 
     static void write_type_tag(std::ostream& stream, type_tag tag, bool compact) {
-        if (compact)
+        if (compact) {
             write(stream, static_cast<signed char>(tag));
-        else
+        } else {
             write(stream, tag);
+        }
     }
 
     template <typename T>
@@ -215,10 +220,7 @@ namespace detail {
 
             auto sol_key_type = key.get_type();
             auto sol_val_type = val.get_type();
-            if (!valid_key_type(sol_key_type))
-                continue;
-            if (!valid_value_type(sol_val_type))
-                continue;
+            if (!valid_key_type(sol_key_type) || !valid_value_type(sol_val_type)) continue;
 
             // Write the key
             auto key_type = sol_type_to_type_tag(sol_key_type, key, compact);
